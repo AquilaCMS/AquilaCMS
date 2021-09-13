@@ -25,6 +25,7 @@
         "type": "Type",
         "catalogue": "Catalog",
         "page": "Page",
+        "url": "URL",
         "slugPageCible": "Target page slug",
         "vignette": "Thumbnail",
         "libelleSupp": "Extra field (obsolete)",

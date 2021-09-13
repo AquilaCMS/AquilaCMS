@@ -3,7 +3,7 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs", 
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
     function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -39,7 +39,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             {
                 text: 'product.general.preview',
                 onClick: function () {
-                    if($scope.product.translation && $scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
+                    if ($scope.product.translation && $scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
                         ProductsV2.preview($scope.product, function (response) {
                             if (response && response.url) {
                                 window.open(response.url)
@@ -61,8 +61,8 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $scope.product = ProductService.getProductObject();
             $scope.product.type = "simple";
 
-            $scope.product.price = {purchase: 0, et: {normal: 0}, ati: {normal: 0}};
-            $scope.product.stock = {qty: 0, qty_booked: 0};
+            $scope.product.price = { purchase: 0, et: { normal: 0 }, ati: { normal: 0 } };
+            $scope.product.stock = { qty: 0, qty_booked: 0 };
             $scope.product.associated_prds = [];
             // $scope.product.cmsBlocks = [];
             $scope.product.characteristics = [];
@@ -71,11 +71,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         if ($routeParams.code !== "new") {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false}}, function (product) {
+            ProductsV2.query({ PostBody: { filter: { code: $routeParams.code, type: $routeParams.type }, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false } }, function (product) {
                 $scope.product = product;
 
                 genAttributes();
-                
+
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
                         $scope.product.images[i].component_template = ImportedProductImage.component_template;
@@ -83,7 +83,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 }
             });
 
-            ProductsV2.getPromos({PostBody: {filter: {code: $routeParams.code}, structure: '*'}}, function (result) {
+            ProductsV2.getPromos({ PostBody: { filter: { code: $routeParams.code }, structure: '*' } }, function (result) {
                 $scope.promos = result.datas ? result.datas.promos : [];
             });
         } else {
@@ -98,11 +98,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         templateUrl: 'app/product/views/modals/coherence.html',
                         controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
                             $scope.product = productSolv;
-                            ProductCoherence.getCoherence({id : $scope.product._id}, function(response){
+                            ProductCoherence.getCoherence({ id: $scope.product._id }, function (response) {
                                 $scope.modal.data = response.content;
                             });
-                            $scope.modal = {data : ''};
-                            $scope.trustHtml = function(){
+                            $scope.modal = { data: '' };
+                            $scope.trustHtml = function () {
                                 return $sce.trustAsHtml($scope.modal.data);
                             }
                             $scope.cancel = function () {
@@ -124,7 +124,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 onClick: function () {
                     const newCode = prompt("Saisir le code du nouveau produit : ");
                     if (newCode) {
-                        const newPrd = {...$scope.product, code: newCode};
+                        const newPrd = { ...$scope.product, code: newCode };
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
                             toastService.toast("success", $translate.instant("simple.productDuplicate"));
@@ -141,7 +141,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
 
         function genAttributes() {
             angular.forEach($scope.product.attributes, function (attributeI) {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI.id}, structure: '*'}}, function (attribute) {
+                AttributesV2.query({ PostBody: { filter: { _id: attributeI.id }, structure: '*' } }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
@@ -176,23 +176,23 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $scope.lang = lang;
         };
 
-        function checkForm(fieldsToCheck){
+        function checkForm(fieldsToCheck) {
             let text = "";
-            for(let oneField of fieldsToCheck){
+            for (let oneField of fieldsToCheck) {
                 const elt = document.querySelector(`label[for="${oneField}"]`);
                 const translationToCheck = ["name"];  // TODO : you may need to add string here (also in bundleProduct)
-                if(translationToCheck.includes(oneField)){
-                    for(let oneLang of $scope.languages){
-                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
-                        //good
-                        }else{
+                if (translationToCheck.includes(oneField)) {
+                    for (let oneLang of $scope.languages) {
+                        if ($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != "") {
+                            //good
+                        } else {
                             text += `name (${oneLang.name}), `;
                         }
                     }
-                }else{
+                } else {
                     if (elt) {
-                        if(elt.control && elt.control.value == ""){
-                            if(elt.innerText){
+                        if (elt.control && elt.control.value == "") {
+                            if (elt.innerText) {
                                 text += `${elt.innerText}, `;
                             }
                         }
@@ -218,15 +218,16 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
-            }else{
+            } else {
                 strInvalidFields = checkForm(["code", "name"]);
             }
             //we remove ", "
-            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
-                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            if (strInvalidFields.substring(strInvalidFields.length - 2, strInvalidFields.length) == ", ") {
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length - 2)
             }
-            if(strInvalidFields != ""){
-                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
+            if (strInvalidFields != "") {
+                const text = $translate.instant("product.toast.notValid");
+                toastService.toast("danger", `${text} : ${strInvalidFields}`);
                 return;
             }
 
@@ -246,7 +247,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             delete attr.translation[$scope.lang].max;
                         } else if (attr.translation[$scope.lang].min !== undefined && attr.translation[$scope.lang].max !== undefined && attr.translation[$scope.lang].min !== "" && attr.translation[$scope.lang].max !== "") {
                             attrsErrors = true;
-                            toastService.toast("danger", `Le minimum de l'attribut ${attr.translation[$scope.lang].name}(${lang}) est plus grand que le maximum`);
+                            const text1 = $translate.instant("attriibute.toast.invalidPart1");
+                            const text2 = $translate.instant("attriibute.toast.invalidPart2");
+                            toastService.toast("danger", `${text1} ${attr.translation[$scope.lang].name}(${lang}) ${text2}`);
                         }
                     }
                 }
@@ -285,7 +288,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
 
         $scope.removeProduct = function (_id) {
             if (confirm($translate.instant("confirm.deleteProduct"))) {
-                ProductsV2.delete({id: _id}, function () {
+                ProductsV2.delete({ id: _id }, function () {
                     toastService.toast("success", $translate.instant("simple.deleteDone"));
                     $location.path("/products");
                 }, function () {

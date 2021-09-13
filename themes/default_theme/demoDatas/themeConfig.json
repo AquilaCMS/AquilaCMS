@@ -4,9 +4,9 @@
     {
       "name": "default_theme",
       "config": {
-        "translation" : {
+        "translation": {
           "fr": {
-            "values" :[
+            "values": [
               {
                 "key": "showFooter",
                 "value": true,

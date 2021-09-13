@@ -8,12 +8,11 @@
 
 const crypto                     = require('crypto');
 const moment                     = require('moment');
-const wkhtmltopdf                = require('wkhtmltopdf');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
 const aquilaEvents               = require('../utils/aquilaEvents');
-const {dev}                      = require('../utils/server');
+const {useWkHTMLtoPDF}           = require('../utils/generatePDF');
 const ServiceOrder               = require('./orders');
 const {generateHTML}             = require('./mail');
 const queryBuilder               = new QueryBuilder(Bills, [], []);
@@ -198,9 +197,10 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
         datas
     };
     await aquilaEvents.emit('generatePDF_overrideData', dataToReplace);
-    const newData = dataToReplace.datas || {};
-    let content   = generateHTML(html.translation[bill.lang].content, newData);
-    let items     = '';
+    const newData        = dataToReplace.datas || {};
+    const htmlToGenerate = html.translation[bill.lang].html ? html.translation[bill.lang].html : html.translation[bill.lang].content;
+    let content          = generateHTML( htmlToGenerate, newData);
+    let items            = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {
@@ -246,35 +246,11 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
         }
         content = content.replace(htmlItem, items);
     }
-    let options = {
+    const PDFstream =  await useWkHTMLtoPDF(content, {
         encoding : 'utf8'
-    };
-    if (dev) {
-        console.info('development mode => using wkhtmltopdf with debug options');
-        options = {
-            ...options,
-            debug           : true,
-            debugJavascript : true
-        };
-    }
-    return useWK(content, options);
+    }, false); // true is default (so it's optionnal)
+    return PDFstream;
 };
-
-const useWK = async (content, options) => new Promise((resolve) => {
-    // eslint-disable-next-line
-    const res = wkhtmltopdf(content, options, function (err, stream) {
-        if (err && err.message) {
-            console.error('wkhtmltopdf produced an error');
-            if (dev) {
-                console.error('(already printed in debug)');
-            } else {
-                const textError = `${err.message.replace('\n', '')}\n`;
-                console.error(textError);
-            }
-        }
-    });
-    resolve(res);
-});
 
 function cleanBillObject(bill) {
     const items = [];

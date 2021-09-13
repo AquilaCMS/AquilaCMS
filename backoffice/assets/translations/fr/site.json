@@ -7,6 +7,8 @@
         "title": "Titre",
         "visible": "Visible",
         "img": "Image",
+        "tags": "Tags",
+        "addTag": "Nouveau tag",
         "add": "Ajouter",
         "invalidEntry": "Les informations saisies ne sont pas valides.",
         "slugEverUsed": "Ce slug est déjà utilisée, merci d'en choisir une autre",
@@ -16,12 +18,14 @@
         "articleNotExist": "Cet attribut n'existe pas",
         "slugEmpty": "Le slug ne doit pas être vide",
         "infoSaved": "Informations sauvegardées !",
-        "content": "Contenu"
+        "content": "Contenu",
+        "newError": "ERROR: Le tag est vide ou existe déjà"
     },
     "new": {
         "t1": "Nouvel article",
         "ph1": "Si vous ne remplissez pas ce champ, il sera genere automatiquement",
         "ph2": "Titre",
+        "phTag": "Tag",
         "urlKey": "Slug",
         "title": "Titre",
         "visible": "Visible",
@@ -40,5 +44,11 @@
         "indiff": "Indifferent",
         "itemDelete": "Article supprimé",
         "creaDate": "Date de création"
+    },
+    "newTag": {
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "newTag": "Nouveau tag",
+        "name": "Nom"
     }
 }

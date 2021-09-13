@@ -35,6 +35,11 @@
                                 "summary": "Get a news with a slug",
                                 "description": "Get a news from a slug",
                                 "value": {"PostBody":{"filter":{"translation.fr.slug": "THE_SLUG"},"limit":1}}
+                            },
+                            "example3": {
+                                "summary": "Get all news with tags",
+                                "description": "Get 10 news with a certain tag",
+                                "value": {"PostBody": {"limit": 10, "filter": {"translation.fr.tags": {"$in": ["mytag"]}}}}
                             }
                         }
                     }
@@ -107,6 +112,51 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/site/news/tags": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "datas": {
+                                    "type": "array",
+                                    "items": {
+                                        "tag": {"type": "string"}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "News"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get tags",
+                                "description": "Get a list of tags that contain the query",
+                                "value": {"PostBody": {"filter": {"lang": "fr", "tags": "query"}}}
+                            }
                         }
                     }
                 },

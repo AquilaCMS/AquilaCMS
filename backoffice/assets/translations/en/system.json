@@ -16,11 +16,6 @@
                 "confirm":"You are going to activate a strict security policy that can lead to malfunctions on your site. To access external content, you must list all authorized domains"
             }
         },
-        "nextjs":{
-            "title": "NextJS",
-            "actualVersion": "Actual version",
-            "changeNextVersion": "Validate"
-        },
         "log":{
             "title": "Logs",
             "titleMenu": "Logs and Errors",
@@ -40,7 +35,6 @@
             "dlAllDocumentInfo": "* Download only this documents : products, medias/galleries/slider, documents",
             "uploadAllDocument": "Upload documents *",
             "restartProgress": "Restart in progress ...",
-            "changeVersion": "Nextjs version changed",
             "addDoc": "Addition of documents made",
             "takeTime": "It may take a while, please wait ...",
             "errorOccurred": "An error has occurred",
