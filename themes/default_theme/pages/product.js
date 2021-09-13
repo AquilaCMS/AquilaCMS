@@ -29,15 +29,6 @@ import Error from './_error';
  */
 
 class PageProduct extends NSPageProduct {
-    selectVariant = (variant) => {
-        let product = this.state.product;
-        product.images = variant.images;
-        product.name = variant.name;
-        product.stock = variant.stock;
-        product.price = variant.price;
-        product.selected_variant = variant;
-        this.setState({variant, product});
-    }
     render = () => {
         const {
             appurl,
@@ -114,6 +105,11 @@ class PageProduct extends NSPageProduct {
                     pictos.push({ location: picto.location, style, pictos: [picto] });
                 }
             });
+        }
+
+        // replace original product datas for default variant
+        if(this.hasVariants() && !this.state.variant) {
+            this.selectVariant(this.getDefaultVariantValue())
         }
 
         return (

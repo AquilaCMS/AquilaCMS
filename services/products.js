@@ -1068,6 +1068,8 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_varia
     } else {
         if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
             throw NSErrors.ProductNotSalable;
+        } else if (!prd.stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
         }
         // if qty2 exists, it is either a product return or a shipment
         if (qty2 !== undefined) {
@@ -1095,6 +1097,8 @@ const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_var
     if (selectedVariantIndex > -1) {
         if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {
             throw NSErrors.ProductNotSalable;
+        } else if (!prd.variants_values[selectedVariantIndex].stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
         }
         // if qty2 exists, it is either a product return or a shipment
         if (qty2 !== undefined) {
