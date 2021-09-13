@@ -697,10 +697,16 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantity to order
  * @returns {object}  Return Information
  */
-const checkProductOrderable = async (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0, selected_variant  = undefined) => {
     let prdStock = {};
     // if objstock is an id, we get the product
-    if (typeof objstock === 'string') {
+    if (selected_variant) {
+        prdStock = {
+            ...selected_variant.stock,
+            qty_real : Number(selected_variant.stock.qty) - Number(selected_variant.stock.qty_booked)
+        };
+        console.log('PRD STOCK  =>  ', prdStock);
+    } else if (typeof objstock === 'string') {
         prdStock = (await Products.findById(objstock)).stock;
     } else {
         prdStock = objstock;
@@ -731,7 +737,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // to recover in db
 
-    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+    if (typeof prdStock.date_selling !== 'undefined' && prdStock.date_selling > Date.now()) {
         datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
         datas.delivery.dates[0] = prdStock.date_selling;
     } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
@@ -754,7 +760,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
             datas.ordering.orderable = true;
         }
     }
-
+    console.log(datas);
     return datas;
 };
 
@@ -1132,7 +1138,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded, item.selected_variant)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {

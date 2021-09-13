@@ -354,9 +354,9 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
             const prdData = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
-                '{{product.bundleName}}'       : translation[lang].name,
+                '{{product.bundleName}}'       : item.name,
                 '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
                 '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
                 '{{product.basePrice}}'        : '',
@@ -373,7 +373,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
             } */
 
             if (item.parent && translation[lang]) {
-                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).name;
             }
             let basePrice  = null;
             let descPromo  = '';
@@ -553,9 +553,9 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
             const {translation} = item.id;
             const prdData       = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
-                '{{product.bundleName}}'       : translation[lang].name,
+                '{{product.bundleName}}'       : item.name,
                 '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
                 '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
                 '{{product.basePrice}}'        : '',

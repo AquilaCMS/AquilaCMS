@@ -93,8 +93,8 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
                 // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
                 if (selectionProducts[j].type === 'simple') {
                     if (
-                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
-                        || !(await ServicesProducts.checkProductOrderable(item.stock, null))
+                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity, item.selected_variant)).ordering.orderable
+                        || !(await ServicesProducts.checkProductOrderable(item.stock, null, item.selected_variant))
                     ) throw NSErrors.ProductNotOrderable;
                     await ServicesProducts.updateStock(selectionProducts[j], -item.quantity, undefined, item.selected_items);
                 }

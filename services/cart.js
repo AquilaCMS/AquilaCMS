@@ -260,7 +260,7 @@ const updateQty = async (req) => {
         throw NSErrors.InactiveCart;
     }
 
-    const item     = cart.items.find((item) => item._id.toString() === req.body.item._id);
+    const item     = cart.items.find((item) => item._id.toString() === req.body.item._id.toString());
     const _product = await Products.findOne({_id: item.id});
 
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
@@ -270,12 +270,12 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, req.body.item.selected_variant)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
             // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variant);
+            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, req.body.item.selected_variant);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
@@ -285,7 +285,7 @@ const updateQty = async (req) => {
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd, item.selected_variant).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
@@ -509,7 +509,12 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = (stock, qty) => stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
+const checkProductOrderable = (stock, qty, selected_variant = undefined) => {
+    if (selected_variant) {
+        return selected_variant.stock.orderable && (selected_variant.stock.qty - selected_variant.stock.qty_booked - qty) >= 0;
+    }
+    return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
+};
 
 /**
  * Function to associate a user with a cart
