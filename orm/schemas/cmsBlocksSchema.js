@@ -24,9 +24,7 @@ const CmsBlocksSchema = new Schema({
 CmsBlocksSchema.statics.translationValidation = async function (self) {
     let errors = [];
 
-    while (self.translation === undefined) {
-        self.translation = {};
-    }
+    if (self.translation === undefined) return errors; // No translation
 
     let translationKeys = Object.keys(self.translation);
 

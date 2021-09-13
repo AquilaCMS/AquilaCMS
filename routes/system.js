@@ -11,39 +11,13 @@ const ServiceSystem = require('../services/system');
 
 module.exports = function (app) {
     app
-        .post('/v2/system/log/file', adminAuth, getLogsContent)
-        .get('/v2/system/next/get', adminAuth, getNextVersion)
-        .post('/v2/system/next/change', adminAuth, changeNextVersion);
+        .post('/v2/system/log/file', adminAuth, getLogsContent);
 };
 
 const getLogsContent = async (req, res, next) => {
     try {
         const fileName = req.body.name;
         return res.json(await ServiceSystem.getLogsContent(fileName));
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * GET /api/config/next
- */
-const getNextVersion = async (req, res, next) => {
-    try {
-        const datas = await ServiceSystem.getNextVersion();
-        return res.json({datas});
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * POST /api/config/next
- */
-const changeNextVersion = async (req, res, next) => {
-    try {
-        await ServiceSystem.changeNextVersion(req.body);
-        res.end();
     } catch (err) {
         return next(err);
     }

@@ -10,8 +10,6 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#security" target="_self"
                             translate>system.environment.security.title</a></li>
-                    <li><a data-toggle="tab" href="#nextjs" target="_self" translate>system.environment.nextjs.title</a>
-                    </li>
                     <li><a data-toggle="tab" href="#other" target="_self" translate>system.environment.other.title</a>
                     </li>
                     <li><a data-toggle="tab" href="#log" target="_self" translate>system.environment.log.title</a></li>
@@ -82,43 +80,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="nextjs" class="tab-pane fade">
-                    <style>
-                        .loader {
-                            border: 10px solid #f3f3f3;
-                            /* Light grey */
-                            border-top: 10px solid #576fa1;
-                            border-radius: 50%;
-                            width: 80px;
-                            height: 80px;
-                            animation: spin 2s linear infinite;
-                            margin: auto;
-                        }
-
-                        @keyframes spin {
-                            0% {
-                                transform: rotate(0deg);
-                            }
-
-                            100% {
-                                transform: rotate(360deg);
-                            }
-                        }
-                    </style>
-                    <p><span translate>system.environment.nextjs.actualVersion</span>: {{next.actual}}</p>
-                    <div class="input-group">
-                        <select class="form-control" id="nextVersion"
-                            ng-options="version for version in next.versions track by version" ng-model="nextVersion"
-                            ng-hide="nextVLoader">
-                        </select>
-                        <div ng-show="nextVLoader">
-                            <div class="fa fa-spinner fa-spin" style="font-size: 30px;"></div>
-                        </div>
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)"
-                        ng-hide="nextVLoader" translate>system.environment.nextjs.changeNextVersion</button>
                 </div>
                 <div id="other" class="tab-pane fade">
                     <h3 translate>system.environment.other.database</h3>
