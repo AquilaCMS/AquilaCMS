@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                   = require('path');
-const themeServices          = require('../services/themes');
-const fs                     = require('../utils/fsp');
-const serverUtils            = require('../utils/server');
-const {themeCompile}         = require('../utils/themes');
-const {createListModuleFile} = require('../utils/modules');
-const NSErrors               = require('../utils/errors/NSErrors');
+const path                     = require('path');
+const themeServices            = require('../services/themes');
+const fs                       = require('../utils/fsp');
+const serverUtils              = require('../utils/server');
+const {themeInstallAndCompile} = require('../utils/themes');
+const {createListModuleFile}   = require('../utils/modules');
+const NSErrors                 = require('../utils/errors/NSErrors');
 
 /**
  * If it's the first launch (/config/env.js exist or not), display the configurator
@@ -90,7 +90,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile(true);
+        await require('../services/languages').createDynamicLangFile('default_theme');
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -100,7 +100,7 @@ const postConfiguratorDatas = async (req) => {
         await createListModuleFile('default_theme');
         // Compilation du theme par default
         console.log('Installer : start default theme compilation');
-        await themeCompile('default_theme');
+        await themeInstallAndCompile('default_theme');
         console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);

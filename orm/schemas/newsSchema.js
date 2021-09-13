@@ -36,9 +36,7 @@ const NewsSchema = new Schema({
 NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    while (self.translation === undefined) {
-        self.translation = {};
-    }
+    if (self.translation === undefined) return errors; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
