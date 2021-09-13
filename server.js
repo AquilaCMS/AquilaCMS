@@ -7,29 +7,26 @@
  */
 
 require('dotenv').config();
-const express           = require('express');
-const passport          = require('passport');
-const path              = require('path');
-const next              = require('next').default;
-const i18nextMiddleware = require('i18next-http-middleware');
-global.envPath          = null;
-global.envFile          = null;
-global.appRoot          = path.resolve(__dirname);
-global.port             = Number(process.env.PORT || 3010);
-global.defaultLang      = '';
-global.moduleExtend     = {};
-global.translate        = require('./utils/translate');
-const utils             = require('./utils/utils');
-const fs                = require('./utils/fsp');
-const translation       = require('./utils/translation');
-const serverUtils       = require('./utils/server');
-const utilsModules      = require('./utils/modules');
-const utilsThemes       = require('./utils/themes');
+const express       = require('express');
+const passport      = require('passport');
+const path          = require('path');
+global.envPath      = null;
+global.envFile      = null;
+global.appRoot      = path.resolve(__dirname);
+global.port         = Number(process.env.PORT || 3010);
+global.defaultLang  = '';
+global.moduleExtend = {};
+global.translate    = require('./utils/translate');
+const utils         = require('./utils/utils');
+const fs            = require('./utils/fsp');
+const serverUtils   = require('./utils/server');
+const utilsModules  = require('./utils/modules');
+const utilsThemes   = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
     middlewareServer
-}                           = require('./middleware');
+} = require('./middleware');
 
 const dev    = serverUtils.dev;
 const server = express();
@@ -90,41 +87,75 @@ const setEnvConfig = async () => {
     }
 };
 
-const initFrontFramework = async (themeFolder) => {
-    if (!(await fs.existsSync(path.join(themeFolder, 'dynamic_langs.js')))) {
+const initFrontFramework = async (themeName = null) => {
+    let type = 'custom'; // default type
+    let themeInfo;
+    if (themeName === null) {
+        themeName =  global.envConfig.environment.currentTheme;
+    }
+    const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
+    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
+    if (!(await fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
         await require('./services/languages').createDynamicLangFile();
     }
-
-    const app = next({dev, dir: themeFolder});
-    let handler;
-    if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
-        const routes = require(path.join(themeFolder, 'routes'));
-        handler      = routes.getRequestHandler(app);
+    themeInfo = utilsThemes.loadInfoTheme(themeName);
+    if (themeInfo === null) {
+        themeInfo = {};
+    }
+    if (themeInfo && themeInfo.type) {
+        type = themeInfo.type;
+    }
+    server.use('/', middlewareServer.maintenance);
+    const color = '\x1b[36m'; // https://stackoverflow.com/a/41407246
+    if (type === 'custom') {
+        console.log(`%s@@ ${themeName} is a custom theme (default type) %s`, color, '\x1b[0m');
+        let handler;
+        try {
+            if (fs.existsSync(pathToInit)) {
+                const process = require('process');
+                process.chdir(pathToTheme); // protect require of the frontFrameWork
+                console.log(`%s@@ Initializing the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
+                const initFileOfConfig = require(pathToInit);
+                if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
+                    console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js => start() %s`, color, '\x1b[0m');
+                    handler = await initFileOfConfig.start(server);
+                    console.log('%s@@ Theme started %s', color, '\x1b[0m');
+                } else {
+                    throw "The 'themeInit.js' of your theme needs to export a start() function";
+                }
+                process.chdir(global.appRoot);
+                if (typeof handler !== 'undefined' && handler !== null) {
+                    server.use('/', handler);
+                }
+            } else {
+                let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
+                msg    += "You can also change or create a 'infoTheme.json' file in your theme";
+                throw  msg;
+            }
+        } catch (errorInit) {
+            console.error(errorInit);
+            throw 'Error loading the theme';
+        }
+    } else if (type === 'normal') {
+        console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
+        // normal type
+        const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
+        if (fs.existsSync(pathToTheme)) {
+            let pathToPages = pathToTheme;
+            if (typeof themeInfo.expose !== 'undefined') {
+                pathToPages = path.join(pathToTheme, themeInfo.expose);
+            }
+            server.use('/', express.static(pathToPages));
+        }
     } else {
-        handler = app.getRequestHandler();
+        throw 'Error with the theme, the type of your theme is not correct';
     }
-    const {i18nInstance, ns} = await utilsThemes.loadTheme();
-
-    if (i18nInstance) {
-        await translation.initI18n(i18nInstance, ns);
-        server.use(i18nextMiddleware.handle(i18nInstance));
-        server.use('/locales', express.static(path.join(themeFolder, 'assets/i18n')));
-    }
-
-    console.log('next build start...');
-    await app.prepare();
-    console.log('next build finish');
-
-    server.use('/', middlewareServer.maintenance, handler);
 };
 
 const initServer = async () => {
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-        const {currentTheme} = global.envConfig.environment;
-        console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
-        const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
         // we check if we compile (default: true)
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
@@ -139,12 +170,21 @@ const initServer = async () => {
         }
 
         if (compile) {
+            const {currentTheme} = global.envConfig.environment;
+            const themeFolder    = path.join(global.appRoot, 'themes', currentTheme, '/');
             if (!fs.existsSync(themeFolder)) {
                 throw new Error(`themes folder ${themeFolder} not found`);
             }
-            await initFrontFramework(themeFolder); // we compile the front
+            console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
+            try {
+                await initFrontFramework(currentTheme); // we compile the front
+            } catch (e) {
+                server.use('/', (req, res) => res.end('Theme start fail - Please configure or compile your front-end'));
+                console.error(`Theme start fail : ${e}`);
+            }
         } else {
-            console.log('`compile` value is set to `false`, the front is not accessible');
+            server.use('/', (req, res) => res.end('No compilation for the theme'));
+            console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation
