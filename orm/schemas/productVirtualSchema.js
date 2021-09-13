@@ -15,7 +15,7 @@ const ProductVirtualSchema = new Schema({
     downloadLink  : {type: String, default: null},
     downloadInfos : {type: String, default: null}
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     toObject         : {virtuals: true},
     toJSON           : {virtuals: true},
     id               : false

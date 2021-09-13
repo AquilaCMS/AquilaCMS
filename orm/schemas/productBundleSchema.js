@@ -43,7 +43,7 @@ const ProductBundleSchema = new Schema({
         translation  : {}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     id               : false
 });
 
