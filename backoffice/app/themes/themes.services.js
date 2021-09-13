@@ -9,7 +9,8 @@ ThemesService.service("Themes", [
             packageBuild   : {method: "POST", params: {type: "package", action: "build"}},
             delete         : {method: "POST", params: {type: "delete"}},
             copyData       : {method: "POST", params: {type: "copyDatas"}},
-            save           : {method: "POST", params: {type: "save"}},
+            save           : {method: "POST", params: {type: "save", action: "before"}},
+            saveAfter      : {method: "POST", params: {type: "save", action: "after"}},
             info           : {method: "GET",  params: {type: "informations"}}
         });
     }
