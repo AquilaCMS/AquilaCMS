@@ -270,9 +270,7 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
 
     // if (self._collection && !self._collection.collectionName.includes('preview')) {
     if (updateQuery) {
-        while (updateQuery.translation === undefined) {
-            updateQuery.translation = {};
-        }
+        if (updateQuery.translation === undefined) return errors; // No translation
         const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
         for (const lang of languages) {
@@ -320,9 +318,8 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
             }
         }
     } else {
-        while (self.translation === undefined) {
-            self.translation = {};
-        }
+        if (self.translation === undefined) return errors; // No translation
+
         const translationKeys = Object.keys(self.translation);
         const languages       = await mongoose.model('languages').find({});
         for (const lang of languages) {

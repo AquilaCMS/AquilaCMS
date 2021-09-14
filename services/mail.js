@@ -11,7 +11,6 @@ const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
-const encryption       = require('../utils/encryption');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
@@ -146,7 +145,8 @@ const deleteMail = async (_id, lang = 'fr') => {
     }
     if (doc.translation[lang].attachments && doc.translation[lang].attachments.length !== 0) {
         for (const file of doc.translation[lang].attachments) {
-            await mediasUtils.deleteFile(file);
+            const pathToFile = file.path;
+            await mediasUtils.deleteFile(pathToFile);
         }
     }
     return doc;
@@ -159,7 +159,9 @@ const sendMailTestConfig = async (mail) => {
 
 const removePdf = async (mail, path) => {
     const result = await Mail.findByIdAndUpdate({_id: mail._id}, {translation: mail.translation}, {new: true, runValidators: true});
-    await mediasUtils.deleteFile(path);
+    if (typeof path === 'string') {
+        await mediasUtils.deleteFile(path);
+    }
     return result;
 };
 
@@ -169,13 +171,11 @@ const removePdf = async (mail, path) => {
  * @param {string} [lang="fr"] lang of mail
  */
 const sendMailTest = async (mail, values = [], lang = 'fr') => {
-    const subject     = mail.translation[lang].subject;
-    const content     = mail.translation[lang].content;
-    const attachments = [];
+    const subject   = mail.translation[lang].subject;
+    const content   = mail.translation[lang].content;
+    let attachments = null;
     if (mail.translation[lang] && mail.translation[lang].attachments && mail.translation[lang].attachments.length > 0) {
-        mail.translation[lang].attachments.forEach((file) => {
-            attachments.push(file);
-        });
+        attachments = mail.translation[lang].attachments;
     }
 
     const data = {};
@@ -202,11 +202,9 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
     const mailRegister = await getMailByTypeAndLang(type, lang);
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
-    const attachments  = [];
+    let attachments    = []; // maybe change to null
     if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
-        mailRegister.translation[lang].attachments.forEach((file) => {
-            attachments.push(file.path);
-        });
+        attachments = mailRegister.translation[lang].attachments;
     }
     if (!subject) {
         throw NSErrors.MailFieldSubjectNotFound;
@@ -223,9 +221,9 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang                                                     = determineLanguage(lang, _user.preferredLanguage);
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('activationAccount', lang);
-    const oDataMail                                          = {
+    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('activationAccount', lang);
+    const oDataMail                                       = {
         '{{activate_account_token}}' : `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`,
         '{{name}}'                   : _user.fullname,
         '{{company}}'                : _user.company.name,
@@ -233,8 +231,8 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
         '{{firstname}}'              : _user.firstname,
         '{{lastname}}'               : _user.lastname
     };
-    const htmlBody                                           = generateHTML(content, oDataMail);
-    return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
+    const htmlBody                                        = generateHTML(content, oDataMail);
+    return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -250,8 +248,8 @@ const sendRegister = async (user_id, lang = '') => {
     }
     lang = determineLanguage(lang, _user.preferredLanguage);
 
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('register', lang);
-    const oDataMail                                          = {
+    const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('register', lang);
+    const oDataMail                                       = {
         '{{name}}'      : _user.fullname,
         '{{fullname}}'  : _user.fullname,
         '{{firstname}}' : _user.firstname,
@@ -263,30 +261,26 @@ const sendRegister = async (user_id, lang = '') => {
     oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
     // }
     const htmlBody = generateHTML(content, oDataMail);
-    return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, attachments});
 };
 
 const sendRegisterForAdmin = async (user_id, lang = '') => {
-    try {
-        const _user = await Users.findById(user_id);
-        if (!_user) {
-            throw NSErrors.AccountUserNotFound;
-        }
-        lang                                                     = determineLanguage(lang, _user.preferredLanguage);
-        const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
-        const oDataMail                                          = {
-            '{{name}}'      : _user.fullname,
-            '{{fullname}}'  : _user.fullname,
-            '{{firstname}}' : _user.firstname,
-            '{{lastname}}'  : _user.lastname,
-            '{{login}}'     : _user.email,
-            '{{company}}'   : _user.company.name
-        };
-        const htmlBody                                           = generateHTML(content, oDataMail);
-        return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
-    } catch (error) {
-        console.error(error);
+    const _user = await Users.findById(user_id);
+    if (!_user) {
+        throw NSErrors.AccountUserNotFound;
     }
+    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
+    const oDataMail                                       = {
+        '{{name}}'      : _user.fullname,
+        '{{fullname}}'  : _user.fullname,
+        '{{firstname}}' : _user.firstname,
+        '{{lastname}}'  : _user.lastname,
+        '{{login}}'     : _user.email,
+        '{{company}}'   : _user.company.name
+    };
+    const htmlBody                                        = generateHTML(content, oDataMail);
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -312,13 +306,9 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
             throw NSErrors.ResetPasswordMailContentNotExists;
         }
     }
-    let pathAttachment = null;
+    let attachments = null;
     if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        pathAttachment = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
+        attachments = mailRegister.translation[lang].attachments;
     }
     const oDataMail = {
         '{{name}}'      : _user.fullname,
@@ -329,7 +319,7 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
         '{{tokenlink}}' : tokenlink
     };
     const htmlBody  = generateHTML(content, oDataMail);
-    return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, attachments});
 };
 
 /**
@@ -343,11 +333,11 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    lang                                            = determineLanguage(lang, order.customer.id.preferredLanguage);
-    const taxDisplay                                = order.priceTotal.paidTax ? 'ati' : 'et';
-    const mailDatas                                 = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
-    const {subject, from, fromName, pathAttachment} = mailDatas;
-    let {content}                                   = mailDatas;
+    lang                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    const taxDisplay                             = order.priceTotal.paidTax ? 'ati' : 'et';
+    const mailDatas                              = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
+    const {subject, from, fromName, attachments} = mailDatas;
+    let {content}                                = mailDatas;
 
     // Mailing information is recorded in DB
     if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
@@ -367,8 +357,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 '{{product.name}}'             : translation[lang].name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -429,7 +419,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{quantityBreaks}}'             : '',
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
-        '{{order.priceTotal}}'           : order.priceTotal[taxDisplay].toFixed(2),
+        '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].toFixed(2)} €`,
         '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
@@ -448,17 +438,17 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+        datas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
+        datas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
         datas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = (0).toFixed(2);
+        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
     }
     const htmlBody = await generateHTML(content, datas);
-    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -513,7 +503,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         '{{order.paymentMode}}'         : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'  : order._doc.payment[0].description,
         '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
-        '{{order.priceTotal}}'          : order.priceTotal[taxDisplay].toFixed(2)
+        '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].toFixed(2)} €`
     };
 
     if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -521,14 +511,14 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        mailDatas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
+        mailDatas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
         mailDatas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        mailDatas['{{promo.discount}}'] = (0).toFixed(2);
+        mailDatas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+        mailDatas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
     }
 
     if (order.additionnalFees && order.additionnalFees[taxDisplay] && order.additionnalFees[taxDisplay] !== 0) {
@@ -552,8 +542,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         }
     }
 
-    const {subject, from, fromName, pathAttachment} = mailByType;
-    let {content}                                   = mailByType;
+    const {subject, from, fromName, attachments} = mailByType;
+    let {content}                                = mailByType;
     // Create from the order the items ordered (the table that will be displayed in the email)
     let templateItems  = '';
     const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
@@ -566,8 +556,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 '{{product.name}}'             : translation[lang].name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -604,9 +594,16 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         }
         content = content.replace(htmlItem, templateItems);
     }
+    const discountTemplate = content.match(new RegExp(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/, 'g'));
+    if (discountTemplate && discountTemplate[0]) {
+        const htmlDiscount = discountTemplate[0].replace('<!--startshowpromo-->', '').replace('<!--endshowpromo-->', '');
+        if (order.promos.length === 0) {
+            content = content.replace(htmlDiscount, '');
+        }
+    }
 
     const htmlBody = await generateHTML(content, mailDatas);
-    return sendMail({subject, htmlBody, mailTo: order.customer.email, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: order.customer.email, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -628,7 +625,7 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
         subject,
         from,
         fromName,
-        pathAttachment
+        attachments
     }              = await getMailDataByTypeAndLang('changeOrderStatus', lang);
     const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
     const htmlBody = generateHTML(content, {
@@ -639,7 +636,7 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
         '{{company}}'   : _order.customer.company.name,
         '{{firstname}}' : _order.customer.id.firstname,
         '{{lastname}}'  : _order.customer.id.lastname});
-    return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -649,7 +646,7 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
  * @param {string} mailinformation.htmlBody - Email HTML
  * @param {string} mailinformation.mailTo - Mail recipient
  * @param {string} [mailinformation.mailFrom=null] - Email sender (Optional)
- * @param {string} [mailinformation.pathAttachment=null] - Path of the file to send (Optional)
+ * @param {array<object>} [mailinformation.attachments=null] - aatachements object (Optional)
  * @param {string} [mailinformation.textBody=null] - Mail text (if no html reader) (Optional)
  * @param {string} [mailinformation.fromName=null] - Sender name (Optionnal)
  * @return {Promise<{envelope: {from: string, to: string[]}, messageId: string}>}
@@ -663,13 +660,12 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailHost,
             mailPort,
             mailUser,
+            mailPass,
             mailIsSendmail,
             mailSecure,
             overrideSendTo,
             mailFromContact
         } = global.envConfig.environment;
-        let {mailPass} = global.envConfig.environment;
-        mailPass       = encryption.decipher(mailPass);
 
         // Check that there is no recipient overload in the config
         if (overrideSendTo) {
@@ -693,12 +689,25 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             subject
         };
 
-        if (attachments) {
+        if (attachments && attachments.length > 0) {
+            if (!mailOptions.attachments) {
+                mailOptions.attachments = [];
+            }
             for (const file of attachments) {
-                if (!mailOptions.attachments) {
-                    mailOptions.attachments = [];
+                if (typeof file !== 'object') {
+                    console.error('Attachments need to be an object');
+                    continue;
                 }
-                const data = await fs.readFile(path.resolve(utilsServer.getUploadDirectory(), file.path), {encoding: 'base64'});
+                let pathToFile = file.path;
+                if (!path.isAbsolute(pathToFile)) {
+                    pathToFile = path.resolve(utilsServer.getUploadDirectory(), file.path);
+                }
+                const checkAccess = await fs.hasAccess(pathToFile);
+                const isFile      = (await fs.lstat(pathToFile)).isFile();
+                if (!checkAccess || !isFile) {
+                    console.error('Your attachments looks unreachable');
+                }
+                const data = await fs.readFile(pathToFile, {encoding: 'base64'});
                 mailOptions.attachments.push({
                     filename    : `${file.name.originalname}.${file.name.mimetype.split('/')[1]}`,
                     content     : data,
@@ -791,14 +800,10 @@ const sendGeneric = async (type, to, datas, lang = '') => {
     } else if (mail.translation[lang].subject) {
         subject = mail.translation[lang].subject;
     }
-    const content      = mail.translation[lang].content ? mail.translation[lang].content : '';
-    let pathAttachment = null;
+    const content   = mail.translation[lang].content ? mail.translation[lang].content : '';
+    let attachments = null;
     if (mail.translation[lang].attachments && mail.translation[lang].attachments.length > 0) {
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        pathAttachment = _config.environment.appUrl + mail.translation[lang].attachments[0].path;
+        attachments = mail.translation[lang].attachments;
     }
     to = to || mail.from;
 
@@ -806,7 +811,7 @@ const sendGeneric = async (type, to, datas, lang = '') => {
         body[`{{${datasKeys[i]}}}`] = datas[datasKeys[i]];
     }
 
-    return sendMail({subject, htmlBody: generateHTML(content, body), mailTo: to, mailFrom: mail.from, fromName: mail.fromName, pathAttachment});
+    return sendMail({subject, htmlBody: generateHTML(content, body), mailTo: to, mailFrom: mail.from, fromName: mail.fromName, attachments});
 };
 
 /**
@@ -821,11 +826,11 @@ const sendContact = async (datas, lang = '') => {
     if (!contactMail) {
         throw NSErrors.MailNotFound;
     }
-    const content      = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
-    const subject      = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
-    let pathAttachment = null;
+    const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+    const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
+    let attachments = null;
     if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
-        pathAttachment = global.envConfig.environment.appUrl + contactMail.translation[lang].attachments[0].path;
+        attachments = contactMail.translation[lang].attachments;
     }
     let bodyString = '';
     Object.keys(datas).forEach((key) => {
@@ -839,7 +844,7 @@ const sendContact = async (datas, lang = '') => {
     });
 
     const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
-    return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
 };
 
 /**
@@ -900,7 +905,7 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
         subject,
         from,
         fromName,
-        pathAttachment
+        attachments
     }              = await getMailDataByTypeAndLang('requestCancelOrderNotify', lang);
     const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
     const htmlBody = generateHTML(content, {
@@ -911,18 +916,18 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
         '{{company}}'   : _order.customer.company.name,
         '{{firstname}}' : _order.customer.id.firstname,
         '{{lastname}}'  : _order.customer.id.lastname});
-    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, attachments});
 }
 
 async function sendMailPendingCarts(cart) {
     const customer = await users.findOne({_id: cart.customer.id});
     if (!customer) return;
-    const lang                                      = customer.preferredLanguage;
-    const mailTo                                    = cart.customer.email;
-    const taxDisplay                                = cart.paidTax ? 'ati' : 'et';
-    const mailDatas                                 = await getMailDataByTypeAndLang('pendingCarts', lang);
-    let {content}                                   = mailDatas;
-    const {subject, from, fromName, pathAttachment} = mailDatas;
+    const lang                                   = customer.preferredLanguage;
+    const mailTo                                 = cart.customer.email;
+    const taxDisplay                             = cart.paidTax ? 'ati' : 'et';
+    const mailDatas                              = await getMailDataByTypeAndLang('pendingCarts', lang);
+    let {content}                                = mailDatas;
+    const {subject, from, fromName, attachments} = mailDatas;
 
     let templateItems  = '';
     const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
@@ -934,8 +939,8 @@ async function sendMailPendingCarts(cart) {
                 '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : item.name,
-                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -971,7 +976,7 @@ async function sendMailPendingCarts(cart) {
         '{{customer.firstname}}' : customer.firstname,
         '{{customer.lastname}}'  : customer.lastname,
         '{{quantityBreaks}}'     : '',
-        '{{order.priceTotal}}'   : cart.priceTotal[taxDisplay].toFixed(2)
+        '{{order.priceTotal}}'   : `${cart.priceTotal[taxDisplay].toFixed(2)} €`
     };
 
     if (cart.quantityBreaks && cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -979,17 +984,17 @@ async function sendMailPendingCarts(cart) {
     }
 
     if (cart.delivery && cart.delivery.price && cart.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = cart.delivery.price[taxDisplay].toFixed(2);
+        mailDatas['{{delivery.price}}'] = `${cart.delivery.price[taxDisplay].toFixed(2)} €`;
     }
 
     if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = cart.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
+        datas['{{promo.discount}}'] = `${cart.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
         datas['{{promo.code}}']     = cart.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = (0).toFixed(2);
+        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
     }
     const htmlBody = generateHTML(content, datas);
-    return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, attachments});
     // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 

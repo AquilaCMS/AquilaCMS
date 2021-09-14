@@ -141,7 +141,8 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Can't generate URL because canonical is empty"
+        "URLcanonical": "Can't generate URL because canonical is empty",
+        "notValid": "Informations entered are not valid"
     },
     "optionsSet": {
         "title": "Options set and product options",

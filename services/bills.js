@@ -8,10 +8,11 @@
 
 const crypto                     = require('crypto');
 const moment                     = require('moment');
-const wkhtmltopdf                = require('wkhtmltopdf');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
+const aquilaEvents               = require('../utils/aquilaEvents');
+const {useWkHTMLtoPDF}           = require('../utils/generatePDF');
 const ServiceOrder               = require('./orders');
 const {generateHTML}             = require('./mail');
 const queryBuilder               = new QueryBuilder(Bills, [], []);
@@ -108,7 +109,7 @@ const orderToBill = async (idOrder, isAvoir = false) => {
     return null;
 };
 
-const generatePDF = async (PostBody) => {
+const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     let bill = await queryBuilder.findOne(PostBody);
     if (!bill) {
         throw NSErrors.AccessUnauthorized;
@@ -124,7 +125,10 @@ const generatePDF = async (PostBody) => {
     }
     const order = await Orders.findById(bill.order_id);
     moment.locale(lang);
-    const html        = await CmsBlocks.findOne({code: 'invoice'});
+    const html = await CmsBlocks.findOne({code: codeCmsBlocks});
+    if (!html) {
+        throw NSErrors.CmsBlockNotFound;
+    }
     const withNoTaxes = lang === 'fr' ? 'HT' : 'ET';
     const withTaxes   = lang === 'fr' ? 'TTC' : 'ATI';
     const unpaid      = lang === 'fr' ? 'Non payé' : 'Unpaid';
@@ -189,8 +193,14 @@ const generatePDF = async (PostBody) => {
     if (!html) {
         throw NSErrors.InvoiceNotFound;
     }
-    let content = generateHTML(html.translation[bill.lang].content, datas);
-    let items   = '';
+    const dataToReplace = {
+        datas
+    };
+    await aquilaEvents.emit('generatePDF_overrideData', dataToReplace);
+    const newData        = dataToReplace.datas || {};
+    const htmlToGenerate = html.translation[bill.lang].html ? html.translation[bill.lang].html : html.translation[bill.lang].content;
+    let content          = generateHTML( htmlToGenerate, newData);
+    let items            = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {
@@ -236,9 +246,10 @@ const generatePDF = async (PostBody) => {
         }
         content = content.replace(htmlItem, items);
     }
-    return wkhtmltopdf(content, {
+    const PDFstream =  await useWkHTMLtoPDF(content, {
         encoding : 'utf8'
-    });
+    }, false); // true is default (so it's optionnal)
+    return PDFstream;
 };
 
 function cleanBillObject(bill) {

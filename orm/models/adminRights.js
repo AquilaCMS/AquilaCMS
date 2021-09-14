@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-// eslint-disable-next-line no-unused-vars
-module.exports = function (app) {
+const mongoose            = require('mongoose');
+const {AdminRightsSchema} = require('../schemas');
 
-};
+module.exports = mongoose.model('adminRights', AdminRightsSchema);

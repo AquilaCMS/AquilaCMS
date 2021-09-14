@@ -75,7 +75,11 @@ const migration_4_Themes = async () => {
     console.log('Applying migration script "migration_4_Themes"...');
     const themes = await mongoose.connection.collection('themeConfigs').find({});
     for await (const theme of themes) {
-        for (const lang of Object.keys(theme.config.translation)) {
+        if (!theme.config.translation) {
+            continue;
+        }
+        const transaltionsKeys = Object.keys(theme.config.translation);
+        for (const lang of transaltionsKeys) {
             if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
                 const values           = [];
                 const tabThemeKeyValue = {values};
@@ -154,6 +158,10 @@ const migration_8_CmsBlocks = async () => {
     await mongoose.connection.collection('cmsblocks').updateMany({}, {$set: {active: true}});
 };
 
+const migration_9_adminRights = async () => {
+    // Deprecated
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -163,7 +171,8 @@ const migrationScripts = [
     migration_5_isActive,
     migration_6_contentSecurityPolicy,
     migration_7_Job_Translations,
-    migration_8_CmsBlocks
+    migration_8_CmsBlocks,
+    migration_9_adminRights
     // sample
 ];
 

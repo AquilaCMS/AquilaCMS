@@ -10,68 +10,13 @@
     "username": "Username",
     "mail": "E-mail",
     "cocher": "Aquila features access:",
-
-    "transComm": " Transactions > Orders",
-    "transPay": " Transactions > Payments",
-    "invoices": " Transactions > invoices",
-    "cart": " Transactions > cart",
-
-    "catalPdts": " Catalog > Products",
-    "siteCat": " Catalog > Categories",
-    "discount": "Catalog > Discount",
-    "picto": " Catalog > picto",
-    "catalAttr": " Catalog > Attributes",
-
-    "catalMarques": " Catalog > Brands",
-    "catalFourn": " Catalog > Suppliers",
-    "families": " Catalog > families",
-
-    "siteStatic": " Site > Static pages",
-    "siteCMS": " Site > CMS Blocks",
-    "gallery": " Site > Gallery",
-    "slider": " Site > Slider",
-    "siteMedias": " Site > Media",
-    "siteArt": " Site > Blog",
-    
-    "clients": " Customers > Customers",
-    "reviews": " Customers > reviews",
-    "contact": " Clients > Contacts",
-    "newsletters": " Clients > Newsletters",
-
-    "mails": " Configuration > emails",
-    "shipments": " Configuration > shipments",
-    "territories": " Configuration > territories",
-    "confLang": " Configuration > Languages",
-    "paymentModes": " Configuration > Payment modes",
-    "admin": " Configuration > Admin",
-
-    "themes": " Design > Themes",
-    "design": " Design > design",
-    "translate": " Design > translate",
-
-    "confEnv": " Configuration > Server setting",
-    "stock": " Configuration > Orders param",
-    "confTasks": " Configuration > Planned Tasks",
-    "system": " Configuration > System",
-    "update": " Configuration > update",
-
-    "modules": " Plugins",
-    
-    "statistics": " Statistics",
-
-    "confLiv": " Delivery country",
-    "confComp": " Components",
-    "confPtsVente": " Points of sale",
-    "promo": " Promo codes",
     "customer": "Customer card",
     "reset": "Reset",
     "cancel": "Cancel",
     "save": "Save",
 
     "mdp": "Password",
-    "confVente": " Configuration > Sale",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete",
-    "editHtml": "Edit HTML"
+    "delete": "Delete"
 }

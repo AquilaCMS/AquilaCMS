@@ -63,7 +63,8 @@ const translateSet = async (translateName, translateValue, lang) => {
     const translatePath = await getTranslatePath(lang);
     await fs.mkdir(translatePath, {recursive: true});
     try {
-        await fs.writeFile(`${translatePath}/${translateName}.json`, translateValue);
+        const pathName = path.join(translatePath, `${translateName}.json`);
+        await fs.writeFile(pathName, translateValue);
     } catch (err) {
         throw NSErrors.TranslationError;
     }
@@ -75,7 +76,8 @@ const translateSet = async (translateName, translateValue, lang) => {
 const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
-        return fs.readFile(`${themePath}/${filePath}.json`, 'utf8');
+        const pathName  = path.join(themePath, `${filePath}.json`);
+        return fs.readFile(pathName, 'utf8');
     } catch (error) {
         throw NSErrors.TranslationError;
     }
@@ -89,8 +91,8 @@ const translateList = async () => {
         const lang          = 'fr';
         const translateList = [];
         const translatePath = await getTranslatePath(lang);
-
-        for (const file of await fs.readdir(translatePath)) {
+        const listDir       = await fs.readdir(translatePath);
+        for (const file of listDir) {
             if (file.endsWith('.json')) {
                 translateList.push(file.substring(0, file.lastIndexOf('.json')));
             }
@@ -106,27 +108,22 @@ const translateList = async () => {
  *
  */
 async function getTranslatePath(lang) {
-    return `./themes/${global.envConfig.environment.currentTheme}/assets/i18n/${lang}`;
+    return path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 
 /**
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
-const createDynamicLangFile = async (fromInstaller = false) => {
+const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
-    let themeActual = 'default_theme'; // if installer -> default_theme
-    if (fromInstaller === false) {
-        themeActual = global.envConfig.environment.currentTheme;
+    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+    try {
+        await fs.writeFile(linkToFile, contentFile);
+    } catch (e) {
+        throw 'Error writing file "dynamic_langs.js"';
     }
-    const linkToFile = path.join(global.appRoot, 'themes', themeActual, 'dynamic_langs.js');
-    // write file
-    await fs.writeFile(linkToFile, contentFile, (err) => {
-        if (err) {
-            throw 'Error writing file "dynamic_langs.js"';
-        }
-    });
 };
 
 module.exports = {

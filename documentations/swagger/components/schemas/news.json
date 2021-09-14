@@ -1,23 +1,12 @@
 {
     "newsSchema": {
         "description": "",
-        "required": ["email"],
         "properties": {
-            "_id"     : {"type": "string", "format": "ObjectId"},
-            "email"   : {"type": "string"},
-            "createdAt" : {
-                "type": "string",
-                "format": "date"
-            },
-            "segment" : {
-                "type": "array",
-                "items": {
-                    "name"             : {"type": "string"},
-                    "optin"            : {"type": "boolean"},
-                    "date_subscribe"   : {"type": "string", "format": "date", "default": "Date.now"},
-                    "date_unsubscribe" : {"type": "string", "format": "date"}
-                }
-            }
+            "isVisible"   : {"type": "boolean", "default": false},
+            "img"         : {"type": "string", "default": ""},
+            "extension"   : {"type": "string", "default": ".jpg"},
+            "translation" : {"type": "object"}
         }
     }
 }
+

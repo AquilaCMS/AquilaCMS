@@ -1,5 +1,5 @@
 {
-    "deleteCustomer" :  "Êtes-vous sûr de vouloir supprimer ce client ? Ses commandes ne seront pas supprimées !",
+    "deleteCustomer": "Êtes-vous sûr de vouloir supprimer ce client ? Ses commandes ne seront pas supprimées !",
     "removeAttribute": "Êtes-vous sûr de vouloir supprimer cet attribut ?",
     "removeSetAttribute": "Êtes-vous sur de vouloir supprimer ce jeu d'attributs ?",
     "fileAttachedNotSaved": "La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?",
@@ -23,7 +23,7 @@
     "deletePage": "Êtes-vous sûr de vouloir supprimer cette page ?",
     "deleteLibelleStock": "Si vous supprimez ce libellé de disponibilité, vous devrez ensuite modifier les items qui les impliquent. Êtes-vous sûr de vouloir le supprimer ?",
     "deleteTva": "Si vous supprimez cette TVA, vous devrez ensuite modifier les items qui impliquent cette TVA. Êtes-vous sûr de vouloir la supprimer ?",
-    "delÊtesupplier": "Êtes-vous sûr de vouloir supprimer ce fournisseur ?",
+    "deleteSupplier": "Êtes-vous sûr de vouloir supprimer ce fournisseur ?",
     "activateCSP": "Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés",
     "deleteTerritory": "Êtes-vous sûr de vouloir supprimer ce territoire ?",
     "installPackageWarning": "Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?",

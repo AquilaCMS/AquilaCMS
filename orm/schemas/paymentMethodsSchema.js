@@ -18,7 +18,6 @@ const PaymentMethodsSchema = new Schema({
     details                  : {}, // Contient les infos propres au mode de paiement
     component_template       : String, // Contient le formulaire pour configurer le mode de paiement
     makePayment              : String, // L'url qu'il faut appeler en GET pour débuter le paiement
-    // all_points_of_sale       : {type: Boolean, default: true},
     isDeferred               : {type: Boolean, default: false}, // Si le paiement est différée
     sort                     : {type: Number, default: 0},
     translation              : {},
@@ -42,9 +41,7 @@ const PaymentMethodsSchema = new Schema({
 PaymentMethodsSchema.statics.translationValidation = async function (query, self) {
     let errors = [];
 
-    while (self.translation === undefined) {
-        self.translation = {};
-    }
+    if (self.translation === undefined) return errors; // No translation
 
     let translationKeys = Object.keys(self.translation);
 

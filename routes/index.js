@@ -15,29 +15,43 @@ const InitRoutes = (express, server) => {
     const adminFrontRouter = express.Router(); // Route for serving the front of the admin
     server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
     server.use(`/${global.envConfig.environment.adminPrefix}`, adminFrontRouter);
-    loadDynamicRoutes(apiRouter, adminFrontRouter);
+    // loading backoffice
+    loadAdminRoutes(adminFrontRouter);
 
+    // load others routes
+    loadDynamicRoutes(apiRouter);
     return apiRouter;
+};
+
+/**
+ * Load the admin route
+ */
+const loadAdminRoutes = (adminFrontRouter) => {
+    const pathToAdminFile = path.join(global.appRoot, 'routes', 'backoffice.js');
+    require(pathToAdminFile)(adminFrontRouter);
 };
 
 /**
  * Dynamically load all routes from the routes folder
  */
-const loadDynamicRoutes = (app, adminFront) => {
+const loadDynamicRoutes = (app) => {
     console.log('Routes : Loading...');
-    fs.readdirSync('./routes').forEach((file) => {
-        // Do not load the index file or the installer routes
-        if (file === path.basename(__filename) || path.extname(file) !== '.js' || file === 'install.js') {
-            return;
+    const pathToRoutes = path.join(global.appRoot, 'routes');
+    const date         = Date.now();
+    const allRoutes    = fs.readdirSync(pathToRoutes).filter((file) => {
+        if (file === path.basename(__filename)
+            || path.extname(file) !== '.js'
+            || file === 'backoffice.js'
+        ) {
+            return false;
         }
-        // Load route files
-        if (file === 'admin.js') {
-            require(`./${file}`)(app, adminFront);
-        } else {
-            require(`./${file}`)(app);
-        }
+        return true;
     });
-    console.log('Routes : Loaded\x1b[32m \u2713 \x1b[0m');
+    allRoutes.forEach((file) => {
+        require(`./${file}`)(app);
+    });
+    const time = (Date.now() - date) / 1000;
+    console.log(`Routes : Loaded in %s${time}%s%s`, '\x1b[33m', '\x1b[0m', '\x1b[32m \u2713 \x1b[0m');
 };
 
 /**

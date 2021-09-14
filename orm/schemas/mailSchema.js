@@ -27,9 +27,8 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
     if (self && updateQuery === undefined || self.code !== undefined) {
-        while (self.translation === undefined) {
-            self.translation = {};
-        }
+        if (self.translation === undefined) return errors; // No translation
+
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
             const lang                  = await mongoose.model('languages').findOne({defaultLanguage: true});

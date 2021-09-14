@@ -654,14 +654,12 @@ const createProduct = async (req) => {
     default:
         break;
     }
+    let body = req.body;
     if (req.body.set_attributes === undefined) {
-        const product = await serviceSetAttributs.addAttributesToProduct(req.body);
-        const result  = await Products.create(product);
-        aquilaEvents.emit('aqProductCreated', result._id);
-        return result;
+        body = await serviceSetAttributs.addAttributesToProduct(req.body);
     }
     req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(req.body);
+    const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
@@ -670,9 +668,13 @@ const createProduct = async (req) => {
  * Remove product
  */
 const deleteProduct = async (_id) => {
-    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        throw NSErrors.InvalidObjectIdError;
+    }
     const doc = await Products.findOneAndRemove({_id});
-    if (!doc) throw NSErrors.ProductNotFound;
+    if (!doc) {
+        throw NSErrors.ProductNotFound;
+    }
     await Categories.updateMany({}, {$pull: {productsList: {id: _id}}});
     await Products.updateMany({}, {$pull: {associated_prds: _id}});
     const products = await Products.find({type: 'bundle'});
@@ -729,7 +731,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // to recover in db
 
-    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+    if (typeof prdStock.date_selling !== 'undefined' && prdStock.date_selling > Date.now()) {
         datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
         datas.delivery.dates[0] = prdStock.date_selling;
     } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
@@ -890,14 +892,18 @@ const controlAllProducts = async (option) => {
 
         // AutoFix :
         try {
-            if (fixAttributs) {await require('./devScripts').sortAttribs();}
+            if (fixAttributs) {
+                await require('./devFunctions').sortAttribs();
+            }
         } catch (ee) {
             returnErrors += `sortAttribs : ${ee.toString()}`;
         }
 
         return returnErrors + returnWarning;
     } catch (error) {
-        if (error.message) {return error.message;}
+        if (error.message) {
+            return error.message;
+        }
         return error;
     }
 };

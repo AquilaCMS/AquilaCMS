@@ -77,7 +77,7 @@ adminCatagenDirectives.directive("nsDatepicker", function ()
             {
                 if(ngModel.$modelValue)
                 {
-                    scope.myDate = moment(new Date(ngModel.$modelValue)).format("L");
+                    scope.myDate = moment(new Date(ngModel.$modelValue)).format("DD/MM/YY");
                 }
             };
             scope.onDateChange = function (){

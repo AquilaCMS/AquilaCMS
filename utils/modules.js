@@ -37,11 +37,12 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
-        modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
+        modules_folder = path.join(global.appRoot, 'themes', theme, 'modules');
         await fs.ensureDir(modules_folder);
-        const isFileExists = await fs.hasAccess(`${modules_folder}/list_modules.js`);
+        const pathToListModules = path.join(modules_folder, 'list_modules.js');
+        const isFileExists      = await fs.hasAccess(pathToListModules);
         if (!isFileExists) {
-            await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
+            await fs.writeFile(pathToListModules, 'export default [];');
         }
     } catch (err) {
         console.error(err);
@@ -190,7 +191,7 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
  * Module : Load the init.js files of the modules if necessary
  * @param {any} server
  */
-const modulesLoadInit = async (server) => {
+const modulesLoadInit = async (server, runInit = true) => {
     const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
     loadedModules  = [..._modules].map((lmod) => ({...lmod, init: true, valid: false}));
@@ -213,11 +214,13 @@ const modulesLoadInit = async (server) => {
                     throw new Error('Error checking licence');
                 }
                 loadedModules[i].valid = true;
-                require(initModuleFile)(server);
+                if (runInit) {
+                    require(initModuleFile)(server);
+                }
                 process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
+                process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
                 return false;
             }
         }
