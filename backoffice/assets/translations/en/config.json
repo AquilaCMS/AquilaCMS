@@ -102,5 +102,8 @@
     },
     "path": {
         "mediaHelper": "Leave empty to have the default folder (/uploads). For a specific folder, a relative path is required"
+    },
+    "storefront": {
+        "saveSuccess": "Sauvegarde effectuée"
     }
 }

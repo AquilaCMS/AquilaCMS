@@ -26,6 +26,7 @@ const itemsSchema = new Schema({
     name         : String,
     code         : String,
     image        : String,
+    slug         : String,
     description1 : {
         title : String,
         text  : String

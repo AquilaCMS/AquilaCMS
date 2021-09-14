@@ -116,6 +116,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     }
                 }).then((response) => {
                     $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                    toastService.toast("success", $translate.instant("config.storefront.saveSuccess"));
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {
@@ -202,7 +203,8 @@ ConfigControllers.controller("StorefrontConfigCtrl", [
                 $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 ConfigV2.save({environment : $scope.config.environment}, function(response) {
-                    if (response.data.data.needRestart) {
+                    toastService.toast("success", $translate.instant("config.storefront.saveSuccess"));
+                    if (response.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {

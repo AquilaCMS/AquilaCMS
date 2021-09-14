@@ -103,5 +103,8 @@
     },
     "path": {
         "mediaHelper": "Laisser vide pour avoir le dossier par defaut (/uploads). Pour un dossier specifique, un chemin relatif est necessaire"
+    },
+    "storefront": {
+        "saveSuccess": "Sauvegarde effectuée"
     }
 }

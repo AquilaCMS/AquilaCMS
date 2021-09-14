@@ -236,18 +236,9 @@ class CartSuccess extends React.Component {
                                                                                         );
                                                                                     }
                                                                                 }
-                                                                                let imgDefault = `/images/products/82x82/0/${item.slug}.jpg`;
+                                                                                let imgDefault = `/images/products/82x82/${item.image}/${item.slug}.jpg`;
                                                                                 let imgAlt = 'illustration produit';
-                                                                                if (item.id.images && item.id.images.length) {
-                                                                                    const foundImg = item.id.images.find((img) => img.default);
-                                                                                    if (foundImg) {
-                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = foundImg.alt || imgAlt;
-                                                                                    } else {
-                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = item.id.images[0].alt || imgAlt;
-                                                                                    }
-                                                                                }
+                                                                                
                                                                                 return (
                                                                                     <tr key={item.id._id} className="cart-item cart-item--small">
                                                                                         <td>

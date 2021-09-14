@@ -185,9 +185,10 @@ const addItem = async (req) => {
     }
     if (_product.translation[_lang.code]) {
         req.body.item.name = _product.translation[_lang.code].name;
+        req.body.item.slug = _product.translation[_lang.code].slug;
     }
     req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageId(_product);
+    req.body.item.image = require('../utils/medias').getProductImageId(_product) || '0';
     const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;

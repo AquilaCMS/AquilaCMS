@@ -668,11 +668,11 @@ const getImageStream = async (req, res) => {
             // TODO : voir pour le mettre dans la dimension demandé !? */
             // next(NSErrors.MediaNotFound);
         }
-        if (imagePath.includes('default_image_cache')) {
+        if (imagePath && imagePath.includes('default_image_cache')) {
             res.status(404);
             res.set('Content-Type', `image/${imagePath.split('.').pop()}`);
         }
-        if (await fsp.existsSync(imagePath) && (await fsp.lstat(imagePath)).isFile()) {
+        if (imagePath && await fsp.existsSync(imagePath) && (await fsp.lstat(imagePath)).isFile()) {
             fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
         } else {
             res.status(404).send('Not found');
