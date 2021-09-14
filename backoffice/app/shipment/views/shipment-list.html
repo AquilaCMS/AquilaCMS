@@ -9,13 +9,13 @@
                         <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 150px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
                             shipment.list.url
                         </th>
-                        <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Type: activate to sort column descending">
+                        <!-- <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Type: activate to sort column descending">
                             <a ng-click="sort.type = 'type'; sort.reverse = !sort.reverse" translate>
                                 shipment.list.type
                                 <span ng-show="sort.type == 'type' && !sort.reverse" class="ico-chevron-up"></span>
                                 <span ng-show="sort.type == 'type' && sort.reverse" class="ico-chevron-down"></span>
                             </a>
-                        </th>
+                        </th> -->
                         <th class="sorting_asc" role="columnheader" tabindex="1" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
                             shipment.list.code
                         </th>
@@ -33,9 +33,9 @@
                         <th>
                             
                         </th>
-                        <th>
+                        <!-- <th>
 
-                        </th>
+                        </th> -->
                         <th>
                             <input type="text" ng-change="getShipments()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='shipment.list.code' class="form-control">
                         </th>
@@ -59,7 +59,7 @@
                         ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
                         <td data-label="Logo :" ng-click="goToShipmentDetails(shipment._id)"><img ng-src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
-                        <td data-label="Type :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{'Livraison'}}</td>
+                        <!-- <td data-label="Type :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{'Livraison'}}</td> -->
                         <td data-label="Code :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
                         <td data-label="Nom :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
                         <td data-label="Minimum d'achat :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
