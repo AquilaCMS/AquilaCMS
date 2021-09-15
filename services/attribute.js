@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose                                                 = require('mongoose');
-const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
-const QueryBuilder                                             = require('../utils/QueryBuilder');
-const NSErrors                                                 = require('../utils/errors/NSErrors');
-const utils                                                    = require('../utils/utils');
-const utilsMedia                                               = require('../utils/medias');
+const mongoose                                                                = require('mongoose');
+const {Attributes, Categories, SetAttributes, Products, Users, ProductSimple} = require('../orm/models');
+const QueryBuilder                                                            = require('../utils/QueryBuilder');
+const NSErrors                                                                = require('../utils/errors/NSErrors');
+const utils                                                                   = require('../utils/utils');
+const utilsMedia                                                              = require('../utils/medias');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
@@ -67,28 +67,14 @@ const setAttribute = async (body) => {
         const attribute = await Attributes.findOne({code: body.code});
         if (attribute) {
             // edit variants
-            const prdListVariants = await Products.find({'variants.id': attribute._id});
-            for (let j = 0; j < prdListVariants.length; j++) {
-                const variantIndex                             = prdListVariants[j].variants.findIndex((variant) => variant.id.toString() === attribute._id.toString());
-                prdListVariants[j].variants[variantIndex].code = body.code;
-                for (let k = 0; k < Object.keys(body.translation).length; k++) {
-                    const lng = Object.keys(body.translation)[k];
-                    prdListVariants[j].variants[variantIndex].translation[lng].values.map((val, index) => {
-                        val.code = body.translation[lng].values[index];
-                        return val;
-                    });
-                    console.log(prdListVariants[j].variants[0].translation.fr.values[1]);
-                    await Products.updateOne({_id: prdListVariants[j]._id}, {$unset: {variants: ''}});
-                    // console.log(await Products.findOneAndUpdate({_id: prdListVariants[j]._id}, {$set: {variants: prdListVariants[j].variants}}, {new: true}));
-                    console.log(prdListVariants[j].variants[0].translation.fr.values[1]);
-                }
-            }
+
             if (updateF) {
             // If the usedInFilters is changed from true to false
                 if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
                 // Then we delete the categories.filters whose _id is the _id of the modified attribute
                     await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
                 }
+                await updateProductsVariants(body, attribute);
                 const code = body.code;
                 delete body.code;
                 const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
@@ -140,6 +126,90 @@ const setAttribute = async (body) => {
         await Users.updateMany({set_attributes: body.set_attributes[i]}, {$push: {attributes: product_attributes}});
     }
     return att;
+};
+
+const updateProductsVariants = async (body, attribute) => {
+    if (body.isVariantable && attribute.isVariantable) {
+        // edit variant from product
+        await ProductSimple.updateMany(
+            {'variants.code': attribute.code},
+            {'variants.$[element].translation': body.translation},
+            {arrayFilters: [{'element.code': attribute.code}]}
+        );
+        await regenerateProductsVariants(body, attribute);
+    } else if (!body.isVariantable && attribute.isVariantable) {
+        // remove variant from product
+        await ProductSimple.updateMany(
+            {'variants.code': attribute.code},
+            {$pull: {variants: {code: attribute.code}}}
+        );
+        await regenerateProductsVariants(body, attribute);
+    }
+};
+
+const regenerateProductsVariants = async (body) => {
+    const prdsWithVariant = await ProductSimple.find({'variants.code': body.code});
+    for (let prdWithVariantIndex = 0; prdWithVariantIndex < prdsWithVariant.length; prdWithVariantIndex++) {
+        prdsWithVariant[prdWithVariantIndex].old_variants_values = prdsWithVariant[prdWithVariantIndex].variants_values;
+        prdsWithVariant[prdWithVariantIndex].variants_values     = [];
+        prdsWithVariant[prdWithVariantIndex].new_variants_values = [];
+        if (prdsWithVariant[prdWithVariantIndex].variants && prdsWithVariant[prdWithVariantIndex].variants.length > 1) {
+            for (let indexValueLine1 = 0; indexValueLine1 < prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; indexValueLine1++) {
+                for (let indexValueLine2 = 0; indexValueLine2 < prdsWithVariant[prdWithVariantIndex].variants[1].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; indexValueLine2++) {
+                    const variant = {
+                        code        : `${prdsWithVariant[prdWithVariantIndex].code}-${prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[indexValueLine1]}-${prdsWithVariant[prdWithVariantIndex].variants[1].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[indexValueLine2]}`,
+                        active      : false,
+                        weight      : prdsWithVariant[prdWithVariantIndex].weight,
+                        default     : !!(indexValueLine1 === 0 && indexValueLine2 === 0),
+                        price       : prdsWithVariant[prdWithVariantIndex].price,
+                        stock       : prdsWithVariant[prdWithVariantIndex].stock,
+                        images      : prdsWithVariant[prdWithVariantIndex].images,
+                        translation : {}
+                    };
+                    for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
+                        if (prdsWithVariant[prdWithVariantIndex].translation[translationKey] && prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey], prdsWithVariant[prdWithVariantIndex].variants[1].translation[translationKey]) {
+                            variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey].values[indexValueLine1]}/${prdsWithVariant[prdWithVariantIndex].variants[1].translation[translationKey].values[indexValueLine2]}`};
+                        }
+                    }
+                    prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
+                }
+            }
+        } else if (prdsWithVariant[prdWithVariantIndex].variants && prdsWithVariant[prdWithVariantIndex].variants.length === 1) {
+            for (let valueIndex = 0; valueIndex < prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; valueIndex++) {
+                const variant = {
+                    code        : `${prdsWithVariant[prdWithVariantIndex].code}-${prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[valueIndex]}`,
+                    active      : false,
+                    weight      : prdsWithVariant[prdWithVariantIndex].weight,
+                    default     : valueIndex === 0,
+                    price       : prdsWithVariant[prdWithVariantIndex].price,
+                    stock       : prdsWithVariant[prdWithVariantIndex].stock,
+                    images      : prdsWithVariant[prdWithVariantIndex].images,
+                    translation : {}
+                };
+                for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
+                    if (prdsWithVariant[prdWithVariantIndex].translation[translationKey] && prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey]) {
+                        variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey].values[valueIndex]}`};
+                    }
+                }
+                prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
+            }
+        }
+
+        // we now compare "new_variants_values" to "new_variants_values" to add or remove element but keep already existing ones
+        prdsWithVariant[prdWithVariantIndex].variants_values = [];
+        for (let newVariantIndex = 0; newVariantIndex < prdsWithVariant[prdWithVariantIndex].new_variants_values.length; newVariantIndex++) {
+            const newVariant = prdsWithVariant[prdWithVariantIndex].new_variants_values[newVariantIndex];
+            const founded    = prdsWithVariant[prdWithVariantIndex].old_variants_values.find((ovv) => ovv.code === newVariant.code);
+            if (founded) {
+                prdsWithVariant[prdWithVariantIndex].variants_values.push(founded);
+            } else {
+                prdsWithVariant[prdWithVariantIndex].variants_values.push(newVariant);
+            }
+        }
+        delete prdsWithVariant[prdWithVariantIndex].old_variants_values;
+        delete prdsWithVariant[prdWithVariantIndex].new_variants_values;
+        await prdsWithVariant[prdWithVariantIndex].save();
+    }
 };
 
 const updateObjectAttribute = async (list, attr, path) => {
