@@ -53,6 +53,7 @@ const getAttribute = async (PostBody, lean) => {
 };
 
 const setAttribute = async (body) => {
+    console.log(body);
     body.code         = utils.slugify(body.code);
     const updateF     = body.update;
     const setToAdd    = body.multiModifAdd;
@@ -153,53 +154,35 @@ const regenerateProductsVariants = async (body) => {
         prdsWithVariant[prdWithVariantIndex].old_variants_values = prdsWithVariant[prdWithVariantIndex].variants_values;
         prdsWithVariant[prdWithVariantIndex].variants_values     = [];
         prdsWithVariant[prdWithVariantIndex].new_variants_values = [];
-        if (prdsWithVariant[prdWithVariantIndex].variants && prdsWithVariant[prdWithVariantIndex].variants.length > 1) {
-            for (let indexValueLine1 = 0; indexValueLine1 < prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; indexValueLine1++) {
-                for (let indexValueLine2 = 0; indexValueLine2 < prdsWithVariant[prdWithVariantIndex].variants[1].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; indexValueLine2++) {
-                    const variant = {
-                        code        : `${prdsWithVariant[prdWithVariantIndex].code}-${prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[indexValueLine1]}-${prdsWithVariant[prdWithVariantIndex].variants[1].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[indexValueLine2]}`,
-                        active      : false,
-                        weight      : prdsWithVariant[prdWithVariantIndex].weight,
-                        default     : !!(indexValueLine1 === 0 && indexValueLine2 === 0),
-                        price       : prdsWithVariant[prdWithVariantIndex].price,
-                        stock       : prdsWithVariant[prdWithVariantIndex].stock,
-                        images      : prdsWithVariant[prdWithVariantIndex].images,
-                        translation : {}
-                    };
-                    for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
-                        if (prdsWithVariant[prdWithVariantIndex].translation[translationKey] && prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey], prdsWithVariant[prdWithVariantIndex].variants[1].translation[translationKey]) {
-                            variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey].values[indexValueLine1]}/${prdsWithVariant[prdWithVariantIndex].variants[1].translation[translationKey].values[indexValueLine2]}`};
-                        }
-                    }
-                    prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
-                }
+        const variantNames                                       = [];
+        for (const variant of prdsWithVariant[prdWithVariantIndex].variants) {
+            variantNames.push(variant.translation[Object.keys(variant.translation)[0]].values);
+        }
+        const f         = (a, b) => [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
+        const cartesian = (a, b, ...c) => (b ? cartesian(f(a, b), ...c) : a);
+        const result    = cartesian(...variantNames);
+        for (const [index, variantName] of result.entries()) {
+            const variant = {
+                code        : `${prdsWithVariant[prdWithVariantIndex].code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
+                active      : false,
+                weight      : prdsWithVariant[prdWithVariantIndex].weight,
+                default     : index === 0,
+                price       : prdsWithVariant[prdWithVariantIndex].price,
+                stock       : prdsWithVariant[prdWithVariantIndex].stock,
+                images      : prdsWithVariant[prdWithVariantIndex].images,
+                translation : {}
+            };
+            for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
+                variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};
             }
-        } else if (prdsWithVariant[prdWithVariantIndex].variants && prdsWithVariant[prdWithVariantIndex].variants.length === 1) {
-            for (let valueIndex = 0; valueIndex < prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values.length; valueIndex++) {
-                const variant = {
-                    code        : `${prdsWithVariant[prdWithVariantIndex].code}-${prdsWithVariant[prdWithVariantIndex].variants[0].translation[Object.keys(prdsWithVariant[prdWithVariantIndex].variants[0].translation)[0]].values[valueIndex]}`,
-                    active      : false,
-                    weight      : prdsWithVariant[prdWithVariantIndex].weight,
-                    default     : valueIndex === 0,
-                    price       : prdsWithVariant[prdWithVariantIndex].price,
-                    stock       : prdsWithVariant[prdWithVariantIndex].stock,
-                    images      : prdsWithVariant[prdWithVariantIndex].images,
-                    translation : {}
-                };
-                for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
-                    if (prdsWithVariant[prdWithVariantIndex].translation[translationKey] && prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey]) {
-                        variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${prdsWithVariant[prdWithVariantIndex].variants[0].translation[translationKey].values[valueIndex]}`};
-                    }
-                }
-                prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
-            }
+            prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
         }
 
         // we now compare "new_variants_values" to "new_variants_values" to add or remove element but keep already existing ones
         prdsWithVariant[prdWithVariantIndex].variants_values = [];
         for (let newVariantIndex = 0; newVariantIndex < prdsWithVariant[prdWithVariantIndex].new_variants_values.length; newVariantIndex++) {
             const newVariant = prdsWithVariant[prdWithVariantIndex].new_variants_values[newVariantIndex];
-            const founded    = prdsWithVariant[prdWithVariantIndex].old_variants_values.find((ovv) => ovv.code === newVariant.code);
+            const founded    = prdsWithVariant[prdWithVariantIndex].old_variants_values.find((ovv) => ovv.code.toLowerCase() === newVariant.code.toLowerCase());
             if (founded) {
                 prdsWithVariant[prdWithVariantIndex].variants_values.push(founded);
             } else {

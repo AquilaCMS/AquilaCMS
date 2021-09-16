@@ -203,42 +203,26 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
 
             $scope.createPrds = function () {
                 $scope.product.variants_values = []
-                if ($scope.product.variants && $scope.product.variants.length > 1) {
-                    for (var indexValueLine1 = 0; indexValueLine1 < $scope.product.variants[0].translation[$scope.lang].values.length; indexValueLine1++) {
-                        for (var indexValueLine2 = 0; indexValueLine2 < $scope.product.variants[1].translation[$scope.lang].values.length; indexValueLine2++) {
-                            $scope.product.variants_values.push({
-                                code: $scope.product.code + '-' + $scope.product.variants[0].translation[$scope.lang].values[indexValueLine1] + '-' + $scope.product.variants[1].translation[$scope.lang].values[indexValueLine2],
-                                active: false,
-                                weight: $scope.product.weight,
-                                default: indexValueLine1 === 0 && indexValueLine2 === 0 ? true : false,
-                                price: $scope.product.price,
-                                stock: $scope.product.stock,
-                                images: $scope.product.images,
-                                translation: {
-                                    [$scope.lang]: {
-                                        name: $scope.product.translation[$scope.lang].name + ' - ' + $scope.product.variants[0].translation[$scope.lang].values[indexValueLine1] + '/' + $scope.product.variants[1].translation[$scope.lang].values[indexValueLine2],
-                                    }
-                                }
-                            })
-                        }
-                    }
-                } else if ($scope.product.variants && $scope.product.variants.length === 1) {
-                    $scope.product.variants_values = $scope.product.variants[0].translation[$scope.lang].values.map((val, index) => {
-                        return {
-                            code: $scope.product.code + '-' + val,
-                            active: false,
-                            weight: $scope.product.weight,
-                            default: index === 0 ? true : false,
-                            price: $scope.product.price,
-                            stock: $scope.product.stock,
-                            images: $scope.product.images,
-                            translation: {
-                                [$scope.lang]: {
-                                    name: $scope.product.translation[$scope.lang].name + ' - ' + val,
-                                }
-                            }
-                        }
-                    })
+                const variantNames                                       = [];
+                for (const variant of $scope.product.variants) {
+                    variantNames.push(variant.translation[$scope.lang].values);
+                }
+                const f         = (a, b) => [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
+                const cartesian = (a, b, ...c) => (b ? cartesian(f(a, b), ...c) : a);
+                const result    = cartesian(...variantNames);
+                for (const [index, variantName] of result.entries()) {
+                    const variant = {
+                        code        : `${$scope.product.code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
+                        active      : false,
+                        weight      : $scope.product.weight,
+                        default     : index === 0,
+                        price       : $scope.product.price,
+                        stock       : $scope.product.stock,
+                        images      : $scope.product.images,
+                        translation : {}
+                    };
+                    variant.translation[$scope.lang] = {name: `${$scope.product.translation[$scope.lang].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};
+                    $scope.product.variants_values.push(variant);
                 }
             }
 
