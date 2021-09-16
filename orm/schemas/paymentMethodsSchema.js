@@ -21,7 +21,8 @@ const PaymentMethodsSchema = new Schema({
     isDeferred               : {type: Boolean, default: false}, // Si le paiement est différée
     sort                     : {type: Number, default: 0},
     translation              : {},
-    component_template_front : {type: String, default: null}
+    component_template_front : {type: String, default: null},
+    moduleFolderName         : {type: String, default: null}
 
     /* name        : {type: String}, // obselete
     urlLogo     : {type: String}, // obselete

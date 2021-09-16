@@ -731,7 +731,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // to recover in db
 
-    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+    if (typeof prdStock.date_selling !== 'undefined' && prdStock.date_selling > Date.now()) {
         datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
         datas.delivery.dates[0] = prdStock.date_selling;
     } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {

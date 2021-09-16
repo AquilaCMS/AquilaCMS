@@ -393,20 +393,34 @@ const activateModule = async (idModule, toBeChanged) => {
         }
 
         if (myModule.loadTranslationFront) {
-            console.log('Loading front translation for module...');
-            const {currentTheme} = global.envConfig.environment;
-            const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`, 'utf-8');
-            for (let i = 0; i < files.length; i++) {
-                const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
-                const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
-                if (await fs.hasAccess(src)) {
-                    try {
-                        await fs.copyRecursive(src, dest, true);
-                    } catch (err) {
-                        console.error(err);
+            console.log('Front translation for module : Loading ...');
+            try {
+                const {currentTheme}      = global.envConfig.environment;
+                const pathToTranslateFile = path.join(global.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
+                const hasAccess           = await fs.hasAccess(pathToTranslateFile);
+                if (hasAccess) {
+                    const files      = await fs.readdir(pathToTranslateFile);
+                    const fileLength = files.length;
+                    for (let i = 0; i < fileLength; i++) {
+                        const lang = files[i];
+                        if (lang === 'index.js') {
+                            continue;
+                        }
+                        const src  = path.join(global.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
+                        const dest = path.resolve('themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                        if (await fs.hasAccess(src)) {
+                            try {
+                                await fs.copyRecursive(src, dest, true);
+                            } catch (err) {
+                                console.error(err);
+                            }
+                            copyTab.push(dest);
+                        }
                     }
-                    copyTab.push(dest);
                 }
+                console.log('Front translation for module : Success');
+            } catch (errorLoadTranslationFront) {
+                console.log('Front translation for module : Failed');
             }
         }
 
@@ -447,7 +461,7 @@ const activateModule = async (idModule, toBeChanged) => {
 
         // If the module must import components into the front
         await addOrRemoveThemeFiles(
-            path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
+            path.join(global.appRoot, 'modules', myModule.name, 'theme_components'),
             false,
             myModule.types || myModule.type || ''
         );
@@ -607,9 +621,10 @@ const setFrontModules = async (theme) => {
         const oneModule = listModules[index];
 
         // Does this module contain a front?
-        if (await fs.hasAccess(`./${oneModule.path}`)) {
+        const modulePath = path.join(global.appRoot, oneModule.path);
+        if (await fs.hasAccess(modulePath)) {
             // Write the file if it's not already in it
-            await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
+            await setFrontModuleInTheme(modulePath, theme || global.envConfig.environment.currentTheme);
         }
     }
     console.log("Set module's front files : Done");
@@ -621,18 +636,21 @@ const setFrontModules = async (theme) => {
  * @param {*} theme : theme
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
-    const savePath = pathModule.replace('theme_components', '');
+    const savePath = pathModule.replace('theme_components', ''); // useless
     console.log(`Set module's front files... ${pathModule}`);
 
     if (pathModule.lastIndexOf('theme_components') === -1) {
-        pathModule += 'theme_components/';
+        pathModule = path.join(pathModule, 'theme_components');
     }
     if (!pathModule.endsWith('/')) {
-        pathModule += '/';
+        pathModule = path.join(pathModule, '/');
     }
 
     // Check if the theme_components folder exists in the module, if so, then it's a front module
-    if (!await fs.hasAccess(pathModule)) return;
+    const hasAccess = await fs.hasAccess(pathModule);
+    if (!hasAccess) {
+        return;
+    }
     const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const resultDir    = await fs.readdir(pathModule);
 
@@ -656,14 +674,21 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
-            const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-            const replaceListModules      = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
+            const regexArray            = new RegExp(/\[[^]*?\]/, 'gm');
+            let exportDefaultListModule = '';
+            const match                 = result.match(regexArray);
+            if (match && match.length > 0) {
+                exportDefaultListModule = match[0];
+            }
+            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
         // Copy the files (of the module) needed by the front
-        const copyTo  = `./themes/${currentTheme}/modules/${file}`;
-        const copyTab = [`themes/${currentTheme}/modules/${file}`];
+        const copyTo  = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+        const copyTab = [
+            path.join(global.appRoot, 'themes', currentTheme, 'modules', file)
+        ];
         // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(pathModule + file, copyTo);
@@ -678,16 +703,21 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
  */
 const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     // Check if the theme_components folder exists in the module, then it's a front module
-    if (!fs.existsSync(pathThemeComponents)) return;
+    if (!fs.existsSync(pathThemeComponents)) {
+        return;
+    }
     const currentTheme = global.envConfig.environment.currentTheme;
-    for (const file of await fs.readdir(pathThemeComponents)) {
-        if (!file.startsWith('Module') || !file.endsWith('.js')) continue;
+    const listOfFile   = await fs.readdir(pathThemeComponents);
+    for (const file of listOfFile) {
+        if (!file.startsWith('Module') || !file.endsWith('.js')) {
+            continue;
+        }
         if (toRemove) {
             const fileNameWithoutModule = file.replace('Module', '')
                 .replace('.js', '')
                 .toLowerCase();
             await removeFromListModule(file, currentTheme, fileNameWithoutModule, type);
-            const filePath = path.resolve(global.appRoot, 'themes', currentTheme, 'modules', file);
+            const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);

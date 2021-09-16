@@ -7,6 +7,7 @@
  */
 
 const moment           = require('moment');
+const path             = require('path');
 const {
     Orders,
     Cart,
@@ -721,6 +722,75 @@ function setItemStatus(order, packages, status1, status2) {
     return order;
 }
 
+async function payOrder(req) {
+    try {
+        const query  = {...req.body.filterPayment};
+        query.active = true;
+        // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
+        // Otherwise, we recover all the active payment methods
+        const paymentMethods = await PaymentMethods.find(query);
+        // We check that the desired payment method is available
+        const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
+        if (!method) {
+            throw NSErrors.PaymentModeNotAvailable;
+        }
+        if (method.isDeferred) {
+            return await deferredPayment(req, method);
+        }
+        return await immediateCashPayment(req, method.code);
+    } catch (err) {
+        return err;
+    }
+}
+
+async function deferredPayment(req, method) {
+    try {
+        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        if (!order) {
+            throw NSErrors.OrderNotFound;
+        }
+        await paymentSuccess({
+            number        : req.params.orderNumber,
+            status        : 'PAYMENT_PENDING',
+            'customer.id' : req.info._id
+        }, {
+            $set : {
+                status  : 'PAYMENT_RECEIPT_PENDING',
+                payment : [createDeferredPayment(order, method, req.params.lang)]
+            }
+        });
+        await Cart.deleteOne({_id: order.cartId});
+
+        return `<form method='POST' id='paymentid' action='${req.params.lang ? `/${req.params.lang}` : ''}/cart/success'></form>`;
+    } catch (err) {
+        return err;
+    }
+}
+
+function createDeferredPayment(order, method, lang) {
+    return {
+        type          : 'CREDIT',
+        operationDate : Date.now(),
+        status        : 'TODO',
+        mode          : method.code.toUpperCase(),
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
+    };
+}
+
+async function immediateCashPayment(req, paymentMethod) {
+    try {
+        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
+        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
+        const paymentService     = require(`${modulePath}/services/${paymentMethod}`);
+        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        return form;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     getOrders,
     getOrder,
@@ -728,6 +798,7 @@ module.exports = {
     getOrderById,
     setOrder,
     setStatus,
+    payOrder,
     paymentSuccess,
     paymentFail,
     cancelOrder,
