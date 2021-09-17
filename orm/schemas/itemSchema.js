@@ -56,7 +56,18 @@ const itemsSchema = new Schema({
             vat : {type: Number}
         }
     },
-    atts        : [],
+    attributes : [
+        {
+            id          : {type: ObjectId, ref: 'attributes', index: true},
+            code        : String,
+            values      : String,
+            param       : String,
+            type        : {type: String, default: 'unset'},
+            translation : {},
+            position    : {type: Number, default: 1},
+            visible     : {type: Boolean, default: true}
+        }
+    ],
     typeDisplay : {type: String, default: undefined}
 }, {
     discriminatorKey : 'type',

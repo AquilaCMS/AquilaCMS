@@ -200,7 +200,8 @@ const addItem = async (req) => {
         price        : _product.price,
         description1 : _product.translation[_lang.code].description1,
         description2 : _product.translation[_lang.code].description2,
-        canonical    : _product.translation[_lang.code].canonical
+        canonical    : _product.translation[_lang.code].canonical,
+        attributes   : _product.attributes
     };
 
     if (_product.type !== 'virtual') item.stock = _product.stock;
