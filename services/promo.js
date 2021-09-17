@@ -733,12 +733,9 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
     const prdIndex = productsCatalog.findIndex((_prd) => {
         const idProduct = cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id;
-        return _prd._id.toString() === idProduct.toString();
+        return _prd._id && ((_prd._id).toString() === idProduct.toString());
     });
     if (prdIndex > -1) {
-        if (cart.items[cartPrdIndex].id === mongoose.Types.ObjectId) {
-            await cart.populate('items.id');
-        }
         if (!cart.items[cartPrdIndex].noRecalculatePrice) {
             cart.items[cartPrdIndex].price.unit = {
                 et  : productsCatalog[prdIndex].price.et.normal,

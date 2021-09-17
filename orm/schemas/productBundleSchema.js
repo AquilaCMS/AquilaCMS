@@ -91,7 +91,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
             for (let j = 0; j < selectionProducts.length; j++) {
                 const ServicesProducts = require('../../services/products');
                 // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
-                if (selectionProducts[j].type === 'simple') {
+                if (selectionProducts[j].kind === 'SimpleProduct') {
                     if (
                         !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
                         || !(await ServicesProducts.checkProductOrderable(item.stock, null))
@@ -115,7 +115,8 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
     }
     // we change the weight with modifiers
     item.weight += modifiers.weight;
-    const _cart  = await this.basicAddToCart(cart, item, user, lang);
+    const finalItem = await rebuildSelectionProducts(item, lang)
+    const _cart  = await this.basicAddToCart(cart, finalItem, user, lang);
     return _cart;
 };
 
@@ -207,6 +208,28 @@ function validateBySection(bundle_section, item) {
     default:
         break;
     }
+}
+
+async function rebuildSelectionProducts(item, lang) {
+    // on boucle sur les selections
+    for (var i = 0; i < item.selections.length; i++) {
+        // on boucle les produits de la selection
+        for (var j = 0; j < item.selections[i].products.length; j++) {
+            const prd = await require('../../services/products').getProduct({filter: {_id: item.selections[i].products[j]}, structure: {code: 1, translation: 1, images: 1}})
+            item.selections[i].products[j] = {
+                id: prd._id,
+                name: prd.translation[lang].name,
+                code: prd.code,
+                image: require('../../utils/medias').getProductImageUrl(prd),
+                description1: prd.translation[lang].description1,
+                description2: prd.translation[lang].description2,
+                canonical: prd.translation[lang].canonical,
+                kind: prd.kind
+            }
+        }
+    }
+    console.log(item)
+    return item
 }
 
 module.exports = ProductBundleSchema;
