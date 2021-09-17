@@ -492,7 +492,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
         // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
     }
-    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
         products = products.filter((prd) =>  {
             const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
             return pr >= (
