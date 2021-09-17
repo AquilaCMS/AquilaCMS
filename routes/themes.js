@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth} = require('../middleware/authentication');
-const themesServices              = require('../services/themes');
-const serviceThemeConfig          = require('../services/themeConfig');
-const ServiceConfig               = require('../services/config');
-const packageManager              = require('../utils/packageManager');
+const {adminAuth}        = require('../middleware/authentication');
+const themesServices     = require('../services/themes');
+const serviceThemeConfig = require('../services/themeConfig');
+const ServiceConfig      = require('../services/config');
+const utilsThemes        = require('../utils/themes');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  adminAuth, listTheme);
@@ -20,7 +20,7 @@ module.exports = function (app) {
     app.get('/v2/themes/css/:cssName',     adminAuth, getCustomCss);
     app.post('/v2/themes/css/:cssName',    adminAuth, postCustomCss);
     app.get('/v2/themes/css',              adminAuth, getAllCssComponentName);
-    app.post('/v2/themes/save',            adminAuth, save);
+    app.post('/v2/themes/save/:type',      adminAuth, save);
     app.post('/v2/themes/package/install', adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   adminAuth, buildTheme);
     app.get('/v2/themes/informations',     adminAuth, getThemeInformations);
@@ -32,7 +32,8 @@ module.exports = function (app) {
 async function save(req, res, next) {
     req.setTimeout(300000);
     try {
-        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
+        const type       = req.params.type;
+        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme, type);
         res.send({data: sauvegarde});
     } catch (err) {
         next(err);
@@ -122,7 +123,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames,  req.body.otherParams);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames, req.body.otherParams);
         return res.end();
     } catch (error) {
         return next(error);
@@ -162,9 +163,9 @@ async function buildTheme(req, res, next) {
         if (!themPath || themPath === '') {
             themPath = themesServices.getThemePath();
         }
-        themPath = themPath.replace('./themes/', '');
-        await themesServices.buildTheme(themPath);
-        res.send(packageManager.restart());
+        themPath   = themPath.replace('./themes/', '');
+        const data = await themesServices.buildTheme(themPath);
+        res.send(data);
     } catch (error) {
         return next(error);
     }
@@ -172,12 +173,12 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf = await serviceThemeConfig.getThemeConfig({
+        const themeConf  = await serviceThemeConfig.getThemeConfig({
             filter    : {},
             structure : {},
             limit     : 99
         });
-        const config    = (await ServiceConfig.getConfig({
+        const config     = (await ServiceConfig.getConfig({
             structure : {
                 _id                        : 0,
                 'environment.adminPrefix'  : 1,
@@ -185,9 +186,16 @@ async function getThemeInformations(req, res, next) {
                 'environment.currentTheme' : 1
             }
         }, req.info));
-        const listTheme = await themesServices.listTheme();
-        const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
+        const listTheme  = await themesServices.listTheme();
+        const listFiles  = await themesServices.getDemoDatasFilesName();
+        const configFile = utilsThemes.loadInfoTheme(config.environment.currentTheme) || '';
+        res.send({
+            themeConf,
+            configEnvironment : config,
+            configFile,
+            listTheme,
+            listFiles
+        });
     } catch (error) {
         return next(error);
     }

@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                   = require('path');
-const themeServices          = require('../services/themes');
-const fs                     = require('../utils/fsp');
-const serverUtils            = require('../utils/server');
-const {themeCompile}         = require('../utils/themes');
-const {createListModuleFile} = require('../utils/modules');
-const NSErrors               = require('../utils/errors/NSErrors');
+const path                     = require('path');
+const themeServices            = require('../services/themes');
+const fs                       = require('../utils/fsp');
+const serverUtils              = require('../utils/server');
+const {themeInstallAndCompile} = require('../utils/themes');
+const {createListModuleFile}   = require('../utils/modules');
+const NSErrors                 = require('../utils/errors/NSErrors');
 const {PackageJSON}          = require('../utils');
 
 /**
@@ -50,7 +50,7 @@ const handleInstaller = async (middlewareServer, middlewarePassport, server, pas
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
-    require('../routes/install')(installRouter);
+    require('./routes')(installRouter);
     server.use('/', installRouter, (req, res, next) => {
         if (req.originalUrl !== '/' && req.originalUrl !== '/favicon.ico') {
             return res.status(301).redirect('/');
@@ -91,7 +91,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile(true);
+        await require('../services/languages').createDynamicLangFile('default_theme');
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -107,7 +107,7 @@ const postConfiguratorDatas = async (req) => {
         // if (currentThemeIndex !== -1) packageJSON.package.workspaces.splice(currentThemeIndex, 1);
         packageJSON.package.workspaces.push('themes/default_theme');
         await packageJSON.save();
-        await themeCompile('default_theme');
+        await themeInstallAndCompile('default_theme');
         console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
@@ -123,7 +123,7 @@ const recoverConfiguration = async (req) => {
     let {envPath} = req.body;
 
     if (fs.existsSync(envPath)) {
-        throw new Error('env file doesn\'t exist or is not located in this folder');
+        throw new Error('Path is not correct');
     }
 
     if (path.extname(envPath) === '.js') {
@@ -133,7 +133,8 @@ const recoverConfiguration = async (req) => {
         await fs.unlink(envPath);
         envPath = `${envPath}on`;
     }
-    await fs.writeFile('./config/envPath', envPath);
+    const envPathFile = path.join(global.appRoot, 'config', 'envPath');
+    await fs.writeFile(envPathFile, envPath);
     global.envPath = envPath;
     global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
     console.log('Installer : finish fetching new env path');
@@ -148,7 +149,7 @@ const createConfiguration = async (datas, bOverride) => {
     const {Configuration} = require('../orm/models');
 
     // check if this configuration already exist
-    const existConf = await Configuration.count();
+    const existConf = await Configuration.countDocuments();
     if (existConf > 0) {
         if (bOverride) {
             console.log('Configuration already exist, removing...');
@@ -196,7 +197,7 @@ const createUserAdmin = async (userDatas, bOverride) => {
     const {Users} = require('../orm/models');
 
     // check if this admin already exist
-    const existAdmin = await Users.count({email: userDatas.email});
+    const existAdmin = await Users.countDocuments({email: userDatas.email});
     if (existAdmin > 0) {
         if (bOverride) {
             console.log('Administrator already exist, removing...');

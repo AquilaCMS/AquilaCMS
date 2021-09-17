@@ -9,7 +9,6 @@
 const mongoose   = require('mongoose');
 const NSErrors   = require('../utils/errors/NSErrors');
 const {MailType} = require('../orm/models');
-const utils      = require('../utils/utils');
 
 /**
  * Get the emails
@@ -43,20 +42,13 @@ const setMailType = async (body, _id = null) => {
             if (!mongoose.Types.ObjectId.isValid(_id)) {
                 throw NSErrors.InvalidObjectIdError;
             }
-            if (body.code !== '') {
-                await checkUniqueCode(body.code);
-            }
             result = await MailType.findByIdAndUpdate(_id, {$set: body}, {new: true, runValidators: true});
             if (!result) {
                 throw NSErrors.MailTypeUpdateError;
             }
         } else {
             // Create
-            if (body.code !== '') {
-                await checkUniqueCode(body.code);
-            }
-            body.code = utils.slugify(body.code);
-            result    = await MailType.create(body);
+            result = await MailType.create(body);
             if (!result) {
                 throw NSErrors.MailTypeCreateError;
             }
@@ -72,30 +64,6 @@ const setMailType = async (body, _id = null) => {
         throw error;
     }
 };
-
-/**
- * @description An email type has a code (registration, forgotten password, etc.). This code must only belong to one email type
- * If a new "registration" type mail code is created, the old "registration" type mail code will see its type change to "noType" (corresponding to the code of the mailtypes collection)
- * @param {string} type: corresponds to the code of email type
- */
-async function checkUniqueCode(code) {
-    try {
-        const mailTypes = await MailType.find({code});
-        // If there is no mail type with this code then we do nothing
-        if (!mailTypes.length) {
-            return;
-        }
-        // One or more (case: 'several' should never happen) mail type has this code, we assign these mailType.code = ""
-        for (let i = 0; i < mailTypes.length; i++) {
-            const result = await MailType.findByIdAndUpdate({_id: mailTypes[i]._id}, {code: ''}, {new: true, runValidators: true});
-            if (!result) {
-                throw NSErrors.MailTypeUpdateNoCodeError;
-            }
-        }
-    } catch (error) {
-        throw NSErrors.MailTypeCreateError;
-    }
-}
 
 const deleteMailType = async (code) => {
     const {Mail, MailType} = require('../orm/models');

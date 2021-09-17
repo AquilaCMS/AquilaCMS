@@ -93,6 +93,7 @@ async function setUser(req, res, next) {
 
         // Edit
         if (req.body._id) {
+            req.body     = await authService.validateUserIsAllowedWithoutPostBody(req.info, req.body, '_id');
             const result = await usersServices.setUser(req.body._id, req.body, isAdmin);
             return res.json({code: 'USER_UPDATE_SUCCESS', user: result});
         }
@@ -111,6 +112,7 @@ async function setUser(req, res, next) {
  */
 async function setUserAddresses(req, res, next) {
     try {
+        req.body = await authService.validateUserIsAllowedWithoutPostBody(req.info, req.body, 'userId');
         return res.send(await usersServices.setUserAddresses(req.body));
     } catch (error) {
         return next(error);

@@ -24,6 +24,10 @@ const ModulesSchema = new Schema({
     active                   : {type: Boolean, default: false},
     config                   : {type: Object, default: {}},
     type                     : {type: String},
+    types : [{
+        component : {type: String},
+        type      : {type: String}
+    }],
     moduleDependencies       : {type: [String], default: []},
     component_template_front : {type: String, default: null}
 }, {

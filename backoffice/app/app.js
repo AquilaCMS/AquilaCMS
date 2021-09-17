@@ -165,7 +165,6 @@ adminCatagenApp.config([
                         config.url = config.url.replace("/", "");
                     }
                     if(
-                        config.url.indexOf("api.shopping-feed.com") === -1 &&
                         config.url.indexOf(".html") === -1 &&
                         config.url.indexOf(".tpl") === -1 &&
                         config.url.indexOf("assets/") === -1

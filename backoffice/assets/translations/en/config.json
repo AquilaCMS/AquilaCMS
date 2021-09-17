@@ -8,7 +8,10 @@
         "restart": "Restart",
         "sendMail": "Send",
         "sendMailTest": "Send a Test Mail",
+        "informationsSenderAndReceipe": "Please note that the two mail addresses must be different.",
+        "addressSender": "Sender Address : ",
         "addressReceipe": "Receipe Address : ",
+        "alertSenderAndReceipe": "Mail not sent: you have entered the same mail address twice.",
         "informationsMail": "Don't forget to save information before sending a test mail.",
         "general": "General",
         "baseURL": "Base URL (ex : http://example.com/)",
@@ -68,7 +71,6 @@
             "other": "Other",
             "theme": "Themes",
             "third-party-auth": "Third party Auth",
-            "nextjs": "NextJS",
             "maintenance": "Maintenance",
             "security": "Security"
         },

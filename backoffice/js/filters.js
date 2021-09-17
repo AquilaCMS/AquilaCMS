@@ -122,7 +122,7 @@ adminCatagenFilters.filter('btdate', function() {
   }
 });
 
-adminCatagenFilters.filter('orderStatus', 'NSConstants', function(NSConstants) {
+adminCatagenFilters.filter('orderStatus',[ 'NSConstants', function(NSConstants) {
   return function (item) {
     const orderStatuses = {};
     NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
@@ -148,7 +148,7 @@ adminCatagenFilters.filter('orderStatus', 'NSConstants', function(NSConstants) {
     //translation is undefined
     return item;
   }
-});
+}]);
 
 adminCatagenFilters.filter('paymentType', function() {
   return function (item) {

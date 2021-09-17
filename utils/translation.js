@@ -6,34 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path              = require('path');
-const fileSystemBackend = require('i18next-fs-backend');
-
-const initI18n = async (i18nInstance, ns) => {
-    const {Languages} = require('../orm/models');
-    const allLangs    = await Languages.find({}, {code: 1, _id: 0});
-    const langs       = allLangs.map((elem) => elem.code);
-    const loadPath    = path.join(
-        global.appRoot,
-        `/themes/${global.envConfig.environment.currentTheme}/assets/i18n/{{lng}}/{{ns}}.json`
-    );
-    i18nInstance.use(fileSystemBackend).init({
-        languages   : langs,
-        preload     : langs,
-        fallbackLng : langs,
-        load        : 'all',
-        ns,
-        fallbackNS  : 'common',
-        defaultNS   : 'common',
-        react       : {
-            wait : false
-        },
-        backend : {
-            loadPath
-        }
-    });
-};
-
 /**
  * translate a Mongo document
  * @param {object} doc - Mongo document to translate
@@ -137,7 +109,6 @@ function checkCustomFields(customObject, parent, fields) {
 }
 
 module.exports = {
-    initI18n,
     translateDocument,
     checkTranslations,
     checkCustomFields

@@ -10,7 +10,7 @@ NewsletterRoutes.config(['$routeProvider',
             controller: 'NewsletterListCtrl',
             resolve: {
                 loggedin: checkLoggedin,
-				checkAccess: checkAccess('newsletter'),
+				checkAccess: checkAccess('newsletters'),
             }
         })
         .when('/client/newsletter/:name', {
@@ -18,7 +18,7 @@ NewsletterRoutes.config(['$routeProvider',
             controller: 'NewsletterDetailCtrl',
             resolve: {
                 loggedin: checkLoggedin,
-				checkAccess: checkAccess('newsletter'),
+				checkAccess: checkAccess('newsletters'),
             }
         });
 

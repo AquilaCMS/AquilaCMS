@@ -17,6 +17,7 @@ const {
 }                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
+const utilsDatabase     = require('../utils/database');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
@@ -93,8 +94,10 @@ const setCartAddresses = async (cartId, addresses) => {
         resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
+            await utilsDatabase.populateItems(newCart.items);
             return {code: 'CART_CREATED', data: {cart: newCart}};
         }
+        await utilsDatabase.populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
         console.log(err);
@@ -141,7 +144,6 @@ const deleteCartItem = async (cartId, itemId) => {
         throw NSErrors.CartItemNotFound;
     }
 
-    ServicePromo.calculDiscount(cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
@@ -373,6 +375,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         priceTotal.paidTax  = await checkCountryTax(cartObj, _user);
 
         const newOrder = {
+            ...cartObj,
             items          : cartObj.items.filter((it) => it.quantity > 0),
             promos         : cartObj.promos,
             cartId         : cartObj._id,
@@ -394,9 +397,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
-        if (_cart.schema.path('point_of_sale')) {
-            newOrder.point_of_sale = cartObj.point_of_sale;
-        }
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {

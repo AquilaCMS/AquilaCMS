@@ -7,14 +7,12 @@
  */
 
 const mongoose                     = require('mongoose');
-const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
-const packageManager               = require('../utils/packageManager');
 const PackageJSON                  = require('../utils/packageJSON');
 const NSErrors                     = require('../utils/errors/NSErrors');
+const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
-const {isProd}                     = require('../utils/server');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
 
@@ -30,13 +28,22 @@ const CSS_FOLDERS = [
  * Set theme
  * @param {string} selectedTheme Name of the selected theme
  */
-const changeTheme = async (selectedTheme) => {
-    // Si le theme a changé
-    if (global.envConfig.environment.currentTheme !== selectedTheme) {
-        console.log('Setup selected theme...');
-        try {
+const changeTheme = async (selectedTheme, type) => {
+    const oldConfig = await Configuration.findOne({});
+    // If the theme has changed
+    const returnObject = {
+        message : '',
+        success : true
+    };
+    try {
+        if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
+            console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
+            await require('./modules').setFrontModules(selectedTheme);
+            return returnObject;
+        } if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+
             const packageJSON = new PackageJSON();
             await packageJSON.read();
             const currentThemeIndex = packageJSON.package.workspaces.indexOf(`themes/${global.envConfig.environment.currentTheme}`);
@@ -49,12 +56,16 @@ const changeTheme = async (selectedTheme) => {
             await buildTheme(selectedTheme);
 
             await updateService.setMaintenance(false);
-        } catch (err) {
-            console.error(err);
+            returnObject.msg = 'OK';
+            return returnObject;
         }
-    } else {
-        throw NSErrors.SameTheme;
+    } catch (err) {
+        console.error(err);
+        returnObject.message = err;
+        returnObject.success = false;
+        return returnObject;
     }
+    throw NSErrors.SameTheme;
 };
 
 /**
@@ -65,8 +76,8 @@ const changeTheme = async (selectedTheme) => {
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
         const tmp_path         = filepath;
-        const target_path      = './themes/';
-        const target_path_full = path.resolve(target_path, originalname);
+        const target_path      = path.join(global.appRoot, 'themes');
+        const target_path_full = path.join(target_path, originalname);
         console.log(`Uploading theme to : ${target_path_full}`);
 
         // move the file from the temporary location to the intended location
@@ -77,59 +88,29 @@ const uploadTheme = async (originalname, filepath) => {
         console.log('Unziping new theme...');
         const AdmZip       = require('adm-zip');
         const zip          = new AdmZip(target_path_full);
-        const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
-        if (!packageTheme) {
-            throw NSErrors.ThemePackageNotFound; // info.json not found in zip
-        }
-        const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
-        if (moduleAquilaVersion) {
-            const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
-            const aquilaVersion = JSON.parse(packageAquila).version;
-            if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
-                throw NSErrors.ThemeAquilaVersionNotSatisfied;
+        const themeName    = originalname.slice(0, -4); // remove ".zip"
+        const packageTheme = zip.getEntry(`${themeName}/package.json`);
+        if (packageTheme) {
+            const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
+            if (moduleAquilaVersion) {
+                const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+                const aquilaVersion = JSON.parse(packageAquila).version;
+                if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+                    throw NSErrors.ThemeAquilaVersionNotSatisfied;
+                }
             }
+        } else {
+            console.log('No package.json found in the zip file');
         }
         zip.extractAllTo(target_path, /* overwrite */true);
-        const themeName = originalname.split('.')
-            .slice(0, -1)
-            .join('.');
-        if (await fs.hasAccess(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
-            if (await fs.hasAccess(target_path_full)) {
-                await fs.unlink(target_path_full);
-            }
-            console.log('New theme is ready to be selected (need to build)');
-            await modulesUtils.createListModuleFile(`${themeName}`);
-            return themeName;
+        if (await fs.hasAccess(target_path_full)) {
+            await fs.unlink(target_path_full);
         }
-        console.log(`Remove theme : ${target_path_full}...`);
-        await fs.deleteRecursive(target_path_full.replace('.zip', '/'));
-        console.log('Theme removed !');
+        console.log('New theme is ready to be selected (need to build)');
+        await modulesUtils.createListModuleFile(`${themeName}`);
         return themeName;
     }
     throw NSErrors.InvalidFile;
-};
-
-/**
- * @description setConfigTheme
- * @param theme : String Theme selectionné
- * @deprecated
- */
-const setConfigTheme = async (theme) => {
-    console.log('Setting configuration for the theme...');
-    try {
-        const data      = await fs.readFile(`./themes/${theme}/themeConfig.json`);
-        const info      = data.toString();
-        const config    = JSON.parse(info);
-        const oldConfig = await ThemeConfig.findOne({name: theme});
-        if (oldConfig) {
-            const mergedConfig = {...config, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
-            await ThemeConfig.updateOne({name: theme}, {$set: {name: theme, config: mergedConfig}});
-        } else {
-            await ThemeConfig.create({name: theme, config});
-        }
-    } catch (err) {
-        // nothing
-    }
 };
 
 /**
@@ -149,9 +130,9 @@ async function removeConfigTheme(theme) {
  * @description Install dependencies
  * @param theme : String Theme selectionné
  */
-const installDependencies = async () => {
-    console.log('Installing new theme\'s dependencies...');
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+const installDependencies = async (theme) => {
+    console.log("Installing new theme's dependencies...");
+    return themesUtils.yarnInstall(theme, false);
 };
 
 /**
@@ -167,8 +148,11 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    if (await fs.hasAccess(path.join(global.appRoot, complete_Path))) {
-        await fs.deleteRecursive(path.join(global.appRoot, complete_Path));
+    const pathToTheme = path.join(global.appRoot, complete_Path);
+    if (await fs.hasAccess(pathToTheme)) {
+        const nodeModulesContent = await themesUtils.yarnDeleteNodeModulesContent(themePath);
+        console.log(nodeModulesContent.stdout);
+        await fs.deleteRecursive(pathToTheme);
     }
     console.log('Theme removed !');
 };
@@ -220,7 +204,9 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
         listOfFile = listOfPath;
     } else {
         listOfFile = listOfPath.filter((onePath) => {
-            const index = fileNames.findIndex((elementInFileName) => onePath.includes(elementInFileName.name));
+            if (fs.lstatSync(onePath).isDirectory()) return false;
+            const fileName = path.basename(onePath);
+            const index    = fileNames.findIndex((elementInFileName) => fileName === elementInFileName.name);
             return (index > -1 && fileNames[index].value === true);
         });
     }
@@ -290,7 +276,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return (await fs.readFile(fullPath)).toString();
@@ -311,7 +297,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -333,7 +319,7 @@ const getAllCssComponentName = async () => {
         const cssNames  = [];
         const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join('./themes', themePath, cssFolder);
+            const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {
@@ -369,17 +355,44 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        // "dynamic_langs.js" is required to build (reactjs) theme
-        if (!(await fs.existsSync(path.join(theme, 'dynamic_langs.js')))) {
-            // Create if not exist
-            await require('./languages').createDynamicLangFile();
+        const isDynamicFileHere = await generateDynamicLangFile(theme);
+        if (isDynamicFileHere === 'OK') {
+            const returnValues = await themesUtils.yarnBuildCustom(theme);
+            if (returnValues?.stdout === 'Build failed') {
+                return {
+                    msg    : 'KO',
+                    result : returnValues
+                };
+            }
+            return {
+                msg    : 'OK',
+                result : returnValues
+            };
         }
-
-        const returnValues = await nextBuild(path.resolve(global.appRoot, 'themes', theme));
         return {
-            msg    : 'OK',
-            result : returnValues
+            msg    : 'KO',
+            result : 'No dynamic lang file'
         };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+}
+
+async function generateDynamicLangFile(theme) {
+    try {
+        const pathToTheme = path.join(global.appRoot, 'themes', theme);
+        // "dynamic_langs.js" is required to build (reactjs) theme
+        const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
+        const isExist            = await fs.existsSync(pathToDynamicLangs);
+        if (!isExist) {
+            // Create the file if not exist
+            const {createDynamicLangFile} = require('./languages');
+            await createDynamicLangFile(theme);
+        }
+        return 'OK';
     } catch (err) {
         return {
             msg   : 'KO',
@@ -402,9 +415,12 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
 };
 
 const listTheme = async () => {
-    const allTheme = [];
-    for (const element of await fs.readdir('./themes/')) {
-        const fileOrFolder = await fs.stat(`./themes/${element}`);
+    const allTheme    = [];
+    const pathToTheme = path.join(global.appRoot, 'themes');
+    const listOfFile  = await fs.readdir(pathToTheme);
+    for (const element of listOfFile) {
+        const pathToFolder = path.join(pathToTheme, element);
+        const fileOrFolder = await fs.stat(pathToFolder);
         if (fileOrFolder.isDirectory()) {
             allTheme.push(element);
         }
@@ -414,12 +430,7 @@ const listTheme = async () => {
 
 const installTheme = async (themeName = '', devDependencies = false) => {
     try {
-        const linkToTheme = path.join(global.appRoot, 'themes', themeName);
-        let command       = 'yarn install --production=true';
-        if (devDependencies === true) {
-            command = 'yarn install --production=false';
-        }
-        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        const returnValues = await themesUtils.yarnInstall(themeName, devDependencies);
         return {
             msg    : 'OK',
             result : returnValues
@@ -434,7 +445,6 @@ const installTheme = async (themeName = '', devDependencies = false) => {
 
 module.exports = {
     changeTheme,
-    setConfigTheme,
     installDependencies,
     buildTheme,
     uploadTheme,

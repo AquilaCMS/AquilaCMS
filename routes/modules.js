@@ -115,6 +115,7 @@ const getModuleMd = async (req, res, next) => {
     try {
         const result    = await serviceModule.getModuleMd(req.body);
         const converter = new showdown.Converter();
+        converter.setOption('tables', true);
         res.json({html: converter.makeHtml(result)});
     } catch (error) {
         next(error);

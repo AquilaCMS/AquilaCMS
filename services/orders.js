@@ -7,6 +7,7 @@
  */
 
 const moment           = require('moment');
+const path             = require('path');
 const {
     Orders,
     Cart,
@@ -103,26 +104,37 @@ const setStatus = async (_id, status, sendMail = true) => {
         await require('./bills').orderToBill(order._id.toString());
     }
     if (([orderStatuses.ASK_CANCEL]).includes(order.status) && sendMail) {
-        try {
-            await ServiceMail.sendMailOrderRequestCancel(_id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderRequestCancel(_id).catch((err) => {
+            console.error(err);
+        });
     }
     if (![orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAID].includes(order.status) && sendMail) {
-        try {
-            await ServiceMail.sendMailOrderStatusEdit(_id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderStatusEdit(_id).catch((err) => {
+            console.error(err);
+        });
     }
 };
 
-const paymentSuccess = async (query, updateObject) => {
+const paymentSuccess = async (query, updateObject, paymentCode = '') => {
     console.log('service order paymentSuccess()');
 
     try {
-        const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
+        let filterCode = paymentCode;
+        if (filterCode === '') {
+            if (updateObject.$set) {
+                filterCode = updateObject.$set.payment[0].mode;
+            } else if (updateObject.$push) {
+                filterCode = updateObject.$push.payment.mode;
+            } else if (updateObject.payment) {
+                filterCode = updateObject.payment[0].mode;
+            } else {
+                console.error('paymentSuccess() : no payment in object');
+                return;
+            }
+        }
+        filterCode = filterCode.toLocaleLowerCase();
+
+        const paymentMethod = await PaymentMethods.findOne({code: filterCode});
         const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
@@ -254,9 +266,13 @@ const rma = async (orderId, returnData, lang) => {
     const upd = {rma: returnData};
 
     if (returnData.refund > 0 && returnData.mode !== '') {
-        const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-        if (paymentMethod.isDeferred) {
+        let name            = returnData.mode.toLowerCase(); // if not in PaymentsMethods, we take the name here
+        const paymentMethod = await PaymentMethods.findOne({code: name});
+        if (paymentMethod && paymentMethod.isDeferred) {
             returnData.isDeferred = paymentMethod.isDeferred;
+            if (paymentMethod.translation && paymentMethod.translation[lang]) {
+                name = paymentMethod.translation[lang].name || name;
+            }
         }
         upd.payment = {
             type          : 'DEBIT',
@@ -266,7 +282,7 @@ const rma = async (orderId, returnData, lang) => {
             transactionId : '',
             amount        : returnData.refund,
             comment       : returnData.comment,
-            name          : paymentMethod.translation[lang].name
+            name
         };
     }
 
@@ -414,11 +430,9 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
         /**
          * DO NOT DELETE THE COMMENTED CODE BELOW
          */
-        try {
-            await ServiceMail.sendMailOrderToClient(_order._id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
+            console.error(err);
+        });
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
     return _order;
@@ -707,6 +721,75 @@ function setItemStatus(order, packages, status1, status2) {
     return order;
 }
 
+async function payOrder(req) {
+    try {
+        const query  = {...req.body.filterPayment};
+        query.active = true;
+        // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
+        // Otherwise, we recover all the active payment methods
+        const paymentMethods = await PaymentMethods.find(query);
+        // We check that the desired payment method is available
+        const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
+        if (!method) {
+            throw NSErrors.PaymentModeNotAvailable;
+        }
+        if (method.isDeferred) {
+            return await deferredPayment(req, method);
+        }
+        return await immediateCashPayment(req, method.code);
+    } catch (err) {
+        return err;
+    }
+}
+
+async function deferredPayment(req, method) {
+    try {
+        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        if (!order) {
+            throw NSErrors.OrderNotFound;
+        }
+        await paymentSuccess({
+            number        : req.params.orderNumber,
+            status        : 'PAYMENT_PENDING',
+            'customer.id' : req.info._id
+        }, {
+            $set : {
+                status  : 'PAYMENT_RECEIPT_PENDING',
+                payment : [createDeferredPayment(order, method, req.params.lang)]
+            }
+        });
+        await Cart.deleteOne({_id: order.cartId});
+
+        return `<form method='POST' id='paymentid' action='${req.params.lang ? `/${req.params.lang}` : ''}/cart/success'></form>`;
+    } catch (err) {
+        return err;
+    }
+}
+
+function createDeferredPayment(order, method, lang) {
+    return {
+        type          : 'CREDIT',
+        operationDate : Date.now(),
+        status        : 'TODO',
+        mode          : method.code.toUpperCase(),
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
+    };
+}
+
+async function immediateCashPayment(req, paymentMethod) {
+    try {
+        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
+        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
+        const paymentService     = require(`${modulePath}/services/${paymentMethod}`);
+        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        return form;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     getOrders,
     getOrder,
@@ -714,6 +797,7 @@ module.exports = {
     getOrderById,
     setOrder,
     setStatus,
+    payOrder,
     paymentSuccess,
     paymentFail,
     cancelOrder,

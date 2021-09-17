@@ -8,7 +8,6 @@
             "details"                  : {"type": "object", "description": "Contient les infos propres au mode de paiement"},
             "component_template"       : {"type": "string", "description": "Contient le formulaire pour configurer le mode de paiement"},
             "makePayment"              : {"type": "string", "description": "L'url qu'il faut appeler en GET pour débuter le paiement"},
-            "all_points_of_sale"       : {"type": "boolean", "default": true},
             "isDeferred"               : {"type": "boolean", "default": false, "description": "Si le paiement est différée"},
             "sort"                     : {"type": "number", "default": 0},
             "translation"              : {"type": "object"},

@@ -149,6 +149,7 @@ const initModule = async (files) => {
             component_template_front : info.component_template_front || null,
             files                    : info.files || [],
             type                     : info.type,
+            types                    : info.types,
             versionAquila            : info.versionAquila,
             active                   : !!(myModule && myModule.active)
         }, {upsert: true, new: true});
@@ -263,9 +264,9 @@ const activateModule = async (idModule) => {
 
     // If the module must import components into the front
     await addOrRemoveThemeFiles(
-        path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
+        path.join(global.appRoot, 'modules', myModule.name, 'theme_components'),
         false,
-        myModule.type ? `type: '${myModule.type}'` : ''
+        myModule.types || myModule.type || ''
     );
     await myModule.updateOne({$push: {files: copyTab}, active: true});
     console.log('Module activated');
@@ -288,7 +289,7 @@ const deactivateModule = async (idModule) => {
         await addOrRemoveThemeFiles(
             path.resolve(global.appRoot, _module.path, 'theme_components'),
             true,
-            _module.type ? `type: '${_module.type}'` : ''
+            _module.types || _module.type || ''
         );
     } catch (error) {
         console.error(error);
@@ -352,7 +353,7 @@ const removeModule = async (idModule) => {
  * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
  */
 const setFrontModules = async (theme) => {
-    console.log('Set module\'s front files...');
+    console.log("Set module's front files : Loading ...");
     // Create the file if it does not exist, or reinit of the file
     await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
 
@@ -363,11 +364,13 @@ const setFrontModules = async (theme) => {
         const oneModule = listModules[index];
 
         // Does this module contain a front?
-        if (await fs.hasAccess(`./${oneModule.path}`)) {
+        const modulePath = path.join(global.appRoot, oneModule.path);
+        if (await fs.hasAccess(modulePath)) {
             // Write the file if it's not already in it
-            await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
+            await setFrontModuleInTheme(modulePath, theme || global.envConfig.environment.currentTheme);
         }
     }
+    console.log("Set module's front files : Done");
 };
 
 /**
@@ -376,11 +379,21 @@ const setFrontModules = async (theme) => {
  * @param {*} theme : theme
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
-    const savePath = pathModule.replace('theme_components', '');
+    const savePath = pathModule.replace('theme_components', ''); // useless
     console.log(`Set module's front files... ${pathModule}`);
 
-    // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.hasAccess(pathModule)) return;
+    if (pathModule.lastIndexOf('theme_components') === -1) {
+        pathModule = path.join(pathModule, 'theme_components');
+    }
+    if (!pathModule.endsWith('/')) {
+        pathModule = path.join(pathModule, '/');
+    }
+
+    // Check if the theme_components folder exists in the module, if so, then it's a front module
+    const hasAccess = await fs.hasAccess(pathModule);
+    if (!hasAccess) {
+        return;
+    }
     const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const resultDir    = await fs.readdir(pathModule);
 
@@ -390,24 +403,35 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
             continue;
         }
-        const info                  = await fs.readFile(path.resolve(savePath, 'info.json'));
-        let type                    = JSON.parse(info).info.type;
-        type                        = type ? `type: '${type}'` : '';
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> namecomponent
-        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
-        const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
-        const result                = await fs.readFile(pathListModules, 'utf8');
+        const info       = await fs.readFile(path.join(savePath, 'info.json'));
+        const parsedInfo = JSON.parse(info);
+        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
+        if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
+            type = parsedInfo.info.types.find((t) => t.component === file).type;
+        }
+        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> componentname
+        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
+        console.log(jsxModuleToImport);
+        const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
+        const result          = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
-            const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-            const replaceListModules      = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
+            const regexArray            = new RegExp(/\[[^]*?\]/, 'gm');
+            let exportDefaultListModule = '';
+            const match                 = result.match(regexArray);
+            if (match && match.length > 0) {
+                exportDefaultListModule = match[0];
+            }
+            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
         // Copy the files (of the module) needed by the front
-        const copyTo  = `./themes/${currentTheme}/modules/${file}`;
-        const copyTab = [`themes/${currentTheme}/modules/${file}`];
+        const copyTo  = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+        const copyTab = [
+            path.join(global.appRoot, 'themes', currentTheme, 'modules', file)
+        ];
         // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(path.resolve(pathModule, file), copyTo);
@@ -422,16 +446,21 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
  */
 const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     // Check if the theme_components folder exists in the module, then it's a front module
-    if (!fs.existsSync(pathThemeComponents)) return;
+    if (!fs.existsSync(pathThemeComponents)) {
+        return;
+    }
     const currentTheme = global.envConfig.environment.currentTheme;
-    if (toRemove) {
-        for (const file of await fs.readdir(pathThemeComponents)) {
-            if (!file.startsWith('Module') || !file.endsWith('.js')) continue;
+    const listOfFile   = await fs.readdir(pathThemeComponents);
+    for (const file of listOfFile) {
+        if (!file.startsWith('Module') || !file.endsWith('.js')) {
+            continue;
+        }
+        if (toRemove) {
             const fileNameWithoutModule = file.replace('Module', '')
                 .replace('.js', '')
                 .toLowerCase();
             await removeFromListModule(file, currentTheme, fileNameWithoutModule, type);
-            const filePath = path.resolve(global.appRoot, 'themes', currentTheme, 'modules', file);
+            const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
@@ -440,10 +469,10 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
                     console.log(`cannot rm ${filePath}`);
                 }
             }
+        } else {
+            await setFrontModuleInTheme(pathThemeComponents, currentTheme);
         }
-    } else {
-        await setFrontModuleInTheme(pathThemeComponents, currentTheme);
-    }
+    } 
     // Rebuild du theme
     if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
@@ -470,8 +499,11 @@ const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, t
     try {
         const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
-            const result                  = await fs.readFile(pathListModules, 'utf8');
-            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
+            const result = await fs.readFile(pathListModules, 'utf8');
+            if (Array.isArray(type)) {
+                type = type.find((t) => t.component === file).type;
+            }
+            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
             const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
             await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
         }
@@ -554,36 +586,41 @@ const loadAdminModules = async () => {
         throw NSErrors.NotFound;
     }
     const tabM = [];
-    for (const module of modules) {
-        const item = {module: module.name, files: []};
+    for (const oneModule of modules) {
+        const item = {module: oneModule.name, files: []};
         try {
-            for (const files of await fs.readdir(path.resolve(`backoffice/app/${module.name}`))) {
+            const pathToModule = path.join(global.appRoot, 'backoffice', 'app', oneModule.name);
+            const hasAccess    = await fs.hasAccess(pathToModule);
+            if (!hasAccess) {
+                throw `Can't access to ${pathToModule}`;
+            }
+            const listOfFiles = await fs.readdir(pathToModule);
+            for (const files of listOfFiles) {
                 if (files.endsWith('.js')) {
                     item.files.push(files);
                 }
             }
             tabM.push(item);
         } catch (err) {
-            console.error(`Could not load module ${module.name}`);
+            console.error(`Could not load module ${oneModule.name}`);
             console.error(err);
 
             await require('./admin').insertAdminInformation({
-                code        : `module_${module.name}_missing`,
+                code        : `module_${oneModule.name}_missing`,
                 type        : 'danger',
                 translation : {
                     en : {
                         title : 'Module missing',
-                        text  : `The module <b>${module.name}</b> is installed, but his files are missing`
+                        text  : `The module <b>${oneModule.name}</b> is installed, but his files are missing`
                     },
                     fr : {
                         title : 'Module manquant',
-                        text  : `Le module <b>${module.name}</b> est installé, mais ces fichiers sont manquant`
+                        text  : `Le module <b>${oneModule.name}</b> est installé, mais ces fichiers sont manquant`
                     }
                 }
             });
         }
     }
-
     return tabM;
 };
 
@@ -618,9 +655,14 @@ const setConfig = async (name, newConfig) => {
  * @deprecated
  */
 const getModuleMd = async (body) => {
-    if (!body.moduleName) throw NSErrors.InvalidParameters;
-    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
-    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    if (!body.moduleName) {
+        throw NSErrors.InvalidParameters;
+    }
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
+    let text       = '';
+    if (fs.existsSync(pathToMd)) {
+        text = await fs.readFileSync(pathToMd, 'utf8');
+    }
     return text;
 };
 

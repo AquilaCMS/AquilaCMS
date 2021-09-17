@@ -32,12 +32,27 @@ const execScript = async (scriptPath) => {
     }
 };
 
+const getErrorText = (err) => {
+    let text = '';
+    if (err instanceof Error) {
+        text = err.toString(); // we can't stringify an error
+    } else {
+        text = 'Error :';
+        try {
+            text += JSON.stringify(err);
+        } catch (e) {
+            text += err.toString();
+        }
+    }
+    return text;
+};
+
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
-            const wkhtmlInstalled = await execScript(path.resolve(global.appRoot, 'installer/scripts/wkhtmltopdf.js'));
-            const sharpInstalled  = await execScript(path.resolve(global.appRoot, 'installer/scripts/sharp.js'));
-            const html            = (await fs.readFile(path.join(global.appRoot, '/installer/install.html'))).toString()
+            const wkhtmlInstalled = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'wkhtmltopdf.js'));
+            const sharpInstalled  = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'sharp.js'));
+            const html            = (await fs.readFile(path.join(global.appRoot, 'installer', 'install.html'))).toString()
                 .replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`)
                 .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.appRoot, './package.json'))).version)
                 .replace('{{wkhtmltopdf}}', wkhtmlInstalled)
@@ -53,7 +68,7 @@ module.exports = (installRouter) => {
 
     installRouter.post('/config', async (req, res) => {
         try {
-            await require('../installer/install').firstLaunch(req, true);
+            await require('./install').firstLaunch(req, true);
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();
             adminServices.welcome();
@@ -61,7 +76,7 @@ module.exports = (installRouter) => {
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(500).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(getErrorText(err));
 
             // Recreating the env.json 'empty'
             await fs.unlink('./config/env.json');
@@ -71,20 +86,20 @@ module.exports = (installRouter) => {
 
     installRouter.post('/recover', async (req, res) => {
         try {
-            await require('../installer/install').firstLaunch(req, false);
+            await require('./install').firstLaunch(req, false);
             jobServices.initAgendaDB();
             adminServices.welcome();
             const result = await packageManager.restart();
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(500).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(getErrorText(err));
         }
     });
 
     installRouter.post('/testdb', async (req, res) => {
         try {
-            const result = await require('../installer/install').testdb(req);
+            const result = await require('./install').testdb(req);
             res.send(result);
         } catch (err) {
             console.error('Error : Cannot connect to database', err);

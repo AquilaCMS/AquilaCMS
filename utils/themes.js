@@ -7,28 +7,19 @@
  */
 
 const path           = require('path');
-const nextBuild      = require('next/dist/build').default;
+const slash          = require('slash');
+const fs             = require('fs');
 const packageManager = require('./packageManager');
-const modulesUtils   = require('./modules');
 const {isProd}       = require('./server');
 
 /**
- * Compile the current theme
+ * Do a yarn install and compile the theme passed as a parameter or the current theme
  */
-const themeCompile = async (theme, type, newIsProd) => {
+const themeInstallAndCompile = async (theme) => {
     try {
-        theme                      = theme || global.envConfig.environment.currentTheme;
-        const pathToTheme          = path.join(global.appRoot, 'themes', theme);
-        let installDevDependencies = !isProd;
-        if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
-            installDevDependencies = true; // we force overriding
-        }
-        await yarnInstall(theme, installDevDependencies);
-        if (typeof type === 'undefined' || type === null || type === 'next') {
-            await nextBuild(pathToTheme);
-        } else {
-            await yarnBuild(theme);
-        }
+        const themeName = theme || global.envConfig.environment.currentTheme;
+        await yarnInstall(themeName);
+        await yarnBuildCustom(themeName);
     } catch (err) {
         console.error(err);
         throw new Error(err);
@@ -36,37 +27,72 @@ const themeCompile = async (theme, type, newIsProd) => {
 };
 
 /**
- * Set current theme at startup from envFile.currentTheme
- */
-const loadTheme = async () => {
-    await modulesUtils.createListModuleFile();
-    await modulesUtils.displayListModule();
-
-    // Language with i18n
-    let i18nInstance = null;
-    let ns           = null;
-    try {
-        const pathToI18n = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n');
-        const oI18n      = require(pathToI18n);
-        i18nInstance     = oI18n.i18nInstance;
-        ns               = oI18n.ns;
-    } catch (error) {
-        console.error(error);
-    }
-
-    return {i18nInstance, ns};
-};
-
-/**
  * Do a yarn install
  */
 const yarnInstall = async (themeName = '', devDependencies = false) => {
-    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
-    let command       = 'yarn install --production=true';
-    if (devDependencies === true) {
+    const linkToTheme   = path.join(global.appRoot, 'themes', themeName);
+    const pathToPackage = path.join(linkToTheme, 'package.json');
+    const isExist       = fs.existsSync(pathToPackage);
+    if (!isExist) {
+        return {
+            stdout : "No 'package.json' found - no yarn",
+            stderr : "No 'package.json' found - no yarn"
+        };
+    }
+    let command = 'yarn install --production=true';
+    // If the NODE_ENV variable is not equal to 'production', yarn install will always install the devDependencies
+    if (devDependencies === true || !isProd) {
         command = 'yarn install --production=false';
     }
     const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+    return returnValues;
+};
+
+/**
+ * Do a yarn run build
+ */
+const yarnBuildCustom = async (themeName = '') => {
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    const pathToInit  = path.join(linkToTheme, 'themeInit.js');
+    let returnValues;
+    try {
+        if (fs.existsSync(pathToInit)) {
+            const process = require('process');
+            process.chdir(linkToTheme); // protect require of the frontFrameWork
+            const initFileOfConfig = require(pathToInit);
+            if (typeof initFileOfConfig.build === 'function') {
+                const appRoot = slash(global.appRoot);
+                returnValues  = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
+                if (returnValues.stderr === '') {
+                    console.log('Build command log : ', returnValues.stdout);
+                } else {
+                    returnValues.stdout = 'Build failed';
+                    console.error(returnValues.stderr);
+                }
+                process.chdir(global.appRoot);
+            } else {
+                process.chdir(global.appRoot);
+                returnValues = await yarnBuild(themeName);
+            }
+        } else {
+            const pathToPackage = path.join(linkToTheme, 'package.json');
+            const isExist       = fs.existsSync(pathToPackage);
+            if (isExist) {
+                returnValues = await yarnBuild(themeName);
+            } else {
+                returnValues = {
+                    stdout : "No 'package.json' or 'themeInit.js' found - no build",
+                    stderr : "No 'package.json' or 'themeInit.js' found - no build"
+                };
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        returnValues = {
+            stdout : 'Build failed',
+            stderr : e
+        };
+    }
     return returnValues;
 };
 
@@ -79,9 +105,65 @@ const yarnBuild = async (themeName = '') => {
     return returnValues;
 };
 
+/**
+ * Create a .yarnclean file to delete the contents of a node_modules folder
+ */
+const yarnDeleteNodeModulesContent = async (themeName = '') => {
+    let returnValues;
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    const themePath   = path.join(linkToTheme, '/');
+    try {
+        const createYarnCleanFile = await packageManager.execCmd('yarn autoclean --init', themePath);
+        if (createYarnCleanFile) {
+            const yarnCleanFilePath = path.join(themePath, '.yarnclean');
+            fs.truncateSync(yarnCleanFilePath, 0);
+            fs.writeFileSync(yarnCleanFilePath, '*');
+            const deleteNodeModulesContent = await packageManager.execCmd('yarn autoclean --force', themePath);
+            if (deleteNodeModulesContent) {
+                returnValues = {stdout: `The contents of the ${themeName} node_modules folder has been deleted`};
+            } else {
+                returnValues = {
+                    stdout : `Error when deleting the contents of the node_modules folder from ${themeName}`,
+                    stderr : `Error when deleting the contents of the node_modules folder from ${themeName}`
+                };
+            }
+        } else {
+            returnValues = {
+                stdout : 'Yarn autoclean --init command failed',
+                stderr : 'Yarn autoclean --init command failed'
+            };
+        }
+    } catch (e) {
+        returnValues = {
+            stdout : 'Node modules deletion failed',
+            stderr : e
+        };
+    }
+    return returnValues;
+};
+
+/**
+ * @description loadThemeConfig
+ * @param theme : String Theme selectionné
+ */
+const loadInfoTheme = (theme) => {
+    const nameOfFile = 'infoTheme.json';
+    const linkToFile = path.join(global.appRoot, 'themes', theme, nameOfFile);
+    try {
+        if (fs.existsSync(linkToFile)) {
+            const config = require(linkToFile);
+            return config;
+        }
+    } catch (e) {
+        // e;
+    }
+    return null;
+};
 module.exports = {
-    themeCompile,
-    loadTheme,
+    themeInstallAndCompile,
+    yarnBuildCustom,
     yarnInstall,
-    yarnBuild
+    yarnBuild,
+    yarnDeleteNodeModulesContent,
+    loadInfoTheme
 };

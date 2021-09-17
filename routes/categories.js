@@ -17,7 +17,7 @@ module.exports = function (app) {
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
     app.post('/v2/category/execRules', adminAuth, execRules);
     app.post('/v2/category/canonical', adminAuth, execCanonical);
-    app.post('/v2/category/applyTranslatedAttribs', applyTranslatedAttribs);
+    app.post('/v2/category/applyTranslatedAttribs', adminAuth, applyTranslatedAttribs);
     app.put('/v2/category', adminAuth, setCategory);
     app.delete('/v2/category/:id', adminAuth, deleteCategory);
 };

@@ -130,17 +130,8 @@ const OrdersSchema = new Schema({
         ati : {default: 0, type: Number, required: true},
         et  : {default: 0, type: Number}
     },
-    comment  : String,
-    items    : [ItemSchema],
-    discount : [
-        {
-            code        : {type: String},
-            type        : {type: String, enum: ['PERCENT', 'PRICE', 'FREE_DELIVERY']},
-            value       : {type: Number},
-            description : {type: String},
-            priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
-        }
-    ],
+    comment   : String,
+    items     : [ItemSchema],
     addresses : {
         delivery : AddressSchema,
         billing  : AddressSchema

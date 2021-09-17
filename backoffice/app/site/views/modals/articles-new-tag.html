@@ -1,0 +1,27 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(tag)" role="form">
+    <div class="modal-header">
+        <h3 translate>site.newTag.newTag</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box-content">
+                    <div class="form-group">
+                        <label for="newtag" class="col-sm-2 control-label" translate>site.newTag.newTagName</label>
+                        <div class="col-sm-10">
+                            <input-dropdown input-name="tag" input-class-name="form-control"
+                                filter-list-method="filterDropdown(userInput)" selected-item="selectedDropdownItem"
+                                default-dropdown-items="dropdownItems" allow-custom-input="true"
+                                item-selected-method="itemObjectSelected(item)">
+                            </input-dropdown>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()" translate>site.newTag.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>site.newTag.save</button>
+    </div>
+</form>

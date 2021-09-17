@@ -110,13 +110,15 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants", "OrderDeliveryFields", "OrderDeliveryDate",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants, OrderDeliveryFields, OrderDeliveryDate)
     {
         const orderStatuses = {};
         NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};
         $scope.fields = OrderFields;
+        $scope.fieldsOrderDelivery = OrderDeliveryFields;
+        $scope.dateOrderDelivery = OrderDeliveryDate;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
         $scope.editableMode = false;
@@ -167,6 +169,19 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
+        $scope.checkOrderStatus = function () {
+            if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
+                const index = $scope.orderStatus.findIndex(oneStatus => oneStatus.code === orderStatuses.BILLED);
+                if(index > -1){
+                    $scope.orderStatus.splice(index, 1);
+                }
+            } else 
+            // we add back the BILLED status into the select box status
+            if (!$scope.orderStatus.find(oneStatus => oneStatus.code === orderStatuses.BILLED)) {
+                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]]
+            }
+        }
+
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -191,10 +206,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     });
                 }
                 $scope.status = $scope.order.status;
-                if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
-                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
-                    $scope.orderStatus.splice(key, 1);
-                }
+                $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
                     if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
                         ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
@@ -403,11 +415,8 @@ OrderControllers.controller("OrderDetailCtrl", [
                         Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
                             $scope.order = response.datas[0];
                             $scope.status = $scope.order.status;
+                            $scope.checkOrderStatus()
                         });
-                        if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
-                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
-                            $scope.orderStatus.splice(key, 1);
-                        }
                         $scope.editStatus = false;
                         d.resolve();
                     }, function (err)
@@ -534,6 +543,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
+                $scope.checkOrderStatus()
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
