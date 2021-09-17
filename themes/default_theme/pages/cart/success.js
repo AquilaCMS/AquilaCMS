@@ -225,7 +225,7 @@ class CartSuccess extends React.Component {
                                                                                 let descPromoT = '';
                                                                                 if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
                                                                                     // On check si le produit courant a recu une promo
-                                                                                    const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
+                                                                                    const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
                                                                                     if (prdPromoFound) {
                                                                                         basePrice = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
                                                                                         descPromo = (
@@ -240,7 +240,7 @@ class CartSuccess extends React.Component {
                                                                                 let imgAlt = 'illustration produit';
                                                                                 
                                                                                 return (
-                                                                                    <tr key={item.id._id} className="cart-item cart-item--small">
+                                                                                    <tr key={item._id} className="cart-item cart-item--small">
                                                                                         <td>
                                                                                             <div className="cart__container">
                                                                                                 <figure className="cart__image" style={{ width: '82px' }}>
@@ -254,14 +254,14 @@ class CartSuccess extends React.Component {
                                                                                                             {
                                                                                                                 item.selections.map((section) => (
                                                                                                                     section.products.map((productSection, indexSel) => (
-                                                                                                                        <li style={{ listStyle: 'none' }} key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                        <li style={{ listStyle: 'none' }} key={indexSel}>{productSection.name} {`${(item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                            (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
                                                                                                                                 '+' :
                                                                                                                                 '') +
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
                                                                                                                             ''
                                                                                                                             }`}</li>
                                                                                                                     ))
