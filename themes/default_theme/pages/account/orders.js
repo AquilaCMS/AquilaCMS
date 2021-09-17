@@ -96,14 +96,13 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                     );
                                                                                                                 }
                                                                                                             }
-                                                                                                            let imgDefault = `/images/products/260x200/0/${item.slug}.jpg`;
                                                                                                             let imgAlt = 'illustration produit';
                                                                                                             return (
                                                                                                                 <tr key={item._id}>
                                                                                                                     <td>
                                                                                                                         <div className="product-small">
                                                                                                                             <div className="product__image">
-                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg` || imgDefault} alt={imgAlt} />
+                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
                                                                                                                                 <h6>{item ? item.name : 'NO NAME'} x {item.quantity}</h6>
