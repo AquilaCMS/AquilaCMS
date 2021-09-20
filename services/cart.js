@@ -358,7 +358,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
                 const _product = await Products.findOne({_id: cartItem.id});
-                console.log('_product.type', _product.type);
                 if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;

@@ -641,19 +641,6 @@ const createProduct = async (req) => {
     // We check that the id is not already taken
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
-    // switch (req.body.type) {
-    // case 'simple':
-    //     req.body.kind = 'SimpleProduct';
-    //     break;
-    // case 'virtual':
-    //     req.body.kind = 'VirtualProduct';
-    //     break;
-    // case 'bundle':
-    //     req.body.kind = 'BundleProduct';
-    //     break;
-    // default:
-    //     break;
-    // }
     let body = req.body;
     if (req.body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(req.body);

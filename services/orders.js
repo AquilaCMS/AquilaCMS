@@ -159,7 +159,6 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
                 const _product  = await Products.findOne({_id: orderItem.id});
-                console.log('_product.type', _product.type);
                 if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
