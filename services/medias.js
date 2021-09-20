@@ -259,7 +259,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         await fsp.mkdir(cacheFolder, {recursive: true});
     } catch (err) {
         fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
-        filePath      = global.envConfig.environment.defaultImage; // global.envConfig.environment.defaultImage;
+        filePath      = path.join(_path, global.envConfig.environment.defaultImage); // global.envConfig.environment.defaultImage;
         filePathCache = path.join(cacheFolder, fileName);
     }
 
@@ -269,7 +269,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
         fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
-        filePath      = global.envConfig.environment.defaultImage;
+        filePath      = path.join(_path, global.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
     if (size === 'max' || size === 'MAX') {

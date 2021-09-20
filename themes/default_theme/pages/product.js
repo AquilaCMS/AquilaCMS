@@ -63,7 +63,7 @@ class PageProduct extends NSPageProduct {
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
-        let imgDefault = `/images/products/516x400/0/${product.slug[lang]}.jpg`;
+        let imgDefault = `/images/products/516x400/no-image/${product.slug[lang]}.jpg`;
         let imgAlt = 'illustration produit';
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
