@@ -28,7 +28,7 @@ ProductVirtualSchema.methods.updateData = async function (data) {
     };
     reviewService.computeAverageRateAndCountReviews(data);
     try {
-        const updPrd = await this.model('VirtualProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+        const updPrd = await this.model('virtual').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
         return updPrd;
     } catch (error) {
         return error;

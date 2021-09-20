@@ -55,7 +55,7 @@ ProductSimpleSchema.methods.updateData = async function (data) {
     if (!data._id) {
         data._id = this._id;
     }
-    const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    const updPrd = await this.model('simple').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
     return updPrd;
 };
 
