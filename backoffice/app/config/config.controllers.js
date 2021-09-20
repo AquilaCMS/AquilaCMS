@@ -116,6 +116,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     }
                 }).then((response) => {
                     $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                    toastService.toast("success", $translate.instant("config.storefront.saveSuccess"));
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {
@@ -172,6 +173,51 @@ ConfigControllers.controller("RobotTxtCtrl", [
             $http.post('/robot', { PostBody: { text } }).then((response) => {
                 toastService.toast("success", $translate.instant("config.import.modifyRobot"));
                 $scope.close();
+            });
+        };
+    }
+]);
+
+
+ConfigControllers.controller("StorefrontConfigCtrl", [
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
+    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, $translate) {
+        $scope.disabledButton = false;
+        $scope.config = {};
+        // $scope.themesList = [];
+        $scope.timezones = moment.tz.names().filter(n => n.includes("Europe"));
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
+            if (!$scope.config.environment.adminPrefix) {
+                $scope.config.environment.adminPrefix = "admin";
+            }
+            delete $scope.config.$promise;
+        });
+
+        $scope.local = {
+            themeDataOverride : false
+        };
+
+        $scope.validate = function () {
+            ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldConfig) {
+                $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";
+                $scope.showThemeLoading = true;
+                ConfigV2.save({environment : $scope.config.environment}, function(response) {
+                    toastService.toast("success", $translate.instant("config.storefront.saveSuccess"));
+                    if (response.data.needRestart) {
+                        $scope.showLoading = true;
+                        $interval(() => {
+                            $http.get("/serverIsUp").then(() => {
+                                location.href = $scope.urlRedirect;
+                                window.location = $scope.urlRedirect;
+                            })
+                        }, 10000);
+                    }
+                }, function (error) {
+                    $scope.showThemeLoading = false;
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    console.error(err);
+                });
             });
         };
     }

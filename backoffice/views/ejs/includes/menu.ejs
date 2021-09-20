@@ -281,7 +281,7 @@
             </ul>
         </li>
 
-        <li class="parent" ng-show="!(accessList.includes('mails')) || !(accessList.includes('shipments')) || !(accessList.includes('territories')) || !(accessList.includes('languages')) || !(accessList.includes('paymentMethods')) || !(accessList.includes('admin'))">
+        <li class="parent" ng-show="!(accessList.includes('config')) || !(accessList.includes('stock')) || !(accessList.includes('mails')) || !(accessList.includes('shipments')) || !(accessList.includes('territories')) || !(accessList.includes('languages')) || !(accessList.includes('paymentMethods')) || !(accessList.includes('jobs')) || !(accessList.includes('admin')) || !(accessList.includes('update'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-wrench fa-2x i-style"></i>
@@ -332,18 +332,18 @@
                         <span translate>menu.modesPaiement</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('admin'))">
-                    <a href="#/list" class="menuClick">
+                <li ng-if="!(accessList.includes('config'))">
+                    <a href="#/config/storefront" class="menuClick">
                         <span class="icon">
-                            <i class="fa fa-shield fa-lg i-style"></i>
+                            <i class="fa fa-desktop fa-lg i-style"></i>
                         </span>
-                        <span translate>menu.admin</span>
+                        <span translate>menu.frontSetting</span>
                     </a>
                 </li>
             </ul>
         </li>
 
-        <li class="parent" ng-show="!(accessList.includes('themes')) || !(accessList.includes('design')) || !(accessList.includes('translate'))">
+        <li class="parent" ng-show="!(accessList.includes('themes')) || !(accessList.includes('design')) || !(accessList.includes('translate')) || !(accessList.includes('modules'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-desktop fa-2x i-style"></i>
@@ -381,7 +381,7 @@
             </ul>
         </li>
 
-        <li class="parent" ng-show="!(accessList.includes('stock')) || !(accessList.includes('jobs')) || !(accessList.includes('system')) || !(accessList.includes('update')) || !(accessList.includes('config'))">
+        <li class="parent" ng-show="!(accessList.includes('environnement')) || !(accessList.includes('stock'))  || !(accessList.includes('jobs'))  || !(accessList.includes('system'))  || !(accessList.includes('update'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-cog fa-2x i-style"></i>
@@ -429,6 +429,14 @@
                             <i class="fa fa-medkit  fa-lg i-style"></i>
                         </span>
                         <span translate>menu.update</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('list'))">
+                    <a href="#/list" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-shield fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.admin</span>
                     </a>
                 </li>
             </ul>
