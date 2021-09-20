@@ -159,13 +159,13 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
                 const _product  = await Products.findOne({_id: orderItem.id});
-                if (_product.kind === 'SimpleProduct') {
+                if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
                     await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
-                } else if (_product.kind === 'BundleProduct') {
+                } else if (_product.type === 'bundle') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {

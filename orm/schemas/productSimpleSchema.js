@@ -24,7 +24,7 @@ const ProductSimpleSchema = new Schema({
         translation  : {}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     toObject         : {virtuals: true},
     toJSON           : {virtuals: true},
     id               : false
