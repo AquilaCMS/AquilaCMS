@@ -6,13 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const crypto       = require('crypto');
-const mongoose     = require('mongoose');
-const {Users}      = require('../orm/models');
-const servicesMail = require('./mail');
-const QueryBuilder = require('../utils/QueryBuilder');
-const aquilaEvents = require('../utils/aquilaEvents');
-const NSErrors     = require('../utils/errors/NSErrors');
+const crypto                 = require('crypto');
+const mongoose               = require('mongoose');
+const {Users, SetAttributes} = require('../orm/models');
+const servicesMail           = require('./mail');
+const QueryBuilder           = require('../utils/QueryBuilder');
+const aquilaEvents           = require('../utils/aquilaEvents');
+const NSErrors               = require('../utils/errors/NSErrors');
+const attributes             = require('../orm/models/attributes');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -110,6 +111,19 @@ const createUser = async (body, isAdmin = false) => {
     }
     let newUser;
     try {
+        if (!body.set_attributes) {
+            const defaultSet    = await SetAttributes.findOne({code: 'defautUser'}).populate(['attributes']);
+            body.set_attributes = defaultSet._id;
+            body.attributes     = defaultSet.attributes.map((attr) => {
+                if (attr.default_value) {
+                    for (let i = 0; i < Object.keys(attr.translation).length; i++) {
+                        const lang =  Object.keys(attr.translation)[i];
+                        if (attr.translation[lang].value === undefined) attr.translation[lang].value = attr.default_value;
+                    }
+                }
+                return attr;
+            });
+        }
         newUser = await (new Users(body)).save();
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
