@@ -13,7 +13,6 @@ const utilsModules   = require('../utils/modules');
 
 const flush = async () => {
     global.cache.flush();
-    await cleanCache();
     return 'Cache flushed';
 };
 
