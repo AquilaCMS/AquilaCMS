@@ -518,11 +518,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         }
 
         $scope.save = function (isQuit) {
-            /*if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
-                toastService.toast("danger", $translate.instant("category.detail.incompleteRules"));
-                return;
-            }*/
-            console.log(this.form)
             let strInvalidFields = "";
             if (this.form.$invalid) {
                 if (this.form.$error && this.form.$error.required) {
