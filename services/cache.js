@@ -11,8 +11,9 @@ const fs             = require('../utils/fsp');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
 
-const flush = () => {
+const flush = async () => {
     global.cache.flush();
+    await cleanCache();
     return 'Cache flushed';
 };
 

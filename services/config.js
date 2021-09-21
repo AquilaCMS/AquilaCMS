@@ -9,6 +9,7 @@
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
 const {merge}                   = require('lodash');
+const ServiceCache              = require('./cache');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
@@ -156,6 +157,7 @@ const saveEnvConfig = async (body) => {
         ) {
             body.needRestart = true;
         }
+        if (environment.defaultImage !== oldConfig.defaultImage) await ServiceCache.flush();
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
