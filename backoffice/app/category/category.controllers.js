@@ -491,11 +491,59 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
         }
 
+        function checkForm(fieldsToCheck) {
+            let text = "";
+            for (let oneField of fieldsToCheck) {
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"];  // TODO : you may need to add string here (also in bundleProduct)
+                if (translationToCheck.includes(oneField)) {
+                    for (let oneLang of $scope.languages) {
+                        if ($scope.category.translation && $scope.category.translation[oneLang.code] && $scope.category.translation[oneLang.code][oneField] && $scope.category.translation[oneLang.code][oneField] != "") {
+                            //good
+                        } else {
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                } else {
+                    if (elt) {
+                        if (elt.control && elt.control.value == "") {
+                            if (elt.innerText) {
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
+
         $scope.save = function (isQuit) {
-            if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
+            /*if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
                 toastService.toast("danger", $translate.instant("category.detail.incompleteRules"));
                 return;
+            }*/
+            console.log(this.form)
+            let strInvalidFields = "";
+            if (this.form.$invalid) {
+                if (this.form.$error && this.form.$error.required) {
+                    this.form.$error.required.forEach((requiredField, index) => {
+                        console.log(requiredField)
+                        strInvalidFields += checkForm([requiredField.$name]);
+                    });
+                }
+            } else {
+                strInvalidFields = checkForm(["slug", "name"]);
             }
+            //we remove ", "
+            if (strInvalidFields.substring(strInvalidFields.length - 2, strInvalidFields.length) == ", ") {
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length - 2)
+            }
+            if (strInvalidFields != "") {
+                const text = $translate.instant("product.toast.notValid");
+                toastService.toast("danger", `${text} : ${strInvalidFields}`);
+                return;
+            }
+
             if ($scope.rule.operand !== undefined) {
                 RulesV2.save($scope.rule, function (response){
                         toastService.toast("success",$translate.instant("category.detail.ruleSaved"));
@@ -796,7 +844,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                             oneChild.displayOrder = count;
                             oneChild.displayOrder--;
                             promiseArray.push(CategoryV2.save(oneChild).$promise);
-                        }
+                        }   
                     }
                     //we save
                     promiseArray.push(CategoryV2.save(categorySource).$promise);
@@ -902,6 +950,14 @@ CategoryControllers.controller("CategoryListCtrl", [
                 Promise.all(promiseArray).then(function () {
                     deferred.resolve();
                     $scope.$broadcast('angular-ui-tree:expand-all');
+                    for (const [index, childCat] of Object.entries(categoryDest.children)) {
+                        CategoryV2.get({PostBody: {filter: {_id: childCat}, structure: '*'}}, function (response) {
+                            $scope.childCategory = response;
+                            $scope.childCategory.displayOrder = index
+                            CategoryV2.save($scope.childCategory)
+                        });
+                    }
+                    getMenus()
                 }, function (err) {
                     toastService.toast("danger", $translate.instant("category.list.errorCategoryMove"));
                     deferred.reject();

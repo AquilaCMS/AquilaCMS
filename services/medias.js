@@ -204,10 +204,10 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             // if a media is requested
         case 'medias':
             imageObj      = await Medias.findOne({_id});
-            fileName      = path.basename(imageObj.link, `.${extension}`);
+            fileName      = path.basename(imageObj.link, `.${path.extname(imageObj.link)}`);
             relativePath  = imageObj.link;
             filePath      = path.join(_path, imageObj.link);
-            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${path.extname(imageObj.link)}`;
             filePathCache = path.join(cacheFolder, 'medias', fileName);
             await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
             break;
@@ -215,28 +215,28 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         case 'gallery':
             const obj     = await mongoose.model(type).findOne({'items._id': _id});
             imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
-            fileName      = path.basename(imageObj.src, `.${extension}`);
+            fileName      = path.basename(imageObj.src, `.${path.extname(imageObj.img)}`);
             relativePath  = imageObj.src;
             filePath      = path.resolve(_path, imageObj.src);
-            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${path.extname(imageObj.img)}`;
             filePathCache = path.resolve(cacheFolder, type, fileName);
             await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
         case 'blog':
             const blog    = await mongoose.model('news').findOne({_id});
-            fileName      = path.basename(blog.img, `.${extension}`);
+            fileName      = path.basename(blog.img, `.${path.extname(blog.img)}`);
             relativePath  = blog.img;
             filePath      = path.join(_path, blog.img);
-            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${path.extname(blog.img)}`;
             filePathCache = path.join(cacheFolder, type, fileName);
             await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
         case 'category':
             const category = await mongoose.model('categories').findOne({_id});
-            fileName       = path.basename(category.img, `.${extension}`);
+            fileName       = path.basename(category.img, `.${path.extname(category.img)}`);
             relativePath   = category.img;
             filePath       = path.join(_path, category.img);
-            fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${path.extname(category.img)}`;
             filePathCache  = path.join(cacheFolder, type, fileName);
             await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
@@ -302,7 +302,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                     await fsp.copyFileSync(filePath, filePathCache);
                 });
             } catch (err) {
-                console.error('defaultImage not found');
+                console.error('defaultImage not found', err);
                 return '/';
             }
         }

@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {cloneDeep}  = require('lodash');
-const mongoose     = require('mongoose');
+const {cloneDeep}   = require('lodash');
+const mongoose      = require('mongoose');
 const {
     Promo,
     Rules,
@@ -15,10 +15,11 @@ const {
     ProductSimple,
     Cart
 }                  = require('../orm/models');
-const ServiceRules = require('./rules');
-const QueryBuilder = require('../utils/QueryBuilder');
-const promoUtils   = require('../utils/promo');
-const NSErrors     = require('../utils/errors/NSErrors');
+const ServiceRules  = require('./rules');
+const QueryBuilder  = require('../utils/QueryBuilder');
+const promoUtils    = require('../utils/promo');
+const utilsDatabase = require('../utils/database');
+const NSErrors      = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -356,6 +357,8 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
     }
 
     const copyCart = JSON.parse(JSON.stringify(cart));
+
+    await utilsDatabase.populateItems(copyCart.items);
 
     // -----------------------------------------------------------------------------
     // ----------------------- Apply rules for this discount -----------------------

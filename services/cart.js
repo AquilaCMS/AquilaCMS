@@ -121,7 +121,7 @@ const deleteCartItem = async (cartId, itemId) => {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
-                await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity);
+                await ServicesProducts.updateStock(cartItem.id, cartItem.quantity);
             } else if (cartItem.type === 'bundle') {
                 for (let i = 0; i < cartItem.selections.length; i++) {
                     const selectionProducts = cartItem.selections[i].products;
