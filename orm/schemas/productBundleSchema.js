@@ -224,7 +224,7 @@ async function rebuildSelectionProducts(item, lang) {
                 description1 : prd.translation[lang].description1,
                 description2 : prd.translation[lang].description2,
                 canonical    : prd.translation[lang].canonical,
-                kind         : prd.kind
+                type         : prd.type
             };
         }
     }

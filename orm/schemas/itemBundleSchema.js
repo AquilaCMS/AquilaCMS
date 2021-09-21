@@ -15,7 +15,7 @@ const ItemBundle = new Schema({
         bundle_section_ref : {type: String, required: true},
         products           : [
             {
-                id: {type: ObjectId, ref: 'products'},
+                id           : {type: ObjectId, ref: 'products'},
                 name         : String,
                 code         : String,
                 image        : String,
@@ -27,8 +27,8 @@ const ItemBundle = new Schema({
                     title : String,
                     text  : String
                 },
-                canonical          : String,
-                kind: String
+                canonical : String,
+                type      : String
             }
         ]
     }],
