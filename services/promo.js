@@ -358,8 +358,6 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
     const copyCart = JSON.parse(JSON.stringify(cart));
 
-    await utilsDatabase.populateItems(copyCart.items);
-
     // -----------------------------------------------------------------------------
     // ----------------------- Apply rules for this discount -----------------------
     // -----------------------------------------------------------------------------
@@ -380,11 +378,13 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
             if (promo.actions.length > 0) {
                 promo = await promo.populate('actions').execPopulate();
 
+                await utilsDatabase.populateItems(copyCart.items);
+
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
                     // we test every action on every product
                     let statementResult = false;
                     for (let j = 0, lenj = copyCart.items.length; j < lenj; j++) {
-                        const itemId      = copyCart.items[j].id._id.toString();
+                        const itemId      = copyCart.items[j].id._id;
                         const baseProduct = await ProductSimple.findOne({_id: itemId}).lean();
                         const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j]]});
 
