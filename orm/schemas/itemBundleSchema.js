@@ -28,7 +28,7 @@ const ItemBundle = new Schema({
                     text  : String
                 },
                 canonical : String,
-                type      : String
+                type      : {type: String, enum: ['simple', 'bundle', 'virtual']}
             }
         ]
     }],

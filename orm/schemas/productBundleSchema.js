@@ -228,7 +228,6 @@ async function rebuildSelectionProducts(item, lang) {
             };
         }
     }
-    console.log(item);
     return item;
 }
 
