@@ -648,15 +648,15 @@ function calculDiscountItem(prd, promo) {
     const {discountType, discountValue} = promo;
 
     // If the discountType is percentage
-    if (prd && discountType === 'P') {
+    if (prd && prd.price && discountType === 'P') {
         // We calculate the discount to apply on the product, if discount > the price of the item then we
         // apply a discount equal to the price of the item in order not to have a negative price, so we will have a price = 0
         values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et * (discountValue / 100));
-    } else if (prd && discountType === 'Aet') {
+    } else if (prd && prd.price && discountType === 'Aet') {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
-    } else if (prd && discountType === 'Aati') {
+    } else if (prd && prd.price && discountType === 'Aati') {
         values = calculateCartItemDiscount(prd.price.priceSort, undefined, discountValue);
-    } else if (prd && discountType === null) {
+    } else if (prd && prd.price && discountType === null) {
         values = {discountET: 0, discountATI: 0};
     }
 
