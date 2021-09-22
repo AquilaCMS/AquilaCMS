@@ -52,6 +52,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
+        await utilsDatabase.populateItems(cart.items);
         const products        = cart.items.map((product) => product.id);
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
@@ -121,7 +122,7 @@ const deleteCartItem = async (cartId, itemId) => {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
-                await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity);
+                await ServicesProducts.updateStock(cartItem.id, cartItem.quantity);
             } else if (cartItem.type === 'bundle') {
                 for (let i = 0; i < cartItem.selections.length; i++) {
                     const selectionProducts = cartItem.selections[i].products;
@@ -185,16 +186,28 @@ const addItem = async (req) => {
     }
     if (_product.translation[_lang.code]) {
         req.body.item.name = _product.translation[_lang.code].name;
+        req.body.item.slug = _product.translation[_lang.code].slug;
     }
     req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageUrl(_product);
+    req.body.item.image = require('../utils/medias').getProductImageId(_product) || 'no-image';
     const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price};
+    const item = {
+        ...req.body.item,
+        weight       : _product.weight,
+        price        : _product.price,
+        description1 : _product.translation[_lang.code].description1,
+        description2 : _product.translation[_lang.code].description2,
+        canonical    : _product.translation[_lang.code].canonical,
+        attributes   : _product.attributes
+    };
+
     if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
+
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
@@ -230,7 +243,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
@@ -346,13 +359,13 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
                 const _product = await Products.findOne({_id: cartItem.id});
-                if (_product.kind === 'SimpleProduct') {
+                if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
                     await ServicesProducts.updateStock(_product._id, -cartItem.quantity);
-                } else if (_product.kind === 'BundleProduct') {
+                } else if (_product.type === 'bundle') {
                     for (let j = 0; j < cartItem.selections.length; j++) {
                         const section = cartItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {

@@ -69,7 +69,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 text: 'picto.details.pictorisation',
                 onClick: function () {
                     PictoApi.update({id : $scope.picto._id}, function(response){
-                        toastService.toast('success', $translate.instant("picto.detail.pictoDone"));
+                        toastService.toast('success', $translate.instant("picto.details.pictoDone"));
                     });
                 },
                 icon: '<i class="fa fa-picture-o" aria-hidden="true"></i>',
@@ -119,18 +119,19 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 if (!response) { return }
             }
             if (this.form.ruleForm.$invalid) {
-                toastService.toast('danger', $translate.instant("picto.detail.formRuleIncomplete"));
+                toastService.toast('danger', $translate.instant("picto.details.formRuleIncomplete"));
                 return;
             }
             if (this.form.$invalid) {
-                toastService.toast('danger', $translate.instant("picto.detail.formPictoIncomplete"));
+                toastService.toast('danger', $translate.instant("picto.details.formPictoIncomplete"));
                 return;
             }
             PictoApi.save({id: $scope.picto._id}, $scope.picto, function (response) {
                 if(response.status === 400) {
+                    console.log("4")
                     toastService.toast('danger', response.translations[$scope.adminLang]);
                 } else {
-                    toastService.toast('success', $translate.instant("picto.detail.pictoSegmentation"));
+                    toastService.toast('success', $translate.instant("picto.details.pictoSegmentation"));
                     if (back) {
                         $location.url('/picto');
                     }
@@ -150,10 +151,11 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 RulesV2.save(
                     $scope.rule,
                     function (response) {
-                        toastService.toast('success',$translate.instant("picto.detail.ruleSaved"));
+                        toastService.toast('success',$translate.instant("picto.details.ruleSaved"));
+                        $scope.rule = response
                     },
                     function (err) {
-                        toastService.toast('danger',$translate.instant("picto.detail.rulesFail"));
+                        toastService.toast('danger',$translate.instant("picto.details.rulesFail"));
                     }
                 );
             }
@@ -188,7 +190,7 @@ PictoControllers.controller('PictoNewCtrl', [
 
         $scope.save = function (back) {
             if ($scope.picto === undefined || $scope.picto.code === "" || $scope.picto.title === "") {
-                toastService.toast("danger", $translate.instant("picto.detail.formPictoIncomplete"));
+                toastService.toast("danger", $translate.instant("picto.details.formPictoIncomplete"));
                 return;
             }
 

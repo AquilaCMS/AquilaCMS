@@ -43,7 +43,7 @@ const ProductBundleSchema = new Schema({
         translation  : {}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     id               : false
 });
 
@@ -62,7 +62,7 @@ ProductBundleSchema.methods.updateData = async function (data) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
-    const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
+    const updPrd = await this.model('bundle').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
     return updPrd;
 };
 
@@ -114,8 +114,9 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
         item.weight = await calculateWeight(item);
     }
     // we change the weight with modifiers
-    item.weight += modifiers.weight;
-    const _cart  = await this.basicAddToCart(cart, item, user, lang);
+    item.weight    += modifiers.weight;
+    const finalItem = await rebuildSelectionProducts(item, lang);
+    const _cart     = await this.basicAddToCart(cart, finalItem, user, lang);
     return _cart;
 };
 
@@ -207,6 +208,27 @@ function validateBySection(bundle_section, item) {
     default:
         break;
     }
+}
+
+async function rebuildSelectionProducts(item, lang) {
+    // on boucle sur les selections
+    for (let i = 0; i < item.selections.length; i++) {
+        // on boucle les produits de la selection
+        for (let j = 0; j < item.selections[i].products.length; j++) {
+            const prd                      = await require('../../services/products').getProduct({filter: {_id: item.selections[i].products[j]}, structure: {code: 1, translation: 1, images: 1}});
+            item.selections[i].products[j] = {
+                id           : prd._id,
+                name         : prd.translation[lang].name,
+                code         : prd.code,
+                image        : require('../../utils/medias').getProductImageUrl(prd),
+                description1 : prd.translation[lang].description1,
+                description2 : prd.translation[lang].description2,
+                canonical    : prd.translation[lang].canonical,
+                type         : prd.type
+            };
+        }
+    }
+    return item;
 }
 
 module.exports = ProductBundleSchema;

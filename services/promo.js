@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {cloneDeep}  = require('lodash');
-const mongoose     = require('mongoose');
+const {cloneDeep}   = require('lodash');
+const mongoose      = require('mongoose');
 const {
     Promo,
     Rules,
@@ -15,10 +15,11 @@ const {
     ProductSimple,
     Cart
 }                  = require('../orm/models');
-const ServiceRules = require('./rules');
-const QueryBuilder = require('../utils/QueryBuilder');
-const promoUtils   = require('../utils/promo');
-const NSErrors     = require('../utils/errors/NSErrors');
+const ServiceRules  = require('./rules');
+const QueryBuilder  = require('../utils/QueryBuilder');
+const promoUtils    = require('../utils/promo');
+const utilsDatabase = require('../utils/database');
+const NSErrors      = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -377,11 +378,13 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
             if (promo.actions.length > 0) {
                 promo = await promo.populate('actions').execPopulate();
 
+                await utilsDatabase.populateItems(copyCart.items);
+
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
                     // we test every action on every product
                     let statementResult = false;
                     for (let j = 0, lenj = copyCart.items.length; j < lenj; j++) {
-                        const itemId      = copyCart.items[j].id._id.toString();
+                        const itemId      = copyCart.items[j].id._id;
                         const baseProduct = await ProductSimple.findOne({_id: itemId}).lean();
                         const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j]]});
 
@@ -645,15 +648,15 @@ function calculDiscountItem(prd, promo) {
     const {discountType, discountValue} = promo;
 
     // If the discountType is percentage
-    if (discountType === 'P') {
+    if (prd && prd.price && discountType === 'P') {
         // We calculate the discount to apply on the product, if discount > the price of the item then we
         // apply a discount equal to the price of the item in order not to have a negative price, so we will have a price = 0
         values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et * (discountValue / 100));
-    } else if (discountType === 'Aet') {
+    } else if (prd && prd.price && discountType === 'Aet') {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
-    } else if (discountType === 'Aati') {
+    } else if (prd && prd.price && discountType === 'Aati') {
         values = calculateCartItemDiscount(prd.price.priceSort, undefined, discountValue);
-    } else if (discountType === null) {
+    } else if (prd && prd.price && discountType === null) {
         values = {discountET: 0, discountATI: 0};
     }
 
@@ -733,12 +736,9 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
     const prdIndex = productsCatalog.findIndex((_prd) => {
         const idProduct = cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id;
-        return _prd._id.toString() === idProduct.toString();
+        return _prd._id && ((_prd._id).toString() === idProduct.toString());
     });
     if (prdIndex > -1) {
-        if (cart.items[cartPrdIndex].id === mongoose.Types.ObjectId) {
-            await cart.populate('items.id');
-        }
         if (!cart.items[cartPrdIndex].noRecalculatePrice) {
             cart.items[cartPrdIndex].price.unit = {
                 et  : productsCatalog[prdIndex].price.et.normal,
