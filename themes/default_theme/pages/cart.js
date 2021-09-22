@@ -138,7 +138,7 @@ class PageCart extends NSPageCart {
                                                                                                         })
                                                                                                     ))
                                                                                                 }
-                                                                                            </ul>
+                                                                                            </ul> 
                                                                                         </div>
                                                                                     )
                                                                                 }

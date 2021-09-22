@@ -90,20 +90,20 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
             // on check que chaque produit soit commandable
             for (let j = 0; j < selectionProducts.length; j++) {
                 const ServicesProducts = require('../../services/products');
-                // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
-                if (selectionProducts[j].type === 'simple') {
+                const selectionProduct = await this.model('products').findOne({_id: selectionProducts[j]});
+                if (selectionProduct.type === 'simple') {
                     if (
-                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
-                        || !(await ServicesProducts.checkProductOrderable(item.stock, null))
+                        !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, item.quantity)).ordering.orderable
+                        || !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, item.quantity))
                     ) throw NSErrors.ProductNotOrderable;
-                    await ServicesProducts.updateStock(selectionProducts[j], -item.quantity);
+                    await ServicesProducts.updateStock(selectionProduct._id, -item.quantity);
                 }
             }
         }
     }
     const modifiers = await this.getBundlePrdsModifiers(item.selections);
     item.price      = {
-        // TODO P3 : se baser sur le produit normal pour ce schémas - Request somewhere later
+        // TODO P3 : se baser sur le produit normal pour ce schémas - Reùùquest somewhere later
         vat  : {rate: this.price.tax},
         unit : {et: this.price.et.normal + modifiers.price.et, ati: this.price.ati.normal + modifiers.price.ati}
     };
