@@ -128,7 +128,7 @@ class PageCart extends NSPageCart {
                                                                                                 {
                                                                                                     item.selections.map((section) => (
                                                                                                         section.products.map((productSection, indexSel) => {
-                                                                                                            const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                                                                                                            const bundleSection = item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
                                                                                                             const correctProduct = bundleSection ? bundleSection.products.find((product) => product.id === productSection._id) : null;
                                                                                                             let toDisplay = '';
                                                                                                             if (bundleSection && correctProduct && correctProduct.modifier_price && correctProduct.modifier_price[taxDisplay]) {

@@ -52,6 +52,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
+        await utilsDatabase.populateItems(cart.items);
         const products        = cart.items.map((product) => product.id);
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
