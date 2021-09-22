@@ -128,7 +128,7 @@ const deleteCartItem = async (cartId, itemId) => {
                     const selectionProducts = cartItem.selections[i].products;
                     // we check that each product is orderable
                     for (let j = 0; j < selectionProducts.length; j++) {
-                        const selectionProduct = await Products.findById(selectionProducts[j]);
+                        const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                         if (selectionProduct.type === 'simple') {
                             await ServicesProducts.updateStock(selectionProduct._id, cartItem.quantity);
                         }
@@ -254,11 +254,11 @@ const updateQty = async (req) => {
                 const selectionProducts = item.selections[i].products;
                 // we check that each product is orderable
                 for (let j = 0; j < selectionProducts.length; j++) {
-                    const selectionProduct = await Products.findById(selectionProducts[j]);
+                    const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
