@@ -164,7 +164,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
                 SetAttributesV2.delete({id: _id}, function () {
                     $location.path(`/${$scope.type}/setAttributes`);
                 }, function (err) {
-                    toastService.toast("danger", err.data);
+                    toastService.toast("danger", err.data.message);
                 });
             }
         };
