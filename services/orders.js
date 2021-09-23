@@ -413,7 +413,9 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     }
     returnData.name          = paymentMethod.translation[lang].name;
     returnData.operationDate = Date.now();
-    await setStatus(orderId, orderStatuses.PAID);
+    if (returnData.type === 'DEBIT') {
+        await setStatus(orderId, orderStatuses.PAID);
+    }
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
@@ -430,9 +432,21 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
         /**
          * DO NOT DELETE THE COMMENTED CODE BELOW
          */
-        ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
-            console.error(err);
-        });
+        if (returnData.type === 'DEBIT') {
+            const datas = {
+                ..._order,
+                articles  : '',
+                firstname : _order.customer.fullname.split(' ')[0],
+                lastname  : _order.customer.fullname.split(' ')[1],
+                fullname  : _order.customer.fullname,
+                number    : _order.number
+            };
+            await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.amount, date: returnData.operationDate});
+        } else {
+            ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
+                console.error(err);
+            });
+        }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
     return _order;

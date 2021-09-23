@@ -184,7 +184,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     }
     const tokenlink = `${link}?token=${resetPassToken}`;
     if (sendMail) {
-        await servicesMail.sendResetPassword(email, tokenlink, lang);
+        await servicesMail.sendResetPassword(email, tokenlink, lang, resetPassToken);
     }
     return {message: email};
 };
