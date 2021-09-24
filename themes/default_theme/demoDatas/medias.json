@@ -53,6 +53,12 @@
          "_id": "5d4a5011edd1c15f16018b85",
          "link": "medias/banniere_1_tshirt.jpg",
          "name": "banniere produits"
+      },
+      {
+         "extension": ".png",
+         "_id": "5d4b5021ef01c34126038c90",
+         "link": "medias/no-image.png",
+         "name": "No image"
       }
    ]
 }

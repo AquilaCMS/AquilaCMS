@@ -9,4 +9,4 @@
 const Products               = require('./products');
 const {ProductVirtualSchema} = require('../schemas');
 
-module.exports = Products.discriminator('VirtualProduct', ProductVirtualSchema);
+module.exports = Products.discriminator('virtual', ProductVirtualSchema);

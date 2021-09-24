@@ -261,22 +261,6 @@ OrdersSchema.post('findOneAndUpdate', function (result) {
     }
 });
 
-OrdersSchema.post('findOne', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-OrdersSchema.post('find', async function (docs, next) {
-    for (let i = 0; i < docs.length; i++) {
-        if (docs[i] && docs[i].items && docs[i].items.length) {
-            await utilsDatabase.populateItems(docs[i].items);
-        }
-    }
-    next();
-});
-
 // Permet d'envoyer un evenement avant que le schema order ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema order de nouveaux attributs
 aquilaEvents.emit('orderSchemaInit', OrdersSchema);

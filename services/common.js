@@ -80,7 +80,7 @@ const getBreadcrumb = async (url) => {
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].title,
-                    link   : keepL + url.slice(0, 1).join('/'),
+                    link   : url.slice(0, 1).join('/'),
                     isHome : false
                 });
             }

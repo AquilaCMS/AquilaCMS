@@ -482,6 +482,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
+                    if (attr.default_value && attr.translation[$scope.lang].value === undefined) attr.translation[$scope.lang].value = attr.default_value;
                     return attr;
                 });
             });
