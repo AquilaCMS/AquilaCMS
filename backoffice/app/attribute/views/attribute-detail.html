@@ -83,7 +83,7 @@
                     <ns-switch name="used_in_filters" ng-model="attribute.usedInFilters"></ns-switch>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" ng-show="_type === 'products'">
                 <label class="col-sm-3 control-label" translate>attribute.detail.visible</label>
                 <div class="col-sm-6">
                     <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>

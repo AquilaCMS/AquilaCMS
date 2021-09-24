@@ -13,7 +13,6 @@ import {
     NSProductCard,
     NSProductCardList,
     NSProductStock,
-    imgDefaultBase64,
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
@@ -64,15 +63,15 @@ class PageProduct extends NSPageProduct {
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
-        let imgDefault = imgDefaultBase64;
+        let imgDefault = `/images/products/516x400/no-image/${product.slug[lang]}.jpg`;
         let imgAlt = 'illustration produit';
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'product'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -259,7 +258,7 @@ class PageProduct extends NSPageProduct {
                                                         const vImage = variant.images.find(img => img.default) || {}
                                                         return (
                                                             <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(variant)}>
-                                                                <img src={'/images/productVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
+                                                                <img src={'/images/productsVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
                                                             </li>
                                                         )
                                                     })

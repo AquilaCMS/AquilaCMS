@@ -23,9 +23,19 @@ const itemsSchema = new Schema({
         ],
         default : 'PROCESSING'
     },
-    name               : String,
-    code               : String,
-    image              : String,
+    name         : String,
+    code         : String,
+    image        : String,
+    slug         : String,
+    description1 : {
+        title : String,
+        text  : String
+    },
+    description2 : {
+        title : String,
+        text  : String
+    },
+    canonical          : String,
     parent             : {type: ObjectId, ref: 'products'},
     children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},
@@ -46,7 +56,18 @@ const itemsSchema = new Schema({
             vat : {type: Number}
         }
     },
-    atts        : [],
+    attributes : [
+        {
+            id          : {type: ObjectId, ref: 'attributes', index: true},
+            code        : String,
+            values      : String,
+            param       : String,
+            type        : {type: String, default: 'unset'},
+            translation : {},
+            position    : {type: Number, default: 1},
+            visible     : {type: Boolean, default: true}
+        }
+    ],
     typeDisplay : {type: String, default: undefined},
     variants    : [{
         code        : {type: String},

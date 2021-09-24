@@ -492,7 +492,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
         // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
     }
-    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
         products = products.filter((prd) =>  {
             const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
             return pr >= (
@@ -641,19 +641,6 @@ const createProduct = async (req) => {
     // We check that the id is not already taken
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
-    switch (req.body.type) {
-    case 'simple':
-        req.body.kind = 'SimpleProduct';
-        break;
-    case 'virtual':
-        req.body.kind = 'VirtualProduct';
-        break;
-    case 'bundle':
-        req.body.kind = 'BundleProduct';
-        break;
-    default:
-        break;
-    }
     let body = req.body;
     if (req.body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(req.body);
@@ -972,7 +959,7 @@ const downloadProduct = async (req, res) => {
     } else if (req.query.p_id) {
         prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res}, undefined);
         // we check that it is virtual, and that its price is equal to 0
-        if (!prd || prd.kind !== 'VirtualProduct') {
+        if (!prd || prd.type !== 'virtual') {
             throw NSErrors.ProductNotFound;
         } else if (prd.price.ati.special !== undefined) {
             if (prd.price.ati.special > 0) {

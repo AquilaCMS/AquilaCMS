@@ -231,23 +231,6 @@ CartSchema.post('findOneAndUpdate', async function (doc, next) {
     if (doc) {
         await updateCarts(this.getUpdate(), this.getQuery()._id, next);
     }
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findOne', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findById', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
     next();
 });
 

@@ -293,7 +293,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
             $scope.getImageUrl = function (images) {
                 let defaultImage = images.find(img => img.default)
                 if(!defaultImage) defaultImage = images[0] || {}
-                return `images/productVariant/150x150-50/${defaultImage._id}/${defaultImage.title}${defaultImage.extension}`;
+                return `images/productsVariant/150x150-50/${defaultImage._id}/${defaultImage.title}${defaultImage.extension}`;
             };
         }]
     };
@@ -505,7 +505,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 };
 
                 $scope.getImageUrl = function (image, variantImageId) {
-                    return `images/${variantImageId ? 'productsVariant' : 'product'}/300x300-50/${variantImageId ? variantImageId : image._id}/${image.title}${image.extension}`;
+                    return `images/${variantImageId ? 'productsVariant' : 'products'}/300x300-50/${variantImageId ? variantImageId : image._id}/${image.title}${image.extension}`;
                 };
             }
         ]

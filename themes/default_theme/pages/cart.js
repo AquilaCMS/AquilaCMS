@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    NSPageCart, NSCodePromo, NSContext, NSProductStock, imgDefaultBase64
+    NSPageCart, NSCodePromo, NSContext, NSProductStock
 } from 'aqlrc';
 import Head from 'next/head';
 import { Link, Router } from 'routes';
@@ -74,7 +74,7 @@ class PageCart extends NSPageCart {
                                                                 let descPromoT   = '';
                                                                 if (cart.quantityBreaks && cart.quantityBreaks.productsId && cart.quantityBreaks.productsId.length) {
                                                                     // On check si le produit courant a recu une promo
-                                                                    const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
+                                                                    const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
                                                                     if (prdPromoFound) {
                                                                         basePriceATI = prdPromoFound.basePriceATI;
                                                                         descPromo = (
@@ -85,26 +85,13 @@ class PageCart extends NSPageCart {
                                                                         );
                                                                     }
                                                                 }
-                                                                let imgDefault = imgDefaultBase64;
                                                                 let imgAlt     = 'illustration produit';
-                                                                if (item.id && item.id.images && item.id.images.length) {
-                                                                    let foundImg;
-                                                                    foundImg = item.id.images.find(img => img.default)
-                                                                    if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
-                                                                    if (foundImg) {
-                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                        imgAlt     = foundImg.alt || imgAlt;
-                                                                    } else if(item.id && item.id.images) {
-                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${item.id.images[0].extension}` : imgDefault;
-                                                                        imgAlt     = item.id.images[0].alt || imgAlt;
-                                                                    }
-                                                                }
                                                                 
                                                                 return (
-                                                                    <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
+                                                                    <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.canonical)}>
                                                                         <div className="product__image">
                                                                             <button style={{ border: '0', background: 'transparent', height: '100%' }} type="button">
-                                                                                <img src={imgDefault} alt={imgAlt} />
+                                                                                <img src={`/images/${item.selected_variant ? 'productsVariant' : 'products'}/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
                                                                             </button>
                                                                         </div>
                                                                         {/* <!-- /.product__image --> */}
@@ -126,12 +113,12 @@ class PageCart extends NSPageCart {
                                                                                             border : '0', background : 'transparent', overflow : 'hidden', textAlign : 'left'
                                                                                         }} type="button"
                                                                                     >
-                                                                                        {(item.name)}
+                                                                                        {item.name}
                                                                                     </button>
                                                                                 </h2>
 
                                                                                 <h5>
-                                                                                    {item.id && item.id.description1 && item.id.description1.title}
+                                                                                    {item.description1 ? item.description1.title : ''}
                                                                                 </h5>
 
                                                                                 {
@@ -141,7 +128,7 @@ class PageCart extends NSPageCart {
                                                                                                 {
                                                                                                     item.selections.map((section) => (
                                                                                                         section.products.map((productSection, indexSel) => {
-                                                                                                            const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                                                                                                            const bundleSection = item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
                                                                                                             const correctProduct = bundleSection ? bundleSection.products.find((product) => product.id === productSection._id) : null;
                                                                                                             let toDisplay = '';
                                                                                                             if (bundleSection && correctProduct && correctProduct.modifier_price && correctProduct.modifier_price[taxDisplay]) {
@@ -151,12 +138,12 @@ class PageCart extends NSPageCart {
                                                                                                         })
                                                                                                     ))
                                                                                                 }
-                                                                                            </ul>
+                                                                                            </ul> 
                                                                                         </div>
                                                                                     )
                                                                                 }
 
-                                                                                <NSProductStock stock={item.id.stock} />
+                                                                                <NSProductStock stock={item.stock} />
                                                                             </div>
                                                                             {/* <!-- /.product__entry --> */}
 

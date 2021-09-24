@@ -85,7 +85,7 @@ const ProductSimpleSchema = new Schema({
         weight      : Number
     }]
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     toObject         : {virtuals: true},
     toJSON           : {virtuals: true},
     id               : false
@@ -116,7 +116,7 @@ ProductSimpleSchema.methods.updateData = async function (data) {
     if (!data._id) {
         data._id = this._id;
     }
-    const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    const updPrd = await this.model('simple').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
     return updPrd;
 };
 

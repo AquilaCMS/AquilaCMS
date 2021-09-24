@@ -118,7 +118,7 @@ const ProductsSchema = new Schema({
         views : {type: Number, default: 0}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     timestamps       : true,
     usePushEach      : true,
     id               : false
