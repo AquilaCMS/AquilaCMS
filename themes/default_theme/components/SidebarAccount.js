@@ -5,8 +5,8 @@ import {
     NSToast,
     logoutUser
 } from 'aqlrc';
-import withI18next from 'lib/withI18n'
-import { Link } from 'routes';
+import { withI18next } from 'lib/withI18n'
+import { Link, Router } from 'routes';
 
 class SidebarAccount extends NSSidebarAccount {
     constructor(props, context) {
@@ -15,9 +15,7 @@ class SidebarAccount extends NSSidebarAccount {
     }
 
     logout = async () => {
-        const { gNext } = this.props;
         const routerLang = this.context.props ? this.context.props.routerlang : null;
-        const Router = (gNext && gNext.Router) || undefined;
 
         // Déconnexion de l'utilisateur
         try {
