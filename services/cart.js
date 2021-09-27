@@ -410,6 +410,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
+        delete newOrder._id;
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {

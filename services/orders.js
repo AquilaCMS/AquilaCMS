@@ -212,12 +212,12 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
 
 const paymentFail = async (query, update) => {
     if (update.status) { delete update.status; }
-    if (update.$set && update.$set.status) {
+    if (update.$set) {
         update.$set.status = orderStatuses.PAYMENT_FAILED;
     } else {
         update.$set = {status: orderStatuses.PAYMENT_FAILED};
     }
-    return Orders.findOneAndUpdate(query, update);
+    return Orders.findOneAndUpdate(query, update, {new: true});
 };
 
 const cancelOrder = async (orderId) => {
