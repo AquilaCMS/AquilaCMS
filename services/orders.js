@@ -114,11 +114,26 @@ const setStatus = async (_id, status, sendMail = true) => {
     }
 };
 
-const paymentSuccess = async (query, updateObject) => {
+const paymentSuccess = async (query, updateObject, paymentCode = '') => {
     console.log('service order paymentSuccess()');
 
     try {
-        const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
+        let filterCode = paymentCode;
+        if (filterCode === '') {
+            if (updateObject.$set) {
+                filterCode = updateObject.$set.payment[0].mode;
+            } else if (updateObject.$push) {
+                filterCode = updateObject.$push.payment.mode;
+            } else if (updateObject.payment) {
+                filterCode = updateObject.payment[0].mode;
+            } else {
+                console.error('paymentSuccess() : no payment in object');
+                return;
+            }
+        }
+        filterCode = filterCode.toLocaleLowerCase();
+
+        const paymentMethod = await PaymentMethods.findOne({code: filterCode});
         const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');

@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "../../node_modules/next/dist/bin/next build .",
+    "build": "next build",
     "cypress": "cypress open",
     "lint:check": "eslint . --ext js,jsx,ts,tsx .",
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix"
@@ -23,7 +23,15 @@
     "react-i18next": "7.13.0",
     "react-js-pagination": "3.0.3",
     "react-responsive-modal": "3.6.0",
-    "react-slick": "0.26.1"
+    "react-slick": "0.26.1",
+    "i18next": "11.3.3",
+    "i18next-fs-backend": "1.0.6",
+    "i18next-http-middleware": "3.0.0",
+    "i18next-xhr-backend": "1.5.1",
+    "next": "9.4",
+    "next-routes": "1.4.2",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.8",

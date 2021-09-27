@@ -41,7 +41,6 @@ const loadDynamicRoutes = (app) => {
     const allRoutes    = fs.readdirSync(pathToRoutes).filter((file) => {
         if (file === path.basename(__filename)
             || path.extname(file) !== '.js'
-            || file === 'install.js'
             || file === 'backoffice.js'
         ) {
             return false;

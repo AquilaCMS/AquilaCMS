@@ -18,8 +18,8 @@ SiteServices.factory('ArticlesV2', ['$resource', function ($resource) {
         query: { method: 'POST', params: { type: "new" } },
         save: { method: 'PUT', params: { type: "new" } },
         delete: { method: 'DELETE', params: { type: "new" } },
-        preview : {method: 'POST', params: {type: 'preview'}}
-
+        preview : {method: 'POST', params: {type: 'preview'}},
+        getNewsTags : {method: 'POST', params: {type: 'news', id: 'tags'}}
     });
 }]);
 

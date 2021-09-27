@@ -37,11 +37,12 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
-        modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
+        modules_folder = path.join(global.appRoot, 'themes', theme, 'modules');
         await fs.ensureDir(modules_folder);
-        const isFileExists = await fs.hasAccess(`${modules_folder}/list_modules.js`);
+        const pathToListModules = path.join(modules_folder, 'list_modules.js');
+        const isFileExists      = await fs.hasAccess(pathToListModules);
         if (!isFileExists) {
-            await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
+            await fs.writeFile(pathToListModules, 'export default [];');
         }
     } catch (err) {
         console.error(err);
