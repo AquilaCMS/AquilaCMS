@@ -187,7 +187,6 @@ class AquilaApp extends App {
                 lang,
                 routerLang,
                 urlLang,
-                hooksFunctions: await getModulesHookFunctionsByType()
             };
             return { pageProps };
         } catch (err) {
