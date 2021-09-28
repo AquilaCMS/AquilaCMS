@@ -199,7 +199,8 @@ const OrdersSchema = new Schema({
         ati : {type: Number, default: 0},
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
-    }
+    },
+    component_template : {type: String, default: null}
 }, {
     usePushEach : true,
     timestamps  : true,
