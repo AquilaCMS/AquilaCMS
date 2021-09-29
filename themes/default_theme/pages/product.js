@@ -13,7 +13,8 @@ import {
     NSProductCard,
     NSProductCardList,
     NSProductStock,
-    truncate
+    truncate,
+    hasVariantsValue
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
 import { listModulePage } from 'lib/utils';
@@ -68,10 +69,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'product'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -250,7 +251,7 @@ class PageProduct extends NSPageProduct {
                                         )
                                     }
                                     {
-                                        product.variants_values && product.variants_values.length > 0 && 
+                                        product.variants_values.length > 0 &&
                                             <div className="variants__container">
                                                 <ul className="variants-values__list">
                                                 {

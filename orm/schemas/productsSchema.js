@@ -282,6 +282,13 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
+ProductsSchema.methods.hasVariantsValue = async function (that) {
+    if (that) {
+        return that.variants_values && that.variants_values.length > 0;
+    }
+    return this.variants_values && this.variants_values.length > 0;
+};
+
 ProductsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('products', that._id, that.code);
 };
@@ -311,14 +318,35 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             }
         }
     }
+    if (this._update && this.hasVariantsValue(this._update.$set)) {
+        if (!this._update.$unset) {
+            this._update.$unset = {};
+        }
+        delete this._update.$set.variants_values;
+        this._update.$unset.variants_values = '';
+    }
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
+    if (this._update && this.hasVariantsValue(this._update.$set)) {
+        if (!this._update.$unset) {
+            this._update.$unset = {};
+        }
+        delete this._update.$set.variants_values;
+        this._update.$unset.variants_values = '';
+    }
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {
+    if (this._update && this.hasVariantsValue(this._update.$set)) {
+        if (!this._update.$unset) {
+            this._update.$unset = {};
+        }
+        delete this._update.$set.variants_values;
+        this._update.$unset.variants_values = '';
+    }
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal

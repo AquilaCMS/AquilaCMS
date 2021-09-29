@@ -164,9 +164,9 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (_product.variants_values && _product.variants_values.length && typeof req.body.item.selected_variant === 'undefined') {
+    if (_product.hasVariantsValue() && typeof req.body.item.selected_variant === 'undefined') {
         throw NSErrors.InvalidParameters;
-    } else if (_product.variants_values && _product.variants_values.length && req.body.item.selected_variant) {
+    } else if (_product.hasVariantsValue() && req.body.item.selected_variant) {
         // we set variant in the cart !
         // quick check if all mandatory options are present
         const isPresent = _product.variants_values.findIndex((oneVariant) => req.body.item.selected_variant._id.toString() === oneVariant._id.toString());
