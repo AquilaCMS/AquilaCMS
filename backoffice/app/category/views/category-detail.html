@@ -67,30 +67,30 @@
                             <td width="70%">
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
-                                           translate>category.detail.catalogue</label>
+                                        translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
-                                           translate>category.detail.page</label>
+                                        translate>category.detail.page</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'url'"
-                                           translate>category.detail.url</label>
+                                        translate>category.detail.url</label>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td translate>category.detail.nom</td>
                             <td>
-                                <input ng-model="category.translation[lang].name" class="form-control" />
+                                <input ng-model="category.translation[lang].name" name="name" class="form-control" required />
                             </td>
                         </tr>
                         <tr  ng-if="category.action == 'catalog'">
                             <td translate>category.detail.metaDesc</td>
                             <td>
-                                <input ng-model="category.translation[lang].metaDescription" class="form-control" />
+                                <input ng-model="category.translation[lang].metaDescription" name="description" class="form-control" />
                             </td>
                         </tr>
                         <tr id="slug" ng-if="category.action == 'catalog'">
                             <td translate>category.detail.slugCat</td>
                             <td>
-                                <input ng-model="category.translation[lang].slug" class="form-control" required/>
+                                <input ng-model="category.translation[lang].slug" name="slug" class="form-control" required/>
                             </td>
                         </tr>
                         <tr ng-if="category.action == 'page'">

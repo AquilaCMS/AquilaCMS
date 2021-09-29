@@ -96,7 +96,6 @@
         "5d24a4844aa9c1692db04ae4"
       ],
       "is_new": true,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -307,7 +306,6 @@
         "5c667f8a28a49c049c5863c8"
       ],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -492,7 +490,6 @@
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -677,7 +674,6 @@
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -843,7 +839,6 @@
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1049,7 +1044,6 @@
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1215,7 +1209,6 @@
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1392,7 +1385,6 @@
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1587,7 +1579,6 @@
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1738,7 +1729,6 @@
       "weight": 0,
       "associated_prds": [],
       "is_new": false,
-      "kind": "BundleProduct",
       "images": [],
       "type": "bundle",
       "bundle_sections": [

@@ -5,8 +5,9 @@ import {
     NSToast,
     logoutUser
 } from 'aqlrc';
-import withI18next from 'lib/withI18n'
-import { Link } from 'routes';
+import { withI18next } from 'lib/withI18n'
+import { Link, Router } from 'routes';
+import { getModulesHookFunctionsByType } from 'lib/utils';
 
 class SidebarAccount extends NSSidebarAccount {
     constructor(props, context) {
@@ -15,15 +16,20 @@ class SidebarAccount extends NSSidebarAccount {
     }
 
     logout = async () => {
-        const { gNext } = this.props;
         const routerLang = this.context.props ? this.context.props.routerlang : null;
-        const Router = (gNext && gNext.Router) || undefined;
 
         // Déconnexion de l'utilisateur
         try {
             await logoutUser();
             // HOOK => onLogout
-            if (this.context.props.hooksFunctions && this.context.props.hooksFunctions.onLogout) this.context.props.hooksFunctions.onLogout.map(func => func())
+            const onLogoutFunctions = (await getModulesHookFunctionsByType()).onLogout
+            if (onLogoutFunctions) {
+                for(const func of onLogoutFunctions) {
+                    if(typeof func === 'function') {
+                        await func()
+                    }
+                }
+            }
             Router.pushRoute('home', { lang: routerLang });
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
