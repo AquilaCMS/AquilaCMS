@@ -74,6 +74,7 @@ async function deletePicto(req, res, next) {
 function execRules(req, res, next) {
     try {
         if (req.body.id) {
+            // TODO don't work
             ServiceRule.execRules('picto', [], req.body.id);
         } else {
             ServiceRule.execRules('picto');
