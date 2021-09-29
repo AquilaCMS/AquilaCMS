@@ -164,6 +164,7 @@ const createConfiguration = async (datas, bOverride) => {
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
+            defaultImage    : '/medias/no-image.png',
             // We don't want to apply migration after the installation, so we calculate the current migration step
             migration       : require('../utils/migration').migrationScripts.length
         },

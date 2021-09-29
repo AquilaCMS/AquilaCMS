@@ -73,11 +73,11 @@ const initAgendaDB = async () => {
                         } else if (tJobsSystem[i] === 'Cache requests clean') {
                             await setJob(undefined, tJobsSystem[9], '0 */6 * * *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
-                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove temp file') {
-                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove previews') {
-                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
                         }

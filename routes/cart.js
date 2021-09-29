@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const utilsDatabase               = require('../utils/database');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const ServiceCart                 = require('../services/cart');
 const {authentication, adminAuth} = require('../middleware/authentication');
@@ -57,7 +56,6 @@ const getCartById = async (req, res, next) => {
     try {
         const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
         if (result) {
-            await utilsDatabase.populateItems(result.items);
             return res.json(result);
         }
         return next(NSErrors.CartNotFound);
