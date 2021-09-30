@@ -207,6 +207,12 @@ const OrdersSchema = new Schema({
     id          : false
 });
 
+// Need all this index for BO listing
+OrdersSchema.index({createdAt: -1});
+OrdersSchema.index({'customer.email': 1});
+OrdersSchema.index({'customer.nom': 1});
+OrdersSchema.index({'priceTotal.ati': 1});
+
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
 

@@ -6,7 +6,7 @@ ClientControllers.controller("ClientCtrl", [
         $scope.columns = ClientColumns;
         $scope.query = {search: ""};
         $scope.page = 1;
-        $scope.nbItemsPerPage = 10;
+        $scope.nbItemsPerPage = 12;
         $scope.maxSize = 5;
         $scope.filter = {
             "company": "",

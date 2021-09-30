@@ -200,14 +200,15 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
 
-    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
+    // To long to calculate here, and don't need for global stats :
+    // const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
         averageCart : allOrders.length === 0 ? 0 : orderTotalAmount / allOrders.length,
         ca          : orderTotalAmount,
         transfo     : allOrders.length > 0 && attendance > 0 ? ((allOrders.length / attendance) * 100) : 0,
-        nbArticle   : articlesNumber.datasObject.length,
+        // nbArticle   : articlesNumber.datasObject.length,
         newClient   : newClients.datasObject.length,
         attendance,
         nbOrderPaid,
@@ -285,7 +286,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
