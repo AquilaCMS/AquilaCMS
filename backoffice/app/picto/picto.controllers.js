@@ -68,7 +68,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
             {
                 text: 'picto.details.pictorisation',
                 onClick: function () {
-                    PictoApi.update({id : $scope.picto._id}, function(response){
+                    PictoApi.update({/* id : $scope.picto._id */}, function(response){
                         toastService.toast('success', $translate.instant("picto.details.pictoDone"));
                     });
                 },
