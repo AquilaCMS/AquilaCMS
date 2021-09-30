@@ -69,10 +69,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${foundImg.name}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.images[0].name}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -191,9 +191,9 @@ class PageProduct extends NSPageProduct {
                                         {typeof window !== 'undefined' && isOpen
                                             && (
                                                 <Lightbox
-                                                    mainSrc={`/images/products/max-80/${product.images[photoIndex]._id}/${product.slug[lang]}${product.images[photoIndex].extension}`}
-                                                    nextSrc={`/images/products/max-80/${product.images[(photoIndex + 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + 1) % product.images.length].extension}`}
-                                                    prevSrc={`/images/products/max-80/${product.images[(photoIndex + product.images.length - 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + product.images.length - 1) % product.images.length].extension}`}
+                                                    mainSrc={`/images/${product.selected_variant ? 'productsVariant' : 'products'}/max-80/${product.images[photoIndex]._id}/${product.images[photoIndex].name}`}
+                                                    nextSrc={`/images/${product.selected_variant ? 'productsVariant' : 'products'}/max-80/${product.images[(photoIndex + 1) % product.images.length]._id}/${product.images[(photoIndex + 1) % product.images.length].name}`}
+                                                    prevSrc={`/images/${product.selected_variant ? 'productsVariant' : 'products'}/max-80/${product.images[(photoIndex + product.images.length - 1) % product.images.length]._id}/${product.images[(photoIndex + product.images.length - 1) % product.images.length].name}`}
                                                     imageTitle={product.images[photoIndex].alt}
                                                     onCloseRequest={() => this.setState({ isOpen: false })}
                                                     onMovePrevRequest={() => this.setState({ photoIndex: (photoIndex + product.images.length - 1) % product.images.length })}

@@ -187,88 +187,89 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     } else {
         fileNameOption = '';
     }
-    // if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
-    switch (type) {
-    // if a product image is requested
-    case 'products':
-        const product = await Products.findOne({'images._id': _id});
-        imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
-        // we get the name of the file
-        fileName      = path.basename(imageObj.url);
-        relativePath  = imageObj.url;
-        filePath      = path.join(_path, imageObj.url);
-        fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
-        filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
-        await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
-        break;
+    if (ObjectID.isValid(_id)) {
+        switch (type) {
+        // if a product image is requested
+        case 'products':
+            const product = await Products.findOne({'images._id': _id});
+            imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
+            // we get the name of the file
+            fileName      = path.basename(imageObj.url);
+            relativePath  = imageObj.url;
+            filePath      = path.join(_path, imageObj.url);
+            fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
+            filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
+            break;
         // if a media is requested
-    case 'productsVariant':
-        const prd = await ProductSimple.findOne({'variants_values.images._id': _id});
-        let variant;
-        for (let i = 0; i < prd.variants_values.length; i++) {
-            if (prd.variants_values[i].images.findIndex((img) => img._id.toString() === _id) > -1) {
-                imageObj = prd.variants_values[i].images.find((img) => img._id.toString() === _id);
-                variant  = prd.variants_values[i];
+        case 'productsVariant':
+            const prd = await ProductSimple.findOne({'variants_values.images._id': _id});
+            let variant;
+            for (let i = 0; i < prd.variants_values.length; i++) {
+                if (prd.variants_values[i].images.findIndex((img) => img._id.toString() === _id) > -1) {
+                    imageObj = prd.variants_values[i].images.find((img) => img._id.toString() === _id);
+                    variant  = prd.variants_values[i];
+                }
             }
-        }
-        // we get the name of the file
-        fileName      = path.basename(imageObj.url);
-        relativePath  = imageObj.url;
-        filePath      = path.join(_path, imageObj.url);
-        fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
-        filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
-        await fsp.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
-        break;
+            // we get the name of the file
+            fileName      = path.basename(imageObj.url);
+            relativePath  = imageObj.url;
+            filePath      = path.join(_path, imageObj.url);
+            fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
+            filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
+            break;
         // if a media is requested
-    case 'medias':
-        imageObj      = await Medias.findOne({_id});
-        fileName      = path.basename(imageObj.link, `${path.extname(imageObj.link)}`);
-        relativePath  = imageObj.link;
-        filePath      = path.join(_path, imageObj.link);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.link)}`;
-        filePathCache = path.join(cacheFolder, 'medias', fileName);
-        await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
-        break;
-    case 'slider':
-    case 'gallery':
-        const obj     = await mongoose.model(type).findOne({'items._id': _id});
-        imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
-        fileName      = path.basename(imageObj.src, `${path.extname(imageObj.src)}`);
-        relativePath  = imageObj.src;
-        filePath      = path.resolve(_path, imageObj.src);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.src)}`;
-        filePathCache = path.resolve(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'blog':
-        const blog    = await mongoose.model('news').findOne({_id});
-        fileName      = path.basename(blog.img, `${path.extname(blog.img)}`);
-        relativePath  = blog.img;
-        filePath      = path.join(_path, blog.img);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(blog.img)}`;
-        filePathCache = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'category':
-        const category = await mongoose.model('categories').findOne({_id});
-        fileName       = path.basename(category.img, `${path.extname(category.img)}`);
-        relativePath   = category.img;
-        filePath       = path.join(_path, category.img);
-        fileName       = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(category.img)}`;
-        filePathCache  = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'picto':
-        const picto   = await mongoose.model('pictos').findOne({_id});
-        fileName      = path.basename(picto.filename, path.extname(picto.filename));
-        relativePath  = path.join('medias/picto', picto.filename);
-        filePath      = path.join(_path, 'medias/picto', picto.filename);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
-        filePathCache = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    default:
-        return null;
+        case 'medias':
+            imageObj      = await Medias.findOne({_id});
+            fileName      = path.basename(imageObj.link, `${path.extname(imageObj.link)}`);
+            relativePath  = imageObj.link;
+            filePath      = path.join(_path, imageObj.link);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.link)}`;
+            filePathCache = path.join(cacheFolder, 'medias', fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
+            break;
+        case 'slider':
+        case 'gallery':
+            const obj     = await mongoose.model(type).findOne({'items._id': _id});
+            imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
+            fileName      = path.basename(imageObj.src, `${path.extname(imageObj.src)}`);
+            relativePath  = imageObj.src;
+            filePath      = path.resolve(_path, imageObj.src);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.src)}`;
+            filePathCache = path.resolve(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'blog':
+            const blog    = await mongoose.model('news').findOne({_id});
+            fileName      = path.basename(blog.img, `${path.extname(blog.img)}`);
+            relativePath  = blog.img;
+            filePath      = path.join(_path, blog.img);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(blog.img)}`;
+            filePathCache = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'category':
+            const category = await mongoose.model('categories').findOne({_id});
+            fileName       = path.basename(category.img, `${path.extname(category.img)}`);
+            relativePath   = category.img;
+            filePath       = path.join(_path, category.img);
+            fileName       = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(category.img)}`;
+            filePathCache  = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'picto':
+            const picto   = await mongoose.model('pictos').findOne({_id});
+            fileName      = path.basename(picto.filename, path.extname(picto.filename));
+            relativePath  = path.join('medias/picto', picto.filename);
+            filePath      = path.join(_path, 'medias/picto', picto.filename);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
+            filePathCache = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        default:
+            return null;
+        }
     }
 
     // if the requested image is already cached, it is returned direct
