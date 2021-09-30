@@ -41,7 +41,8 @@
         "preview": "Aperçu",
         "finished": "Terminé",
         "errorCategorization": "Erreur lors de la categorisation",
-        "coherenceTitle": "Cohérence du produit"
+        "coherenceTitle": "Cohérence du produit",
+        "saveFirst": "Enrigistrez le produit pour pouvoir ajouter des images"
     },
     "modal": {
         "activeProduct": "Activer un produit",

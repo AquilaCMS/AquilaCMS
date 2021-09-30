@@ -290,10 +290,10 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 return $scope.product.variants.findIndex(v => v.code === code)
             }     
 
-            $scope.getImageUrl = function (images) {
-                let defaultImage = images.find(img => img.default)
-                if(!defaultImage) defaultImage = images[0] || {}
-                return `images/productsVariant/150x150-50/${defaultImage._id}/${defaultImage.title}${defaultImage.extension}`;
+            $scope.getImageUrl = function (variant) {
+                let defaultImage = variant.images.find(img => img.default)
+                if(!defaultImage) defaultImage = variant.images[0] || {}
+                return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.name}`;
             };
         }]
     };

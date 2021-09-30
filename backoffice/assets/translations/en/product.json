@@ -41,7 +41,8 @@
         "preview": "Preview",
         "finished": "Finished",
         "errorCategorization": "Error during categorization",
-        "coherenceTitle": "Coherence of the product"
+        "coherenceTitle": "Coherence of the product",
+        "saveFirst": "Save the product before adding images"
     },
     "modal": {
         "activeProduct": "Activate a product",
