@@ -150,11 +150,17 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         if (item.selected_variant) {
             item.price = {
                 unit : {
-                    ati : item.selected_variant.price.ati.special > 0 ? item.selected_variant.price.ati.special : item.selected_variant.price.ati.normal,
-                    et  : item.selected_variant.price.et.special > 0 ? item.selected_variant.price.et.special : item.selected_variant.price.et.normal
+                    ati : item.selected_variant.price.ati.normal,
+                    et  : item.selected_variant.price.et.normal
                 },
                 vat : {rate: item.selected_variant.price.tax}
             };
+            if (item.selected_variant.price.et.special !== undefined && item.selected_variant.price.et.special !== null) {
+                item.price.special = {
+                    et  : item.selected_variant.price.et.special,
+                    ati : item.selected_variant.price.ati.special
+                };
+            }
         } else {
             item.price = {
                 vat  : {rate: this.price.tax},

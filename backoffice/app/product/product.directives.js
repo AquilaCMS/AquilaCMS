@@ -293,7 +293,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
             $scope.getImageUrl = function (variant) {
                 let defaultImage = variant.images.find(img => img.default)
                 if(!defaultImage) defaultImage = variant.images[0] || {}
-                return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.name}`;
+                return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.title || 'img'}${defaultImage.extension || '.jpg'}`;
             };
         }]
     };
