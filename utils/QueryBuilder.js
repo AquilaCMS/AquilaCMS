@@ -62,9 +62,13 @@ module.exports = class QueryBuilder {
      * @param {PostBody} PostBody, PostBody object
      * @param {"find" | "findOne" | "findById"} [request=find], le type de requete : (find, findOne, findById)
      */
-    verifyPostBody(PostBody, request = 'find') {
+    verifyPostBody(PostBody, request = 'find', isAdmin) {
         if (PostBody && PostBody.PostBody) { // Fix postbody pas au bon niveau
             PostBody = PostBody.PostBody;    // P2 : How is it that there is a PostBody in a PostBody ?!
+        }
+
+        if (isAdmin && !PostBody.limit) {
+            PostBody.limit = 0;
         }
 
         if (request === 'find') {
@@ -101,7 +105,7 @@ module.exports = class QueryBuilder {
      */
     async find(PostBody, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
-        const postBodyChecked                                  = this.verifyPostBody(PostBody);
+        const postBodyChecked                                  = this.verifyPostBody(PostBody, 'find', isAdmin);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
 
         const addStructure   = this.addToStructure(structure, sort);
@@ -136,7 +140,7 @@ module.exports = class QueryBuilder {
     async findOne(PostBody = null, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         // creating a PostBody object with default values
-        const postBodyCheck                 = this.verifyPostBody(PostBody, 'findOne');
+        const postBodyCheck                 = this.verifyPostBody(PostBody, 'findOne', isAdmin);
         const {filter, populate, structure} = postBodyCheck;
         if (this.containRestrictedLabels(filter)) throw NSErrors.OperatorRestricted;
         const addStructure = this.addToStructure(structure);
@@ -167,7 +171,7 @@ module.exports = class QueryBuilder {
      */
     async findById(id, PostBody = null, isAdmin = false) {
         // creating a PostBody object with default values
-        const postBodyCheck         = this.verifyPostBody(PostBody, 'findById');
+        const postBodyCheck         = this.verifyPostBody(PostBody, 'findById', isAdmin);
         const {populate, structure} = postBodyCheck;
         if (!mongoose.Types.ObjectId.isValid(id)) throw NSErrors.InvalidObjectIdError;
         const addStructure = this.addToStructure(structure);

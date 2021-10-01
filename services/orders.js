@@ -64,7 +64,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
 });
 
 const getOrders = async (PostBody) => {
-    const result = await queryBuilder.find(PostBody);
+    const result = await queryBuilder.find(PostBody, false, true);
     return result;
 };
 
