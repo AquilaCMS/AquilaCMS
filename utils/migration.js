@@ -162,6 +162,23 @@ const migration_9_adminRights = async () => {
     // Deprecated
 };
 
+const migration_10_shortcode = async () => {
+    console.log('Applying migration script "migration_10_shortcode"...');
+    const mtCodes = ['register', 'passwordRecovery', 'activationAccount'];
+    for (let j = 0; j < mtCodes.length; j++) {
+        const result = await mongoose.connection.collection('mailtypes').findOne({code: mtCodes[j]});
+        if (result) {
+            for (let i = 0; i < Object.keys(result.translation).length; i++) {
+                const lng = Object.keys(result.translation)[i];
+                result.translation[lng].variables.push({value: 'URL_SITE', descripton: 'Url du site'});
+                result.translation[lng].variables.push({value: 'token', descripton: 'Token'});
+            }
+            await mongoose.connection.collection('mailtypes').deleteOne({code: result.code});
+            await mongoose.connection.collection('mailtypes').findOneAndUpdate({code: result.code}, {$set: result});
+        }
+    }
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -172,7 +189,8 @@ const migrationScripts = [
     migration_6_contentSecurityPolicy,
     migration_7_Job_Translations,
     migration_8_CmsBlocks,
-    migration_9_adminRights
+    migration_9_adminRights,
+    migration_10_shortcode
     // sample
 ];
 
