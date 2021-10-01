@@ -15,12 +15,11 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 
-const utils         = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
-const defaultVAT    = 20;
+const utils        = require('../../utils/utils');
+const aquilaEvents = require('../../utils/aquilaEvents');
+const Schema       = mongoose.Schema;
+const {ObjectId}   = Schema.Types;
+const defaultVAT   = 20;
 
 const CartSchema = new Schema({
     updated : {type: Date, default: Date.now},

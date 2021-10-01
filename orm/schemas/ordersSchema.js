@@ -6,9 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const utilsDatabase = require('../../utils/database');
+const mongoose     = require('mongoose');
+const aquilaEvents = require('../../utils/aquilaEvents');
 
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');

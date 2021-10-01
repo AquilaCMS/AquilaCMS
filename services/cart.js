@@ -26,7 +26,6 @@ const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
 const servicesMail      = require('./mail');
 const ServiceJob        = require('./job');
-const cart              = require('../orm/models/cart');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];

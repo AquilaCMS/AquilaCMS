@@ -177,7 +177,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     let filePathCache  = '';
     let fileName       = '';
     let imageObj       = {};
-    let relativePath   = '';
     let fileNameOption = '';
 
     if (options.position) {
@@ -195,7 +194,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
             // we get the name of the file
             fileName      = path.basename(imageObj.url);
-            relativePath  = imageObj.url;
             filePath      = path.join(_path, imageObj.url);
             fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
             filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
@@ -213,7 +211,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             }
             // we get the name of the file
             fileName      = path.basename(imageObj.url);
-            relativePath  = imageObj.url;
             filePath      = path.join(_path, imageObj.url);
             fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
             filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
@@ -223,7 +220,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         case 'medias':
             imageObj      = await Medias.findOne({_id});
             fileName      = path.basename(imageObj.link, `${path.extname(imageObj.link)}`);
-            relativePath  = imageObj.link;
             filePath      = path.join(_path, imageObj.link);
             fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.link)}`;
             filePathCache = path.join(cacheFolder, 'medias', fileName);
@@ -234,7 +230,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             const obj     = await mongoose.model(type).findOne({'items._id': _id});
             imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
             fileName      = path.basename(imageObj.src, `${path.extname(imageObj.src)}`);
-            relativePath  = imageObj.src;
             filePath      = path.resolve(_path, imageObj.src);
             fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.src)}`;
             filePathCache = path.resolve(cacheFolder, type, fileName);
@@ -243,7 +238,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         case 'blog':
             const blog    = await mongoose.model('news').findOne({_id});
             fileName      = path.basename(blog.img, `${path.extname(blog.img)}`);
-            relativePath  = blog.img;
             filePath      = path.join(_path, blog.img);
             fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(blog.img)}`;
             filePathCache = path.join(cacheFolder, type, fileName);
@@ -252,7 +246,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         case 'category':
             const category = await mongoose.model('categories').findOne({_id});
             fileName       = path.basename(category.img, `${path.extname(category.img)}`);
-            relativePath   = category.img;
             filePath       = path.join(_path, category.img);
             fileName       = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(category.img)}`;
             filePathCache  = path.join(cacheFolder, type, fileName);
@@ -261,7 +254,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         case 'picto':
             const picto   = await mongoose.model('pictos').findOne({_id});
             fileName      = path.basename(picto.filename, path.extname(picto.filename));
-            relativePath  = path.join('medias/picto', picto.filename);
             filePath      = path.join(_path, 'medias/picto', picto.filename);
             fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
             filePathCache = path.join(cacheFolder, type, fileName);
