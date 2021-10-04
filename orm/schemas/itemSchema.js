@@ -68,21 +68,7 @@ const itemsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ],
-    typeDisplay : {type: String, default: undefined},
-    variants    : [{
-        code        : {type: String},
-        type        : {type: String, enum: ['list', 'radio', 'checkbox']},
-        sort        : {type: Number},
-        id          : {type: ObjectId, ref: 'attributes', index: true},
-        translation : {
-            /**
-             *  lang: {
-             *      name: String
-             *  }
-             */
-        }
-    }],
-    lang : {type: String}
+    typeDisplay : {type: String, default: undefined}
 }, {
     discriminatorKey : 'type',
     id               : false
@@ -101,6 +87,22 @@ itemsSchema.virtual('price.total').get(function () {
     }
 
     return {ati: price * self.quantity};
+});
+
+itemsSchema.virtual('stock').get(function () {
+    const self = this;
+    if (self.id._id) {
+        const originalPrd = self.id;
+        if (self.selected_variant) {
+            const variantValue = originalPrd.variants_values.find((vv) => vv._id.toString() === self.selected_variant.id.toString());
+            if (variantValue) {
+                return variantValue.stock;
+            }
+            return {};
+        }
+        return originalPrd.stock;
+    }
+    return {};
 });
 
 // Par défaut, le populate spécifique ne fait rien
