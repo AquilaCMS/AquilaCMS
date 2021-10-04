@@ -228,7 +228,7 @@ adminCatagenApp
                 var deferred = $q.defer();
                 var translation = {};
 
-                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
+                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 0}}).then(function (response)
                 {
                     const translationArray = []; // {url:"", name:""}
 

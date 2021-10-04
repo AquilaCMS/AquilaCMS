@@ -149,7 +149,7 @@ MediasControllers.controller("MediasDetailsCtrl",
             }
             $scope.id = id;
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
-            MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 99}}, function (response) {
+            MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 0}}, function (response) {
                 $scope.media = response;
                 $scope.filterDropdown();
                 if($scope.media.group){

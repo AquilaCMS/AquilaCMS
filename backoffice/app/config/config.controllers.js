@@ -19,7 +19,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
         $scope.local = {
             themeDataOverride: false
         };
-        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, structure: '*', limit: 99 } }, function ({ datas }) {
+        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, structure: '*', limit: 0 } }, function ({ datas }) {
             $scope.countries = datas;
         });
 

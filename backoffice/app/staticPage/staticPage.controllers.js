@@ -9,7 +9,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
             $scope.groups = []
             $scope.search = '';
 
-            StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+            StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
                 $scope.statics = staticsList.datas;
                 $scope.groups = staticsList.datas.getAndSortGroups()
                 $scope.currentTab = $scope.groups[0];
@@ -136,7 +136,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             if (userInput !== undefined) {
                 $scope.selectedDropdownItem = userInput;
             }
-            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }).$promise.then(function (staticsList) {
+            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }).$promise.then(function (staticsList) {
                 $scope.groups = staticsList.datas.getAndSortGroups($scope.selectedDropdownItem)
                 return staticsList.datas.getAndSortGroups($scope.selectedDropdownItem);
             });
@@ -254,7 +254,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                 $scope.selectedDropdownItem = userInput;
             }
             $scope.dropdownItems = [];
-            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }).$promise.then(function (staticsList) {
+            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }).$promise.then(function (staticsList) {
                 $scope.groups = staticsList.datas.getAndSortGroups(userInput);
                 return $scope.groups;
             });
@@ -288,7 +288,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             });
         };
 
-        StaticV2.list({ PostBody: { filter: {}, limit: 99 } }, function (staticsList) {
+        StaticV2.list({ PostBody: { filter: {}, limit: 0 } }, function (staticsList) {
             $scope.statics = staticsList.datas;
         });
 

@@ -14,7 +14,7 @@ SupplierControllers.controller("SupplierListCtrl", [
             if ($scope.filter.query != "") {
                 filter["name"] = { $regex: $scope.filter.query, $options: 'i' };
             }
-            SuppliersV2.list({ PostBody: { filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 99 } }, function (res) {
+            SuppliersV2.list({ PostBody: { filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 0 } }, function (res) {
                 $scope.suppliers = res.datas;
                 $scope.totalItems = res.count;
             });
@@ -77,7 +77,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
 
         if ($routeParams.supplierId) {
             $scope.isEditMode = true;
-            $scope.supplier = SuppliersV2.query({ PostBody: { filter: { code: $routeParams.supplierId }, structure: '*', limit: 99 } }, function () {
+            $scope.supplier = SuppliersV2.query({ PostBody: { filter: { code: $routeParams.supplierId }, structure: '*', limit: 0 } }, function () {
                 if (!angular.isDefined($scope.supplier.code)) {
                     $scope.supplier.code = "";
                 } else {
@@ -92,7 +92,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
 
         $scope.getProducts = function () {
             if (angular.isDefined($scope.supplier.code)) {
-                ProductsV2.list({ PostBody: { filter: { supplier_ref: $scope.supplier._id }, structure: '*', limit: 99 } }, function ({ datas }) {
+                ProductsV2.list({ PostBody: { filter: { supplier_ref: $scope.supplier._id }, structure: '*', limit: 0 } }, function ({ datas }) {
                     $scope.products = datas
                 });
             }

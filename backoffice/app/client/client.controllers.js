@@ -207,7 +207,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         }
 
         getAttributesClient = function(){
-            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 99, structure: '*', populate: ['attributes']}}, function ({datas}) {
+            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 0, structure: '*', populate: ['attributes']}}, function ({datas}) {
                 $scope.setAttributes = datas;
 
                 if ($scope.client && $scope.client.set_attributes === undefined) {
@@ -247,12 +247,12 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.filterDropdown();
 
         if ($routeParams.clientId !== "new") {
-            Orders.list({PostBody: {filter: {['customer.id']: $routeParams.clientId}, limit: 99}}, function(response) {
+            Orders.list({PostBody: {filter: {['customer.id']: $routeParams.clientId}, limit: 0}}, function(response) {
                 $scope.orders = response.datas;
             })
             $scope.carts = Carts.getCarts({param: $routeParams.clientId});
             $scope.rules = ClientV2.testUser({user_id: $routeParams.clientId});
-            TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 99 } }, function (countries) {
+            TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 0 } }, function (countries) {
                 $scope.countries = countries;
                 $scope.countries.datas.forEach(function (country, i) {
                     $rootScope.languages.forEach(lang => {
@@ -478,7 +478,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
 
         $scope.loadNewAttrs = async function () {
-            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 99}}, function ({datas}) {
+            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 0}}, function ({datas}) {
                 //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
