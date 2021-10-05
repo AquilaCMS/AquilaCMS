@@ -64,15 +64,15 @@ class PageProduct extends NSPageProduct {
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
-        let imgDefault = `/images/products/516x400/no-image/${product.slug[lang]}.jpg`;
+        let imgDefault = `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/no-image/${product.slug[lang]}.jpg`;
         let imgAlt = 'illustration produit';
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${foundImg.name}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${foundImg.name}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.images[0].name}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.images[0].name}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -105,11 +105,6 @@ class PageProduct extends NSPageProduct {
                     pictos.push({ location: picto.location, style, pictos: [picto] });
                 }
             });
-        }
-
-        // replace original product datas for default variant
-        if(this.hasVariants() && !this.state.variant) {
-            this.selectVariant(this.getDefaultVariantValue())
         }
 
         return (
@@ -258,7 +253,7 @@ class PageProduct extends NSPageProduct {
                                                     product.variants_values.filter(vv => vv.active).map((variant) => {
                                                         const vImage = variant.images.find(img => img.default) || {}
                                                         return (
-                                                            <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(variant)}>
+                                                            <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(product, variant)}>
                                                                 <img src={'/images/productsVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
                                                             </li>
                                                         )
