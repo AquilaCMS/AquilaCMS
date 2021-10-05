@@ -198,12 +198,12 @@ const initDBValues = async () => {
                             description : 'Lien d\'activation du compte'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'Url du site'
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -232,12 +232,12 @@ const initDBValues = async () => {
                             description : 'Account activation link'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'Url du site'
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -800,12 +800,12 @@ const initDBValues = async () => {
                             description : 'Lien pour changer le mot de passe'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'Url du site'
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -830,12 +830,12 @@ const initDBValues = async () => {
                             description : 'Recovery password link'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'Url du site'
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
