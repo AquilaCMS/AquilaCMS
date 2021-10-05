@@ -9,6 +9,7 @@ import {
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 import { withI18next } from 'lib/withI18n';
 
@@ -247,7 +248,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                             </div>
                                         </section>
                                     </div>
-                                    <NSSidebarAccount active="orders" gNext={{ Link, Router }} t={t} />
+                                    <SidebarAccount active="orders" />
                                 </div>
                             </div>
                         </div>

@@ -6,21 +6,19 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const fs       = require('../../utils/fsp');
-
+const mongoose          = require('mongoose');
+const fs                = require('../../utils/fsp');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
+const utils             = require('../../utils/utils');
+const aquilaEvents      = require('../../utils/aquilaEvents');
 
-const utils         = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
-const defaultVAT    = 20;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
+const defaultVAT = 20;
 
 const CartSchema = new Schema({
     updated : {type: Date, default: Date.now},

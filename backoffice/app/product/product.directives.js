@@ -62,7 +62,7 @@ ProductDirectives.directive("nsProductsList", function () {
 
                 // Pagination
                 $scope.onPageChange = function (page) {
-                    SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                    SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                         $scope.suppliers = {"": ""};
                         for (let i = 0; i < datas.length; i++) {
                             $scope.suppliers[datas[i]._id] = datas[i].name;
@@ -195,7 +195,7 @@ ProductDirectives.directive("nsProductMarketing", [
                     if (ngModel.$modelValue) {
                         scope.product = ngModel.$modelValue;
 
-                        SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                        SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                             scope.supplierList = datas;
 
                         });
@@ -206,11 +206,11 @@ ProductDirectives.directive("nsProductMarketing", [
                 "$scope", "$filter", "TrademarksV2", "SuppliersV2", "FamilyV2", function ($scope, $filter, TrademarksV2, SuppliersV2, FamilyV2) {
                     $scope.supplier = {};
                     $scope.trademarkList = [];
-                    TrademarksV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function({datas}) {
+                    TrademarksV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function({datas}) {
                         $scope.trademarkList = datas
                     });
 
-                    FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                    FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                         $scope.allFamilies = datas;
                         $scope.universeList = $filter("filter")(datas, {type: "universe"}, true);
                         $scope.familyList = $filter("filter")(datas, {type: "family"}, true);
@@ -409,7 +409,7 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                 if ($scope.isEditMode) {
                     $scope.$watch("product.code", function (newVal, oldVal) {
                         if (newVal) {
-                            ProductsV2.list({PostBody: {filter: {_id: {$in: $scope.product.associated_prds}}, structure: '*', limit: 99}}, function ({datas, count}) {
+                            ProductsV2.list({PostBody: {filter: {_id: {$in: $scope.product.associated_prds}}, structure: '*', limit: 0}}, function ({datas, count}) {
                                 for (let prd of datas) {
                                     prd.images = prd.images.filter(i => i.default)
                                 }

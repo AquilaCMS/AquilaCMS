@@ -56,6 +56,8 @@ const CategoriesSchema = new Schema({
     id          : false
 });
 
+CategoriesSchema.index({displayOrder: 1});
+
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
  pageSlug
@@ -81,22 +83,24 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
             const lang = self.translation[translationKeys[i]];
 
             if (Object.keys(lang).length > 0) {
-                if (lang.slug === undefined || lang.slug === '') {
-                    lang.slug = utils.slugify(lang.name);
-                } else {
-                    lang.slug = utils.slugify(lang.slug);
-                }
-                if (lang.slug.length <= 2) {
-                    errors.push('slug trop court');
-                    return errors;
-                }
-                if (updateQuery) {
-                    self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
-                }
-                if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                    lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                if (updateQuery.action === 'catalog') {
+                    if (lang.slug === undefined || lang.slug === '') {
+                        lang.slug = utils.slugify(lang.name);
+                    } else {
+                        lang.slug = utils.slugify(lang.slug);
+                    }
+                    if (lang.slug.length <= 2) {
+                        errors.push('slug trop court');
+                        return errors;
+                    }
+                    if (updateQuery) {
+                        self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
+                    }
                     if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                        errors.push('slug déjà existant');
+                        lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                        if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                            errors.push('slug déjà existant');
+                        }
                     }
                 }
                 errors = errors.concat(translationUtils.checkCustomFields(lang, `translation.${translationKeys[i]}`, [
@@ -119,22 +123,24 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
             const lang = updateQuery.translation[translationKeys[i]];
 
             if (Object.keys(lang).length > 0) {
-                if (lang.slug === undefined || lang.slug === '') {
-                    lang.slug = utils.slugify(lang.name);
-                } else {
-                    lang.slug = utils.slugify(lang.slug);
-                }
-                if (lang.slug.length <= 2) {
-                    errors.push('slug trop court');
-                    return errors;
-                }
-                if (updateQuery) {
-                    updateQuery.translation[translationKeys[i]] = Object.assign(updateQuery.translation[translationKeys[i]], lang);
-                }
-                if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                    lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                if (updateQuery.action === 'catalog') {
+                    if (lang.slug === undefined || lang.slug === '') {
+                        lang.slug = utils.slugify(lang.name);
+                    } else {
+                        lang.slug = utils.slugify(lang.slug);
+                    }
+                    if (lang.slug.length <= 2) {
+                        errors.push('slug trop court');
+                        return errors;
+                    }
+                    if (updateQuery) {
+                        updateQuery.translation[translationKeys[i]] = Object.assign(updateQuery.translation[translationKeys[i]], lang);
+                    }
                     if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                        errors.push('slug déjà existant');
+                        lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                        if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                            errors.push('slug déjà existant');
+                        }
                     }
                 }
                 errors = errors.concat(translationUtils.checkCustomFields(lang, `translation.${translationKeys[i]}`, [

@@ -229,7 +229,10 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
         '{{company}}'                : _user.company.name,
         '{{fullname}}'               : _user.fullname,
         '{{firstname}}'              : _user.firstname,
-        '{{lastname}}'               : _user.lastname
+        '{{lastname}}'               : _user.lastname,
+        '{{token}}'                  : _user.activateAccountToken,
+        '{{URL_SITE}}'               : _config.environment.appUrl,
+        '{{lang}}'                   : lang
     };
     const htmlBody                                        = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, attachments});
@@ -255,7 +258,10 @@ const sendRegister = async (user_id, lang = '') => {
         '{{firstname}}' : _user.firstname,
         '{{company}}'   : _user.company.name,
         '{{lastname}}'  : _user.lastname,
-        '{{login}}'     : _user.email
+        '{{login}}'     : _user.email,
+        '{{token}}'     : _user.activateAccountToken,
+        '{{URL_SITE}}'  : _config.environment.appUrl,
+        '{{lang}}'      : lang
     };
     // if (true) { // Possibility to use a variable: validate the email at registration
     oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
@@ -289,7 +295,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
  * @param {string} tokenlink Password reset validation token
  * @param {string} [lang="fr"] lang
  */
-const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
+const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
     lang               = determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);
@@ -316,7 +322,9 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
         '{{lastname}}'  : _user.lastname,
         '{{company}}'   : _user.company.name,
         '{{fullname}}'  : _user.fullname,
-        '{{tokenlink}}' : tokenlink
+        '{{tokenlink}}' : tokenlink,
+        '{{token}}'     : token,
+        '{{URL_SITE}}'  : global.envConfig.environment.appUrl
     };
     const htmlBody  = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, attachments});

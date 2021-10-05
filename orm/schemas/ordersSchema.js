@@ -6,18 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const utilsDatabase = require('../../utils/database');
-
+const mongoose          = require('mongoose');
+const aquilaEvents      = require('../../utils/aquilaEvents');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
-
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const Schema            = mongoose.Schema;
+const {ObjectId}        = Schema.Types;
 
 const DeliveryPackageSchema = new Schema({
     date     : {type: Date, default: Date.now},
@@ -202,12 +199,19 @@ const OrdersSchema = new Schema({
         ati : {type: Number, default: 0},
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
-    }
+    },
+    component_template : {type: String, default: null}
 }, {
     usePushEach : true,
     timestamps  : true,
     id          : false
 });
+
+// Need all this index for BO listing
+OrdersSchema.index({createdAt: -1});
+OrdersSchema.index({'customer.email': 1});
+OrdersSchema.index({'customer.nom': 1});
+OrdersSchema.index({'priceTotal.ati': 1});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});

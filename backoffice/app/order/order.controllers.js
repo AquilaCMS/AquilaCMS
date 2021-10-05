@@ -669,7 +669,7 @@ OrderControllers.controller("InfoAddressCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 99 } }, function (countries) {
+        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 0 } }, function (countries) {
             $scope.countries = countries;
             $scope.countries.datas.forEach(function (country, i) {
                 $rootScope.languages.forEach(lang => {

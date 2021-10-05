@@ -247,7 +247,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                     $scope.rule = rule;
                 }
             });
-            RulesV2.list({PostBody: {filter: {owner_id: $routeParams.promoId, owner_type: "discountAction"}, structure: '*', limit: 99}}, function ({datas}) {
+            RulesV2.list({PostBody: {filter: {owner_id: $routeParams.promoId, owner_type: "discountAction"}, structure: '*', limit: 0}}, function ({datas}) {
                 $scope.actions = datas;
 
                 $scope.promo.actions = datas.map(function (action) {

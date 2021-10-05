@@ -5,7 +5,7 @@
 
     <div class="row start_stats orderInfoColor" style="margin: 30px auto;">
 
-        <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0;">
+        <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0;overflow: hidden">
             <i class="fa fa-key" style="color: #5c6bc0"></i>
             <p>
                 <b style="font-size: 25px;">{{order.number}}</b>
@@ -14,17 +14,18 @@
             </p>
         </div>
 
-        <div class="col-md-2" style="background:#e57373;border: 1px solid #ef5350">
+        <div class="col-md-2" style="background:#e57373;border: 1px solid #ef5350;overflow: hidden">
             <i class="fa fa-calendar-o" style="color: #ef5350"></i>
             <p>
-                <b style="font-size: 25px;">{{order.createdAt | date:'dd/MM/yyyy'}}</b> <b style="font-size: 15px;">{{order.createdAt | date:'HH:mm'}}</b>
+                <b style="font-size: 25px;">{{order.createdAt | date:'dd/MM/yyyy'}}</b>
                 <br />
+                <b style="font-size: 15px;">{{order.createdAt | date:'HH:mm'}}</b>
                 <br/>
                 <span translate>order.friendlyInfo.date</span>
             </p>
         </div>
 
-        <div class="col-md-2" style="background:#a1887f;border: 1px solid #8f7f79">
+        <div class="col-md-2" style="background:#a1887f;border: 1px solid #8f7f79;overflow: hidden">
             <i class="fa fa-archive" style="color: #8f7f79"></i>
             <p>
                 <b>{{calculateTotalQty(order.items)}}</b>
@@ -33,7 +34,7 @@
             </p>
         </div>
 
-        <div class="col-md-2" style="background:#ffd54f;border: 1px solid #ffca28">
+        <div class="col-md-2" style="background:#ffd54f;border: 1px solid #ffca28;overflow: hidden">
             <i class="fa fa-usd" style="color: #ffca28"></i>
             <p>
                 <b style="font-size: 30px;">{{order.priceTotal.ati | number:2}}</b><b class="euro">€</b>
@@ -44,7 +45,7 @@
             </p>
         </div>
 
-        <div class="col-md-2" style="background:#80cbc4;border: 1px solid #4db6ac;width:23%;cursor: pointer;" ng-click="scrollTo('changeStatusId')">
+        <div class="col-md-2" style="background:#80cbc4;border: 1px solid #4db6ac;width:23%;cursor: pointer;overflow: hidden" ng-click="scrollTo('changeStatusId')">
             <i class="fa fa-bookmark" style="color: #4db6ac"></i>
             <p>
                 <b style="font-size: 20px;">{{getStatus(order.status)}}</b>
@@ -533,4 +534,5 @@
             </div>
         </div>
     </div>
+    <div class="row" bind-html-compile="order.component_template"></div>
 </ns-box>

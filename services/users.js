@@ -13,7 +13,6 @@ const servicesMail           = require('./mail');
 const QueryBuilder           = require('../utils/QueryBuilder');
 const aquilaEvents           = require('../utils/aquilaEvents');
 const NSErrors               = require('../utils/errors/NSErrors');
-const attributes             = require('../orm/models/attributes');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -184,7 +183,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     }
     const tokenlink = `${link}?token=${resetPassToken}`;
     if (sendMail) {
-        await servicesMail.sendResetPassword(email, tokenlink, lang);
+        await servicesMail.sendResetPassword(email, tokenlink, resetPassToken, lang);
     }
     return {message: email};
 };

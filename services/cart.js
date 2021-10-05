@@ -128,7 +128,7 @@ const deleteCartItem = async (cartId, itemId) => {
                     const selectionProducts = cartItem.selections[i].products;
                     // we check that each product is orderable
                     for (let j = 0; j < selectionProducts.length; j++) {
-                        const selectionProduct = await Products.findById(selectionProducts[j]);
+                        const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                         if (selectionProduct.type === 'simple') {
                             await ServicesProducts.updateStock(selectionProduct._id, cartItem.quantity);
                         }
@@ -148,6 +148,7 @@ const deleteCartItem = async (cartId, itemId) => {
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -221,6 +222,7 @@ const addItem = async (req) => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
+    await utilsDatabase.populateItems(_newCart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -254,11 +256,11 @@ const updateQty = async (req) => {
                 const selectionProducts = item.selections[i].products;
                 // we check that each product is orderable
                 for (let j = 0; j < selectionProducts.length; j++) {
-                    const selectionProduct = await Products.findById(selectionProducts[j]);
+                    const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
@@ -283,6 +285,7 @@ const updateQty = async (req) => {
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -410,6 +413,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
+        delete newOrder._id;
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {
