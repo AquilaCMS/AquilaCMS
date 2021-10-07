@@ -13,10 +13,11 @@
         "pseudo": "Pseudo",
         "phone": "Téléphone",
         "type": "Type",
-        "inscription": "Inscription :",
-        "birthday": "Anniversaire :" ,
+        "inscription": "Inscription",
+        "birthday": "Anniversaire" ,
+        "lastConnexion":"Dernière connexion",
         "taxDisplay": "Afficher taxes",
-        "checkAccount": "Vérifié :",
+        "checkAccount": "Vérifié",
         "mdp": "Mot de passe",
         "connectAs": "Se connecter en tant que ce client",
         "resetMdp": "Réinitialiser mot de passe",
@@ -90,6 +91,7 @@
         "prenom2": "Prenom",
         "company": "Société",
         "companyName": "Nom de la societe",
-        "creationDate": "Date de création"
+        "creationDate": "Date de création",
+        "lastConnexion": "Dernière connexion"
     }
 }

@@ -39,11 +39,11 @@
                                     <span ng-show="sort.type == 'company.name' && sort.reverse" class="ico-chevron-up"></span>
                                 </a>
                             </th>
-                            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Creation date: activate to sort column ascending">
-                                <a  ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse" translate>
-                                    client.list.creationDate
-                                    <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
-                                    <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
+                            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Login date: activate to sort column ascending">
+                                <a  ng-click="sortSearch('lastConnexion')" translate>
+                                    client.list.lastConnexion
+                                    <span ng-show="sort.type == 'lastConnexion' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'lastConnexion' && sort.reverse" class="ico-chevron-up"></span>
                                 </a>
                             </th>
                             <th ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
@@ -64,10 +64,10 @@
                             <th>
                                 <input type="text" ng-change="sortSearch(null, 1)" ng-model="filter.company" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.companyName' class="form-control">
                             </th>
-                            <th>
-                                <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="sortSearch(null, 1)">
+                            <!-- <th>
+                                <ns-datepicker name="lastConnexion" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.lastConnexion" ng-change="sortSearch(null, 1)">
                                 </ns-datepicker>
-                            </th>
+                            </th> -->
                         </tr>
 
                         </thead>
@@ -80,7 +80,7 @@
                             <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
                             <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
                             <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
-                            <td data-label="Date de création :" class="tdSize">{{client.createdAt | date:"dd/MM/yyyy"}}</td>
+                            <td data-label="Login :" class="tdSize">{{client.lastConnexion | date:"dd/MM/yy - hh:mm"}}</td>
                             <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                             <!--<td style="width: 25%">
                                 <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">
