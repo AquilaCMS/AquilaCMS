@@ -222,7 +222,7 @@ const addItem = async (req) => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
-    await utilsDatabase.populateItems(_newCart.items);
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
