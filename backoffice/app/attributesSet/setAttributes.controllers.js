@@ -13,7 +13,7 @@ SetAttributesControllers.controller("SetAttributesListCtrl", [
         init();
 
         function getSetAttributes() {
-            SetAttributesV2.list({PostBody: {filter: {type: $scope.type}, limit: 99, structure: '*'}}, function ({datas}) {
+            SetAttributesV2.list({PostBody: {filter: {type: $scope.type}, limit: 0, structure: '*'}}, function ({datas}) {
                 $scope.setAttributes = datas;
             });
         }

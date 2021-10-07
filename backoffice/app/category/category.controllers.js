@@ -75,7 +75,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             selectedLang = lang;
         };
 
-        StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+        StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
             $scope.pages = staticsList.datas;
             if ($scope.pages[0]) {
                 $scope.pageSelelected = $scope.pages[0].translation[$scope.lang].slug;
@@ -98,7 +98,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         }
         function getAttrib(){
             // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
-            CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 99, filter: { "usedInFilters":true}}}, function (resp)
+            CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 0, filter: { "usedInFilters":true}}}, function (resp)
             {
                 let response = resp.datas;
                 for(var i = 0; i < response.length; i++)
@@ -694,7 +694,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 oneCat.children = [];
             }
             if(oneCat.children.length > 0){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
                     oneCat.nodes = response.datas || [];
                     for(let oneNode of oneCat.nodes){
                         $scope.expandOneCat(oneNode);
@@ -723,7 +723,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     populate: ["children"],
                     sort: {displayOrder: 1},
                     structure : structure,
-                    limit: 99
+                    limit: 0
                 }
             }, function (response) {
                 $scope.categories = verifyOrder(response.datas);
@@ -766,7 +766,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 cat.collapsed = false;
             }
             if(cat.collapsed){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
                     cat.nodes = response.datas;
                     cat.collapsed = false;
                     for(let oneNode of cat.nodes){
@@ -1038,7 +1038,7 @@ CategoryControllers.controller("NsCategoryListController", [
         }).code;
 
         $scope.getCategories = function() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
                 $scope.categories = response.datas;
                 //we expand all the categories
                 $scope.expandAll();
@@ -1074,7 +1074,7 @@ CategoryControllers.controller("NsCategoryListController", [
                 oneCat.children = [];
             }
             if (oneCat.children.length > 0) {
-                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
+                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 0 } }, function (response) {
                     oneCat.nodes = response.datas || [];
                     for (let oneNode of oneCat.nodes) {
                         $scope.expandOneCat(oneNode);
@@ -1094,7 +1094,7 @@ CategoryControllers.controller("NsCategoryListController", [
 
         $scope.listChildren = function (cat, scope) {
             for(let oneNode of cat.nodes){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
                     oneNode.nodes = response.datas;
                 });
             }

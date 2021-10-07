@@ -84,7 +84,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds              = await Products.find(PostBody.filter);
+    const prds              = await Products.find(PostBody.filter).lean();
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
     for (const prd of prds) {

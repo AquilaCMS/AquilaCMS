@@ -46,11 +46,9 @@
                                 </a>
                             </th>
                             <th style="text-align: center">
-                                <a ng-click="sort.type = 'status'; sort.reverse = !sort.reverse; getOrders(1);">
                                     <span translate>order.list.status</span>
                                     <span ng-show="sort.type == 'status' && !sort.reverse" class="ico-chevron-down"></span>
                                     <span ng-show="sort.type == 'status' && sort.reverse" class="ico-chevron-up"></span>
-                                </a>
                             </th>
                             <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
                         </tr>

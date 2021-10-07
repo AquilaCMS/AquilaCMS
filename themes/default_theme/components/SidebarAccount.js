@@ -3,11 +3,12 @@ import {
     NSSidebarAccount,
     NSContext,
     NSToast,
-    logoutUser
+    logoutUser,
+    getModulesHookFunctionsByType
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n'
 import { Link, Router } from 'routes';
-import { getModulesHookFunctionsByType } from 'lib/utils';
+import listModules from '../modules/list_modules'
 
 class SidebarAccount extends NSSidebarAccount {
     constructor(props, context) {
@@ -22,7 +23,7 @@ class SidebarAccount extends NSSidebarAccount {
         try {
             await logoutUser();
             // HOOK => onLogout
-            const onLogoutFunctions = (await getModulesHookFunctionsByType()).onLogout
+            const onLogoutFunctions = (await getModulesHookFunctionsByType(listModules)).onLogout
             if (onLogoutFunctions) {
                 for(const func of onLogoutFunctions) {
                     if(typeof func === 'function') {
