@@ -96,7 +96,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             return group;
         }
-        function getAttrib(){
+        $scope.getAttrib = function () {
             // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
             CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 0, filter: { "usedInFilters":true}}}, function (resp)
             {
@@ -109,17 +109,11 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // Si l'attribut est déjà présent dans la category alors nous le supprimons de usedInFilters et nous ajoutons le code
                 // a l'objet category.filters.attributes[i].code
                 if($scope.category.filters && $scope.category.filters.attributes){
-                    const attributesLength = $scope.category.filters.attributes.length;
-                    for(var i = 0; i < attributesLength; i++) {
-                        // On recherche l'index de usedInFilters existant dans $scope.category.filters.attributes afin de le supprimer de usedInFilters
-                        var indexFound = $scope.usedInFilters.findIndex(function (filter) {
-                            return filter.id_attribut === $scope.category.filters.attributes[i]._id;
-                        });
-                        if(indexFound !== -1)
-                        {
-                            // On ajoute au category.filters.attributes le code afin qu'il soit visible dans la partie de droite des filtres
-                            $scope.category.filters.attributes[i].code = $scope.usedInFilters[indexFound].code;
-                            $scope.usedInFilters.splice(indexFound, 1);
+                    $scope.usedInFilters = []
+                    for(var i = 0; i < response.length; i++) {
+                        console.log($scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code))
+                        if(!$scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code)) {
+                            $scope.usedInFilters.push(response[i])
                         }
                     }
                 }
@@ -319,37 +313,34 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }).reverse();
         }
 
-        function init(){
-            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
-                $scope.category = response;
-                if($scope.category && $scope.category.productsList){
-                    if($scope.category.productsList.length > 0){
-                        $scope.products = $scope.category.productsList.map((element) => {
-                            return {
-                                checked: true,
-                                sortWeight: element.sortWeight || 0,
-                                ...element.id
-                            }
-                        })
-                        $scope.totalItems = $scope.category.productsList.length;
-                        $scope.products = filterProducts($scope.products);
-                        $scope.products = $scope.products.filter(function(value, index){
-                            return index < 14; // it the first page
-                        });
-                    }else{
-                        // no products in this cat, so we need to change the setup
-                        $scope.searchObj.productInCategory == "false";
-                        $scope.getProducts();
-                    }
+        CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
+            $scope.category = response;
+            if($scope.category && $scope.category.productsList){
+                if($scope.category.productsList.length > 0){
+                    $scope.products = $scope.category.productsList.map((element) => {
+                        return {
+                            checked: true,
+                            sortWeight: element.sortWeight || 0,
+                            ...element.id
+                        }
+                    })
+                    $scope.totalItems = $scope.category.productsList.length;
+                    $scope.products = filterProducts($scope.products);
+                    $scope.products = $scope.products.filter(function(value, index){
+                        return index < 14; // it the first page
+                    });
                 }else{
                     // no products in this cat, so we need to change the setup
                     $scope.searchObj.productInCategory == "false";
                     $scope.getProducts();
                 }
-            });
-        }
-        init();
-        getAttrib();
+            }else{
+                // no products in this cat, so we need to change the setup
+                $scope.searchObj.productInCategory == "false";
+                $scope.getProducts();
+            }
+            $scope.getAttrib();
+        });
 
         RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule) {
             if(rule.operand === undefined) {
