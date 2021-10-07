@@ -253,7 +253,7 @@ class PageProduct extends NSPageProduct {
                                                     this.hasVariants(product) && product.variants_values.filter(vv => vv.active).map((variant) => {
                                                         const vImage = variant.images.find(img => img.default) || {}
                                                         return (
-                                                            <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(product, variant)}>
+                                                            <li key={variant._id} className={"variant-value " + ((product.selected_variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(product, variant)}>
                                                                 <img src={'/images/productsVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
                                                             </li>
                                                         )
