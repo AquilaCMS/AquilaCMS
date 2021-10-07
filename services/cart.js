@@ -148,6 +148,7 @@ const deleteCartItem = async (cartId, itemId) => {
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -221,6 +222,7 @@ const addItem = async (req) => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -283,6 +285,7 @@ const updateQty = async (req) => {
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 

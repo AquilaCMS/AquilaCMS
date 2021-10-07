@@ -196,6 +196,14 @@ const initDBValues = async () => {
                         {
                             value       : 'activate_account_token',
                             description : 'Lien d\'activation du compte'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -222,6 +230,14 @@ const initDBValues = async () => {
                         {
                             value       : 'activate_account_token',
                             description : 'Account activation link'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -782,6 +798,14 @@ const initDBValues = async () => {
                         {
                             value       : 'tokenlink',
                             description : 'Lien pour changer le mot de passe'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -804,6 +828,14 @@ const initDBValues = async () => {
                         {
                             value       : 'tokenlink',
                             description : 'Recovery password link'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -1288,6 +1320,14 @@ const initDBValues = async () => {
                         {
                             value       : 'activate_account_token',
                             description : 'Lien d\'activation du compte'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -1310,6 +1350,14 @@ const initDBValues = async () => {
                         {
                             value       : 'activate_account_token',
                             description : 'Account activation link'
+                        },
+                        {
+                            value       : 'URL_SITE',
+                            description : 'Url du site'
+                        },
+                        {
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 

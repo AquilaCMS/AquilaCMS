@@ -17,7 +17,7 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
                 filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
             }
         }
-        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 99}}, function({datas}) {
+        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 0}}, function({datas}) {
             $scope.trademarks = datas
         });
     }

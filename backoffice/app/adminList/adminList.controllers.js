@@ -99,7 +99,7 @@ AdminListControllers.controller("AdminNewCtrl", [
         $scope.user = { accessList: [] };
         $scope.rights = [];
 
-        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 0, structure: '*' } }, function (data) {
             $scope.rights = data.datas;
         });
 
@@ -153,7 +153,7 @@ AdminListControllers.controller("AdminDetailCtrl", [
             $scope.user = client;
             $scope.user.oldEmail = client.email;
         });
-        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 0, structure: '*' } }, function (data) {
             $scope.rights = data.datas;
         });
 

@@ -89,6 +89,14 @@ itemsSchema.virtual('price.total').get(function () {
     return {ati: price * self.quantity};
 });
 
+itemsSchema.virtual('stock').get(function () {
+    const self = this;
+    if (self.id._id) {
+        return self.id.stock;
+    }
+    return {};
+});
+
 // Par défaut, le populate spécifique ne fait rien
 itemsSchema.methods.populateItem = function () {
     return Promise.resolve();

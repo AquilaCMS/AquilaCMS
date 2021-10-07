@@ -28,7 +28,7 @@ TranslationControllers.controller('LanguagesCtrl',
                     }
                 }
             }
-            LanguagesApiV2.list({}, {PostBody: {filter, limit: 99}}, function (languages) {
+            LanguagesApiV2.list({}, {PostBody: {filter, limit: 0}}, function (languages) {
                 $scope.languages = languages.datas;
             });
         }
@@ -72,7 +72,7 @@ TranslationControllers.controller('LanguageEditCtrl',
         ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService', '$translate',
             function ($scope, LanguagesApiV2, $modalInstance, lang, toastService, $translate) {
                 function getLanguages() {
-                    LanguagesApiV2.list({}, {PostBody: {filter: {}, limit: 99}},function (languages) {
+                    LanguagesApiV2.list({}, {PostBody: {filter: {}, limit: 0}},function (languages) {
                         $scope.languages = languages.datas;
                     });
                 }
