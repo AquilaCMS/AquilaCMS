@@ -1103,7 +1103,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
         };
     
         if(status && status == orderStatuses.PAID){
-            $scope.return.type = "CREDIT";
+            $scope.return.type = "DEBIT";
             $scope.pay.disabled = true;
         }
 
