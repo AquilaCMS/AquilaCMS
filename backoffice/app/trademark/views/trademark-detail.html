@@ -2,39 +2,33 @@
     <form name="form" class="form-horizontal" novalidate ng-submit="save(trademark)" role="form">
         <ns-buttons is-edit-mode="true" remove="removeTrademark(trademark)" save-and-quit="save(trademark,true)"
                     disable-save="disableSave" return-path="/trademarks" form="form">
-            <p translate>trademark.detail.click</p>
+
+                    
             <table id="user" class="table table-bordered table-striped" style="clear: both">
                 <tbody>
-                <tr>
-                    <td width="35%" translate>trademark.detail.id</td>
-                    <td width="65%">{{trademark._id}}</td>
-                </tr>
-                <tr>
-                    <td translate>trademark.detail.nom</td>
-                    <td>
-                        <input type="text" class="form-control" ng-model="trademark.name">
-                    </td>
-                </tr>
-                <tr>
-                    <td translate>trademark.detail.code</td>
-                    <td>
-                        {{trademark.code}}
-                    </td>
-                </tr>
-                <tr>
-                    <td translate>trademark.detail.active</td>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" ng-model="trademark.active" ng-change="updateTrademark({active: trademark.active})" class="switch-input">
-                            <span class="switch-label" data-on="Oui" data-off="Non"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td translate>trademark.detail.creaDate</td>
-                    <td>{{trademark.createdAt | date}}</td>
-                </tr>
+                    <tr>
+                        <td translate>trademark.detail.code</td>
+                        <td>
+                            {{trademark.code}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td translate>trademark.detail.nom</td>
+                        <td>
+                            <input type="text" class="form-control" ng-model="trademark.name">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td translate>trademark.detail.active</td>
+                        <td>
+                            <ns-switch name="active" ng-model="trademark.active"></ns-switch>
+                        </td>
+                    </tr>
+                    <!-- <tr>
+                        <td translate>trademark.detail.creaDate</td>
+                        <td>{{trademark.createdAt | date}}</td>
+                    </tr> -->
                 </tbody>
             </table>
         </ns-buttons>
