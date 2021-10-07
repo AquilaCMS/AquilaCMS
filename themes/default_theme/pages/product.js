@@ -250,7 +250,7 @@ class PageProduct extends NSPageProduct {
                                             <div className="variants__container">
                                                 <ul className="variants-values__list">
                                                 {
-                                                    product.variants_values.filter(vv => vv.active).map((variant) => {
+                                                    this.hasVariants(product) && product.variants_values.filter(vv => vv.active).map((variant) => {
                                                         const vImage = variant.images.find(img => img.default) || {}
                                                         return (
                                                             <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(product, variant)}>

@@ -164,9 +164,9 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (_product.hasVariantsValue() && typeof req.body.item.selected_variant === 'undefined') {
+    if (_product.hasVariantsValue(_product) && typeof req.body.item.selected_variant === 'undefined') {
         throw NSErrors.InvalidParameters;
-    } else if (_product.hasVariantsValue() && req.body.item.selected_variant) {
+    } else if (_product.hasVariantsValue(_product) && typeof req.body.item.selected_variant === 'undefined') {
         // we set variant in the cart !
         // quick check if all mandatory options are present
         const isPresent = _product.variants_values.findIndex((oneVariant) => req.body.item.selected_variant._id.toString() === oneVariant._id.toString());
@@ -261,7 +261,7 @@ const addItem = async (req) => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
-    await utilsDatabase.populateItems(_newCart.items);
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 

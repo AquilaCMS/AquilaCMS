@@ -288,8 +288,8 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
-ProductsSchema.methods.hasVariantsValue = async function (that) {
-    return that ? (that.variants_values && that.variants_values.length > 0) : (this.variants_values && this.variants_values.length > 0);
+ProductsSchema.methods.hasVariantsValue = function (that) {
+    return that ? (that.variants_values && that.variants_values.length > 0 && that.variants_values.find((vv) => vv.active)) : (this.variants_values && this.variants_values.length > 0 && this.variants_values.find((vv) => vv.active));
 };
 
 ProductsSchema.statics.checkCode = async function (that) {
