@@ -6,14 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}       = require('../middleware/authentication');
-const trademarkServices = require('../services/trademarks');
+const {adminAuth}          = require('../middleware/authentication');
+const {securityForceActif} = require('../middleware/security');
+const trademarkServices    = require('../services/trademarks');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/trademarks', getTrademarks);
-    app.post('/v2/trademark', getTrademark);
-    app.post('/v2/trademark/:id', getTrademarkById);
+    app.post('/v2/trademarks', securityForceActif(['active']), getTrademarks);
+    app.post('/v2/trademark', securityForceActif(['active']), getTrademark);
+    app.post('/v2/trademark/:id', adminAuth, getTrademarkById);
     app.put('/v2/trademark', adminAuth, setTrademark);
     app.delete('/v2/trademark/:id', adminAuth, deleteTrademark);
 };
