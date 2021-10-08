@@ -196,10 +196,10 @@ class PageProduct extends NSPageProduct {
                                                 />
                                             )}
                                         <ul className="list-images">
-                                            {/*
+                                            {
                                                 product.images && product.images.filter((img) => !img.default) ? product.images.filter((img) => !img.default).map((img, index) => (
-                                                    <li key={img.url}>
-                                                        <a onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
+                                                    <li style={{width: '100px', padding: '8px', display: 'inline-block'}} key={img.url}>
+                                                        <a style={{width: '82px'}} onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
                                                             <img
                                                                 itemProp="image"
                                                                 src={`/images/products/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`}
@@ -208,7 +208,7 @@ class PageProduct extends NSPageProduct {
                                                         </a>
                                                     </li>
                                                 )) : ''
-                                                */}
+                                                }
                                         </ul>
                                     </div>
                                 </div>
