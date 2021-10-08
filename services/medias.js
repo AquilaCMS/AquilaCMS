@@ -675,7 +675,7 @@ const getImageStream = async (req, res) => {
 
     const size      = req.url.split('/')[3].split('-')[0];
     const _id       = req.url.split('/')[4];
-    const extension = path.extname(req.url).replace('.', '');
+    const extension = path.extname(req.url).replace('.', '') || 'png';
     if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';
