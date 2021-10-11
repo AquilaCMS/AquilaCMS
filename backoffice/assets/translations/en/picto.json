@@ -25,7 +25,10 @@
         "formPictoIncomplete": "Incomplete pictogram form",
         "rulesFail": "Failed to save rules",
         "ruleSaved": "Saved rule(s)",
-        "pictorisation": "Perform pictorization"
+        "pictorisation": "Perform pictorization",
+        "startDate": "Start date",
+        "endDate": "End date"
+
     },
     "list": {
         "t1": "Pictograms",
