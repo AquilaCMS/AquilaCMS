@@ -1054,7 +1054,7 @@ const getProductsListing = async (req, res) => {
 const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
 
-    if (selected_variant && selected_variant.id) {
+    if (selected_variant) {
         await updateVariantsStock(prd, qty1, qty2, selected_variant);
     } else {
         if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {

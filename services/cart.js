@@ -164,9 +164,9 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (_product.hasVariantsValue(_product) && typeof req.body.item.selected_variant === 'undefined') {
+    if (_product.hasVariantsValue(_product) && !req.body.item.selected_variant) {
         throw NSErrors.InvalidParameters;
-    } else if (_product.hasVariantsValue(_product) && typeof req.body.item.selected_variant === 'undefined') {
+    } else if (_product.hasVariantsValue(_product) && typeof !req.body.item.selected_variant) {
         // we set variant in the cart !
         // quick check if all mandatory options are present
         const isPresent = _product.variants_values.findIndex((oneVariant) => req.body.item.selected_variant._id.toString() === oneVariant._id.toString());
@@ -247,6 +247,7 @@ const addItem = async (req) => {
 
     if (_product.type !== 'virtual') item.stock = _product.stock;
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
+    if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {

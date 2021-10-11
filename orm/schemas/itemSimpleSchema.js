@@ -11,7 +11,7 @@ const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
 
 const ItemSimple = new Schema({
-    selected_variant : {
+    selected_variant : new Schema({
         id      : {type: ObjectId},
         active  : {type: Boolean},
         default : {type: Boolean},
@@ -57,7 +57,7 @@ const ItemSimple = new Schema({
             translation  : {}
         },
         weight : Number
-    }
+    }, {strict: false})
 },
 {
     discriminatorKey : 'type',

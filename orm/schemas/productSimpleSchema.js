@@ -79,7 +79,7 @@ ProductSimpleSchema.methods.updateData = async function (data) {
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {
     const prdServices = require('../../services/products');
 
-    if (item.selected_variant && item.selected_variant._id) {
+    if (item.selected_variant) {
         item = {
             ...item,
             ...item.selected_variant,
