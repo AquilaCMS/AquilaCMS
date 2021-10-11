@@ -232,7 +232,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                     if(!$scope.product.variants) $scope.product.variants = []
                     $scope.product.variants.push({
                         ...variant,
-                        type: 'list'
+                        type: 'image'
                     })
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)

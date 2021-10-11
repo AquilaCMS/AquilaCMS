@@ -27,7 +27,7 @@ const ProductSimpleSchema = new Schema({
     },
     variants : [{
         code        : {type: String},
-        type        : {type: String, enum: ['list', 'radio', 'checkbox']},
+        type        : {type: String, enum: ['list', 'radio', 'checkbox', 'images']},
         sort        : {type: Number},
         id          : {type: ObjectId, ref: 'attributes', index: true},
         translation : {
