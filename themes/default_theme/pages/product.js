@@ -202,7 +202,7 @@ class PageProduct extends NSPageProduct {
                                                         <a style={{width: '82px'}} onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
                                                             <img
                                                                 itemProp="image"
-                                                                src={`/images/products/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`}
+                                                                src={`/images/${product.selected_variant ? 'productsVariant' : 'products'}/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`}
                                                                 alt={img.alt}
                                                             />
                                                         </a>
