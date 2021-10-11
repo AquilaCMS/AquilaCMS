@@ -22,12 +22,29 @@ const defaultFields    = [
 const queryBuilder     = new QueryBuilder(Slider, restrictedFields, defaultFields);
 
 // See more information on react slick: https://react-slick.neostack.com/
-const getSliders = async (PostBody) => queryBuilder.find(PostBody);
-
-const getSlider = async (PostBody) => queryBuilder.findOne(PostBody);
-
-const getSliderById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
-
+const getSliders = async (PostBody, user = null) => {
+    const results = await queryBuilder.find(PostBody);
+    for (let i = 0; i < results.length; i++) {
+        if (!user || !user.isAdmin) {
+            results[i].items = results[i].items.filter((item) => (!item.startDate || (new Date(item.startDate) <= Date.now())) && (!item.endDate || (new Date(item.endDate) >= Date.now())));
+        }
+    }
+    return results;
+};
+const getSlider = async (PostBody, user = null) => {
+    const result = await queryBuilder.findOne(PostBody);
+    if (!user || !user.isAdmin) {
+        result.items = result.items.filter((item) => (!item.startDate || (new Date(item.startDate) <= Date.now())) && (!item.endDate || (new Date(item.endDate) >= Date.now())));
+    }
+    return result;
+};
+const getSliderById = async (id, PostBody = null, user = null) => {
+    const result = await queryBuilder.findById(id, PostBody);
+    if (!user || !user.isAdmin) {
+        result.items = result.items.filter((item) => (!item.startDate || (new Date(item.startDate) <= Date.now())) && (!item.endDate || (new Date(item.endDate) >= Date.now())));
+    }
+    return result;
+};
 const setSlider = async (req) => {
     const result = await Slider.findByIdAndUpdate(req.body._id, req.body, {new: true});
     if (!result) throw NSErrors.SliderUpdateError;
