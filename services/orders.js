@@ -411,7 +411,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
     }
-    returnData.name          = paymentMethod.translation[lang].name;
+    returnData.name          = paymentMethod.translation[lang]?.name;
     returnData.operationDate = Date.now();
     if (returnData.type === 'DEBIT') {
         await setStatus(orderId, orderStatuses.PAID);
