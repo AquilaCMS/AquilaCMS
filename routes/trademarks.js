@@ -59,7 +59,7 @@ async function getTrademarkById(req, res, next) {
  */
 async function setTrademark(req, res, next) {
     try {
-        const result = await trademarkServices.saveTrademark(req);
+        const result = await trademarkServices.saveTrademark(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -71,7 +71,7 @@ async function setTrademark(req, res, next) {
 async function deleteTrademark(req, res, next) {
     // We remove the trademark from the products
     try {
-        const result = await trademarkServices.deleteTrademark(req);
+        const result = await trademarkServices.deleteTrademark(req.params.id);
         return res.json(result);
     } catch (error) {
         return next(error);

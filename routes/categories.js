@@ -58,9 +58,9 @@ async function setCategory(req, res, next) {
     try {
         let response;
         if (req.body._id) {
-            response = await ServiceCategory.setCategory(req);
+            response = await ServiceCategory.setCategory(req.body);
         } else {
-            response = await ServiceCategory.createCategory(req);
+            response = await ServiceCategory.createCategory(req.body);
         }
         return res.json(response);
     } catch (error) {
