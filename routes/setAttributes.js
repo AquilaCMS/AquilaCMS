@@ -44,7 +44,7 @@ async function getSetAttribute(req, res, next) {
 async function setSetAttribute(req, res, next) {
     try {
         // The route does not appear to contain a change to setAttributes
-        const result = await setAttributeServices.createOrUpdateSetAttribute(req);
+        const result = await setAttributeServices.createOrUpdateSetAttribute(req.body);
         res.json(result);
     } catch (error) {
         return next(error);
@@ -55,7 +55,7 @@ async function setSetAttribute(req, res, next) {
  */
 async function deleteSetAttribute(req, res, next) {
     try {
-        const result = await setAttributeServices.deleteSetAttribute(req);
+        const result = await setAttributeServices.deleteSetAttribute(req.params.id);
         return res.json(result);
     } catch (error) {
         return next(error);

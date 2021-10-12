@@ -606,11 +606,11 @@ const deleteFileAndCacheFile = async (link, type) => {
     }
 };
 
-const getImageStream = async (req, res) => {
-    const type    = req.url.split('/')[2];
+const getImageStream = async (url, res) => {
+    const type    = url.split('/')[2];
     let quality;
     const option  = {};
-    const options = req.url.split('/')[3];
+    const options = url.split('/')[3];
 
     if (options.includes('crop')) {
         if (options.split('-crop')[0].split('-').length > 1) {
@@ -644,9 +644,9 @@ const getImageStream = async (req, res) => {
         }
     }
 
-    const size      = req.url.split('/')[3].split('-')[0];
-    const _id       = req.url.split('/')[4];
-    const extension = path.extname(req.url).replace('.', '');
+    const size      = url.split('/')[3].split('-')[0];
+    const _id       = url.split('/')[4];
+    const extension = path.extname(url).replace('.', '');
     if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';

@@ -19,10 +19,9 @@ const getMailTypes = async () => {
 };
 
 /**
-* Get a mailType by _id
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
+* Get a mailType by code
+ * @param {String} code
+ * @param {Object} MailType
  */
 const getMailType = async (code) => {
     const {MailType} = require('../orm/models');
