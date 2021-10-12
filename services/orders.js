@@ -452,9 +452,9 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     return _order;
 };
 
-const duplicateItemsFromOrderToCart = async (req) => {
-    const orderId = req.body.idOrder || null;
-    let cartId    = req.body.idCart || null;
+const duplicateItemsFromOrderToCart = async (postBody, userInfo) => {
+    const orderId = postBody.idOrder || null;
+    let cartId    = postBody.idCart || null;
     let products  = [];
     // If we send an order id, we get the items of this order, otherwise we get the products sent directly (ex: foodOption)
     if (orderId) {
@@ -478,7 +478,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
         //             bundle_section_ref : "Plat du menu"
         //         }
         //     ]}];
-        products = req.body.products;
+        products = postBody.products;
     }
     let _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
     if (!_cart) {
@@ -489,7 +489,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
     let isErrorOccured      = false;
     let isErrorOccuredIndex = 0;
     let itemsPushed         = 0;
-    await ServiceCart.linkCustomerToCart(_cart, req);
+    await ServiceCart.linkCustomerToCart(_cart, userInfo);
     for (let i = 0; i < products.length; i++) {
         _cart                   = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         const productThatExists = await Products.findOne({_id: products[i].id, active: true, _visible: true});
@@ -537,9 +537,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+                _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
                 itemsPushed++;
-                _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+                _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
                 await _cart.save();
             }
         } else if (productThatExists && productThatExists.stock && productThatExists.stock.orderable) {
@@ -560,9 +560,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
             }
             item.code  = productThatExists.code;
             item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-            _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+            _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
             itemsPushed++;
-            _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+            _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
             await _cart.save();
         } else {
             isErrorOccured = true;
