@@ -19,6 +19,7 @@ import {
 import { withI18next } from 'lib/withI18n';
 import { listModulePage } from 'lib/utils';
 import CMS from 'components/CMS';
+import ProductVariants from 'components/ProductVariants';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
 import Error from './_error';
@@ -245,23 +246,7 @@ class PageProduct extends NSPageProduct {
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
                                     }
-                                    {
-                                        product.variants_values.length > 0 &&
-                                            <div className="variants__container">
-                                                <ul className="variants-values__list">
-                                                {
-                                                    this.hasVariants(product) && product.variants_values.filter(vv => vv.active).map((variant) => {
-                                                        const vImage = variant.images.find(img => img.default) || {}
-                                                        return (
-                                                            <li key={variant._id} className={"variant-value " + ((product.selected_variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(product, variant)}>
-                                                                <img src={'/images/productsVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
-                                                            </li>
-                                                        )
-                                                    })
-                                                }
-                                                </ul>
-                                            </div>
-                                    }
+                                    <ProductVariants product={product} hasVariants={this.hasVariants} selectVariant={this.selectVariant} />
                                     <div className="product-actions">
                                         <div className="product-stock hidden-xs">
                                             <NSProductStock stock={product.stock} />
