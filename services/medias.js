@@ -6,10 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip       = require('adm-zip');
-const moment       = require('moment');
-const path         = require('path');
-const mongoose     = require('mongoose');
+const AdmZip   = require('adm-zip');
+const moment   = require('moment');
+const path     = require('path');
+const mongoose = require('mongoose');
+const ObjectID = mongoose.Types.ObjectId;
+
 const {
     Medias,
     Products,
@@ -672,9 +674,9 @@ const getImageStream = async (url, res) => {
         }
     }
 
-    const size      = req.url.split('/')[3].split('-')[0];
-    const _id       = req.url.split('/')[4];
-    const extension = path.extname(req.url).replace('.', '') || 'png';
+    const size      = url.split('/')[3].split('-')[0];
+    const _id       = url.split('/')[4];
+    const extension = path.extname(url).replace('.', '') || 'png';
     if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';
