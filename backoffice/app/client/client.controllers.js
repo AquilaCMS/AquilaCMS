@@ -6,14 +6,14 @@ ClientControllers.controller("ClientCtrl", [
         $scope.columns = ClientColumns;
         $scope.query = {search: ""};
         $scope.page = 1;
-        $scope.nbItemsPerPage = 10;
+        $scope.nbItemsPerPage = 12;
         $scope.maxSize = 5;
         $scope.filter = {
             "company": "",
             "email": "",
             "firstname": "",
             "lastname": "",
-            "min_createdAt":null,
+            "min_lastConnexion":null,
         };
 
         if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
@@ -32,7 +32,7 @@ ClientControllers.controller("ClientCtrl", [
                 $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
             }else{
                 $scope.valeurTri = -1;
-                $scope.tri = { createdAt: -1 }
+                $scope.tri = { lastConnexion: -1 }
             }
         }
         
@@ -105,7 +105,7 @@ ClientControllers.controller("ClientCtrl", [
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {createdAt: 1, company : 1},
+                structure : {lastConnexion: 1, company : 1},
                 page      : $scope.page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -143,7 +143,7 @@ ClientControllers.controller("ClientCtrl", [
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {createdAt: 1, company : 1},
+                structure : {lastConnexion: 1, company : 1},
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -207,7 +207,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         }
 
         getAttributesClient = function(){
-            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 99, structure: '*', populate: ['attributes']}}, function ({datas}) {
+            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 0, structure: '*', populate: ['attributes']}}, function ({datas}) {
                 $scope.setAttributes = datas;
 
                 if ($scope.client && $scope.client.set_attributes === undefined) {
@@ -247,12 +247,12 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.filterDropdown();
 
         if ($routeParams.clientId !== "new") {
-            Orders.list({PostBody: {filter: {['customer.id']: $routeParams.clientId}, limit: 99}}, function(response) {
+            Orders.list({PostBody: {filter: {['customer.id']: $routeParams.clientId}, limit: 0}}, function(response) {
                 $scope.orders = response.datas;
             })
             $scope.carts = Carts.getCarts({param: $routeParams.clientId});
             $scope.rules = ClientV2.testUser({user_id: $routeParams.clientId});
-            TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 99 } }, function (countries) {
+            TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 0 } }, function (countries) {
                 $scope.countries = countries;
                 $scope.countries.datas.forEach(function (country, i) {
                     $rootScope.languages.forEach(lang => {
@@ -478,7 +478,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
 
         $scope.loadNewAttrs = async function () {
-            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 99}}, function ({datas}) {
+            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 0}}, function ({datas}) {
                 //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;

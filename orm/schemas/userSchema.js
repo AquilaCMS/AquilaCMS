@@ -131,13 +131,19 @@ const UserSchema = new Schema({
             translation : {},
             position    : {type: Number, default: 1}
         }
-    ]
+    ],
+    lastConnexion : Date
 }, {
     timestamps : true,
     id         : false
 });
 
 UserSchema.index({email: 1});
+// Need all this index for BO listing
+UserSchema.index({firstname: 1});
+UserSchema.index({lastname: 1});
+UserSchema.index({'company.name': 1});
+UserSchema.index({createdAt: 1});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

@@ -18,7 +18,9 @@ const PictosSchema = new Schema({
     title         : {type: String},
     location      : {type: String}, // Lieux d'affichage du picto sur l'image du produit...
     enabled       : {type: Boolean, default: false},
-    usedInFilters : {type: Boolean, default: false}
+    usedInFilters : {type: Boolean, default: false},
+    startDate     : {type: Date},
+    endDate       : {type: Date}
 }, {
     id : false
 });

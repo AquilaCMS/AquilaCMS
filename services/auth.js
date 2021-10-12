@@ -64,6 +64,9 @@ const login = async (req, res, next) => {
         delete user.password;
         const token = require('../middleware/authentication').generateJWTToken(res, user, user.isAdmin);
 
+        // Update last login
+        await Users.updateOne({_id: user._id}, {$set: {lastConnexion: new Date()}});
+
         return res.status(200).send({
             code : 'LOGIN_SUCCESS',
             data : token

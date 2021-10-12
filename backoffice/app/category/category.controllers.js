@@ -75,7 +75,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             selectedLang = lang;
         };
 
-        StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+        StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
             $scope.pages = staticsList.datas;
             if ($scope.pages[0]) {
                 $scope.pageSelelected = $scope.pages[0].translation[$scope.lang].slug;
@@ -96,9 +96,9 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             return group;
         }
-        function getAttrib(){
+        $scope.getAttrib = function () {
             // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
-            CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 99, filter: { "usedInFilters":true}}}, function (resp)
+            CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 0, filter: { "usedInFilters":true}}}, function (resp)
             {
                 let response = resp.datas;
                 for(var i = 0; i < response.length; i++)
@@ -109,17 +109,11 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // Si l'attribut est déjà présent dans la category alors nous le supprimons de usedInFilters et nous ajoutons le code
                 // a l'objet category.filters.attributes[i].code
                 if($scope.category.filters && $scope.category.filters.attributes){
-                    const attributesLength = $scope.category.filters.attributes.length;
-                    for(var i = 0; i < attributesLength; i++) {
-                        // On recherche l'index de usedInFilters existant dans $scope.category.filters.attributes afin de le supprimer de usedInFilters
-                        var indexFound = $scope.usedInFilters.findIndex(function (filter) {
-                            return filter.id_attribut === $scope.category.filters.attributes[i]._id;
-                        });
-                        if(indexFound !== -1)
-                        {
-                            // On ajoute au category.filters.attributes le code afin qu'il soit visible dans la partie de droite des filtres
-                            $scope.category.filters.attributes[i].code = $scope.usedInFilters[indexFound].code;
-                            $scope.usedInFilters.splice(indexFound, 1);
+                    $scope.usedInFilters = []
+                    for(var i = 0; i < response.length; i++) {
+                        console.log($scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code))
+                        if(!$scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code)) {
+                            $scope.usedInFilters.push(response[i])
                         }
                     }
                 }
@@ -319,37 +313,34 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }).reverse();
         }
 
-        function init(){
-            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
-                $scope.category = response;
-                if($scope.category && $scope.category.productsList){
-                    if($scope.category.productsList.length > 0){
-                        $scope.products = $scope.category.productsList.map((element) => {
-                            return {
-                                checked: true,
-                                sortWeight: element.sortWeight || 0,
-                                ...element.id
-                            }
-                        })
-                        $scope.totalItems = $scope.category.productsList.length;
-                        $scope.products = filterProducts($scope.products);
-                        $scope.products = $scope.products.filter(function(value, index){
-                            return index < 14; // it the first page
-                        });
-                    }else{
-                        // no products in this cat, so we need to change the setup
-                        $scope.searchObj.productInCategory == "false";
-                        $scope.getProducts();
-                    }
+        CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
+            $scope.category = response;
+            if($scope.category && $scope.category.productsList){
+                if($scope.category.productsList.length > 0){
+                    $scope.products = $scope.category.productsList.map((element) => {
+                        return {
+                            checked: true,
+                            sortWeight: element.sortWeight || 0,
+                            ...element.id
+                        }
+                    })
+                    $scope.totalItems = $scope.category.productsList.length;
+                    $scope.products = filterProducts($scope.products);
+                    $scope.products = $scope.products.filter(function(value, index){
+                        return index < 14; // it the first page
+                    });
                 }else{
                     // no products in this cat, so we need to change the setup
                     $scope.searchObj.productInCategory == "false";
                     $scope.getProducts();
                 }
-            });
-        }
-        init();
-        getAttrib();
+            }else{
+                // no products in this cat, so we need to change the setup
+                $scope.searchObj.productInCategory == "false";
+                $scope.getProducts();
+            }
+            $scope.getAttrib();
+        });
 
         RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule) {
             if(rule.operand === undefined) {
@@ -694,7 +685,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 oneCat.children = [];
             }
             if(oneCat.children.length > 0){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
                     oneCat.nodes = response.datas || [];
                     for(let oneNode of oneCat.nodes){
                         $scope.expandOneCat(oneNode);
@@ -723,7 +714,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     populate: ["children"],
                     sort: {displayOrder: 1},
                     structure : structure,
-                    limit: 99
+                    limit: 0
                 }
             }, function (response) {
                 $scope.categories = verifyOrder(response.datas);
@@ -766,7 +757,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 cat.collapsed = false;
             }
             if(cat.collapsed){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
                     cat.nodes = response.datas;
                     cat.collapsed = false;
                     for(let oneNode of cat.nodes){
@@ -1038,7 +1029,7 @@ CategoryControllers.controller("NsCategoryListController", [
         }).code;
 
         $scope.getCategories = function() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
                 $scope.categories = response.datas;
                 //we expand all the categories
                 $scope.expandAll();
@@ -1074,7 +1065,7 @@ CategoryControllers.controller("NsCategoryListController", [
                 oneCat.children = [];
             }
             if (oneCat.children.length > 0) {
-                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
+                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 0 } }, function (response) {
                     oneCat.nodes = response.datas || [];
                     for (let oneNode of oneCat.nodes) {
                         $scope.expandOneCat(oneNode);
@@ -1094,7 +1085,7 @@ CategoryControllers.controller("NsCategoryListController", [
 
         $scope.listChildren = function (cat, scope) {
             for(let oneNode of cat.nodes){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
                     oneNode.nodes = response.datas;
                 });
             }

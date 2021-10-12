@@ -56,7 +56,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
             isSelected: false
         };
         PictoApi.query(
-            {PostBody: {filter: {_id: $routeParams.id}, limit: 1}},
+            {PostBody: {filter: {_id: $routeParams.id}, structure: '*', limit: 1}},
             function (response) {
                 $scope.picto = response.datas[0];
             },
@@ -68,7 +68,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
             {
                 text: 'picto.details.pictorisation',
                 onClick: function () {
-                    PictoApi.update({id : $scope.picto._id}, function(response){
+                    PictoApi.update({/* id : $scope.picto._id */}, function(response){
                         toastService.toast('success', $translate.instant("picto.details.pictoDone"));
                     });
                 },

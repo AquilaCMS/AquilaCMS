@@ -25,7 +25,9 @@
         "formPictoIncomplete": "Formulaire du pictogramme incomplet",
         "rulesFail": "Echec de sauvegarde des règles",
         "ruleSaved": "Règle(s) sauvegardée(s)",
-        "pictorisation": "Effectuer la pictorisation"
+        "pictorisation": "Effectuer la pictorisation",
+        "startDate": "Debut",
+        "endDate": "Fin"
     },
     "list": {
         "t1": "Pictogrammes",

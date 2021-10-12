@@ -10,7 +10,7 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 99}}, function (cmsBlocks) {
+        CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 0}}, function (cmsBlocks) {
             $scope.cmsBlocks = cmsBlocks.datas;
             $scope.groups = cmsBlocks.datas.getAndSortGroups();
             $scope.currentTab = $scope.groups[0];
@@ -64,7 +64,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 if (userInput !== undefined) {
                     $scope.selectedDropdownItem = userInput;
                 }
-                return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsBlocks) {
+                return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit:0}}).$promise.then(function (cmsBlocks) {
                     $scope.groups = cmsBlocks.datas.getAndSortGroups($scope.selectedDropdownItem)
                     return $scope.groups;
                 });

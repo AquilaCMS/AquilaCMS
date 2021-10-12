@@ -1302,12 +1302,12 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'URL du site'
+                            value       : 'URL_SITE',
+                            description : 'URL du site'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 
@@ -1328,12 +1328,12 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'App URL'
+                            value       : 'URL_SITE',
+                            description : 'App URL'
                         },
                         {
-                            value      : 'token',
-                            descripton : 'Token'
+                            value       : 'token',
+                            description : 'Token'
                         }
                     ]
 

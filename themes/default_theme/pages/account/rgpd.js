@@ -2,10 +2,11 @@ import React from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import {
-    NSPageAccount, NSContext, NSSidebarAccount, NSToast, getLangPrefix, anonymizeUser, deleteUser, logoutUser
+    NSPageAccount, NSContext, NSToast, getLangPrefix, anonymizeUser, deleteUser, logoutUser
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 import getAPIUrl from 'lib/getAPIUrl';
 import { withI18next } from 'lib/withI18n';
@@ -197,7 +198,7 @@ class PageRgpd extends NSPageAccount {
                                         </div>{/* <!-- /.section__body --> */}
                                     </section>{/* <!-- /.section-client-area --> */}
                                 </div>{/* <!-- /.content --> */}
-                                <NSSidebarAccount active="rgpd" gNext={{ Link, Router }} t={t} />
+                                <SidebarAccount active="rgpd" />
                             </div>{/* <!-- /.container container--flex --> */}
                         </div>{/* <!-- /.shell --> */}
                     </div>{/* <!-- /.main --> */}

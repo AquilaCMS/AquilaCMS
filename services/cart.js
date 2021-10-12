@@ -39,7 +39,7 @@ const getCarts = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
-const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
+const getCartById = async (id, PostBody = null, user = null, lang = null, userInfo = null) => {
     if (PostBody && PostBody.structure) {
         // Need to have all the fields for the discount rules
         const structure = PostBody.structure;
@@ -63,7 +63,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
             await cart.save();
         }
         if (user && !user.isAdmin) {
-            cart = await linkCustomerToCart(cart, req);
+            cart = await linkCustomerToCart(cart, userInfo);
         }
     }
     return cart;
@@ -150,8 +150,8 @@ const deleteCartItem = async (cartId, itemId) => {
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
-const addItem = async (req) => {
-    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'}).populate('items.id');
+const addItem = async (postBody, userInfo) => {
+    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'}).populate('items.id');
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
@@ -187,7 +187,7 @@ const addItem = async (req) => {
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(req.body.item.selections)
+                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
             // eslint-disable-next-line no-empty
             ) {
                 continue;
@@ -225,18 +225,18 @@ const addItem = async (req) => {
         }
     }
     if (_product.translation[_lang.code]) {
-        req.body.item.name = _product.translation[_lang.code].name;
-        req.body.item.slug = _product.translation[_lang.code].slug;
+        postBody.item.name = _product.translation[_lang.code].name;
+        postBody.item.slug = _product.translation[_lang.code].slug;
     }
     req.body.item.code  = _product.code;
     req.body.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
     const idGift        = mongoose.Types.ObjectId();
-    if (req.body.item.parent) {
-        req.body.item._id = idGift;
+    if (postBody.item.parent) {
+        postBody.item._id = idGift;
     }
 
     const item = {
-        ...req.body.item,
+        ...postBody.item,
         weight       : _product.weight,
         price        : _product.price,
         description1 : _product.translation[_lang.code].description1,
@@ -249,15 +249,15 @@ const addItem = async (req) => {
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
-    const data = await _product.addToCart(cart, item, req.info, _lang.code);
+    const data = await _product.addToCart(cart, item, userInfo, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart           = data;
-    cart           = await ServicePromo.checkForApplyPromo(req.info, cart, _lang.code);
+    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
     const _newCart = await cart.save();
-    if (req.body.item.parent) {
-        _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
+    if (postBody.item.parent) {
+        _newCart.items.find((item) => item._id.toString() === postBody.item.parent).children.push(idGift);
     }
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
@@ -266,11 +266,11 @@ const addItem = async (req) => {
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
-const updateQty = async (req) => {
-    if (!req.body.item || req.body.item.quantity <= 0) {
+const updateQty = async (postBody, userInfo) => {
+    if (!postBody.item || postBody.item.quantity <= 0) {
         return {code: 'BAD_REQUEST', status: 400}; // res status 400
     }
-    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'});
+    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'});
     if (!cart) {
         throw NSErrors.InactiveCart;
     }
@@ -281,7 +281,7 @@ const updateQty = async (req) => {
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
         const ServicesProducts = require('./products');
 
-        const quantityToAdd = req.body.item.quantity - item.quantity;
+        const quantityToAdd = postBody.item.quantity - item.quantity;
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
@@ -312,15 +312,15 @@ const updateQty = async (req) => {
     }
 
     // Manage stock
-    // await servicesProducts.handleStock(item, _product, req.body.item.quantity);
+    // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
     await cart.updateOne({
-        $set : {'items.$[item].quantity': req.body.item.quantity}
+        $set : {'items.$[item].quantity': postBody.item.quantity}
     }, {
-        arrayFilters : [{'item._id': req.body.item._id}],
+        arrayFilters : [{'item._id': postBody.item._id}],
         new          : true
     });
-    await linkCustomerToCart(cart, req);
-    cart = await ServicePromo.checkForApplyPromo(req.info, cart);
+    await linkCustomerToCart(cart, userInfo);
+    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
@@ -536,12 +536,12 @@ const checkProductOrderable = (stock, qty, selected_variant = undefined) => {
 /**
  * Function to associate a user with a cart
  * @param {any} cart
- * @param {Express.Request} req
- * @returns {Promise<any>}
+ * @param {Object} User info
+ * @returns {Object} cart
  */
-const linkCustomerToCart = async (cart, req) => {
+const linkCustomerToCart = async (cart, userInfo) => {
     if (cart && (!cart.customer || !cart.customer.id)) {
-        const user = req.info;
+        const user = userInfo;
         if (user) {
             const customer = {
                 id    : user._id,

@@ -36,7 +36,7 @@ PaymentMethodControllers.controller("PaymentMethodListCtrl", [
                     }
                 }
             }
-            PaymentMethodV2.list({PostBody: {filter, limit: 99, structure: '*'}}, function ({datas}) {
+            PaymentMethodV2.list({PostBody: {filter, limit: 0, structure: '*'}}, function ({datas}) {
                 $scope.paymentMethods = datas;
             });
         }

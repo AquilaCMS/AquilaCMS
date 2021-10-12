@@ -144,15 +144,15 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => {
-    await Categories.updateOne({_id: req.body._id}, {$set: req.body});
-    const newCat = await Categories.findOne({_id: req.body._id});
+const setCategory = async (postBody) => {
+    await Categories.updateOne({_id: postBody._id}, {$set: postBody});
+    const newCat = await Categories.findOne({_id: postBody._id});
     return newCat;
 };
 
-const createCategory = async (req) => {
-    const newMenu   = new Categories(req.body);
-    const id_parent = req.body.id_parent;
+const createCategory = async (postBody) => {
+    const newMenu   = new Categories(postBody);
+    const id_parent = postBody.id_parent;
     const _menu     = await Categories.findOne({_id: id_parent});
     if (id_parent) {
         newMenu.ancestors = [..._menu.ancestors, id_parent];

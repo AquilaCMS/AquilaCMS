@@ -79,7 +79,7 @@ ProductControllers.controller("ProductListCtrl", [
         };
 
         $scope.getAttributesClassed = function () {
-            AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 99}}, function ({datas}) {
+            AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 0}}, function ({datas}) {
                 $scope.attribs = datas;
             });
         };
@@ -278,7 +278,7 @@ ProductControllers.controller("nsProductGeneral", [
         $scope.hookInfo = HookProductInfo;
 
         $scope.loadNewAttrs = async function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -287,7 +287,7 @@ ProductControllers.controller("nsProductGeneral", [
             });
         };
 
-        SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
+        SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 0}}, function ({datas}) {
             $scope.setAttributes = datas;
 
             if ($scope.product && $scope.product.set_attributes === undefined) {
@@ -313,7 +313,7 @@ ProductControllers.controller("nsProductGeneral", [
                         $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
 
-                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 0 } }, function (categoriesLink) {
                         $scope.cat = categoriesLink.datas.length !== 0;
                     });
 

@@ -14,7 +14,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             isSelected: false
         };
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
             if ($scope.product && $scope.product.set_attributes === undefined) {
                 const set_attributes = datas.find(function (setAttr) {
@@ -30,7 +30,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         
 
         $scope.loadNewAttrs = function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;

@@ -137,7 +137,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
             {_id: req.body.idOrder || null},
             'customer.id'
         );
-        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req));
+        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req.body, req.info));
     } catch (err) {
         return next(err);
     }

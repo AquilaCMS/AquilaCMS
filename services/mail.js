@@ -295,7 +295,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
  * @param {string} tokenlink Password reset validation token
  * @param {string} [lang="fr"] lang
  */
-const sendResetPassword = async (to, tokenlink, lang = 'fr', token) => {
+const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
     lang               = determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);

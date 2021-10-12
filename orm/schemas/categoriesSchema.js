@@ -56,6 +56,8 @@ const CategoriesSchema = new Schema({
     id          : false
 });
 
+CategoriesSchema.index({displayOrder: 1});
+
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
  pageSlug

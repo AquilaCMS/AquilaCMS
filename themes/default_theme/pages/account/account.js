@@ -4,7 +4,6 @@ import Head from 'next/head';
 import {
     NSPageAccount,
     NSContext,
-    NSSidebarAccount,
     NSToast,
     getLangPrefix,
     createOrUpdateUser,
@@ -13,6 +12,7 @@ import {
     updateNewsletterUser
 } from 'aqlrc';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 // import getAPIUrl from 'lib/getAPIUrl';
 import { withI18next } from 'lib/withI18n';
@@ -333,7 +333,7 @@ class PageAccount extends NSPageAccount {
                                         </div>{/* <!-- /.section__body --> */}
                                     </section>{/* <!-- /.section-client-area --> */}
                                 </div>{/* <!-- /.content --> */}
-                                <NSSidebarAccount active="infos" gNext={{ Link, Router }} t={t} />
+                                <SidebarAccount active="infos" />
                             </div>{/* <!-- /.container container--flex --> */}
                         </div>{/* <!-- /.shell --> */}
                     </div>

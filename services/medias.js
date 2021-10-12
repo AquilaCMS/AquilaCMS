@@ -10,7 +10,6 @@ const AdmZip       = require('adm-zip');
 const moment       = require('moment');
 const path         = require('path');
 const mongoose     = require('mongoose');
-const ObjectID     = require('mongodb').ObjectID;
 const {
     Medias,
     Products,
@@ -635,11 +634,11 @@ const deleteFileAndCacheFile = async (link, type) => {
     }
 };
 
-const getImageStream = async (req, res) => {
-    const type    = req.url.split('/')[2];
+const getImageStream = async (url, res) => {
+    const type    = url.split('/')[2];
     let quality;
     const option  = {};
-    const options = req.url.split('/')[3];
+    const options = url.split('/')[3];
 
     if (options.includes('crop')) {
         if (options.split('-crop')[0].split('-').length > 1) {
