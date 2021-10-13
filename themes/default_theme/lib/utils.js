@@ -5,8 +5,28 @@ import nsModules from '../modules/list_modules';
 import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
 
-Number.prototype.aqlRound = function (places = 2) {
-    return +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
+    let roundNum = +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+    if (places !== 0 && addingTrailingZeros) {
+        roundNum        = roundNum.toString();
+        let intPart     = roundNum;
+        let decimalPart = '';
+
+        // if we have a decimal number we split it into two parts
+        if (roundNum.includes('.')) {
+            roundNum    = roundNum.split('.');
+            intPart     = roundNum[0];
+            decimalPart = roundNum[1];
+        }
+
+        // if the size of the decimal part is not equal to the number of digits after the decimal point given in parameter, we add the missing zeros
+        if (decimalPart.length !== places) {
+            const numOfMissingZero = places - decimalPart.length;
+            decimalPart            = decimalPart.padEnd(numOfMissingZero + decimalPart.length, 0);
+        }
+        roundNum = `${intPart}.${decimalPart}`;
+    }
+    return roundNum;
 };
 
 /**
