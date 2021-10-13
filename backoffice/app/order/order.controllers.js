@@ -153,7 +153,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '(';
                         }
-                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['et'].aqlRound(2)} €)`;
                         //put the TTC text
                         text+= '/ATI: '
                         if(productOfBundle.modifier_price['ati'] > 0){
@@ -161,7 +161,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '';
                         }
-                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['ati'].aqlRound(2)} €)`;
                     }
                     displayHtml += `<li key="${j}">${productSection.name} ${text}</li>`;
                 }
@@ -284,7 +284,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             let basePriceATI = null;
             if(item.price.special && item.price.special.ati)
             {
-                return item.price.unit.ati.toFixed(2);
+                return item.price.unit.ati.aqlRound(2);
             }
             if(_order.quantityBreaks && _order.quantityBreaks.productsId.length)
             {
@@ -293,7 +293,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 if(prdPromoFound)
                 {
                     basePriceATI = prdPromoFound.basePriceATI;
-                    return (basePriceATI).toFixed(2);
+                    return (basePriceATI).aqlRound(2);
                 }
             }
             return false;

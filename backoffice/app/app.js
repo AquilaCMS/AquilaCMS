@@ -1,5 +1,9 @@
 "use strict";
 
+Number.prototype.aqlRound = function (places = 2) {
+    return +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+};
+
 /* App Module */
 var adminCatagenApp = angular.module("adminCatagenApp", [
     "ngRoute",
@@ -142,7 +146,7 @@ var delayTimer;
 function input(ele) {
     clearTimeout(delayTimer);
     delayTimer = setTimeout(function() {
-       ele.value = parseFloat(ele.value).toFixed(2).toString();
+       ele.value = parseFloat(ele.value).aqlRound(2).toString();
     }, 800); 
 }
 

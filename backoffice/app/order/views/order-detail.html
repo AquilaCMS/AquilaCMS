@@ -269,26 +269,26 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.aqlRound(2)}} €</td>
                             </tr>
                             <tr ng-if="order.promos[0]">
                                 <td><strong translate>order.detail.reduc</strong></td>
                                 <td class="text-left order-emphase">{{order.promos[0].name}}</td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><strong translate>order.detail.total</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.toFixed(2) }}€</strong></td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.aqlRound(2) }}€</strong></td>
                                 <td class="text-center">
                                     <span ng-show="order.priceTotal.paidTax === undefined || order.priceTotal.paidTax" translate>order.detail.paidTax</span>
                                     <span ng-show="order.priceTotal.paidTax === false" translate>order.detail.taxFree</span>

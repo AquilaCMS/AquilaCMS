@@ -5,6 +5,10 @@ import nsModules from '../modules/list_modules';
 import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
 
+Number.prototype.aqlRound = function (places = 2) {
+    return +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+};
+
 /**
  * Si le produit est dans la categorie printer alors on va compter le nombre de printer dans le panier
  * @param {*} category category du produit qui vient d'être ajouté

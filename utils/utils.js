@@ -151,7 +151,7 @@ const downloadFile = async (url, dest) => {
             res.pipe(file);
             res.on('data', (chunk) => {
                 downloaded += chunk.length;
-                console.log(`Downloading ${(100.0 * downloaded / len).toFixed(2)}% ${downloaded} bytes\r`);
+                console.log(`Downloading ${(100.0 * downloaded / len).aqlRound(2)}% ${downloaded} bytes\r`);
             }).on('end', () => {
                 file.end();
                 resolve(null);
