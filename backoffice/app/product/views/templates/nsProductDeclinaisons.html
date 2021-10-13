@@ -44,9 +44,11 @@
                                 name="type_{{$index}}" id="type_{{$index}}" 
                                 ng-model="product.variants[getProductVariantIndex(declinaison.code)].type" 
                                 ng-click="$event.stopPropagation()"
-                                disabled
+                                ng-show="getProductVariantIndex(declinaison.code) === 0"
                             >
                                 <option selected value="image" translate>product.declinaisons.displayImage</option>
+                                <option selected value="list" translate>product.declinaisons.displayList</option>
+                                <option selected value="radio" translate>product.declinaisons.displayRadio</option>
                             </select>
                         </td>
                     </tr>

@@ -219,6 +219,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                         price       : $scope.product.price,
                         stock       : $scope.product.stock,
                         images      : $scope.product.images,
+                        variant_codes: (typeof variantName === 'string' ? variantName : variantName.join('--')).toLowerCase(),
                         translation : {}
                     };
                     variant.translation[$scope.lang] = {name: `${$scope.product.translation[$scope.lang].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};

@@ -159,6 +159,8 @@
         "quantity": "Quantité",
         "default": "Defaut",
         "createAttribs": "Vous devez creer au moins un attribut marqué comme declinaison de produits <a style='text-decoration: underline;' href='#/products/attributes'>ici</a>",
-        "displayImage": "Afficher en image"
+        "displayImage": "Afficher en image",
+        "displayRadio": "Radio boutons",
+        "displayList": "Listes"
     }
 }

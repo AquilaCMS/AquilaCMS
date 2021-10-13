@@ -14,12 +14,11 @@ import {
     NSProductCardList,
     NSProductStock,
     truncate,
-    hasVariantsValue
+    NSProductVariants
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
 import { listModulePage } from 'lib/utils';
 import CMS from 'components/CMS';
-import ProductVariants from 'components/ProductVariants';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
 import Error from './_error';
@@ -246,7 +245,7 @@ class PageProduct extends NSPageProduct {
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
                                     }
-                                    <ProductVariants product={product} hasVariants={this.hasVariants} selectVariant={this.selectVariant} />
+                                    <NSProductVariants product={product} hasVariants={this.hasVariants} selectVariant={this.selectVariant} t={t} />
                                     <div className="product-actions">
                                         <div className="product-stock hidden-xs">
                                             <NSProductStock stock={product.stock} />

@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
 const VariantValueSchema = new Schema({
-    active  : {type: Boolean},
-    default : {type: Boolean},
-    code    : {type: String},
-    qty     : Number,
-    price   : {
+    active        : {type: Boolean},
+    default       : {type: Boolean},
+    code          : {type: String},
+    variant_codes : {type: String},
+    qty           : Number,
+    price         : {
         purchase : Number,
         tax      : Number,
         et       : {

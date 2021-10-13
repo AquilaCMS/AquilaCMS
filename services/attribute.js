@@ -163,14 +163,15 @@ const regenerateProductsVariants = async (body) => {
         const result    = cartesian(...variantNames);
         for (const [index, variantName] of result.entries()) {
             const variant = {
-                code        : `${prdsWithVariant[prdWithVariantIndex].code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
-                active      : false,
-                weight      : prdsWithVariant[prdWithVariantIndex].weight,
-                default     : index === 0,
-                price       : prdsWithVariant[prdWithVariantIndex].price,
-                stock       : prdsWithVariant[prdWithVariantIndex].stock,
-                images      : prdsWithVariant[prdWithVariantIndex].images,
-                translation : {}
+                code          : `${prdsWithVariant[prdWithVariantIndex].code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
+                active        : false,
+                weight        : prdsWithVariant[prdWithVariantIndex].weight,
+                default       : index === 0,
+                price         : prdsWithVariant[prdWithVariantIndex].price,
+                stock         : prdsWithVariant[prdWithVariantIndex].stock,
+                images        : prdsWithVariant[prdWithVariantIndex].images,
+                variant_codes : (typeof variantName === 'string' ? variantName : variantName.join('--')).toLowerCase(),
+                translation   : {}
             };
             for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
                 variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};

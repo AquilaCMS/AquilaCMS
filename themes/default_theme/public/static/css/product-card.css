@@ -77,6 +77,21 @@
     background-color: #576fa1;
 }
 
+.variants__container select {
+    width: 100%;
+    border-radius: 0;
+    padding: 5px;
+    margin-bottom: 5px;
+    max-width: 200px;
+}
+.variants__container .warn-message {
+    padding: 8px;
+    background-color: orange;
+    color: white;
+    border-radius: 5px;
+    width: fit-content;
+
+}
 /* === ProductCard-Modal === */
 
 .custom-modal .btn:hover {
