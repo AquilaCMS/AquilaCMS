@@ -283,7 +283,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             sharpOptions.height = Number(size.split('x')[1]);
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
-            console.error('Image not resized : Sharp may not be installed', exc);
+            console.error('Image not resized : ', exc);
 
             try {
                 // Take the original file size
@@ -294,7 +294,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                     await fsp.copyFileSync(filePath, filePathCache);
                 });
             } catch (err) {
-                console.error('defaultImage not found', err);
+                console.error('defaultImage not found', err.message);
                 return '/';
             }
         }
