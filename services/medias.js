@@ -294,7 +294,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                     await fsp.copyFileSync(filePath, filePathCache);
                 });
             } catch (err) {
-                console.error('defaultImage not found', err.message);
                 return '/';
             }
         }
