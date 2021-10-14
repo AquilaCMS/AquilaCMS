@@ -72,7 +72,11 @@
         "incompleteRules": "Formulaire des règles incomplet",
         "ruleSaved": "Règle(s) sauvegardée(s)",
         "noNewRule": "Pas de règles créées",
-        "inORout": "Dans la catégorie"
+        "inORout": "Dans la catégorie",
+        "import": "Import produit CSV",
+        "export": "Export produit CSV",
+        "importDone": "Import terminé",
+        "importFailed": "Import échoué"
     },
     "list": {
         "t1": "Catégories",

@@ -396,6 +396,36 @@ async function removeChildren(menu) {
     }
 }
 
+async function importCategoryProducts(datas, cat) {
+    const category = await Categories.findOne({_id: cat._id}).populate(['productsList.id']);
+    if (category) {
+        for (const data of datas) {
+            if (data.checked === false || data.checked === 'false') {
+                category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
+            } else if (category.productsList.findIndex((prd) => prd.id.code === data.code) < 0) {
+                const product = await Products.findOne({code: data.code});
+                if (product) {
+                    category.productsList.push({id: product._id, checked: true});
+                }
+            }
+        }
+        await category.save();
+        return true;
+    }
+    return false;
+}
+
+async function exportCategoryProducts(catId) {
+    const category = await Categories.findOne({_id: catId}).populate(['productsList.id']);
+    if (category) {
+        return category.productsList.map((prd) => ({
+            code    : prd.id.code,
+            checked : !!prd.checked
+        }));
+    }
+    return [];
+}
+
 module.exports = {
     getCategories,
     generateFilters,
@@ -408,5 +438,7 @@ module.exports = {
     getCompleteSlugs,
     applyTranslatedAttribs,
     removeChildren,
-    deleteCategory
+    deleteCategory,
+    importCategoryProducts,
+    exportCategoryProducts
 };
