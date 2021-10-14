@@ -400,9 +400,10 @@ async function importCategoryProducts(datas, cat) {
     const category = await Categories.findOne({_id: cat._id}).populate(['productsList.id']);
     if (category) {
         for (const data of datas) {
-            if (data.checked === false || data.checked === 'false') {
+            const foundPrd = category.productsList.find((prd) => prd.id.code === data.code);
+            if ((data.remove === true || data.remove === 'true') && foundPrd?.checked) {
                 category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
-            } else if (category.productsList.findIndex((prd) => prd.id.code === data.code) < 0) {
+            } else if (!foundPrd) {
                 const product = await Products.findOne({code: data.code});
                 if (product) {
                     category.productsList.push({id: product._id, checked: true});
@@ -420,6 +421,7 @@ async function exportCategoryProducts(catId) {
     if (category) {
         return category.productsList.map((prd) => ({
             code    : prd.id.code,
+            remove  : false,
             checked : !!prd.checked
         }));
     }

@@ -684,7 +684,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                         for(const [index, row] of rows.entries()) {
                             if(index !== 0) {
                                 const cells = row.split(';')
-                                jsonResult.push({code: cells[0], checked: cells[1]})
+                                jsonResult.push({code: cells[0], remove: cells[1], checked: cells[2]})
                             }
                         }
                         $scope.importJson(jsonResult)
