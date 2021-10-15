@@ -253,7 +253,14 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: orderStatuses.PAYMENT_PENDING, createdAt: {$lt: dateAgo}})
+    return Orders.find({
+        createdAt : {$lt: dateAgo},
+        status    : {
+            $in : [
+                orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING
+            ]
+        }})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -758,7 +765,7 @@ async function payOrder(req) {
 
 async function deferredPayment(req, method) {
     try {
-        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        const order = await Orders.findOne({number: req.params.orderNumber, status: orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }

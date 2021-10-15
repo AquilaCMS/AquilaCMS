@@ -247,12 +247,13 @@ exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd)
  * Globale sales
  */
 exports.getCag = async function (granularity, periodeStart, periodeEnd) {
+    const {orderStatuses} = require('./orders');
     return statsForOrders({granularity,
         periodeStart,
         periodeEnd,
         statusMatch : {
             $nin : [
-                'CANCELED'
+                orderStatuses.CANCELED
             ]
         },
         sumGroup : '$priceTotal.ati'
@@ -263,12 +264,13 @@ exports.getCag = async function (granularity, periodeStart, periodeEnd) {
  * Number of orders
  */
 exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
+    const {orderStatuses} = require('./orders');
     return statsForOrders({granularity,
         periodeStart,
         periodeEnd,
         statusMatch : {
             $nin : [
-                'CANCELED'
+                orderStatuses.CANCELED
             ]
         },
         sumGroup : 1

@@ -337,7 +337,8 @@ const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
  * @param {string} lang email language
  */
 const sendMailOrderToCompany = async (order_id, lang = '') => {
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    const {orderStatuses} = require('./orders');
+    const order           = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
@@ -348,7 +349,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     let {content}                                = mailDatas;
 
     // Mailing information is recorded in DB
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== orderStatuses.PAID && order.status !== orderStatuses.FINISHED) {
         throw NSErrors.OrderNotPaid;
     }
     const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = order.addresses.delivery;
@@ -465,12 +466,13 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
  * @param {string} lang email language
  */
 const sendMailOrderToClient = async (order_id, lang = '') => {
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    const {orderStatuses} = require('./orders');
+    const order           = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
     // If an order is paid in credit card the status of the order must be paid or finished to continue
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== orderStatuses.PAID && order.status !== orderStatuses.FINISHED) {
         throw NSErrors.OrderNotPaid;
     }
 
@@ -539,7 +541,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     if (order.payment && order.payment[0] && order.payment[0].mode) {
         paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()}).lean();
     }
-    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === 'PAID' || order.status === 'FINISHED') {
+    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === orderStatuses.PAID || order.status === orderStatuses.FINISHED) {
         // We send the order success email to the customer
         mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
     } else {
@@ -620,12 +622,13 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
  * @param {string} lang email language
  */
 const sendMailOrderStatusEdit = async (order_id, lang = '') => {
-    const _order = await Orders.findOne({_id: order_id}).populate('customer.id');
+    const {orderStatuses} = require('./orders');
+    const _order          = await Orders.findOne({_id: order_id}).populate('customer.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
     lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    if (_order.status === 'PAID' || _order.status === 'FINISHED') {
+    if (_order.status === orderStatuses.PAID || _order.status === orderStatuses.FINISHED) {
         return sendMailOrderToClient(order_id, lang);
     }
     const {

@@ -43,7 +43,8 @@ async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         if (!isAdmin(req.info)) {
-            PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
+            const {orderStatuses}          = require('../services/orders');
+            PostBodyVerified.filter.status = {$nin: [orderStatuses.PAYMENT_FAILED]};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
         return res.json(result);
