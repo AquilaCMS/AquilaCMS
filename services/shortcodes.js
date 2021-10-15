@@ -13,7 +13,7 @@ const {Shortcodes} = require('../orm/models');
  * Get shortcodes
  */
 exports.getShortcodes = async function () {
-    return Shortcodes.find({});
+    return Shortcodes.find({}).lean();
 };
 
 /*

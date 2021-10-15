@@ -15,13 +15,13 @@ const defaultFields    = ['_id', 'name', '_slug'];
 const queryBuilder     = new QueryBuilder(Trademarks, restrictedFields, defaultFields);
 
 exports.getTrademarks    = async function (PostBody) {
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 exports.getTrademark     = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 exports.getTrademarkById = async function (id, PostBody = null) {
-    return queryBuilder.findById(id, PostBody);
+    return queryBuilder.findById(id, PostBody, true);
 };
 
 exports.saveTrademark = async function (postBody) {

@@ -553,9 +553,9 @@ const uploadFiles = async (body, files) => {
     }
 };
 
-const listMedias = async (PostBody) => queryBuilder.find(PostBody);
+const listMedias = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getMedia = async (PostBody) => queryBuilder.findOne(PostBody);
+const getMedia = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const saveMedia = async (media) => {
     if (media._id) {
@@ -585,7 +585,7 @@ const removeMedia = async (_id) => {
 };
 
 const getMediasGroups = async (query, filter = {}) => {
-    const medias       = await Medias.find(filter);
+    const medias       = await Medias.find(filter).lean();
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
     // if it is there, we put "general" in the first index
     if (sortedGroups.includes('general')) {

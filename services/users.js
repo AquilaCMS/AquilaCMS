@@ -28,15 +28,15 @@ const queryBuilder     = new QueryBuilder(Users, restrictedFields, defaultFields
  * @param {Object} [PostBody.sort] sort
  * @param {Object} [PostBody.structure] structure
  */
-const getUsers = async (PostBody) => queryBuilder.find(PostBody);
+const getUsers = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getUser = async (PostBody) => queryBuilder.findOne(PostBody);
+const getUser = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 
 const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});

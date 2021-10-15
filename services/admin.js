@@ -28,7 +28,7 @@ const insertAdminInformation = async (dataInformation) => {
  */
 /* eslint-disable-next-line arrow-body-style */
 const getAdminInformation = async () => {
-    return AdminInformation.find({deleted: false}).sort({date: -1});
+    return AdminInformation.find({deleted: false}).sort({date: -1}).lean();
 };
 
 /**
@@ -73,7 +73,7 @@ const controlAllDatas = async () => {
         let fixChildrenDuplicated = false;
 
         // Categories
-        const categories = await Categories.find({});
+        const categories = await Categories.find({}).lean();
         for (const category of categories) {
             // Code control
             if (typeof category.code === 'undefined' || category.code === '') {
@@ -143,7 +143,7 @@ const controlAllDatas = async () => {
 };
 
 const existAndValid = async (element, category, returnErrors, returnWarning, type) => {
-    const thisChild = await Categories.findOne({_id: element});
+    const thisChild = await Categories.findOne({_id: element}).lean();
     if (!thisChild) {
         returnErrors += `<b>Category ${category.code}</b> : No ${type} '${element}' existing<br/>`;
     } else {

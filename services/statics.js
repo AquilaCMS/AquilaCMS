@@ -15,11 +15,11 @@ const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
 const queryBuilder     = new QueryBuilder(Statics, restrictedFields, defaultFields);
 
-const getStatics = async (PostBody) => queryBuilder.find(PostBody);
+const getStatics = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getStatic = async (PostBody) => queryBuilder.findOne(PostBody);
+const getStatic = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
-const getStaticById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
+const getStaticById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody, true);
 
 const setStatic = async (postBody) => {
     const oldStatic = await getStatic({filter: {code: postBody.code}, structure: '*', limit: 1});
