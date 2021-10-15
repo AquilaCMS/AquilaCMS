@@ -13,20 +13,14 @@ const {MailType} = require('../orm/models');
 /**
  * Get the emails
  */
-const getMailTypes = async () => {
-    const {MailType} = require('../orm/models');
-    return MailType.find({}).sort({position: 1});
-};
+const getMailTypes = async () => MailType.find({}).sort({position: 1}).lean();
 
 /**
 * Get a mailType by code
  * @param {String} code
  * @param {Object} MailType
  */
-const getMailType = async (code) => {
-    const {MailType} = require('../orm/models');
-    return MailType.findOne({code});
-};
+const getMailType = async (code) => MailType.findOne({code}).lean();
 
 /**
  * @description Modify or create a new mail type in the admin

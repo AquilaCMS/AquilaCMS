@@ -24,7 +24,7 @@ const filterByDate     = (item) => (!item.startDate || (new Date(item.startDate)
 
 // See more information on react slick: https://react-slick.neostack.com/
 const getSliders = async (PostBody, user = null) => {
-    const results = await queryBuilder.find(PostBody);
+    const results = await queryBuilder.find(PostBody, true);
     if (!user || !user.isAdmin) {
         for (let i = 0; i < results.length; i++) {
             results[i].items = results[i].items.filter(filterByDate);
@@ -33,14 +33,14 @@ const getSliders = async (PostBody, user = null) => {
     return results;
 };
 const getSlider = async (PostBody, user = null) => {
-    const result = await queryBuilder.findOne(PostBody);
+    const result = await queryBuilder.findOne(PostBody, true);
     if (!user || !user.isAdmin) {
         result.items = result.items.filter(filterByDate);
     }
     return result;
 };
 const getSliderById = async (id, PostBody = null, user = null) => {
-    const result = await queryBuilder.findById(id, PostBody);
+    const result = await queryBuilder.findById(id, PostBody, true);
     if (!user || !user.isAdmin) {
         result.items = result.items.filter(filterByDate);
     }

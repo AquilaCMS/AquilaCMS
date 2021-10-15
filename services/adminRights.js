@@ -14,7 +14,7 @@ const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(AdminRights, restrictedFields, defaultFields);
 
-const getAdminRights = async (PostBody) => queryBuilder.find(PostBody);
+const getAdminRights = async (PostBody) => queryBuilder.find(PostBody, true);
 
 const addAdminRight = async (right) => {
     if (!right.code || !right.translate) throw NSErrors.InvalidParameters;

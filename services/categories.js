@@ -21,7 +21,7 @@ const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
 const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultFields);
 
-const getCategories = async (PostBody) => queryBuilder.find(PostBody);
+const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
 const generateFilters = async (res, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
@@ -140,14 +140,13 @@ const generateFilters = async (res, lang = '') => {
 
 const getCategory = async (PostBody, withFilter = null, lang = '') => {
     lang      = ServiceLanguages.getDefaultLang(lang);
-    const res =  await queryBuilder.findOne(PostBody);
+    const res =  await queryBuilder.findOne(PostBody, true);
     return withFilter ? generateFilters(res, lang) : res;
 };
 
 const setCategory = async (postBody) => {
     await Categories.updateOne({_id: postBody._id}, {$set: postBody});
-    const newCat = await Categories.findOne({_id: postBody._id});
-    return newCat;
+    return Categories.findOne({_id: postBody._id}).lean();
 };
 
 const createCategory = async (postBody) => {
@@ -169,7 +168,7 @@ const createCategory = async (postBody) => {
 };
 
 const deleteCategory = async (id) => {
-    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)});
+    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)}).lean();
     if (!_menu) {
         throw NSErrors.NotFound;
     }
@@ -235,7 +234,8 @@ const getCategoryChild = async (code, childConds, user = null) => {
                     select   : projectionOptions
                 }
             }
-        });
+        })
+        .lean();
 };
 
 const execRules = async () => ServiceRules.execRules('category');
@@ -315,7 +315,7 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
     // For the current category
-    const current_category = await Categories.findOne({_id: categorie_id});
+    const current_category = await Categories.findOne({_id: categorie_id}).lean();
     const lang             = ServiceLanguages.getDefaultLang();
 
     if (typeof current_category !== 'undefined') {
@@ -326,7 +326,7 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
         // For each "grandparent"
         for (let iCat = 0; iCat < categoriesToBrowse.length; iCat++) {
             const parent_category_id = categoriesToBrowse[iCat];
-            const parent_category    = await Categories.findOne({_id: parent_category_id});
+            const parent_category    = await Categories.findOne({_id: parent_category_id}).lean();
 
             // We add it to the slug
             if (typeof parent_category !== 'undefined' && parent_category?.active) { // Usually the root is not taken, so it must be deactivated
@@ -353,12 +353,12 @@ const applyTranslatedAttribs = async (PostBody) => {
         // Get all products
         let _categories = [];
         if (PostBody === undefined || PostBody === {}) {
-            _categories = await Categories.find({});
+            _categories = await Categories.find({}).lean();
         } else {
-            _categories = [await queryBuilder.findOne(PostBody)];
+            _categories = [await queryBuilder.findOne(PostBody, true)];
         }
         // Get all attributes
-        const _attribs = await Attributes.find({});
+        const _attribs = await Attributes.find({}).lean();
 
         for (let i = 0; i < _categories.length; i++) {
             if (_categories[i].filters && _categories[i].filters.attributes !== undefined) {

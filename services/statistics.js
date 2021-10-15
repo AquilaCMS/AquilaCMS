@@ -41,8 +41,8 @@ exports.sendMetrics = async function (licence, date) {
  */
 exports.getFirstDayMetrics = async function () {
     try {
-        const User  = await Users.find().sort({createdAt: 1}).limit(1);
-        const Order = await Orders.find().sort({createdAt: 1}).limit(1);
+        const User  = await Users.find().sort({createdAt: 1}).limit(1).lean();
+        const Order = await Orders.find().sort({createdAt: 1}).limit(1).lean();
         if (User.length === 1 || Order.length === 1) {
             if (User[0].createdAt > Order[0].createdAt) {
                 return Order[0].createdAt;
@@ -157,7 +157,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
                 orderStatuses.RETURNED
             ]
         }
-    });
+    }).lean();
 
     let orderTotalAmount        = 0; // prices for all orders
     let nbOrderPaid             = 0; // number of paid orders

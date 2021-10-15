@@ -33,7 +33,7 @@ const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields)
 /**
  * @description Get the emails
  */
-const getMails = async (PostBody) => queryBuilder.find(PostBody);
+const getMails = async (PostBody) => queryBuilder.find(PostBody, true);
 /**
  * @description Get the email by _id
  * @param {ObjectId} _id
@@ -42,7 +42,7 @@ const getMail = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
         throw NSErrors.InvalidObjectIdError;
     }
-    const result = await Mail.findOne({_id});
+    const result = await Mail.findOne({_id}).lean();
     if (!result) {
         throw NSErrors.MailNotFound;
     }
@@ -57,7 +57,7 @@ const getMail = async (_id) => {
 const getMailByTypeAndLang = async (type, lang = '') => {
     lang         = ServiceLanguages.getDefaultLang(lang);
     const query  = {type, [`translation.${lang}`]: {$exists: true}};
-    const result = await Mail.findOne(query);
+    const result = await Mail.findOne(query).lean();
     if (!result) {
         throw NSErrors.MailNotFound;
     }
@@ -114,7 +114,7 @@ const setMail = async (body, _id = null) => {
  */
 async function checkUniqueType(type) {
     try {
-        const mails = await Mail.find({type});
+        const mails = await Mail.find({type}).lean();
         // If there is no mail with this type then we do nothing
         if (!mails.length) {
             return;
@@ -537,7 +537,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     // Get the payment method for check isDeferred
     let paymentMethod;
     if (order.payment && order.payment[0] && order.payment[0].mode) {
-        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()});
+        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()}).lean();
     }
     if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === 'PAID' || order.status === 'FINISHED') {
         // We send the order success email to the customer
@@ -798,7 +798,7 @@ const sendGeneric = async (type, to, datas, lang = '') => {
     const datasKeys = Object.keys(datas);
 
     const query = {type, [`translation.${lang}`]: {$exists: true}};
-    const mail  = await Mail.findOne(query);
+    const mail  = await Mail.findOne(query).lean();
     if (!mail) {
         throw NSErrors.MailNotFound;
     }
@@ -829,7 +829,7 @@ const sendGeneric = async (type, to, datas, lang = '') => {
 const sendContact = async (datas, lang = '') => {
     lang              = determineLanguage(lang, datas.lang);
     const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
-    const contactMail = await Mail.findOne(query);
+    const contactMail = await Mail.findOne(query).lean();
 
     if (!contactMail) {
         throw NSErrors.MailNotFound;
@@ -1007,7 +1007,7 @@ async function sendMailPendingCarts(cart) {
 }
 
 const sendError = async (error) => {
-    const errorMail = await Mail.findOne({type: 'error'});
+    const errorMail = await Mail.findOne({type: 'error'}).lean();
 
     if (!errorMail) {
         return; // We don't want to generate an error
