@@ -34,10 +34,10 @@
                             <tr ng-repeat="item in order.items">
                                 <td>
                                     <div class="details-box">
-                                        <span class="name">{{item.id.translation[defaultLang].name}}</span>
-                                        <span class="name">({{item.id.code}})</span>
+                                        <span class="name">{{item.name}}</span>
+                                        <span class="name">({{item.code}})</span>
                                         <br />
-                                        <span class="trademark">{{item.id.trademark.name}}</span>
+                                        <span class="trademark">{{item.trademark.name}}</span>
                                     </div>
                                 </td>
                                 <td ng-hide="item.price.special.ati === undefined" class="text-right">
