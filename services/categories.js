@@ -401,7 +401,7 @@ async function importCategoryProducts(datas, cat) {
     if (category) {
         for (const data of datas) {
             const foundPrd = category.productsList.find((prd) => prd.id.code === data.code);
-            if ((data.remove === true || data.remove === 'true') && foundPrd?.checked) {
+            if ((data.isInclude === false || data.isInclude === 'false') && foundPrd?.checked) {
                 category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
             } else if (!foundPrd) {
                 const product = await Products.findOne({code: data.code});
@@ -420,9 +420,9 @@ async function exportCategoryProducts(catId) {
     const category = await Categories.findOne({_id: catId}).populate(['productsList.id']);
     if (category) {
         return category.productsList.map((prd) => ({
-            code    : prd.id.code,
-            remove  : false,
-            checked : !!prd.checked
+            code            : prd.id.code,
+            isInclude       : true,
+            manuallyChecked : !!prd.checked
         }));
     }
     return [];
