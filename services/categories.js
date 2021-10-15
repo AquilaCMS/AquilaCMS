@@ -401,7 +401,7 @@ async function importCategoryProducts(datas, cat) {
     if (category) {
         for (const data of datas) {
             const foundPrd = category.productsList.find((prd) => prd.id.code === data.code);
-            if ((data.isInclude === false || data.isInclude === 'false') && foundPrd?.checked) {
+            if ((typeof data.isInclude === 'string' ? (data.isInclude.toLowerCase() === 'false') : (data.isInclude === 'false')) && foundPrd?.checked) {
                 category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
             } else if (!foundPrd) {
                 const product = await Products.findOne({code: data.code});
