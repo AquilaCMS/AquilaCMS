@@ -392,7 +392,7 @@ const rma = async (orderId, returnData, lang) => {
 
     await Bills.create(data);
 
-    if (returnData.sendMail) {
+    if (returnData.sendMail && _order.customer.id) {
         const articles = [];
         const datas    = {
             number    : _order.number,

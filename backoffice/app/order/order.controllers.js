@@ -205,6 +205,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                         console.log(error);
                     });
                 }
+                else {
+                    $scope.customer = null;
+                }
+                
                 $scope.status = $scope.order.status;
                 $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {

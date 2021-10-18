@@ -19,7 +19,7 @@ const insertAdminInformation = async (dataInformation) => {
         dataInformation.date    = new Date();
         dataInformation.deleted = false;
         const _admininformation = new AdminInformation(dataInformation);
-        _admininformation.save();
+        await _admininformation.save();
     }
 };
 
