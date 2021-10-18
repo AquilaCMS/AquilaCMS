@@ -406,7 +406,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == orderStatuses.RETURNED || data == orderStatuses.CANCELED) {
+                } else if (data == orderStatuses.RETURNED) {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
