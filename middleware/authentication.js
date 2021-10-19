@@ -78,13 +78,12 @@ const adminAuth = (requiredRights = '') => async (req, res, next) => {
  */
 const isAdminRights = async (req, requiredRights) => {
     // Get the current admin
-    const admin = await Users.findOne({_id: req.info._id}).lean();
-    if (admin && (!admin.accessList || admin.accessList.length === 0)) { // All rights
+    if (!req.info.accessList || req.info.accessList.length === 0) { // All rights
         return true;
     }
 
     // If the list doesn't contains the required rights, he have the rights
-    return admin.accessList.indexOf(requiredRights) <= -1;
+    return req.info.accessList.indexOf(requiredRights) <= -1;
 };
 
 /**
