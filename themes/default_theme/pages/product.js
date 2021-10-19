@@ -322,7 +322,7 @@ class PageProduct extends NSPageProduct {
                             </section>{/* <!-- /.section-product-main --> */}
 
                             {
-                                product.description1 && product.description1.length > 0 && (
+                                product.description1 && (
                                     <section className="section-product-description">
                                         <header className="section__head">
                                             <h4>{product.description1.title ? product.description1.title : null}</h4>
