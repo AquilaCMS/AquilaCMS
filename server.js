@@ -22,11 +22,6 @@ const fs            = require('./utils/fsp');
 const serverUtils   = require('./utils/server');
 const utilsModules  = require('./utils/modules');
 const utilsThemes   = require('./utils/themes');
-const {
-    middlewarePassport,
-    expressErrorHandler,
-    middlewareServer
-} = require('./middleware');
 
 const dev    = serverUtils.dev;
 const server = express();
@@ -105,7 +100,7 @@ const initFrontFramework = async (themeName = null) => {
     if (themeInfo && themeInfo.type) {
         type = themeInfo.type;
     }
-    server.use('/', middlewareServer.maintenance);
+    server.use('/', require('./middleware').middlewareServer.maintenance);
     const color = '\x1b[36m'; // https://stackoverflow.com/a/41407246
     if (type === 'custom') {
         console.log(`%s@@ ${themeName} is a custom theme (default type) %s`, color, '\x1b[0m');
@@ -159,8 +154,8 @@ const initServer = async () => {
         // we check if we compile (default: true)
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
-        middlewareServer.initExpress(server, passport);
-        await middlewarePassport.init(passport);
+        require('./middleware').middlewareServer.initExpress(server, passport);
+        await require('./middleware').middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
@@ -188,12 +183,12 @@ const initServer = async () => {
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation
-        require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
+        require('./installer/install').handleInstaller(require('./middleware').middlewareServer, require('./middleware').middlewarePassport, server, passport, express);
     }
 };
 
 const startServer = async () => {
-    server.use(expressErrorHandler);
+    server.use(require('./middleware').expressErrorHandler);
     await serverUtils.startListening(server);
     serverUtils.showAquilaLogo();
 };
