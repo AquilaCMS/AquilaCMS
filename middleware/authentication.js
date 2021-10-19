@@ -10,7 +10,6 @@ const jwt               = require('jsonwebtoken');
 const NSErrors          = require('../utils/errors/NSErrors');
 const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
-const {Users}           = require('../orm/models');
 
 const retrieveUser = async (req, res, next) => {
     try {
