@@ -272,8 +272,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2", "$translate",
-    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope", "$translate",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, $rootScope, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
 
@@ -301,6 +301,22 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
+        $scope.isGoodCanonical = function () {
+            // Detect canonical for all languages
+            let isGoodCanonicalForAllLang = true;
+            for (let index = 0; index < $rootScope.languages.length; index++) {
+                const aLang = $rootScope.languages[index];
+                if(!($scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                    isGoodCanonicalForAllLang = false;
+                }
+            }
+
+            if($scope.product.active || isGoodCanonicalForAllLang){
+                return true;
+            }
+            else
+                return false;
+        };
 
         $scope.changeActiveVisible = function(product){
             $modal.open({
@@ -324,13 +340,7 @@ ProductControllers.controller("nsProductGeneral", [
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', $translate.instant("product.general.finished"))
-                                ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
-                                    $scope.product = response;
-                                    $scope.product.active = true;
-                                    ProductsV2.save({}, $scope.product, function (response) {
-                                        window.location.reload()
-                                    })
-                                })
+                                window.location.reload();
                             })
                         }, function (error) {
                             console.log(error)
