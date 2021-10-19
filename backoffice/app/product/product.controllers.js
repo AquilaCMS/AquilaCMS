@@ -302,26 +302,27 @@ ProductControllers.controller("nsProductGeneral", [
         });
 
         $scope.isGoodCanonical = function () {
-            // Detect canonical for all languages
-            let isGoodCanonicalForAllLang = true;
-            for (let index = 0; index < $rootScope.languages.length; index++) {
-                const aLang = $rootScope.languages[index];
-                if(!($scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
-                    isGoodCanonicalForAllLang = false;
+            if ($scope.product) {
+                // Detect canonical for all languages
+                let isGoodCanonicalForAllLang = true;
+                for (let index = 0; index < $rootScope.languages.length; index++) {
+                    const aLang = $rootScope.languages[index];
+                    if(!($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                        isGoodCanonicalForAllLang = false;
+                    }
+                }
+
+                if($scope.product.active || isGoodCanonicalForAllLang){
+                    return true;
                 }
             }
-
-            if($scope.product.active || isGoodCanonicalForAllLang){
-                return true;
-            }
-            else
-                return false;
+            return false;
         };
 
         $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
-                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
+                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules) {
                     $scope.product = product;
                     $scope.adminUrl = "";
                     ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
