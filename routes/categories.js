@@ -15,13 +15,13 @@ const ServiceRules         = require('../services/rules');
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
-    app.get('/v2/category/export/:catId', adminAuth, exportCategoryProducts);
-    app.post('/v2/category/import', adminAuth, importCategoryProducts);
-    app.post('/v2/category/execRules', adminAuth, execRules);
-    app.post('/v2/category/canonical', adminAuth, execCanonical);
-    app.post('/v2/category/applyTranslatedAttribs', adminAuth, applyTranslatedAttribs);
-    app.put('/v2/category', adminAuth, setCategory);
-    app.delete('/v2/category/:id', adminAuth, deleteCategory);
+    app.get('/v2/category/export/:catId', adminAuth(), exportCategoryProducts);
+    app.post('/v2/category/import', adminAuth(), importCategoryProducts);
+    app.post('/v2/category/execRules', adminAuth(), execRules);
+    app.post('/v2/category/canonical', adminAuth(), execCanonical);
+    app.post('/v2/category/applyTranslatedAttribs', adminAuth(), applyTranslatedAttribs);
+    app.put('/v2/category', adminAuth(), setCategory);
+    app.delete('/v2/category/:id', adminAuth(), deleteCategory);
 };
 
 /**

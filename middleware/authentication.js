@@ -10,6 +10,7 @@ const jwt               = require('jsonwebtoken');
 const NSErrors          = require('../utils/errors/NSErrors');
 const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
+const {Users}           = require('../orm/models');
 
 const retrieveUser = async (req, res, next) => {
     try {
@@ -50,7 +51,7 @@ const authentication = async (req, res, next) => {
  * @param {Express.Response} res
  * @param {Function} next
  */
-const adminAuth = async (req, res, next) => {
+const adminAuth = (requiredRights = '') => async (req, res, next) => {
     try {
         if (!req.info) throw NSErrors.Unauthorized;
     } catch (err) {
@@ -61,7 +62,29 @@ const adminAuth = async (req, res, next) => {
     if (!!req.info.isAdmin === false) {
         return next(NSErrors.Unauthorized);
     }
+
+    if (requiredRights !== '') {
+        const haveRights = await isAdminRights(req, requiredRights);
+        if (!haveRights) {
+            return next(NSErrors.Unauthorized);
+        }
+    }
+
     next();
+};
+
+/**
+ * @param {Object} req
+ */
+const isAdminRights = async (req, requiredRights) => {
+    // Get the current admin
+    const admin = await Users.findOne({_id: req.info._id}).lean();
+    if (admin && (!admin.accessList || admin.accessList.length === 0)) { // All rights
+        return true;
+    }
+
+    // If the list doesn't contains the required rights, he have the rights
+    return admin.accessList.indexOf(requiredRights) <= -1;
 };
 
 /**

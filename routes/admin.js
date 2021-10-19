@@ -10,8 +10,8 @@ const serviceAdminInformation = require('../services/admin');
 const {adminAuth}             = require('../middleware/authentication');
 
 module.exports = (router) => {
-    router.get('/v2/adminInformation', adminAuth, getAdminInformation);
-    router.delete('/v2/adminInformation/:code', adminAuth, deleteAdminInformation);
+    router.get('/v2/adminInformation', adminAuth(), getAdminInformation);
+    router.delete('/v2/adminInformation/:code', adminAuth(), deleteAdminInformation);
 };
 
 // GET /api/v2/adminInformation

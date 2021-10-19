@@ -12,11 +12,11 @@ const servicesLanguages     = require('../services/languages');
 module.exports = function (app) {
     app.post('/v2/languages', securityForceFilter([{status: 'visible'}]), listLangs);
     app.post('/v2/language', getLang);
-    app.put('/v2/language', adminAuth, saveLang);
-    app.delete('/v2/language/:id', adminAuth, removeLang);
+    app.put('/v2/language', adminAuth(), saveLang);
+    app.delete('/v2/language/:id', adminAuth(), removeLang);
     app.get('/V2/translate', translateList);
     app.get('/V2/translate/:lang/:currentTranslate', translateGet);
-    app.post('/V2/translate/:lang/:currentTranslate', adminAuth, translateSet);
+    app.post('/V2/translate/:lang/:currentTranslate', adminAuth(), translateSet);
 };
 
 /**

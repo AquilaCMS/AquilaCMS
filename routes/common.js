@@ -14,8 +14,8 @@ module.exports = function (app) {
     app.post('/cookienotice', setCookieNotice);
     app.get('/serverIsUp', serverIsUp);
     app.post('/v2/getBreadcrumb', getBreadcrumb);
-    app.get('/v2/export/csv/:model',  adminAuth, exportData);
-    app.post('/v2/export/csv/:model', adminAuth, exportData);
+    app.get('/v2/export/csv/:model',  adminAuth(), exportData);
+    app.post('/v2/export/csv/:model', adminAuth(), exportData);
 
     // Deprecated
     app.post('/v2/calculStock', middlewareServer.deprecatedRoute, calculStock);

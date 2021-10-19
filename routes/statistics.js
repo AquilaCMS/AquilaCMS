@@ -11,14 +11,14 @@ const {adminAuth}       = require('../middleware/authentication');
 const ServiceStatistics = require('../services/statistics');
 
 module.exports = function (app) {
-    app.get('/v2/statistics/globale',              adminAuth, getGlobaleStats);
-    app.get('/v2/statistics/sell/canceledCart',    adminAuth, getCanceledCart);
-    app.get('/v2/statistics/sell/cag',             adminAuth, getCag);
-    app.get('/v2/statistics/sell/capp',            adminAuth, getCapp);
-    app.get('/v2/statistics/sell/nbOrder',         adminAuth, getNbOrder);
-    app.get('/v2/statistics/customer/newCustomer', adminAuth, getNewCustomer);
-    app.get('/v2/statistics/customer/topCustomer', adminAuth, getTopCustomer);
-    app.post('/v2/statistics/generate',            adminAuth, generateStatistics);
+    app.get('/v2/statistics/globale',              adminAuth(), getGlobaleStats);
+    app.get('/v2/statistics/sell/canceledCart',    adminAuth(), getCanceledCart);
+    app.get('/v2/statistics/sell/cag',             adminAuth(), getCag);
+    app.get('/v2/statistics/sell/capp',            adminAuth(), getCapp);
+    app.get('/v2/statistics/sell/nbOrder',         adminAuth(), getNbOrder);
+    app.get('/v2/statistics/customer/newCustomer', adminAuth(), getNewCustomer);
+    app.get('/v2/statistics/customer/topCustomer', adminAuth(), getTopCustomer);
+    app.post('/v2/statistics/generate',            adminAuth(), generateStatistics);
 };
 
 /**

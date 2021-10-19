@@ -15,8 +15,8 @@ module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.put('/v2/shipment', adminAuth, setShipment);
-    app.delete('/v2/shipment/:id', adminAuth, deleteShipment);
+    app.put('/v2/shipment', adminAuth(), setShipment);
+    app.delete('/v2/shipment/:id', adminAuth(), deleteShipment);
 
     // Deprecated
     app.post('/v2/shipments/fee', middlewareServer.deprecatedRoute, getEstimatedFee);

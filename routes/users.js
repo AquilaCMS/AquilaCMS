@@ -11,15 +11,15 @@ const authService                 = require('../services/auth');
 const usersServices               = require('../services/users');
 
 module.exports = function (app) {
-    app.post('/v2/users', adminAuth, getUsers);
+    app.post('/v2/users', adminAuth(), getUsers);
     app.post('/v2/user', authentication, getUser);
     app.post('/v2/user/resetpassword/:lang?', resetpassword);
     app.post('/v2/user/:id', authentication, getUserById);
     app.post('/v2/user/active/account', getUserByAccountToken);
     app.put('/v2/user/addresses', authentication, setUserAddresses);
     app.put('/v2/user', setUser);
-    app.delete('/v2/user/:id', adminAuth, deleteUser);
-    app.post('/v2/getUserTypes', adminAuth, getUserTypes);
+    app.delete('/v2/user/:id', adminAuth(), deleteUser);
+    app.post('/v2/getUserTypes', adminAuth(), getUserTypes);
 };
 
 /* POST /api/v2/users

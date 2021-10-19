@@ -14,7 +14,7 @@ const ServiceAuth  = require('../services/auth');
 module.exports = function (app) {
     app.post('/v2/bills', getBills);
     app.post('/v2/bills/generatePDF', generatePDF);
-    app.post('/v2/bills/fromOrder', adminAuth, orderToBill);
+    app.post('/v2/bills/fromOrder', adminAuth(), orderToBill);
 };
 
 /**

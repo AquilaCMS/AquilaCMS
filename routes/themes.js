@@ -13,17 +13,17 @@ const ServiceConfig      = require('../services/config');
 const utilsThemes        = require('../utils/themes');
 
 module.exports = function (app) {
-    app.get('/v2/themes',                  adminAuth, listTheme);
-    app.post('/v2/themes/upload',          adminAuth, uploadTheme);
-    app.post('/v2/themes/delete',          adminAuth, deleteTheme);
-    app.post('/v2/themes/copyDatas',       adminAuth, copyDatas);
-    app.get('/v2/themes/css/:cssName',     adminAuth, getCustomCss);
-    app.post('/v2/themes/css/:cssName',    adminAuth, postCustomCss);
-    app.get('/v2/themes/css',              adminAuth, getAllCssComponentName);
-    app.post('/v2/themes/save/:type',      adminAuth, save);
-    app.post('/v2/themes/package/install', adminAuth, packageInstall);
-    app.post('/v2/themes/package/build',   adminAuth, buildTheme);
-    app.get('/v2/themes/informations',     adminAuth, getThemeInformations);
+    app.get('/v2/themes',                  adminAuth(), listTheme);
+    app.post('/v2/themes/upload',          adminAuth(), uploadTheme);
+    app.post('/v2/themes/delete',          adminAuth(), deleteTheme);
+    app.post('/v2/themes/copyDatas',       adminAuth(), copyDatas);
+    app.get('/v2/themes/css/:cssName',     adminAuth(), getCustomCss);
+    app.post('/v2/themes/css/:cssName',    adminAuth(), postCustomCss);
+    app.get('/v2/themes/css',              adminAuth(), getAllCssComponentName);
+    app.post('/v2/themes/save/:type',      adminAuth(), save);
+    app.post('/v2/themes/package/install', adminAuth(), packageInstall);
+    app.post('/v2/themes/package/build',   adminAuth(), buildTheme);
+    app.get('/v2/themes/informations',     adminAuth(), getThemeInformations);
 };
 
 /**

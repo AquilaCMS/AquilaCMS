@@ -12,7 +12,7 @@ const ServiceReviews = require('../services/reviews');
 module.exports = function (app) {
     app.post('/v2/product/reviews/aggregate', getAggregateReviews);
     app.put('/v2/product/:id/review', setProductReview);
-    app.delete('/v2/product/:id/review/:idreview', adminAuth, deleteProductReview);
+    app.delete('/v2/product/:id/review/:idreview', adminAuth(), deleteProductReview);
 };
 
 /**

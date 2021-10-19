@@ -11,8 +11,8 @@ const servicesDevFunctions = require('../services/devFunctions');
 const {Configuration}      = require('../orm/models');
 
 module.exports = function (app) {
-    app.get('/encryption/cipher', adminAuth, cipherPasswords);
-    app.get('/createModelData', adminAuth, createModelData);
+    app.get('/encryption/cipher', adminAuth(), cipherPasswords);
+    app.get('/createModelData', adminAuth(), createModelData);
 };
 async function createModelData(req, res, next) {
     try {

@@ -13,8 +13,8 @@ const ServicePayment       = require('../services/payments');
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
     app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
-    app.put('/v2/paymentMethod', adminAuth, savePaymentMethod);
-    app.post('/v2/payments/order', adminAuth, getOrdersPayments);
+    app.put('/v2/paymentMethod', adminAuth(), savePaymentMethod);
+    app.post('/v2/payments/order', adminAuth('payments'), getOrdersPayments);
 };
 
 async function getOrdersPayments(req, res, next) {

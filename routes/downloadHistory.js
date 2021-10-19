@@ -10,8 +10,8 @@ const SercivesDownloadHistory = require('../services/downloadHistory');
 const {adminAuth}             = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/downloadHistory', adminAuth, getHistory);
-    app.put('/v2/downloadHistory', adminAuth, addToHistory);
+    app.post('/v2/downloadHistory', adminAuth(), getHistory);
+    app.put('/v2/downloadHistory', adminAuth(), addToHistory);
 };
 
 /**

@@ -13,10 +13,10 @@ const NSErrors      = require('../utils/errors/NSErrors');
 module.exports = function (app) {
     app.post('/v2/rules', listRules);
     app.post('/v2/rule', queryRule);
-    app.put('/v2/rule', adminAuth, setRule);
-    app.delete('/v2/rule/:_id', adminAuth, deleteRule);
-    app.post('/v2/rules/testUser', adminAuth, testUser);
-    app.post('/v2/rules/execRule', adminAuth, execRules);
+    app.put('/v2/rule', adminAuth(), setRule);
+    app.delete('/v2/rule/:_id', adminAuth(), deleteRule);
+    app.post('/v2/rules/testUser', adminAuth(), testUser);
+    app.post('/v2/rules/execRule', adminAuth(), execRules);
 };
 
 async function listRules(req, res, next) {

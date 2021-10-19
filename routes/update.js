@@ -10,11 +10,11 @@ const {adminAuth}   = require('../middleware/authentication');
 const updateService = require('../services/update');
 
 module.exports = function (app) {
-    app.get('/v2/update/verifying', adminAuth, verifyingUpdate);
-    app.get('/v2/update', adminAuth, update);
-    app.get('/v2/checkChanges', adminAuth, checkChanges);
-    app.get('/v2/checkGithub', adminAuth, checkGithub);
-    app.post('/v2/updateGithub', adminAuth, updateGithub);
+    app.get('/v2/update/verifying', adminAuth(), verifyingUpdate);
+    app.get('/v2/update', adminAuth(), update);
+    app.get('/v2/checkChanges', adminAuth(), checkChanges);
+    app.get('/v2/checkGithub', adminAuth(), checkGithub);
+    app.post('/v2/updateGithub', adminAuth(), updateGithub);
 };
 
 /*

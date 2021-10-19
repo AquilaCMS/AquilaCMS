@@ -10,13 +10,13 @@ const {adminAuth} = require('../middleware/authentication');
 const ServiceJob  = require('../services/job');
 
 module.exports = function (app) {
-    app.get('/v2/jobs', adminAuth, getJobs);
-    app.get('/v2/job/:_id', adminAuth, getJobById);
-    app.get('/v2/job/play/:_id', adminAuth, getPlayJob);
-    app.get('/v2/job/play/immediate/:_id', adminAuth, getPlayImmediateJob);
-    app.get('/v2/job/pause/:_id', adminAuth, getPauseJob);
-    app.put('/v2/job', adminAuth, setJob);
-    app.delete('/v2/job/:_id', adminAuth, deleteJob);
+    app.get('/v2/jobs', adminAuth(), getJobs);
+    app.get('/v2/job/:_id', adminAuth(), getJobById);
+    app.get('/v2/job/play/:_id', adminAuth(), getPlayJob);
+    app.get('/v2/job/play/immediate/:_id', adminAuth(), getPlayImmediateJob);
+    app.get('/v2/job/pause/:_id', adminAuth(), getPauseJob);
+    app.put('/v2/job', adminAuth(), setJob);
+    app.delete('/v2/job/:_id', adminAuth(), deleteJob);
 };
 
 /**

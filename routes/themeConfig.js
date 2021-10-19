@@ -14,7 +14,7 @@ const serviceThemeConfig = require('../services/themeConfig');
 module.exports = function (app) {
     app.post('/v2/themeConfig', getThemeConfig);
     app.get('/v2/themeConfig/:key', getThemeConfigByKey);
-    app.put('/v2/themeConfig', adminAuth, setThemeConfig);
+    app.put('/v2/themeConfig', adminAuth(), setThemeConfig);
 };
 
 /**
