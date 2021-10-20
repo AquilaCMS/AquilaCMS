@@ -19,7 +19,7 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
                 filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
             }
         }
-        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 20, page: page}}, function({datas, count}) {
+        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 12, page: page}}, function({datas, count}) {
             $scope.trademarks = datas
             $scope.totalItems = count
             $scope.currentPage = page
@@ -34,14 +34,27 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
 
 }]);
 
-TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate)
+TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', 'ProductsV2', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate, ProductsV2)
 {
     $scope.trademark = {}
     $scope.isEditMode = true;
 
+    $scope.totalItems = 0
+    $scope.currentPage = 1
+
+    $scope.getTradeMarkPrds = function (trdmk, page = 1) {
+        
+        ProductsV2.list({PostBody: {filter: {'trademark.code': trdmk.code}, limit: 12, page, structure: '*'}}, function (result) {
+            $scope.products = result.datas
+            $scope.totalItems = result.count
+            $scope.currentPage = page
+        })
+    }
+
     TrademarksV2.query({PostBody: {filter: {_id: $routeParams.trademarkId}, structure: '*'}}, function (data)
     {
         $scope.trademark = data;
+        $scope.getTradeMarkPrds(data, 1)
     });
 
     $scope.updateTrademark = function (updt)
@@ -87,6 +100,10 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     $scope.getImage = function(trademark) {
         return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo}`;
     }
+
+    $scope.goToProductDetails = function (productType, productCode) {
+        $location.path("/products/" + productType + "/" + productCode);
+    };
 
 }]);
 
