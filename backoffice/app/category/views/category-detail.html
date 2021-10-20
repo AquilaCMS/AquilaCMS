@@ -62,11 +62,14 @@
                 <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
                     <tbody>
                         <tr id="type">
-                            <td width="30%" translate>
-                                category.detail.type
+                            <td width="30%">
+                                <span translate>category.detail.type</span>
+                                <i style="margin-left:10px" class="fa fa-question-circle" popover="{{'category.detail.containerHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
                             </td>
                             <td width="70%">
                                 <div class="btn-group" style="z-index: 1;">
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'container'"
+                                        translate>category.detail.container</label>
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                         translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
@@ -111,7 +114,7 @@
                                 <input ng-model="category.url" class="form-control" title="category.detail.t1" required />
                             </td>
                         </tr>
-                        <tr>
+                        <tr ng-if="category.action == 'catalog'">
                             <td translate>category.detail.pdsCanonCat</td>
                             <td>
                                 <input type="number" class="form-control" ng-model="category.canonical_weight" required>
@@ -120,7 +123,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both" ng-if="category.action !== 'container'">
                     <tbody>
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
@@ -143,7 +146,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage" ng-if="category.action !== 'container'">
                     <tbody>
                         <tr>
                             <td width="30%" translate>category.detail.nameColor</td>
@@ -170,7 +173,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog'">
                     <tbody>
                         <tr id="text1">
                             <td translate>

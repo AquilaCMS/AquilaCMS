@@ -26,6 +26,8 @@
         "catalogue": "Catalog",
         "page": "Page",
         "url": "URL",
+        "container":"None",
+        "containerHelper":"- None: container for sub-categories. - Catalog: list of products. - Page : redirects to a (static) page. - URL : redirects to an URL (internal or external)",
         "slugPageCible": "Target page slug",
         "vignette": "Thumbnail",
         "libelleSupp": "Extra field (obsolete)",

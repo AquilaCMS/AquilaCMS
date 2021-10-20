@@ -26,6 +26,8 @@
         "catalogue": "Catalogue",
         "page": "Page",
         "url": "URL",
+        "container":"Aucun",
+        "containerHelper":"- Aucun : sert de receptacle pour des sous catégories. - Catalogue : liste de produits. - Page : redirige vers une page (static). - URL : redirige vers une URL (interne ou externe)",
         "slugPageCible": "Slug de la page cible",
         "vignette": "Vignette",
         "libelleSupp": "Libellé supplémentaire (obsolète)",
