@@ -10,6 +10,7 @@ const jwt               = require('jsonwebtoken');
 const NSErrors          = require('../utils/errors/NSErrors');
 const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
+// Be careful, add requied here is dangerous (modules can change schema)
 
 const retrieveUser = async (req, res, next) => {
     try {

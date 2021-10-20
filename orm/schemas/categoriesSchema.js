@@ -161,7 +161,10 @@ CategoriesSchema.statics.checkCode = async function (that) {
 };
 
 CategoriesSchema.statics.checkSlugExist = async function (that) {
-    await utilsDatabase.checkSlugExist(that, 'categories');
+    // Check slug if the action type is catalog only
+    if (that.action === 'catalog') {
+        await utilsDatabase.checkSlugExist(that, 'categories');
+    }
 };
 
 CategoriesSchema.pre('updateOne', async function (next) {
