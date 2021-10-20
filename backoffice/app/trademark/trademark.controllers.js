@@ -37,7 +37,6 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
 TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', 'ProductsV2', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate, ProductsV2)
 {
     $scope.trademark = {}
-    $scope.isEditMode = true;
 
     $scope.totalItems = 0
     $scope.currentPage = 1
@@ -55,6 +54,7 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     {
         $scope.trademark = data;
         $scope.getTradeMarkPrds(data, 1)
+        $scope.isEditMode = true;
     });
 
     $scope.updateTrademark = function (updt)
