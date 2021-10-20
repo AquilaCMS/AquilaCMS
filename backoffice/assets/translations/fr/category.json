@@ -78,7 +78,8 @@
         "import": "Import produit CSV",
         "export": "Export produit CSV",
         "importDone": "Import terminé",
-        "importFailed": "Import échoué"
+        "importFailed": "Import échoué",
+        "noCatalog": "Cette categorie n'est pas un catalogue"
     },
     "list": {
         "t1": "Catégories",

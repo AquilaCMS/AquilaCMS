@@ -703,7 +703,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             {
                 text: 'category.detail.export',
                 onClick: function () {
-                    if($scope.category.action !== 'catalog') return
+                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
                     $http.get('/v2/category/export/' + $scope.category._id, {headers: {Authorization: window.localStorage.getItem('jwtAdmin')}}).then(function (response) {
                         const separator = ';';
                         const keys = Object.keys(response.data[0]);
@@ -745,7 +745,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             {
                 text: 'category.detail.import',
                 onClick: function () {
-                    if($scope.category.action !== 'catalog') return
+                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
                     document.getElementById('importCsv').click()
                 },
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
