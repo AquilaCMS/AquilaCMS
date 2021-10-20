@@ -12,16 +12,16 @@ const mediasServices = require('../services/medias');
 const NSErrors       = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/medias', adminAuth(), listMedias);
+    app.post('/v2/medias', adminAuth, listMedias);
     app.post('/v2/media', getMedia);
-    app.put('/v2/media', adminAuth(), saveMedia);
-    app.delete('/v2/media/:_id', adminAuth(), removeMedia);
-    app.post('/v2/medias/upload', adminAuth(), uploadFiles);
+    app.put('/v2/media', adminAuth, saveMedia);
+    app.delete('/v2/media/:_id', adminAuth, removeMedia);
+    app.post('/v2/medias/upload', adminAuth, uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
-    app.get('/v2/medias/download/documents', adminAuth(), downloadAllDocuments);
-    app.post('/v2/medias/download/documents', adminAuth(), uploadAllDocuments);
-    app.post('/v2/medias/download/medias', adminAuth(), uploadAllMedias);
+    app.get('/v2/medias/download/documents', adminAuth, downloadAllDocuments);
+    app.post('/v2/medias/download/documents', adminAuth, uploadAllDocuments);
+    app.post('/v2/medias/download/medias', adminAuth, uploadAllMedias);
 };
 
 /**

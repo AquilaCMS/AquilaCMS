@@ -51,7 +51,23 @@ const authentication = async (req, res, next) => {
  * @param {Express.Response} res
  * @param {Function} next
  */
-const adminAuth = (requiredRights = '') => async (req, res, next) => {
+const adminAuth = (req, res, next) => {
+    try {
+        if (!req.info) throw NSErrors.Unauthorized;
+    } catch (err) {
+        res.clearCookie('jwt');
+        return next(err);
+    }
+
+    if (!!req.info.isAdmin === false) {
+        return next(NSErrors.Unauthorized);
+    }
+
+    next();
+};
+
+// Same of adminAuth with acces right
+const adminAuthRight = (requiredRights = '') => async (req, res, next) => {
     try {
         if (!req.info) throw NSErrors.Unauthorized;
     } catch (err) {
@@ -129,5 +145,6 @@ module.exports = {
     retrieveUser,
     authentication,
     adminAuth,
+    adminAuthRight,
     generateJWTToken
 };

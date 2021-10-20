@@ -12,8 +12,8 @@ const {adminAuth}          = require('../middleware/authentication');
 module.exports = function (app) {
     app.post('/v2/setAttributes', getSetAttributes);
     app.post('/v2/setAttribute', getSetAttribute);
-    app.put('/v2/setAttribute', adminAuth(), setSetAttribute);
-    app.delete('/v2/setAttribute/:id', adminAuth(), deleteSetAttribute);
+    app.put('/v2/setAttribute', adminAuth, setSetAttribute);
+    app.delete('/v2/setAttribute/:id', adminAuth, deleteSetAttribute);
 };
 
 /**

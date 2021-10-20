@@ -18,8 +18,8 @@ const {
 }                          = require('../utils');
 
 module.exports = function (app) {
-    app.post('/v2/contacts', adminAuth(), getContacts);
-    app.delete('/v2/contact/:id', adminAuth(), deleteContact);
+    app.post('/v2/contacts', adminAuth, getContacts);
+    app.delete('/v2/contact/:id', adminAuth, deleteContact);
     app.post('/v2/contact/:mode', captchaValidation, setContact);
 };
 

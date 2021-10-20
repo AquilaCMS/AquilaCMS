@@ -11,7 +11,7 @@ const ServiceSystem = require('../services/system');
 
 module.exports = function (app) {
     app
-        .post('/v2/system/log/file', adminAuth(), getLogsContent);
+        .post('/v2/system/log/file', adminAuth, getLogsContent);
 };
 
 const getLogsContent = async (req, res, next) => {

@@ -11,9 +11,9 @@ const {adminAuth, authentication} = require('../middleware/authentication');
 const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/newsletters', adminAuth(), getNewsletters);
-    app.post('/v2/newsletter', adminAuth(), getNewsletter);
-    app.post('/v2/newsletters/distinct', adminAuth(), getDistinctNewsletters);
+    app.post('/v2/newsletters', adminAuth, getNewsletters);
+    app.post('/v2/newsletter', adminAuth, getNewsletter);
+    app.post('/v2/newsletters/distinct', adminAuth, getDistinctNewsletters);
     app.get('/v2/newsletter/:email', authentication, getNewsletterByEmail);
     app.post('/v2/newsletter/:email', setStatusNewsletterByEmail);
 };

@@ -10,14 +10,14 @@ const ServiceGallery = require('../services/gallery');
 const {adminAuth}    = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/galleries', adminAuth(), getGalleries);
+    app.post('/v2/galleries', adminAuth, getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
-    app.put('/v2/gallery', adminAuth(), setGallery);
-    app.put('/v2/gallery/:_id/item', adminAuth(), setItemGallery);
-    app.put('/v2/gallery/:_id/items', adminAuth(), setItemsGallery);
-    app.delete('/v2/gallery/:_id', adminAuth(), deleteGallery);
-    app.delete('/v2/gallery/:_id/:_id_item', adminAuth(), deleteItemGallery);
+    app.put('/v2/gallery', adminAuth, setGallery);
+    app.put('/v2/gallery/:_id/item', adminAuth, setItemGallery);
+    app.put('/v2/gallery/:_id/items', adminAuth, setItemsGallery);
+    app.delete('/v2/gallery/:_id', adminAuth, deleteGallery);
+    app.delete('/v2/gallery/:_id/:_id_item', adminAuth, deleteItemGallery);
 };
 
 /**

@@ -10,7 +10,7 @@ const {adminAuth}         = require('../middleware/authentication');
 const ServicesAdminRights = require('../services/adminRights');
 
 module.exports = function (app) {
-    app.post('/v2/adminRights', adminAuth(), getAdminRights);
+    app.post('/v2/adminRights', adminAuth, getAdminRights);
 };
 
 async function getAdminRights(req, res, next) {

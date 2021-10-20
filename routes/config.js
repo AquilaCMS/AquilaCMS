@@ -17,11 +17,11 @@ const fs                   = require('../utils/fsp');
 const {getUploadDirectory} = require('../utils/server');
 
 module.exports = function (app) {
-    app.put('/v2/config', adminAuth(), extendTimeOut, saveEnvFile, saveEnvConfig);
+    app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
-    app.get('/restart', adminAuth(), restart);
-    app.get('/robot', adminAuth(), getRobot);
-    app.post('/robot', adminAuth(), setRobot);
+    app.get('/restart', adminAuth, restart);
+    app.get('/robot', adminAuth, getRobot);
+    app.post('/robot', adminAuth, setRobot);
 
     // Deprecated
     app.get('/config/data', middlewareServer.deprecatedRoute, getConfigTheme);
