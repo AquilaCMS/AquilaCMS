@@ -10,7 +10,7 @@ const {adminAuth}       = require('../middleware/authentication');
 const ServiceShortcodes = require('../services/shortcodes');
 
 module.exports = function (app) {
-    app.get('/v2/shortcodes', adminAuth(), getShortcodes);
+    app.get('/v2/shortcodes', adminAuth, getShortcodes);
 };
 
 /**

@@ -11,11 +11,11 @@ const ServiceRule  = require('../services/rules');
 const ServicePicto = require('../services/pictos');
 
 module.exports = function (app) {
-    app.post('/v2/picto',           adminAuth(), getPictos);
-    app.post('/v2/picto/execRules', adminAuth(), execRules);
-    app.post('/v2/picto/:id',       adminAuth(), getPictoById);
-    app.put('/v2/picto/:id?',       adminAuth(), savePicto);
-    app.delete('/v2/picto/:id',     adminAuth(), deletePicto);
+    app.post('/v2/picto',           adminAuth, getPictos);
+    app.post('/v2/picto/execRules', adminAuth, execRules);
+    app.post('/v2/picto/:id',       adminAuth, getPictoById);
+    app.put('/v2/picto/:id?',       adminAuth, savePicto);
+    app.delete('/v2/picto/:id',     adminAuth, deletePicto);
 };
 
 /**

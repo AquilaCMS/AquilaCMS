@@ -97,8 +97,18 @@ const controlAllDatas = async () => {
                 }
 
                 // Slug control
-                if (typeof category.translation[currentLang].slug === 'undefined' || category.translation[currentLang].slug === '') {
-                    returnErrors += `<b>Category ${category.code}</b> : Slug undefined (${currentLang})<br/>`;
+                if (category.action === 'catalog') {
+                    if (typeof category.translation[currentLang].slug === 'undefined' || category.translation[currentLang].slug === '') {
+                        returnErrors += `<b>Category ${category.code}</b> : Slug undefined (${currentLang})<br/>`;
+                    }
+                } else if (category.action === 'page') {
+                    if (typeof category.translation[currentLang].pageSlug === 'undefined' || category.translation[currentLang].pageSlug === '') {
+                        returnErrors += `<b>Category ${category.code}</b> : Page not selected (${currentLang})<br/>`;
+                    }
+                } else if (category.action === 'url') {
+                    if (!category.url || category.url.length === 0) {
+                        returnErrors += `<b>Category ${category.code}</b> : empty URL (${currentLang})<br/>`;
+                    }
                 }
             }
 

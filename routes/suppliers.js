@@ -11,10 +11,10 @@ const {adminAuth}      = require('../middleware/authentication');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/suppliers', adminAuth(), listSuppliers);
-    app.post('/v2/supplier', adminAuth(), getSupplier);
-    app.put('/v2/supplier', adminAuth(), saveSupplier);
-    app.delete('/v2/supplier/:id', adminAuth(), deleteSupplier);
+    app.post('/v2/suppliers', adminAuth, listSuppliers);
+    app.post('/v2/supplier', adminAuth, getSupplier);
+    app.put('/v2/supplier', adminAuth, saveSupplier);
+    app.delete('/v2/supplier/:id', adminAuth, deleteSupplier);
 };
 /* eslint-enable no-use-before-define */
 
