@@ -54,5 +54,8 @@
             </tr>
             </tbody>
         </table>
+        
+        <pagination ng-if="totalItems > 20" total-items="totalItems" page="currentPage" on-select-page="getTradeMarks(page)" items-per-page="20" max-size="maxSize" boundary-links="true"
+            rotate="false"></pagination>
     </div>
 </ns-box>

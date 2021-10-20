@@ -12,9 +12,11 @@ const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
-    code   : {type: String, unique: true},
-    name   : {type: String, required: true, unique: true},
-    active : {type: Boolean, default: true}
+    code        : {type: String, unique: true},
+    name        : {type: String, required: true, unique: true},
+    active      : {type: Boolean, default: true},
+    logo        : {type: String},
+    translation : {}
 }, {
     timestamps : true,
     id         : false

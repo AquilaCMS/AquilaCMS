@@ -2353,6 +2353,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.entity.filename = response.data.name;
                                                 break;
                                             }
+                                            case 'trademark': {
+                                                $scope.entity.logo = response.data.name;
+                                                break;
+                                            }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
                                                 break;

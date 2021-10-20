@@ -11,7 +11,9 @@
         "markSaved": "Marque sauvegardée",
         "nameValue": "Entrez une valeur pour le nom",
         "enterValue": "Entrer une valeur",
-        "creaDate": "Date de création"
+        "creaDate": "Date de création",
+        "logo": "Logo",
+        "link": "Liens"
     },
     "new": {
         "t1": "Créer une Nouvelle Marque",
