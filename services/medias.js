@@ -19,7 +19,8 @@ const {
     News,
     Gallery,
     Slider,
-    Mail
+    Mail,
+    Trademarks
 }                      = require('../orm/models');
 const utils        = require('../utils/utils');
 const utilsModules = require('../utils/modules');
@@ -241,6 +242,14 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             filePathCache = path.join(cacheFolder, type, fileName);
             await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
+        case 'trademark':
+            const trademark = await mongoose.model('trademarks').findOne({_id});
+            fileName        = path.basename(trademark.logo, path.extname(trademark.logo));
+            filePath        = path.join(_path, 'medias/trademark', trademark.logo);
+            fileName        = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(trademark.logo)}`;
+            filePathCache   = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
         default:
             return null;
         }
@@ -403,6 +412,12 @@ const uploadFiles = async (body, files) => {
         const result = await Pictos.findOne({_id: body._id});
         await deleteFileAndCacheFile(`medias/picto/${result.filename}`, 'picto');
         await Pictos.updateOne({_id: body._id}, {$set: {filename: name + extension}});
+        return {name: name + extension};
+    }
+    case 'trademark': {
+        const result = await Trademarks.findOne({_id: body._id});
+        await deleteFileAndCacheFile(`medias/trademark/${result.logo}`, 'trademark');
+        await Trademarks.updateOne({_id: body._id}, {$set: {logo: name + extension}});
         return {name: name + extension};
     }
     case 'language': {

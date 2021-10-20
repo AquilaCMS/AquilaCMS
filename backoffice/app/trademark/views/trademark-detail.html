@@ -2,6 +2,7 @@
     <form name="form" class="form-horizontal" novalidate ng-submit="save(trademark)" role="form">
         <ns-buttons is-edit-mode="true" remove="removeTrademark(trademark)" save-and-quit="save(trademark,true)"
                     disable-save="disableSave" return-path="/trademarks" form="form">
+                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
 
                     
             <table id="user" class="table table-bordered table-striped" style="clear: both">
@@ -25,12 +26,45 @@
                             <ns-switch name="active" ng-model="trademark.active"></ns-switch>
                         </td>
                     </tr>
+
+                    <tr>
+                        <td ><span translate>trademark.detail.link</span> ({{lang.toUpperCase()}})</td>
+                        <td>
+                            <input type="text" class="form-control" name="link" ng-model="trademark.translation[lang].link">
+                        </td>
+                    </tr>
                     <!-- <tr>
                         <td translate>trademark.detail.creaDate</td>
                         <td>{{trademark.createdAt | date}}</td>
                     </tr> -->
                 </tbody>
             </table>
+            <div class="col-md-4 text-center" style="margin-bottom: 30px">
+                <label for="" translate>trademark.detail.logo</label>
+
+                <!--<input type="file">-->
+                <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
+                    </div>
+                </div>
+                <div class="image-frame"  ng-if="trademark.logo !== ''">
+                    <div class="row">
+                        <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
+                            <img ng-src="{{getImage(trademark)}}" ng-if="trademark.logo !== ''" alt="{{trademark.logo}}">
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="filename" class="form-control" ng-model="trademark.logo" ng-disabled="true" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="trademark" id="trademark._id" entity="trademark"></ns-upload-files>
+            </div>
         </ns-buttons>
     </form>        
 </ns-box>

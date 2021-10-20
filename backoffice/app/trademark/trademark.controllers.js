@@ -5,8 +5,10 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
     
     $scope.trademarks = [];
     $scope.filter = {};
+    $scope.currentPage = 1;
+    $scope.totalItems = 0;
     
-    $scope.getTradeMarks = function(){
+    $scope.getTradeMarks = function(page = 1){
         let filter = {};
         const filterKeys = Object.keys($scope.filter);
         for (let i = 0, leni = filterKeys.length; i < leni; i++) {
@@ -17,8 +19,10 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
                 filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
             }
         }
-        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 0}}, function({datas}) {
+        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 20, page: page}}, function({datas, count}) {
             $scope.trademarks = datas
+            $scope.totalItems = count
+            $scope.currentPage = page
         });
     }
     
@@ -33,6 +37,7 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
 TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate)
 {
     $scope.trademark = {}
+    $scope.isEditMode = true;
 
     TrademarksV2.query({PostBody: {filter: {_id: $routeParams.trademarkId}, structure: '*'}}, function (data)
     {
@@ -78,6 +83,10 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
             }
         });
     };
+    
+    $scope.getImage = function(trademark) {
+        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo}`;
+    }
 
 }]);
 
@@ -87,6 +96,8 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
     $scope.master = {
         name: '', _id: ''
     };
+
+    $scope.isEditMode = false;
 
     $scope.reset = function ()
     {
