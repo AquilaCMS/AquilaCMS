@@ -110,6 +110,9 @@
         "contacts":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Contacts.</a>",
         "medias":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Médias.</a>",
         "gallery":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation de la Gallerie.</a>",
+        "trademarks":"Les marques permettent de créer des pages marques, mais aussi de créer des règles en se basant sur les marques.",
+        "suppliers":"Les fournisseurs permettent de créer des règles en se basant sur les fournisseurs.",
+        "families":"Les univers, familles et sous-famille permettent de créer des règles en se basant sur cet arborescence.",
         "hide":"Cacher"
     }
 }

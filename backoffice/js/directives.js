@@ -226,7 +226,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor',
+                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor, autoresize',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
                         toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | codeeditor',
@@ -831,6 +831,21 @@ adminCatagenDirectives.directive("nsBox", function ()
                     type = "medias";
                     translation = "ns.help.medias";
                     translationValues = "{url:'https://www.aquila-cms.com/medias/tutorial_aquila_fr_medias.pdf'}";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/trademarks":
+                    type = "trademarks";
+                    translation = "ns.help.trademarks";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/suppliers":
+                    type = "suppliers";
+                    translation = "ns.help.suppliers";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/families":
+                    type = "families";
+                    translation = "ns.help.families";
                     showAdvice(type, translation, translationValues);
                     break;
                 default:
