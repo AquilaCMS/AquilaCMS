@@ -105,13 +105,12 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
 );
 
 MediasControllers.controller("MediasDetailsCtrl",
-    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate", "$q",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate, $q) {
         $scope.media = {
             link : "",
             name : "",
             group: "",
-            groups: []
         };
 
         $scope.nsUploadFiles = {
@@ -135,7 +134,6 @@ MediasControllers.controller("MediasDetailsCtrl",
             if(mode == true){
                 // it is a new media
                 id = $routeParams.id.substring(0, $routeParams.id.length - 4);
-                $scope.filterDropdown();
                 $scope.additionnalButtons = [
                     {
                         text: 'medias.medias.uploadButton',
@@ -151,11 +149,19 @@ MediasControllers.controller("MediasDetailsCtrl",
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
             MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 0}}, function (response) {
                 $scope.media = response;
-                $scope.filterDropdown();
+            });
+            MediaApiV2.getGroups({query: ''}, function (groups) {
+                $scope.groups = groups.filter(gp => typeof gp === 'string');
+                console.log('INIT GRPOUS', $scope.groups)
                 if($scope.media.group){
                     // to bind the input "group"
                     $scope.selectedDropdownItem = $scope.media.group;
+                    $scope.filterDropdown($scope.selectedDropdownItem)
+                } else {
+                    $scope.selectedDropdownItem = null
                 }
+            }, function (error){
+                console.log(error);
             });
         }
 
@@ -208,22 +214,23 @@ MediasControllers.controller("MediasDetailsCtrl",
 
 
         $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            let params = {};
-            if($scope.selectedDropdownItem){
-                params = {query: $scope.selectedDropdownItem};
-            }
-            MediaApiV2.getGroups(params, function (groups) {
-                $scope.groups = [];
-                $scope.groups = groups;
-            }, function (error){
-                console.log(error);
+            console.log("user input", userInput)
+            var filter = $q.defer();
+            var normalisedInput = userInput.toLowerCase();
+
+            var filteredArray = $scope.groups.filter(function(group) {
+                return group.toLowerCase().indexOf(normalisedInput) === 0;
             });
+
+            console.log($scope.groups)
+            console.log(filteredArray)
+
+            filter.resolve(filteredArray);
+            return filter.promise;
         };
         
         $scope.itemObjectSelected = function (item) {
+            console.log("select item", item)
             $scope.selectedDropdownItem = item;
         };
 

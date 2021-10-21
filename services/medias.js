@@ -601,16 +601,13 @@ const removeMedia = async (_id) => {
 
 const getMediasGroups = async (query, filter = {}) => {
     const medias       = await Medias.find(filter).lean();
-    const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
+    const sortedGroups = ([...new Set(medias.map((media) => (!media.group ? 'general' : media.group)))]).sort((a, b) => a - b);
     // if it is there, we put "general" in the first index
     if (sortedGroups.includes('general')) {
         sortedGroups.splice(sortedGroups.indexOf('general'), 1);
         sortedGroups.unshift('general');
     }
-    if (query) {
-        return sortedGroups.filter((group) => group.match(new RegExp(query, 'gim')));
-    }
-    return sortedGroups;
+    return sortedGroups.filter((group) => group.match(new RegExp(query || '', 'gim')));
 };
 
 const deleteFileAndCacheFile = async (link, type) => {
