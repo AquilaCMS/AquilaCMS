@@ -152,7 +152,6 @@ MediasControllers.controller("MediasDetailsCtrl",
             });
             MediaApiV2.getGroups({query: ''}, function (groups) {
                 $scope.groups = groups.filter(gp => typeof gp === 'string');
-                console.log('INIT GRPOUS', $scope.groups)
                 if($scope.media.group){
                     // to bind the input "group"
                     $scope.selectedDropdownItem = $scope.media.group;
@@ -192,7 +191,6 @@ MediasControllers.controller("MediasDetailsCtrl",
                     return
                 }
             }
-            $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", $translate.instant("medias.medias.mediaSaved"));
                 if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
@@ -214,23 +212,19 @@ MediasControllers.controller("MediasDetailsCtrl",
 
 
         $scope.filterDropdown = function (userInput) {
-            console.log("user input", userInput)
             var filter = $q.defer();
             var normalisedInput = userInput.toLowerCase();
+            $scope.media.group = userInput
 
             var filteredArray = $scope.groups.filter(function(group) {
                 return group.toLowerCase().indexOf(normalisedInput) === 0;
             });
-
-            console.log($scope.groups)
-            console.log(filteredArray)
 
             filter.resolve(filteredArray);
             return filter.promise;
         };
         
         $scope.itemObjectSelected = function (item) {
-            console.log("select item", item)
             $scope.selectedDropdownItem = item;
         };
 
