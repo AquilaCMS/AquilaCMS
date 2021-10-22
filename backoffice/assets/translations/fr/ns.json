@@ -90,7 +90,7 @@
         "trademark": "Produit : Marque",
         "supplier_ref": "Produit : Fournisseur",
         "client__id": "Client : ID",
-        "client_type": "Client : Code",
+        "client_type": "Client : Type",
         "categorie_code": "Catégorie : Code",
         "panier_priceTotal_et": "Panier : Prix HT",
         "panier_priceTotal_ati": "Panier : Prix TTC",
