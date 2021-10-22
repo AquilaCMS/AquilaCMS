@@ -10,15 +10,6 @@
                     <li><a data-toggle="tab" href="#products" target="_self"  translate>supplier.detail.pdtsLinked</a></li>
                 </ul>
             </div>
-            <!--<div class="row">
-                <div class="col-lg-12">
-                    <div class="dataTables_filter">
-                        <label>
-                            <input type="search" ng-model="query" ng-model-options="{debounce: 500}" ng-change="search()" name="q" id="q" value="" placeholder="Rechercher…" class="search-field">
-                        </label>
-                    </div>
-                </div>
-            </div>-->
             <div class="tab-content">
                 <div id="detail" class="tab-pane fade in active">
 
@@ -51,38 +42,48 @@
                                     <input type="text" class="form-control" name="link" ng-model="trademark.translation[lang].link">
                                 </td>
                             </tr>
+
+                            <tr>
+                                <td ><span translate>trademark.detail.logo</span></td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-3 text-center" style="margin-bottom: 30px; min-width: 300px;" ng-if="trademark.logo">
+                                            <label for="" translate></label>
+    
+                                            <!--<input type="file">-->
+                                            <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                                    <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
+                                                </div>
+                                            </div>
+                                            <div class="image-frame"  ng-if="trademark.logo">
+                                                <div class="row">
+                                                    <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
+                                                        <img ng-src="{{getImage(trademark)}}" ng-if="trademark.logo" alt="{{trademark.logo}}">
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
+                                                            <div class="col-sm-9">
+                                                                <input type="text" name="filename" class="form-control" ng-model="trademark.logo" ng-disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2" style="margin-top: 25px;">
+                                            <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="trademark" id="trademark._id" entity="trademark"></ns-upload-files>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                             <!-- <tr>
                                 <td translate>trademark.detail.creaDate</td>
                                 <td>{{trademark.createdAt | date}}</td>
                             </tr> -->
                         </tbody>
                     </table>
-                    <div class="col-md-4 text-center" style="margin-bottom: 30px">
-                        <label for="" translate>trademark.detail.logo</label>
-
-                        <!--<input type="file">-->
-                        <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
-                            </div>
-                        </div>
-                        <div class="image-frame"  ng-if="trademark.logo !== ''">
-                            <div class="row">
-                                <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
-                                    <img ng-src="{{getImage(trademark)}}" ng-if="trademark.logo !== ''" alt="{{trademark.logo}}">
-                                </div>
-                                <div class="col-sm-8">
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" name="filename" class="form-control" ng-model="trademark.logo" ng-disabled="true" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="trademark" id="trademark._id" entity="trademark"></ns-upload-files>
-                    </div>
                 </div>
                 <div id="products" class="tab-pane fade in">
                     <h3 style="display: inline" translate>supplier.detail.pdtsLinked</h3>
