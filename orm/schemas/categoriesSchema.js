@@ -34,7 +34,6 @@ const CategoriesSchema = new Schema({
     // headerUrl    : {type: String},
     img          : {type: String},
     alt          : {type: String},
-    url          : {type: String},
     displayOrder : {type: Number, default: 99}, // Revoir la valeur par défaut
     filters      : {
         attributes : [
