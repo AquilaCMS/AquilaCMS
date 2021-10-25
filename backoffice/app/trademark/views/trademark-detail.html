@@ -45,36 +45,34 @@
 
                             <tr>
                                 <td ><span translate>trademark.detail.logo</span></td>
-                                <td>
-                                    <div class="row">
-                                        <div class="col-md-3 text-center" style="margin-bottom: 30px; min-width: 300px;" ng-if="trademark.logo">
-                                            <label for="" translate></label>
-    
-                                            <!--<input type="file">-->
-                                            <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
-                                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                                    <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
-                                                </div>
+                                <td class="upload-file">
+                                    <div class="text-center" style="margin-bottom: 30px;" ng-if="trademark.logo">
+                                        <label for="" translate></label>
+
+                                        <!--<input type="file">-->
+                                        <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                                <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
                                             </div>
-                                            <div class="image-frame"  ng-if="trademark.logo">
-                                                <div class="row">
-                                                    <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
-                                                        <img ng-src="{{getImage(trademark)}}" ng-if="trademark.logo" alt="{{trademark.logo}}">
-                                                    </div>
-                                                    <div class="col-sm-8">
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" name="filename" class="form-control" ng-model="trademark.logo" ng-disabled="true" />
-                                                            </div>
+                                        </div>
+                                        <div class="image-frame"  ng-if="trademark.logo">
+                                            <div class="row">
+                                                <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
+                                                    <img ng-src="{{getImage(trademark)}}" ng-if="trademark.logo" alt="{{trademark.logo}}">
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
+                                                        <div class="col-sm-9">
+                                                            <input type="text" name="filename" class="form-control" ng-model="trademark.logo" ng-disabled="true" />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2" style="margin-top: 25px;">
-                                            <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="trademark" id="trademark._id" entity="trademark"></ns-upload-files>
-                                        </div>
+                                    </div>
+                                    <div>
+                                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="trademark" id="trademark._id" entity="trademark"></ns-upload-files>
                                     </div>
                                 </td>
                             </tr>
@@ -179,5 +177,20 @@
                 </div>
             </div>
         </ns-buttons>
-    </form>        
+    </form>    
+    <style>
+        .upload-file {
+            padding: 5px 0;
+        }
+        .upload-file > div {
+            width: calc(50% - 8px);
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @media screen and (max-width: 972px) {
+            .upload-file > div {
+                width: 100%;
+            }
+        }
+    </style>    
 </ns-box>
