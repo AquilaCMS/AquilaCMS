@@ -2271,6 +2271,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                 $scope.files[i].nameModified = $scope.files[i].nameModified !== $scope.files[i].name.replace(/\.[^/.]+$/, "") && $scope.files[i].nameModified ? $scope.files[i].nameModified.replace(/[^A-Z0-9-]+/ig, "_") : $scope.files[i].name.replace(/\.[^/.]+$/, "").replace(/[^A-Z0-9-]+/ig, "_");
                                 $scope.files[i].alt = $scope.files[i].alt !== "" ? $scope.files[i].alt : '';
                             }
+                            $scope.upload($scope.files)
                         }
                             $scope.disableUpload = false;
                     });
