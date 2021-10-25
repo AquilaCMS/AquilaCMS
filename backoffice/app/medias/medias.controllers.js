@@ -12,14 +12,19 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         };
 
         $scope.addMedia = function () {
-            var modalInstance = $modal.open({
-                templateUrl: "app/medias/views/modals/media-new.html",
-                controller: "MediasModalNewCtrl"
-            });
+            const newMedia = {
+                link : "",
+                name : 'new-' + Math.floor(Math.random() * 1024),
+                group: "",
+            };
 
-            modalInstance.result.then(function (returnedValue) {
-                if(returnedValue.create == true){
-                    $scope.mediaDetails({_id: `${returnedValue._id}:new`})
+            MediaApiV2.save({media: newMedia}, function (rep) {
+                $scope.mediaDetails({_id: `${rep._id}:new`})
+            }, function(err) {
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
                 }
             });
         };
@@ -390,29 +395,3 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
     }
 ]);
 
-MediasControllers.controller("MediasModalNewCtrl", [
-    "$scope", "$modalInstance", "MediaApiV2", "toastService",
-    function ($scope, $modalInstance, MediaApiV2, toastService) {
-        $scope.media = {
-            link : "",
-            name : "",
-            group: "",
-        };
-
-        $scope.save = function (category) {
-            MediaApiV2.save({media: $scope.media}, function (rep) {
-                $modalInstance.close({create: true, _id: rep._id});
-            }, function(err) {
-                if(err.data.code === "Conflict"){
-                    toastService.toast("danger", err.data.message + " : code already exists");
-                }else{
-                    toastService.toast("danger", err.data.message);
-                }
-            });
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.close({create: false});
-        };
-    }
-]);

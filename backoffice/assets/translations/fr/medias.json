@@ -1,7 +1,7 @@
 {
     "medias": {
         "t1": "Médias",
-        "nom": "Code",
+        "nom": "Nom",
         "lien": "Lien",
         "miniature": "Miniature",
         "cpLien": "Copier lien",
@@ -15,7 +15,7 @@
     "new": {
         "t1": "Nouveau Média",
         "ph1": "Nom du fichier",
-        "nom": "Code",
+        "nom": "Nom",
         "lien": "Lien :",
         "cpLien": "Copier lien",
         "media": "Média",

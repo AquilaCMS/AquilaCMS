@@ -128,7 +128,7 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
                 if(msg._id) {
                     console.log("Trademark Saved!");
                     toastService.toast("success", $translate.instant("trademark.detail.markSaved"));
-                    $location.path("/trademarks");
+                    $location.path("/trademarks/"+msg._id);
                 } else {
                     toastService.toast("warning", $translate.instant("trademark.detail.nameValue"));
                     console.error("Error!");
