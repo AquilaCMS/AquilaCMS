@@ -371,9 +371,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             // we re-build the correct array
             const newCat = angular.copy($scope.category);
-            for(let oneProduct of newCat.productsList){
-                oneProduct.id = oneProduct.id._id;
-            }
             CategoryV2.save(newCat, function (res) {
                 toastService.toast("success", $translate.instant("category.detail.positionSaved"));
                 if($scope.formMenu) {
@@ -455,9 +452,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         function saveCategory() {
             // we re-build the correct array
             const newCat = angular.copy($scope.category);
-            for(let oneProduct of newCat.productsList){
-                oneProduct.id = oneProduct.id._id;
-            }
             CategoryV2.save(newCat, function (res) {
                 $scope.category = res;
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
