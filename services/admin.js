@@ -106,7 +106,7 @@ const controlAllDatas = async () => {
                         returnErrors += `<b>Category ${category.code}</b> : Page not selected (${currentLang})<br/>`;
                     }
                 } else if (category.action === 'url') {
-                    if (!category.url || category.url.length === 0) {
+                    if (typeof category.translation[currentLang].url === 'undefined' || category.translation[currentLang].url === '') {
                         returnErrors += `<b>Category ${category.code}</b> : empty URL (${currentLang})<br/>`;
                     }
                 }
