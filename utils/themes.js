@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const slash          = require('slash');
-const fs             = require('fs');
-const packageManager = require('./packageManager');
-const {isProd}       = require('./server');
+const path            = require('path');
+const slash           = require('slash');
+const fs              = require('fs');
+const packageManager  = require('./packageManager');
+const {isProd}        = require('./server');
+const {Configuration} = require('../orm/models');
 
 /**
  * Do a yarn install and compile the theme passed as a parameter or the current theme
@@ -93,6 +94,7 @@ const yarnBuildCustom = async (themeName = '') => {
             stderr : e
         };
     }
+    if (isProd) await Configuration.findOneAndUpdate({}, {'environment.needRebuild': false});
     return returnValues;
 };
 

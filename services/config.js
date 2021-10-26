@@ -15,6 +15,7 @@ const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
+const {isProd}                  = require('../server');
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -209,9 +210,39 @@ const getConfigTheme = async () => {
     };
 };
 
+// Set config props to true if step is needed (0: rest props1: build)
+const needRebuildAndRestart = async (restart = false, rebuild = false) => {
+    const _config = await Configuration.findOne({});
+    if (isProd && rebuild) {
+        _config.environment.needRebuild = true;
+    } else {
+        _config.environment.needRebuild = false;
+    }
+    if (restart) {
+        _config.environment.needRestart = true;
+    }
+    await _config.save();
+    await require('./admin').removeAdminInformation('server_restart_rebuild');
+    await require('./admin').insertAdminInformation({
+        code        : 'server_restart_rebuild',
+        type        : 'warning',
+        translation : {
+            en : {
+                title : _config.environment.needRebuild ? 'Rebuild & Restart Aquila' : 'Restart Aquila',
+                text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila`
+            },
+            fr : {
+                title : _config.environment.needRebuild ? 'Rebuild & Redemarrez Aquila' : 'Redemarrez Aquila',
+                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'rebuildez & redemarrez' : 'redemarrez'} Aquila`
+            }
+        }
+    });
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
-    getConfigTheme
+    getConfigTheme,
+    needRebuildAndRestart
 };

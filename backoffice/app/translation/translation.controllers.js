@@ -1,8 +1,8 @@
 var TranslationControllers = angular.module('aq.translation.controllers', []);
 
 TranslationControllers.controller('LanguagesCtrl',
-    ['$scope', 'LanguagesApiV2', '$modal', 'toastService','$translate',
-        function ($scope, LanguagesApiV2, $modal, toastService, $translate) {
+    ['$scope', 'LanguagesApiV2', '$modal', 'toastService','$translate', "$rootScope",
+        function ($scope, LanguagesApiV2, $modal, toastService, $translate, $rootScope) {
         $scope.filter = {};
 
         $scope.getLanguages = function() {
@@ -56,22 +56,26 @@ TranslationControllers.controller('LanguagesCtrl',
                 if (LanguagesApiV2.delete({ id: lang._id }).$resolved === false){
                     $scope.languages.splice($scope.languages.indexOf(lang), 1);
                     setTimeout(function(){
-                        getLanguages();
-                        var event = new CustomEvent("getLanguages", {});
+                        $scope.getLanguages();
+                        var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
                         window.dispatchEvent(event);
+                        window.location.reload()
                     }, 200) 
                 }else{
                     toastService.toast("danger", err.data);
                 }
+                /*$scope.languages.splice($scope.languages.indexOf(lang), 1);
+                $rootScope.languages = $scope.languages
+                console.log($rootScope)*/
             }
         };
     }
 ]);
 
 TranslationControllers.controller('LanguageEditCtrl',
-        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService', '$translate',
-            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService, $translate) {
-                function getLanguages() {
+        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService', '$translate', "$rootScope",
+            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService, $translate, $rootScope) {
+                $scope.getLanguages = function () {
                     LanguagesApiV2.list({}, {PostBody: {filter: {}, limit: 0}},function (languages) {
                         $scope.languages = languages.datas;
                     });
@@ -95,9 +99,11 @@ TranslationControllers.controller('LanguageEditCtrl',
                         }
                     }
                     LanguagesApiV2.save({lang}, function () {
-                        var event = new CustomEvent("getLanguages", {});
+                        var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
                         window.dispatchEvent(event);
                         $modalInstance.close();
+                        $scope.getLanguages();
+                        window.location.reload()
                     }, function(err){
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
@@ -107,7 +113,6 @@ TranslationControllers.controller('LanguageEditCtrl',
                             toastService.toast("danger", err.data);
                         }
                     });
-                    getLanguages();
                 };
 
                 $scope.cancel = function () {

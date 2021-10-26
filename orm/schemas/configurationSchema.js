@@ -53,7 +53,9 @@ const ConfigurationSchema = new Schema({
         contentSecurityPolicy : {
             values : {type: [String]},
             active : {type: Boolean, default: false}
-        }
+        },
+        needRestart : {type: Boolean, default: false},
+        needRebuild : {type: Boolean, default: false}
 
     },
     taxerate : {
