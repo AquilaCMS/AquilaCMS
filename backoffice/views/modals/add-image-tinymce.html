@@ -211,14 +211,14 @@
                     <label translate>tinymce.modal.width</label>
                 </div>
                 <div class="col-md-2">
-                    <input type="number" class="form-control" ng-model="size.width" />
+                    <input type="number" class="form-control" name="width" ng-model="size.width" ng-change="sizeChange('width', size.width)" />
                 </div>
 
                 <div class="col-md-2">
                 <label translate>tinymce.modal.height </label>
                 </div>
                 <div class="col-md-2">
-                <input style="float:left" type="number" class="form-control" ng-model="size.height" />
+                <input style="float:left" type="number" class="form-control" name="height" ng-model="size.height" ng-change="sizeChange('height', size.height)" />
                 </div>
             </div>
         </div>

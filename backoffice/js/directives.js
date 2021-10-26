@@ -471,6 +471,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.size = {};
                             $scope.size.max = true;
+                            $scope.size.ratio = 1
 
                             $scope.changeSwitch = function(){
                                 if ($scope.size.max === true){
@@ -483,7 +484,29 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             $scope.selectImage = function(image){
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
+                                $scope.getMeta(image.link)
                             };
+
+                            $scope.sizeChange = function (type, size) {
+                                if(type === 'width') {
+                                    $scope.size.height = Math.round(size / $scope.size.ratio)
+                                } else {
+                                    $scope.size.width = Math.round(size * $scope.size.ratio)
+                                }
+                            }
+
+                            $scope.getMeta = function (url) {
+                                const img = new Image();
+                                img.src = url;
+                                img.onload = function() { 
+                                    $scope.size.ratio = this.width / this.height;
+                                    if(!$scope.size.max) {
+                                        $scope.size.width = this.width;
+                                        $scope.size.height = this.height;
+                                    }
+                                    $scope.$apply()
+                                }
+                            }
 
                             $scope.generate = function () {
                                 let url = $scope.imageSelected.split('medias/')[1];
