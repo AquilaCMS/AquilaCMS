@@ -60,6 +60,9 @@
 
             <div class="row" style="margin-top:20px">
             <!-- <div class="row" style="margin-bottom:30px;overflow:scroll; height:70vh;overflow-x: hidden;padding:15px 20px"> -->
+                <div>
+                    <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="media" id="id" entity="media" after-function="onPageChange(1)"></ns-upload-files>
+                </div>
                 <div ng-repeat="media in list">
                     <div ng-if="media.extension === '.png' || media.extension === '.jpg'" class="col-md-3" style="text-align: center;margin-bottom:20px">
                         <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"

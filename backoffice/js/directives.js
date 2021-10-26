@@ -499,6 +499,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $modalInstance.dismiss('cancel');
                             };
 
+                            $scope.media = {
+                                link : "",
+                                name : 'new-' + Math.floor(Math.random() * 1024),
+                                group: "",
+                            };
+
                         }],
                         resolve: {
                         }
@@ -2385,6 +2391,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
+                                                $scope.afterFunction();
                                                 break;
                                             }
                                             case 'gallery': {

@@ -441,7 +441,7 @@ const uploadFiles = async (body, files) => {
             await Medias.updateOne({_id: body._id}, {$set: {link: target_path_full, extension: path.extname(target_path_full)}});
             return {name: name + extension, path: target_path_full, id: body._id};
         }
-        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full)});
+        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full), name: name + extension});
         return {name: name + extension, path: target_path_full, id: media._id};
     }
     case 'gallery': {
