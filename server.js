@@ -7,7 +7,7 @@
  */
 
 require('dotenv').config();
-require('./utils/nativeObjectExtension');
+require('aql-utils');
 const express       = require('express');
 const passport      = require('passport');
 const path          = require('path');
