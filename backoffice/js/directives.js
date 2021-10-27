@@ -326,6 +326,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
                                 $scope.search = '';
+                                $scope.keepRatio = false
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -488,10 +489,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             };
 
                             $scope.sizeChange = function (type, size) {
-                                if(type === 'width') {
-                                    $scope.size.height = Math.round(size / $scope.size.ratio)
-                                } else {
-                                    $scope.size.width = Math.round(size * $scope.size.ratio)
+                                if($scope.size.keepRatio) {
+                                    if(type === 'width') {
+                                        $scope.size.height = Math.round(size / $scope.size.ratio)
+                                    } else {
+                                        $scope.size.width = Math.round(size * $scope.size.ratio)
+                                    }
                                 }
                             }
 
@@ -500,10 +503,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 img.src = url;
                                 img.onload = function() { 
                                     $scope.size.ratio = this.width / this.height;
-                                    if(!$scope.size.max) {
-                                        $scope.size.width = this.width;
-                                        $scope.size.height = this.height;
-                                    }
+                                    $scope.size.width = this.width;
+                                    $scope.size.height = this.height;
                                     $scope.$apply()
                                 }
                             }
