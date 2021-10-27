@@ -1,10 +1,12 @@
 <nav class="nav-fixed">
 
     <select class="nav-margin form-control hidden" style="padding: 0 5px" ng-model="adminLang" ng-change="adminLangChange(adminLang)">
-        <option ng-repeat="lng in languages" value="{{lng.code}}">{{lng.name}}</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
     </select>
     <select class="nav-margin form-control" ng-model="adminLang" ng-change="adminLangChange(adminLang)">
-        <option ng-repeat="lng in languages" value="{{lng.code}}">{{lng.name}}</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
     </select>
 
     <ul>
