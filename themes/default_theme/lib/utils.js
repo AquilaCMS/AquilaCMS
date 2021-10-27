@@ -4,8 +4,7 @@ import Head from 'next/head';
 import nsModules from '../modules/list_modules';
 import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
-
-require('aql-utils');
+import 'aql-utils';
 
 /**
  * Si le produit est dans la categorie printer alors on va compter le nombre de printer dans le panier
