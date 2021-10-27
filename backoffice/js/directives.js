@@ -326,7 +326,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
                                 $scope.search = '';
-                                $scope.keepRatio = false
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -472,6 +471,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.size = {};
                             $scope.size.max = true;
+                            $scope.size.keepRatio = true;
                             $scope.size.ratio = 1
 
                             $scope.changeSwitch = function(){
