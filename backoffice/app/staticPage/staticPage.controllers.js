@@ -130,6 +130,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
@@ -248,6 +249,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {

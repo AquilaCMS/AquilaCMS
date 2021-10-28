@@ -86,6 +86,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.cmsBlock.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
