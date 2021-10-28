@@ -15,34 +15,34 @@ const defaultFields    = ['_id', 'name', '_slug'];
 const queryBuilder     = new QueryBuilder(Trademarks, restrictedFields, defaultFields);
 
 exports.getTrademarks    = async function (PostBody) {
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 exports.getTrademark     = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 exports.getTrademarkById = async function (id, PostBody = null) {
-    return queryBuilder.findById(id, PostBody);
+    return queryBuilder.findById(id, PostBody, true);
 };
 
-exports.saveTrademark = async function (req) {
-    if (req.body._id) {
+exports.saveTrademark = async function (postBody) {
+    if (postBody._id) {
         // update
-        const result = await Trademarks.findOneAndUpdate({_id: req.body._id}, req.body, {upsert: true, new: true});
+        const result = await Trademarks.findOneAndUpdate({_id: postBody._id}, postBody, {upsert: true, new: true});
         if (!result) {
             return {status: false};
         }
         return result;
     }
     // creation
-    const result = await Trademarks.create({name: req.body.name});
+    const result = await Trademarks.create({name: postBody.name});
     if (!result) {
         return {status: false};
     }
     return result;
 };
 
-exports.deleteTrademark = async function (req) {
-    const _trademark = await Trademarks.findOne({_id: req.params.id});
+exports.deleteTrademark = async function (id) {
+    const _trademark = await Trademarks.findOne({_id: id});
     if (!_trademark) throw NSErrors.TradeMarkNotFound;
     await Products.updateMany({}, {$unset: {trademark: {id: _trademark._id}}});
     const result = await Trademarks.deleteOne({_id: _trademark._id});

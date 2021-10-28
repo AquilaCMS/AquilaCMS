@@ -11,7 +11,9 @@
         "link": "Lien",
         "delete": "Supprimer",
         "cancel": "Annuler",
-        "valider": "Valider"
+        "valider": "Valider",
+        "startDate": "Debut",
+        "endDate": "Fin"
     },
     "detail": {
         "t1": "Détail Carrousel",

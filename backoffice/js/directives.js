@@ -226,7 +226,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor',
+                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor, autoresize',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
                         toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | codeeditor',
@@ -471,6 +471,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.size = {};
                             $scope.size.max = true;
+                            $scope.size.keepRatio = true;
+                            $scope.size.ratio = 1
 
                             $scope.changeSwitch = function(){
                                 if ($scope.size.max === true){
@@ -483,7 +485,29 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             $scope.selectImage = function(image){
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
+                                $scope.getMeta(image.link)
                             };
+
+                            $scope.sizeChange = function (type, size) {
+                                if($scope.size.keepRatio) {
+                                    if(type === 'width') {
+                                        $scope.size.height = Math.round(size / $scope.size.ratio)
+                                    } else {
+                                        $scope.size.width = Math.round(size * $scope.size.ratio)
+                                    }
+                                }
+                            }
+
+                            $scope.getMeta = function (url) {
+                                const img = new Image();
+                                img.src = url;
+                                img.onload = function() { 
+                                    $scope.size.ratio = this.width / this.height;
+                                    $scope.size.width = this.width;
+                                    $scope.size.height = this.height;
+                                    $scope.$apply()
+                                }
+                            }
 
                             $scope.generate = function () {
                                 let url = $scope.imageSelected.split('medias/')[1];
@@ -497,6 +521,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
+                            };
+
+                            $scope.media = {
+                                link : "",
+                                name : 'new-' + Math.floor(Math.random() * 1024),
+                                group: "",
                             };
 
                         }],
@@ -831,6 +861,21 @@ adminCatagenDirectives.directive("nsBox", function ()
                     type = "medias";
                     translation = "ns.help.medias";
                     translationValues = "{url:'https://www.aquila-cms.com/medias/tutorial_aquila_fr_medias.pdf'}";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/trademarks":
+                    type = "trademarks";
+                    translation = "ns.help.trademarks";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/suppliers":
+                    type = "suppliers";
+                    translation = "ns.help.suppliers";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/families":
+                    type = "families";
+                    translation = "ns.help.families";
                     showAdvice(type, translation, translationValues);
                     break;
                 default:
@@ -2256,6 +2301,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                 $scope.files[i].nameModified = $scope.files[i].nameModified !== $scope.files[i].name.replace(/\.[^/.]+$/, "") && $scope.files[i].nameModified ? $scope.files[i].nameModified.replace(/[^A-Z0-9-]+/ig, "_") : $scope.files[i].name.replace(/\.[^/.]+$/, "").replace(/[^A-Z0-9-]+/ig, "_");
                                 $scope.files[i].alt = $scope.files[i].alt !== "" ? $scope.files[i].alt : '';
                             }
+                            $scope.upload($scope.files)
                         }
                             $scope.disableUpload = false;
                     });
@@ -2353,6 +2399,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.entity.filename = response.data.name;
                                                 break;
                                             }
+                                            case 'trademark': {
+                                                $scope.entity.logo = response.data.name;
+                                                break;
+                                            }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
                                                 break;
@@ -2365,6 +2415,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
+                                                $scope.afterFunction();
                                                 break;
                                             }
                                             case 'gallery': {

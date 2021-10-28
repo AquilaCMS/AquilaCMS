@@ -52,7 +52,6 @@ const ProductSimple         = require('./productSimple');
 const ProductSimplePreview  = require('./productSimplePreview');
 const ProductVirtual        = require('./productVirtual');
 const ProductVirtualPreview = require('./productVirtualPreview');
-const RelayPoint            = require('./relayPoint');
 const DownloadHistory       = require('./downloadHistory');
 const Shortcodes            = require('./shortcodes');
 
@@ -103,6 +102,5 @@ exports.ProductSimple         = ProductSimple;
 exports.ProductSimplePreview  = ProductSimplePreview;
 exports.ProductVirtual        = ProductVirtual;
 exports.ProductVirtualPreview = ProductVirtualPreview;
-exports.RelayPoint            = RelayPoint;
 exports.DownloadHistory       = DownloadHistory;
 exports.Shortcodes            = Shortcodes;

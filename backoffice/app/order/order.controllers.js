@@ -205,6 +205,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                         console.log(error);
                     });
                 }
+                else {
+                    $scope.customer = null;
+                }
+                
                 $scope.status = $scope.order.status;
                 $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
@@ -406,7 +410,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == orderStatuses.RETURNED || data == orderStatuses.CANCELED) {
+                } else if (data == orderStatuses.RETURNED) {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{

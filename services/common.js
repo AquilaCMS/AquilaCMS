@@ -28,7 +28,7 @@ const getBreadcrumb = async (url) => {
         url.splice(index, 1);
     }
 
-    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code');
+    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code').lean();
     let lang              = '';
     if (defaultLanguage !== null) {
         lang = defaultLanguage.code;
@@ -76,7 +76,7 @@ const getBreadcrumb = async (url) => {
         });
 
         if (url && url[0]) {
-            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]});
+            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]}).lean();
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].title,

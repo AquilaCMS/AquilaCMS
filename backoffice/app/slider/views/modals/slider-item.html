@@ -5,7 +5,7 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-sm-12">
-                <div class="box-content form-group">
+                <div class="box-content form-group row">
                     <div class="col-sm-4 text-center">
                         <div ng-show="showLoader" class="uploadOverlayAddImage">
                             <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
@@ -14,24 +14,38 @@
                     </div>
 
                     <div class="col-sm-8">
-                        <label for="image_url" class="col-sm-4 control-label" translate>slider.item.url</label>
-                        <div class="col-sm-8" style="margin-bottom: 30px">
-                            <input id="image_url" class="form-control" translate translate-attr-placeholder='slider.item.ph1' ng-model="item.src" disabled />
-                        </div>
-
-                        <label for="image_name" class="col-sm-4 control-label" translate>slider.item.nom</label>
-                        <div class="col-sm-8">
-                            <input id="image_name" class="form-control" translate translate-attr-placeholder='slider.item.ph2' ng-model="item.name" />
-                        </div>
-
-                        <label for="image_text" class="col-sm-4 control-label" translate>slider.item.txt</label>
-                        <div class="col-sm-8" style="margin-bottom: 30px">
-                            <input id="image_text" class="form-control" translate translate-attr-placeholder='slider.item.ph3' ng-model="item.text" />
-                        </div>
-
-                        <label for="image_href" class="col-sm-4 control-label" translate>slider.item.link</label>
-                        <div class="col-sm-8">
-                            <input id="image_href" class="form-control" translate translate-attr-placeholder='slider.item.ph4' ng-model="item.href" />
+                        <div class="row">
+                            <label for="image_url" class="col-sm-4 control-label" translate>slider.item.url</label>
+                            <div class="col-sm-8" style="margin-bottom: 10px">
+                                <input id="image_url" class="form-control" translate translate-attr-placeholder='slider.item.ph1' ng-model="item.src" disabled />
+                            </div>
+    
+                            <label for="image_name" class="col-sm-4 control-label" translate>slider.item.nom</label>
+                            <div class="col-sm-8" style="margin-bottom: 10px">
+                                <input id="image_name" class="form-control" translate translate-attr-placeholder='slider.item.ph2' ng-model="item.name" />
+                            </div>
+    
+                            <label for="image_text" class="col-sm-4 control-label" translate>slider.item.txt</label>
+                            <div class="col-sm-8" style="margin-bottom: 10px">
+                                <input id="image_text" class="form-control" translate translate-attr-placeholder='slider.item.ph3' ng-model="item.text" />
+                            </div>
+    
+                            <label for="image_href" class="col-sm-4 control-label" translate>slider.item.link</label>
+                            <div class="col-sm-8" style="margin-bottom: 10px">
+                                <input id="image_href" class="form-control" translate translate-attr-placeholder='slider.item.ph4' ng-model="item.href" />
+                            </div>
+    
+                            <label for="startDate" class="col-sm-4 control-label" translate>slider.item.startDate</label>
+                            <div class="col-sm-8" style="margin-bottom: 10px">
+                                <ns-datepicker name="startDate" class="fullDatepicker form-datepicker" ng-model="item.startDate">
+                                </ns-datepicker>
+                            </div>
+    
+                            <label for="endDate" class="col-sm-4 control-label" translate>slider.item.endDate</label>
+                            <div class="col-sm-8">
+                                <ns-datepicker name="endDate" class="fullDatepicker form-datepicker" ng-model="item.endDate">
+                                </ns-datepicker>
+                            </div>
                         </div>
                     </div>
                 </div>

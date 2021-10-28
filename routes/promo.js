@@ -10,14 +10,14 @@ const {adminAuth}  = require('../middleware/authentication');
 const ServicePromo = require('../services/promo');
 
 module.exports = function (app) {
-    app.get('/v2/promo/check/code/:code/:cartId/:lang?', checkCodePromoByCode);
-    app.post('/v2/promos',          adminAuth, getPromos);
-    app.post('/v2/promo',           adminAuth, getPromo);
-    app.post('/v2/promo/:_id',      adminAuth, getPromoById);
-    app.put('/v2/promo/:_id/clone', adminAuth, clonePromo);
-    app.put('/v2/promo',            adminAuth, setPromo);
-    app.delete('/v2/promo/:_id',    adminAuth, deletePromo);
-    app.delete('/v2/promo/:promoId/code/:codeId',    adminAuth, deletePromoCode);
+    app.get('/v2/promo/check/code/:code/:cartId/:lang?',       checkCodePromoByCode);
+    app.post('/v2/promos',                        adminAuth, getPromos);
+    app.post('/v2/promo',                         adminAuth, getPromo);
+    app.post('/v2/promo/:_id',                    adminAuth, getPromoById);
+    app.put('/v2/promo/:_id/clone',               adminAuth, clonePromo);
+    app.put('/v2/promo',                          adminAuth, setPromo);
+    app.delete('/v2/promo/:_id',                  adminAuth, deletePromo);
+    app.delete('/v2/promo/:promoId/code/:codeId', adminAuth, deletePromoCode);
 };
 
 /**

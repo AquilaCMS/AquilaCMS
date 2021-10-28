@@ -13,29 +13,28 @@ const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Newsletters, restrictedFields, defaultFields);
 
 exports.getNewsletters = async function (PostBody) {
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 
 exports.getNewsletter = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 
 exports.getDistinctNewsletters = async function (PostBody) {
-    const newsletterNames      = await Newsletters.find(PostBody.filter).distinct('segment.name');
+    const newsletterNames      = await Newsletters.find(PostBody.filter).distinct('segment.name').lean();
     const newsletterNamesCount = newsletterNames.length;
     const newsCount            = [];
     const datas                = newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b)).slice((PostBody.page - 1) * PostBody.limit, PostBody.limit);
 
     for (const element of datas) {
-        const a = await queryBuilder.find({PostBody : {filter: {'segment.name': element}}
-        });
-        newsCount.push({name: element, count: a.count});
+        const nl = await queryBuilder.find({PostBody: {filter: {'segment.name': element}}}, true);
+        newsCount.push({name: element, count: nl.count});
     }
     return {datas: newsCount, count: newsletterNamesCount};
 };
 
 exports.getNewsletterByEmail = async function (email) {
-    return Newsletters.findOne({email});
+    return Newsletters.findOne({email}).lean();
 };
 
 /**
@@ -51,7 +50,7 @@ exports.setStatusNewsletterByEmail = async function (email, params) {
     const oNewsletter = await Newsletters.findOne(
         {email, 'segment.name': params.name},
         {email: 1, segment: {$elemMatch: {name: params.name}}}
-    );
+    ).lean();
     // No segment exists
     if (!oNewsletter || !oNewsletter.segment.length) {
         const update = {name: params.name, optin: true, date_subscribe: new Date()};
