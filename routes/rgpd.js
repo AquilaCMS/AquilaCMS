@@ -11,7 +11,7 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');
 const {Modules}                   = require('../orm/models');
-const fs                          = require('../utils/fsp');
+const fs                          = require('aql-utils');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const appdirname                  = path.dirname(require.main.filename);
 

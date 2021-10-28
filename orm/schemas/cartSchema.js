@@ -7,7 +7,7 @@
  */
 
 const mongoose          = require('mongoose');
-const fs                = require('../../utils/fsp');
+const fs                = require('aql-utils');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');

@@ -24,7 +24,7 @@ const {
 const aqlUtils     = require('aql-utils');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
-const fsp          = require('../utils/fsp');
+const fsp          = require('aql-utils');
 const NSErrors     = require('../utils/errors/NSErrors');
 const server       = require('../utils/server');
 const utilsMedias  = require('../utils/medias');

@@ -1,4 +1,4 @@
-const fs = require('../utils/fsp');
+const fs = require('aql-utils');
 
 (async () => {
     try {

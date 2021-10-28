@@ -16,7 +16,7 @@ const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
 const aquilaEvents     = require('../utils/aquilaEvents');
 const utilsServer      = require('../utils/server');
-const fs               = require('../utils/fsp');
+const fs               = require('aql-utils');
 const {
     Users,
     Mail,

@@ -7,7 +7,7 @@
  */
 
 const path         = require('path');
-const fs           = require('../utils/fsp');
+const fs           = require('aql-utils');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');

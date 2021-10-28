@@ -9,7 +9,7 @@
 const axios                    = require('axios');
 const AdmZip                   = require('adm-zip');
 const path                     = require('path');
-const fsp                      = require('../utils/fsp');
+const fsp                      = require('aql-utils');
 const packageManager           = require('../utils/packageManager');
 const {isProd}                 = require('../utils/server');
 const {Modules, Configuration} = require('../orm/models');

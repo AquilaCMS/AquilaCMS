@@ -7,7 +7,7 @@
  */
 
 const mongoose      = require('mongoose');
-const fs            = require('../../utils/fsp');
+const fs            = require('aql-utils');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const NSErrors      = require('../../utils/errors/NSErrors');
 const aqlUtils      = require('aql-utils');

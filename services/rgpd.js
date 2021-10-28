@@ -16,7 +16,7 @@ const bcrypt       = require('bcrypt');
 const rimraf       = require('rimraf');
 const path         = require('path');
 const faker        = require('faker');
-const fs           = require('../utils/fsp');
+const fs           = require('aql-utils');
 const {execCmd}    = require('../utils/packageManager');
 const NSErrors     = require('../utils/errors/NSErrors');
 const {

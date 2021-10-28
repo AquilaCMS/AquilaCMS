@@ -1,5 +1,5 @@
 const path = require('path');
-const fs   = require('../utils/fsp');
+const fs   = require('aql-utils');
 
 const getLogsContent = async (fileName) => {
     const filePath = path.resolve(global.appRoot, fileName);

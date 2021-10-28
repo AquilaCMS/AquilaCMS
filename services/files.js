@@ -8,7 +8,7 @@
 
 const path                 = require('path');
 const moment               = require('moment');
-const fs                   = require('../utils/fsp');
+const fs                   = require('aql-utils');
 const {getUploadDirectory} = require('../utils/server');
 
 /**
