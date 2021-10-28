@@ -55,6 +55,15 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.selectTab = function (tab) {
             $scope.selectedTab.active = tab;
         }
+
+        $scope.getGroups = function () {
+            
+            CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit:0}}).$promise.then(function (cmsBlocks) {
+                $scope.groups = cmsBlocks.datas.getAndSortGroups()
+                $scope.filterDropdown($scope.cmsBlock.group)
+            });
+        }
+        
         if ($routeParams.code !== "new") {
             CmsBlocksApi.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (block) {
                 $scope.cmsBlock = block;
@@ -91,14 +100,6 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             filter.resolve(filteredArray);
             return filter.promise;
         };
-
-        $scope.getGroups = function () {
-            
-            CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit:0}}).$promise.then(function (cmsBlocks) {
-                $scope.groups = cmsBlocks.datas.getAndSortGroups()
-                $scope.filterDropdown($scope.cmsBlock.group)
-            });
-        }
 
         $scope.generateVariables = function () {
             if ($scope.cmsBlock.translation){
