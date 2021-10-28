@@ -7,7 +7,7 @@
  */
 
 const mongoose   = require('mongoose');
-const helper     = require('../../utils/utils');
+const aqlUtils   = require('aql-utils');
 const NSErrors   = require('../../utils/errors/NSErrors');
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -60,7 +60,7 @@ ProductBundleSchema.methods.updateData = async function (data) {
     };
     if (updatedData.autoSlug) {
         // On met à jour le slug du produit
-        updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
+        updatedData._slug = `${aqlUtils.slugify(updatedData.name)}-${updatedData.id}`;
     }
     const updPrd = await this.model('bundle').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
     return updPrd;

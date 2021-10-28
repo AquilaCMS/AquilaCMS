@@ -7,7 +7,7 @@
  */
 
 const mongoose      = require('mongoose');
-const helper        = require('../../utils/utils');
+const aqlUtils      = require('aql-utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 
@@ -36,7 +36,7 @@ LanguagesSchema.pre('findOneAndUpdate', async function (next) {
 
 LanguagesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, LanguagesSchema);
-    this.code = helper.slugify(this.code);
+    this.code = aqlUtils.slugify(this.code);
     next();
 });
 

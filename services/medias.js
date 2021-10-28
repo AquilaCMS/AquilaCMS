@@ -21,7 +21,7 @@ const {
     Slider,
     Mail
 }                      = require('../orm/models');
-const utils        = require('../utils/utils');
+const aqlUtils     = require('aql-utils');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
 const fsp          = require('../utils/fsp');
@@ -569,7 +569,7 @@ const saveMedia = async (media) => {
         return result;
     }
     // we need to create the media
-    media.name   = utils.slugify(media.name);
+    media.name   = aqlUtils.slugify(media.name);
     const result = Medias.create(media);
     return result;
 };

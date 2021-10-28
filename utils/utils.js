@@ -165,26 +165,6 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text) => require('slug')(text, {lower: true});
-
-/**
- * transform a price in ATI to ET
- * @param {number|undefined} ATIPrice
- * @param {number|undefined} VAT ex: VAT is 20 if it is 20%
- * @returns {number|undefined}
- */
-const toET = (ATIPrice, VAT) => {
-    if ((ATIPrice !== undefined) && (VAT !== undefined)) {
-        if (VAT === 0) {
-            return ATIPrice;
-        }
-
-        return Math.round(ATIPrice * 100 * 100 / (100 + VAT)) / 100;
-    }
-
-    return undefined;
-};
-
 /**
  *
  * @param {any} obj
@@ -299,8 +279,6 @@ module.exports = {
     json2csv,
     getObjFromDotStr,
     detectDuplicateInArray,
-    slugify,
-    toET,
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,

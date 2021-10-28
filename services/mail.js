@@ -11,7 +11,7 @@ const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
-const utils            = require('../utils/utils');
+const aqlUtils         = require('aql-utils');
 const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
 const aquilaEvents     = require('../utils/aquilaEvents');
@@ -89,7 +89,7 @@ const setMail = async (body, _id = null) => {
                 await checkUniqueType(body.type);
             }
 
-            body.code = utils.slugify(body.code);
+            body.code = aqlUtils.slugify(body.code);
             result    = await Mail.create(body);
             if (!result) {
                 throw NSErrors.MailCreateError;

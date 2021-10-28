@@ -13,8 +13,8 @@ const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
-const utils             = require('../../utils/utils');
 const aquilaEvents      = require('../../utils/aquilaEvents');
+const aqlUtils          = require('aql-utils');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -126,7 +126,7 @@ CartSchema.virtual('delivery.price').get(function () {
 
         if (!self.delivery.freePriceLimit || priceTotal.ati < self.delivery.freePriceLimit) {
             deliveryPrice.ati = self.delivery.value.ati;
-            deliveryPrice.et  = utils.toET(self.delivery.value.ati, defaultVAT);
+            deliveryPrice.et  = aqlUtils.toET(self.delivery.value.ati, defaultVAT);
         }
         return deliveryPrice;
     }

@@ -10,7 +10,7 @@ const mongoose                                                 = require('mongoo
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder                                             = require('../utils/QueryBuilder');
 const NSErrors                                                 = require('../utils/errors/NSErrors');
-const utils                                                    = require('../utils/utils');
+const aqlUtils                                                 = require('aql-utils');
 const utilsMedia                                               = require('../utils/medias');
 
 const restrictedFields = [];
@@ -53,7 +53,7 @@ const getAttribute = async (PostBody, lean) => {
 };
 
 const setAttribute = async (body) => {
-    body.code         = utils.slugify(body.code);
+    body.code         = aqlUtils.slugify(body.code);
     const updateF     = body.update;
     const setToAdd    = body.multiModifAdd;
     const setToRemove = body.multiModifRemove;

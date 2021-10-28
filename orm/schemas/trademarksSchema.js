@@ -7,7 +7,7 @@
  */
 
 const mongoose      = require('mongoose');
-const {slugify}     = require('../../utils/utils');
+const {slugify}     = require('aql-utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 

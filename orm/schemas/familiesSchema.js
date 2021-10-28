@@ -7,7 +7,7 @@
  */
 
 const mongoose      = require('mongoose');
-const helper        = require('../../utils/utils');
+const aqlUtils      = require('aql-utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 const {ObjectId}    = Schema.Types;
@@ -30,7 +30,7 @@ const FamiliesSchema = new Schema({
 
 FamiliesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
-    if (!this.slug) this.slug = `${helper.slugify(this.name)}-${this.code}`;
+    if (!this.slug) this.slug = `${aqlUtils.slugify(this.name)}-${this.code}`;
     return next();
 });
 
@@ -59,7 +59,7 @@ FamiliesSchema.pre('findOneAndDelete', async function (next) {
 
 /*
 FamiliesSchema.post('save', function () {
-  helper.create_ancestors(this._id, this.parent);
+  utils.create_ancestors(this._id, this.parent);
 });
 */
 

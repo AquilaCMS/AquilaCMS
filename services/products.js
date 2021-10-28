@@ -13,6 +13,7 @@ const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
 const QueryBuilder            = require('../utils/QueryBuilder');
 const utils                   = require('../utils/utils');
+const aqlUtils                = require('aql-utils');
 const utilsServer             = require('../utils/server');
 const utilsMedias             = require('../utils/medias');
 const NSErrors                = require('../utils/errors/NSErrors');
@@ -212,7 +213,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
-        doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
+        doc.translation[lang.code].slug = aqlUtils.slugify(doc._id.toString());
     }
     doc.isNew   = true;
     doc.images  = [];
@@ -628,7 +629,7 @@ const setProduct = async (req) => {
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${aqlUtils.slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     if (result.code === 'SlugAlreadyExist' ) {
         throw NSErrors.SlugAlreadyExist;
@@ -645,7 +646,7 @@ const createProduct = async (req) => {
     if (req.body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(req.body);
     }
-    req.body.code = utils.slugify(req.body.code);
+    req.body.code = aqlUtils.slugify(req.body.code);
     const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
