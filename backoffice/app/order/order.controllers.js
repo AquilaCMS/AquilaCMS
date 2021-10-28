@@ -1096,7 +1096,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             comment: "",
             mode: "",
             sendMail: true,
-            amount: $scope.order.priceTotal.ati,
+            amount: Number($scope.order.priceTotal.ati.aqlRound(2)),
             type: "CREDIT",
             status: "DONE",
             products: []
