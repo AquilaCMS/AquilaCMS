@@ -15,7 +15,8 @@ const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
-const {isProd}                  = require('../server');
+
+const isProd = !serverUtils.dev;
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -229,11 +230,11 @@ const needRebuildAndRestart = async (restart = false, rebuild = false) => {
         translation : {
             en : {
                 title : _config.environment.needRebuild ? 'Rebuild & Restart Aquila' : 'Restart Aquila',
-                text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila`
+                text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila <a href="#/themes">here</a>`
             },
             fr : {
                 title : _config.environment.needRebuild ? 'Rebuild & Redemarrez Aquila' : 'Redemarrez Aquila',
-                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'rebuildez & redemarrez' : 'redemarrez'} Aquila`
+                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'rebuildez & redemarrez' : 'redemarrez'} Aquila <a href="#/themes">ici</a>`
             }
         }
     });
