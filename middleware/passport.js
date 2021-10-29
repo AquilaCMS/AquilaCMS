@@ -9,11 +9,11 @@
 /*
  * Passport / Authentification
  */
-const passportJWT  = require('passport-jwt');
-const NSErrors     = require('../utils/errors/NSErrors');
-const aquilaEvents = require('../utils/aquilaEvents');
-const ExtractJwt   = passportJWT.ExtractJwt;
-const Strategy     = passportJWT.Strategy;
+const passportJWT    = require('passport-jwt');
+const {aquilaEvents} = require('aql-utils');
+const NSErrors       = require('../utils/errors/NSErrors');
+const ExtractJwt     = passportJWT.ExtractJwt;
+const Strategy       = passportJWT.Strategy;
 
 /** @type {passport.PassportStatic} */
 let passport;

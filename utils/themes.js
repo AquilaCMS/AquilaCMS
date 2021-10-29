@@ -9,7 +9,7 @@
 const path           = require('path');
 const slash          = require('slash');
 const fs             = require('fs');
-const packageManager = require('./packageManager');
+const packageManager = require('aql-utils');
 const {isProd}       = require('./server');
 
 /**

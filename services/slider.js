@@ -8,8 +8,8 @@
 
 const path         = require('path');
 const mongoose     = require('mongoose');
-const {Slider}     = require('../orm/models');
 const aqlUtils     = require('aql-utils');
+const {Slider}     = require('../orm/models');
 const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');

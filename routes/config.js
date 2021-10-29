@@ -7,13 +7,13 @@
  */
 
 const path                 = require('path');
+const fs                   = require('aql-utils');
+const packageManager       = require('aql-utils');
 const {middlewareServer}   = require('../middleware');
 const {adminAuth}          = require('../middleware/authentication');
 const {extendTimeOut}      = require('../middleware/server');
 const serviceConfig        = require('../services/config');
-const packageManager       = require('../utils/packageManager');
 const NSErrors             = require('../utils/errors/NSErrors');
-const fs                   = require('aql-utils');
 const {getUploadDirectory} = require('../utils/server');
 
 module.exports = function (app) {

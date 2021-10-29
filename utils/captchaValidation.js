@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const aquilaEvents = require('./aquilaEvents');
+const {aquilaEvents} = require('aql-utils');
 
 module.exports = (req, res, next) => {
     // TODO add in config something who indicate that a captcha has been activated

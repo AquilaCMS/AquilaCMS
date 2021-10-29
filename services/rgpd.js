@@ -10,15 +10,16 @@ const {
     Types: {ObjectId: ObjectID},
     mongo: {MongoClient}
 } = require('mongoose');
-const {v4: uuidv4} = require('uuid');
-const mongoURI     = require('mongodb-uri');
-const bcrypt       = require('bcrypt');
-const rimraf       = require('rimraf');
-const path         = require('path');
-const faker        = require('faker');
-const fs           = require('aql-utils');
-const {execCmd}    = require('../utils/packageManager');
-const NSErrors     = require('../utils/errors/NSErrors');
+const {v4: uuidv4}   = require('uuid');
+const mongoURI       = require('mongodb-uri');
+const bcrypt         = require('bcrypt');
+const rimraf         = require('rimraf');
+const path           = require('path');
+const faker          = require('faker');
+const fs             = require('aql-utils');
+const {aquilaEvents} = require('aql-utils');
+const {execCmd}      = require('aql-utils');
+const NSErrors       = require('../utils/errors/NSErrors');
 const {
     Bills,
     Orders,
@@ -28,14 +29,13 @@ const {
     Modules,
     Newsletters
 }                  = require('../orm/models');
-const aquilaEvents = require('../utils/aquilaEvents');
-const appdirname   = path.dirname(require.main.filename);
-faker.locale       = 'fr';
+const appdirname     = path.dirname(require.main.filename);
+faker.locale         = 'fr';
 /*
 RGPD : Example of a function to implement in a module using users data
 */
 
-// const aquilaEvents = require('../../../utils/aquilaEvents');
+// const {aquilaEvents} = require('aql-utils');
 // // On catch l'évènement de suppression d'un user
 // aquilaEvents.on('aqRemoveUser', function(doc){
 //     // Remplacer "id_user" par le nom du champ faisant référence à l'user dans le modèle du module

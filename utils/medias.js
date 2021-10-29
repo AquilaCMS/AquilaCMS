@@ -13,7 +13,7 @@ const imageminMozjpeg             = require('imagemin-mozjpeg');
 const {default: imageminPngquant} = require('imagemin-pngquant');
 const imageminSvgo                = require('imagemin-svgo');
 const path                        = require('path');
-const fsp                         = require('./fsp');
+const fsp                         = require('aql-utils');
 const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {

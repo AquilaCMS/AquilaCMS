@@ -9,7 +9,7 @@
 const path           = require('path');
 const {fork}         = require('child_process');
 const fs             = require('aql-utils');
-const packageManager = require('../utils/packageManager');
+const packageManager = require('aql-utils');
 const jobServices    = require('../services/job');
 const adminServices  = require('../services/admin');
 

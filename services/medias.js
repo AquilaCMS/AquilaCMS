@@ -10,6 +10,8 @@ const AdmZip       = require('adm-zip');
 const moment       = require('moment');
 const path         = require('path');
 const mongoose     = require('mongoose');
+const aqlUtils     = require('aql-utils');
+const fsp          = require('aql-utils');
 const {
     Medias,
     Products,
@@ -21,10 +23,8 @@ const {
     Slider,
     Mail
 }                      = require('../orm/models');
-const aqlUtils     = require('aql-utils');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
-const fsp          = require('aql-utils');
 const NSErrors     = require('../utils/errors/NSErrors');
 const server       = require('../utils/server');
 const utilsMedias  = require('../utils/medias');

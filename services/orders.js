@@ -8,6 +8,7 @@
 
 const moment           = require('moment');
 const path             = require('path');
+const {aquilaEvents}   = require('aql-utils');
 const {
     Orders,
     Cart,
@@ -19,7 +20,6 @@ const {
     Promo
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
-const aquilaEvents     = require('../utils/aquilaEvents');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utils            = require('../utils');
 const ServiceMail      = require('./mail');

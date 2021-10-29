@@ -7,7 +7,7 @@
  */
 
 const path     = require('path');
-const fs       = require('./fsp');
+const fs       = require('aql-utils');
 const utils    = require('./utils');
 const NSError  = require('./errors/NSError');
 const NSErrors = require('./errors/NSErrors');

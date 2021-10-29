@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const aquilaEvents                = require('../utils/aquilaEvents');
+const {aquilaEvents}              = require('aql-utils');
 const ServiceProduct              = require('../services/products');
 const ProductPreview              = require('../services/preview');
 const {authentication, adminAuth} = require('../middleware/authentication');

@@ -7,10 +7,10 @@
  */
 
 const mongoose                                                 = require('mongoose');
+const aqlUtils                                                 = require('aql-utils');
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder                                             = require('../utils/QueryBuilder');
 const NSErrors                                                 = require('../utils/errors/NSErrors');
-const aqlUtils                                                 = require('aql-utils');
 const utilsMedia                                               = require('../utils/medias');
 
 const restrictedFields = [];

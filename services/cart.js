@@ -8,6 +8,7 @@
 
 const moment            = require('moment');
 const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
 const {
     Cart,
     Orders,
@@ -15,7 +16,6 @@ const {
     Languages,
     Configuration
 }                       = require('../orm/models');
-const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
 const utilsDatabase     = require('../utils/database');
 const NSErrors          = require('../utils/errors/NSErrors');

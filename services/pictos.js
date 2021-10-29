@@ -7,10 +7,10 @@
  */
 
 const path         = require('path');
+const aqlUtils     = require('aql-utils');
 const {Pictos}     = require('../orm/models');
 const QueryBuilder = require('../utils/QueryBuilder');
 const ServiceRules = require('./rules');
-const aqlUtils     = require('aql-utils');
 const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 

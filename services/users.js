@@ -8,10 +8,10 @@
 
 const crypto                 = require('crypto');
 const mongoose               = require('mongoose');
+const {aquilaEvents}         = require('aql-utils');
 const {Users, SetAttributes} = require('../orm/models');
 const servicesMail           = require('./mail');
 const QueryBuilder           = require('../utils/QueryBuilder');
-const aquilaEvents           = require('../utils/aquilaEvents');
 const NSErrors               = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['password'];

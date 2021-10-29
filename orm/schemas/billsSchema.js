@@ -9,11 +9,11 @@
 const crypto           = require('crypto');
 const autoIncrement    = require('mongoose-plugin-autoinc-fix');
 const mongoose         = require('mongoose');
+const {aquilaEvents}   = require('aql-utils');
 const ItemBundleSchema = require('./itemBundleSchema');
 const ItemSchema       = require('./itemSchema');
 const ItemSimpleSchema = require('./itemSimpleSchema');
 const AddressSchema    = require('./addressSchema');
-const aquilaEvents     = require('../../utils/aquilaEvents');
 const Schema           = mongoose.Schema;
 const {ObjectId}       = Schema.Types;
 

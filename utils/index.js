@@ -6,14 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const packageManager    = require('aql-utils');
 const mongoose          = require('./database').connect;
 const logger            = require('./logger');
 const captchaValidation = require('./captchaValidation');
-const aquilaEvents      = require('./aquilaEvents');
 const encryption        = require('./encryption');
-const fsp               = require('./fsp');
 const modules           = require('./modules');
-const packageManager    = require('./packageManager');
 const translation       = require('./translation');
 const utils             = require('./utils');
 const serverUtils       = require('./server');
@@ -26,9 +24,7 @@ module.exports = {
     mongoose,
     logger,
     captchaValidation,
-    aquilaEvents,
     encryption,
-    fsp,
     modules,
     packageManager,
     translation,

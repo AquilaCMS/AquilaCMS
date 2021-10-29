@@ -4,9 +4,9 @@ const next = require('next').default;
 const express = require('express');
 const i18nextMiddleware = require('i18next-http-middleware');
 const fileSystemBackend = require('i18next-fs-backend');
+const packageManager = require('aql-utils');
 const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server');
-const packageManager = require('../../utils/packageManager');
 const dev = serverUtils.dev;
 
 const themeName = path.basename(__dirname);

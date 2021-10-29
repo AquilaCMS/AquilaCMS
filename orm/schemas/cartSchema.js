@@ -7,14 +7,12 @@
  */
 
 const mongoose          = require('mongoose');
-const fs                = require('aql-utils');
+const aqlUtils          = require('aql-utils');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
-const aquilaEvents      = require('../../utils/aquilaEvents');
-const aqlUtils          = require('aql-utils');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -207,7 +205,7 @@ CartSchema.pre('save', function (next) {
  */
 CartSchema.post('save', async function (doc, next) {
     if (doc.wasNew) {
-        aquilaEvents.emit('aqNewCart', doc, next);
+        aqlUtils.aquilaEvents.emit('aqNewCart', doc, next);
     } else {
         await updateCarts(this, doc._id, next);
     }
@@ -230,13 +228,13 @@ CartSchema.post('findOneAndUpdate', async function (doc, next) {
 
 // Permet d'envoyer un evenement avant que le schema cart ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema cart de nouveaux attributs
-aquilaEvents.emit('cartSchemaInit', CartSchema);
+aqlUtils.aquilaEvents.emit('cartSchemaInit', CartSchema);
 
 async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+        if (await aqlUtils.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }

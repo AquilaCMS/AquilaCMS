@@ -11,7 +11,6 @@ const aqlUtils         = require('aql-utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const aquilaEvents     = require('../../utils/aquilaEvents');
 const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
@@ -178,6 +177,6 @@ CategoriesSchema.pre('save', async function (next) {
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
-aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
+aqlUtils.aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
 
 module.exports = CategoriesSchema;
