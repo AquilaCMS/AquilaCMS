@@ -80,7 +80,7 @@ const setEnvConfig = async () => {
     if (!configuration) {
         throw new Error('Configuration collection is missing');
     }
-    if (!configuration.environment.needRebuild) {
+    if (!configuration.environment.needRebuild && configuration.environment.needRestart) {
         configuration.environment.needRestart = false;
         await configuration.save();
         await require('./services/admin').removeAdminInformation('server_restart_rebuild');
