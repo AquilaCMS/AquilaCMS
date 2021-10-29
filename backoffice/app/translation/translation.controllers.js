@@ -59,7 +59,8 @@ TranslationControllers.controller('LanguagesCtrl',
                         $scope.getLanguages();
                         var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
                         window.dispatchEvent(event);
-                        window.location.reload()
+                        
+                        $rootScope.languages.splice($scope.languages.indexOf(lang), 1);
                     }, 200) 
                 }else{
                     toastService.toast("danger", err.data);
@@ -103,7 +104,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         window.dispatchEvent(event);
                         $modalInstance.close();
                         $scope.getLanguages();
-                        window.location.reload()
+                        $rootScope.languages.push(lang)
                     }, function(err){
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
