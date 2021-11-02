@@ -47,7 +47,7 @@
                                 <td ng-show="item.price.special.ati === undefined" class="text-right">
                                     {{item.price.unit.ati | number:2}} €
                                 </td>
-                                <td class="text-right">{{item.price.total.ati.toFixed(2)}} €</td>
+                                <td class="text-right">{{item.price.total.ati.aqlRound(2)}} €</td>
                                 <td class="text-right">{{item.quantity}}</td>
                                 <td class="text-right">{{return.products[$index].qty_shipped ? return.products[$index].qty_shipped : "0"}}</td>
                                 <td class="text-right">{{return.products[$index].qty_returned ? return.products[$index].qty_returned : "0"}}</td>
@@ -69,7 +69,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2" translate>order-rma.totalComm</td>
-                                <td class="text-right">{{order.priceTotal.ati}} €</td>
+                                <td class="text-right">{{order.priceTotal.ati.aqlRound(2)}} €</td>
                             </tr>
                             <tr>
                                 <td colspan="2" translate>order-rma.aRemb</td>
