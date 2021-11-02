@@ -8,8 +8,7 @@
 
 const path           = require('path');
 const {fork}         = require('child_process');
-const fs             = require('aql-utils');
-const packageManager = require('aql-utils');
+const {fs, restart}  = require('aql-utils');
 const jobServices    = require('../services/job');
 const adminServices  = require('../services/admin');
 
@@ -72,7 +71,7 @@ module.exports = (installRouter) => {
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();
             adminServices.welcome();
-            const result = await packageManager.restart();
+            const result = await restart();
             res.send(result);
         } catch (err) {
             console.error(err);
@@ -89,7 +88,7 @@ module.exports = (installRouter) => {
             await require('./install').firstLaunch(req, false);
             jobServices.initAgendaDB();
             adminServices.welcome();
-            const result = await packageManager.restart();
+            const result = await restart();
             res.send(result);
         } catch (err) {
             console.error(err);

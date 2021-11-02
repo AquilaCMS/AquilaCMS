@@ -13,7 +13,7 @@ const imageminMozjpeg             = require('imagemin-mozjpeg');
 const {default: imageminPngquant} = require('imagemin-pngquant');
 const imageminSvgo                = require('imagemin-svgo');
 const path                        = require('path');
-const fsp                         = require('aql-utils');
+const {fs}                        = require('aql-utils');
 const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
@@ -42,13 +42,13 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            await fsp.rename(pathIn, filePathOut);
+            await fs.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
     } catch (error) {
         console.error('error =>', error);
-        await fsp.rename(pathIn, filePathOut);
+        await fs.rename(pathIn, filePathOut);
         return filePathOut.replace(/\\/g, '/');
     }
 };
@@ -64,9 +64,9 @@ const deleteFile = async (filePath) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, filePath);
-            if (pathToRemove && fsp.existsSync(pathToRemove)) {
+            if (pathToRemove && fs.existsSync(pathToRemove)) {
                 try {
-                    await fsp.unlink(pathToRemove);
+                    await fs.unlink(pathToRemove);
                 } catch (err) {
                     console.error(err);
                     throw err;
@@ -85,8 +85,8 @@ const deleteFolder = async (folderPath) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, folderPath);
-            if (fsp.existsSync(pathToRemove)) {
-                await fsp.deleteRecursive(pathToRemove);
+            if (fs.existsSync(pathToRemove)) {
+                await fs.deleteRecursive(pathToRemove);
             }
         });
     } else {
@@ -105,9 +105,9 @@ const renameFile = async (pathIn, filePathOut) => {
             const pathUpload = require('./server').getUploadDirectory();
             const oldPath    = path.resolve(pathUpload, pathIn);
             const newPath    = path.resolve(pathUpload, filePathOut);
-            if (oldPath && fsp.existsSync(oldPath)) {
+            if (oldPath && fs.existsSync(oldPath)) {
                 try {
-                    await fsp.rename(pathIn, newPath);
+                    await fs.rename(pathIn, newPath);
                 } catch (err) {
                     console.error(err);
                     throw err;
@@ -124,7 +124,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
+            if (pathToCheck && await fs.existsSync(pathToCheck)) {
                 return true;
             }
             return false;

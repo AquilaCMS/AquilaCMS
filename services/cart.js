@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment            = require('moment');
-const mongoose          = require('mongoose');
-const {aquilaEvents}    = require('aql-utils');
+const moment                        = require('moment');
+const mongoose                      = require('mongoose');
+const {aquilaEvents, populateItems} = require('aql-utils');
 const {
     Cart,
     Orders,
@@ -17,7 +17,6 @@ const {
     Configuration
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
-const utilsDatabase     = require('aql-utils');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
@@ -52,7 +51,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        await utilsDatabase.populateItems(cart.items);
+        await populateItems(cart.items);
         const products        = cart.items.map((product) => product.id);
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
@@ -95,10 +94,10 @@ const setCartAddresses = async (cartId, addresses) => {
         resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
-            await utilsDatabase.populateItems(newCart.items);
+            await populateItems(newCart.items);
             return {code: 'CART_CREATED', data: {cart: newCart}};
         }
-        await utilsDatabase.populateItems(resp.items);
+        await populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
         console.log(err);
@@ -148,7 +147,7 @@ const deleteCartItem = async (cartId, itemId) => {
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    await utilsDatabase.populateItems(cart.items);
+    await populateItems(cart.items);
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -222,7 +221,7 @@ const addItem = async (req) => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
-    await utilsDatabase.populateItems(_newCart.items);
+    await populateItems(_newCart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -285,7 +284,7 @@ const updateQty = async (req) => {
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    await utilsDatabase.populateItems(cart.items);
+    await populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 

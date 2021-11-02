@@ -6,17 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const nodemailer       = require('nodemailer');
-const moment           = require('moment-timezone');
-const mongoose         = require('mongoose');
-const path             = require('path');
-const aqlUtils         = require('aql-utils');
-const {aquilaEvents}   = require('aql-utils');
-const fs               = require('aql-utils');
-const ServiceLanguages = require('./languages');
-const mediasUtils      = require('../utils/medias');
-const NSErrors         = require('../utils/errors/NSErrors');
-const utilsServer      = require('../utils/server');
+const nodemailer                  = require('nodemailer');
+const moment                      = require('moment-timezone');
+const mongoose                    = require('mongoose');
+const path                        = require('path');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const ServiceLanguages            = require('./languages');
+const mediasUtils                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const utilsServer                 = require('../utils/server');
 const {
     Users,
     Mail,
@@ -89,7 +87,7 @@ const setMail = async (body, _id = null) => {
                 await checkUniqueType(body.type);
             }
 
-            body.code = aqlUtils.slugify(body.code);
+            body.code = slugify(body.code);
             result    = await Mail.create(body);
             if (!result) {
                 throw NSErrors.MailCreateError;

@@ -7,7 +7,7 @@
  */
 
 const path                        = require('path');
-const fs                          = require('aql-utils');
+const {fs}                        = require('aql-utils');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');

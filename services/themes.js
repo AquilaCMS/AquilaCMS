@@ -8,7 +8,7 @@
 
 const mongoose                     = require('mongoose');
 const path                         = require('path');
-const fs                           = require('aql-utils');
+const {fs}                         = require('aql-utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');

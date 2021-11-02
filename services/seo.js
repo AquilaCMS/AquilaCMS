@@ -9,7 +9,7 @@
 const path                 = require('path');
 const js2xmlparser         = require('js2xmlparser');
 const moment               = require('moment');
-const fs                   = require('aql-utils');
+const {fs}                 = require('aql-utils');
 const NSErrors             = require('../utils/errors/NSErrors');
 const {getUploadDirectory} = require('../utils/server');
 const {

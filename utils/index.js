@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const packageManager    = require('aql-utils');
 const mongoose          = require('./database').connect;
 const logger            = require('./logger');
 const captchaValidation = require('./captchaValidation');
@@ -26,7 +25,6 @@ module.exports = {
     captchaValidation,
     encryption,
     modules,
-    packageManager,
     translation,
     utils,
     serverUtils,

@@ -7,7 +7,7 @@
  */
 
 const mongoose      = require('mongoose');
-const aqlUtils      = require('aql-utils');
+const {slugify}     = require('aql-utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 const {ObjectId}    = Schema.Types;
@@ -30,7 +30,7 @@ const FamiliesSchema = new Schema({
 
 FamiliesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
-    if (!this.slug) this.slug = `${aqlUtils.slugify(this.name)}-${this.code}`;
+    if (!this.slug) this.slug = `${slugify(this.name)}-${this.code}`;
     return next();
 });
 

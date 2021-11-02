@@ -4,7 +4,7 @@
  */
 
 const path = require('path');
-const fs   = require('aql-utils');
+const {fs} = require('aql-utils');
 
 // isEqual Function
 /**

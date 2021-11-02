@@ -8,7 +8,7 @@
 
 const path         = require('path');
 const mongoose     = require('mongoose');
-const aqlUtils     = require('aql-utils');
+const {slugify}    = require('aql-utils');
 const {Gallery}    = require('../orm/models');
 const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
@@ -64,7 +64,7 @@ const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
  */
 const setGallery = async (code, initItemNumber, maxColumnNumber, _id = null) => {
     let result;
-    code = aqlUtils.slugify(code);
+    code = slugify(code);
     if (_id) {
         // Update
         if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;

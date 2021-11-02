@@ -4,7 +4,7 @@ const next = require('next').default;
 const express = require('express');
 const i18nextMiddleware = require('i18next-http-middleware');
 const fileSystemBackend = require('i18next-fs-backend');
-const packageManager = require('aql-utils');
+const {execCmd} = require('aql-utils');
 const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server');
 const dev = serverUtils.dev;
@@ -76,7 +76,7 @@ const start = async (server) => {
 
 
 const build = async () => {
-    await packageManager.execCmd(`npx next build`, pathToTheme);
+    await execCmd(`npx next build`, pathToTheme);
 }
 
 module.exports = {

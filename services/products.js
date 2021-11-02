@@ -6,30 +6,28 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment                  = require('moment-business-days');
-const path                    = require('path');
-const mongoose                = require('mongoose');
-const fs                      = require('aql-utils');
-const {aquilaEvents}          = require('aql-utils');
-const aqlUtils                = require('aql-utils');
-const QueryBuilder            = require('../utils/QueryBuilder');
-const utils                   = require('../utils/utils');
-const utilsServer             = require('../utils/server');
-const utilsMedias             = require('../utils/medias');
-const NSErrors                = require('../utils/errors/NSErrors');
-const servicesLanguages       = require('./languages');
-const ServicesDownloadHistory = require('./downloadHistory');
-const servicesCategory        = require('./categories');
-const serviceSetAttributs     = require('./setAttributes');
-const servicePromos           = require('./promo');
-const serviceReviews          = require('./reviews');
+const moment                      = require('moment-business-days');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const utils                       = require('../utils/utils');
+const utilsServer                 = require('../utils/server');
+const utilsMedias                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const servicesLanguages           = require('./languages');
+const ServicesDownloadHistory     = require('./downloadHistory');
+const servicesCategory            = require('./categories');
+const serviceSetAttributs         = require('./setAttributes');
+const servicePromos               = require('./promo');
+const serviceReviews              = require('./reviews');
 const {
     Configuration,
     Products,
     ProductsPreview,
     Categories,
     Attributes
-}                             = require('../orm/models');
+}                                 = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
@@ -213,7 +211,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
-        doc.translation[lang.code].slug = aqlUtils.slugify(doc._id.toString());
+        doc.translation[lang.code].slug = slugify(doc._id.toString());
     }
     doc.isNew   = true;
     doc.images  = [];
@@ -629,7 +627,7 @@ const setProduct = async (req) => {
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${aqlUtils.slugify(req.body.name)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     if (result.code === 'SlugAlreadyExist' ) {
         throw NSErrors.SlugAlreadyExist;
@@ -646,7 +644,7 @@ const createProduct = async (req) => {
     if (req.body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(req.body);
     }
-    req.body.code = aqlUtils.slugify(req.body.code);
+    req.body.code = slugify(req.body.code);
     const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;

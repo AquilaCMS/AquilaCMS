@@ -10,16 +10,14 @@ const {
     Types: {ObjectId: ObjectID},
     mongo: {MongoClient}
 } = require('mongoose');
-const {v4: uuidv4}   = require('uuid');
-const mongoURI       = require('mongodb-uri');
-const bcrypt         = require('bcrypt');
-const rimraf         = require('rimraf');
-const path           = require('path');
-const faker          = require('faker');
-const fs             = require('aql-utils');
-const {aquilaEvents} = require('aql-utils');
-const {execCmd}      = require('aql-utils');
-const NSErrors       = require('../utils/errors/NSErrors');
+const {v4: uuidv4}                = require('uuid');
+const mongoURI                    = require('mongodb-uri');
+const bcrypt                      = require('bcrypt');
+const rimraf                      = require('rimraf');
+const path                        = require('path');
+const faker                       = require('faker');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const NSErrors                    = require('../utils/errors/NSErrors');
 const {
     Bills,
     Orders,

@@ -6,11 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const fs             = require('aql-utils');
-const {aquilaEvents} = require('aql-utils');
-const aqlUtils       = require('aql-utils');
-const NSErrors       = require('../../utils/errors/NSErrors');
+const mongoose                    = require('mongoose');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const NSErrors                    = require('../../utils/errors/NSErrors');
 const {
     checkCustomFields,
     checkTranslations
@@ -202,19 +200,19 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 } else {
                     correctCode = updateQuery.code;
                 }
-                updateQuery.translation[lang.code] = {slug: aqlUtils.slugify(correctCode)};
+                updateQuery.translation[lang.code] = {slug: slugify(correctCode)};
             }
             if (!updateQuery.translation[lang.code].slug) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? aqlUtils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
             } else {
-                updateQuery.translation[lang.code].slug = aqlUtils.slugify(updateQuery.translation[lang.code].slug);
+                updateQuery.translation[lang.code].slug = slugify(updateQuery.translation[lang.code].slug);
             }
             if (updateQuery.translation[lang.code].slug.length <= 2) {
                 errors.push('slug trop court');
                 return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${aqlUtils.slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                     errors.push('slug déjà existant');
                 }
@@ -240,12 +238,12 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                self.translation[lang.code] = {slug: aqlUtils.slugify(self.code)};
+                self.translation[lang.code] = {slug: slugify(self.code)};
             }
             if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].name ? aqlUtils.slugify(self.translation[lang.code].name) : updateQuery.code;
+                self.translation[lang.code].slug = self.translation[lang.code].name ? slugify(self.translation[lang.code].name) : updateQuery.code;
             } else {
-                self.translation[lang.code].slug = aqlUtils.slugify(self.translation[lang.code].slug);
+                self.translation[lang.code].slug = slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
                 errors.push(`slug '${lang.code}' trop court`);

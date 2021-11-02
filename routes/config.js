@@ -7,8 +7,7 @@
  */
 
 const path                 = require('path');
-const fs                   = require('aql-utils');
-const packageManager       = require('aql-utils');
+const {fs, restart}        = require('aql-utils');
 const {middlewareServer}   = require('../middleware');
 const {adminAuth}          = require('../middleware/authentication');
 const {extendTimeOut}      = require('../middleware/server');
@@ -71,7 +70,7 @@ async function saveEnvConfig(req, res, next) {
         await serviceConfig.saveEnvConfig(req.body);
         if (req.body.needRestart) {
             setTimeout(() => {
-                packageManager.restart();
+                restart();
             }, 5000);
         }
         res.send({
@@ -90,7 +89,7 @@ async function saveEnvConfig(req, res, next) {
  */
 const restart = async (req, res, next) => {
     try {
-        await packageManager.restart();
+        await restart();
     } catch (err) {
         return next(err);
     }

@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose          = require('mongoose');
-const aqlUtils          = require('aql-utils');
-const ItemSchema        = require('./itemSchema');
-const ItemSimpleSchema  = require('./itemSimpleSchema');
-const ItemBundleSchema  = require('./itemBundleSchema');
-const ItemVirtualSchema = require('./itemVirtualSchema');
-const AddressSchema     = require('./addressSchema');
+const mongoose                 = require('mongoose');
+const {toET, fs, aquilaEvents} = require('aql-utils');
+const ItemSchema               = require('./itemSchema');
+const ItemSimpleSchema         = require('./itemSimpleSchema');
+const ItemBundleSchema         = require('./itemBundleSchema');
+const ItemVirtualSchema        = require('./itemVirtualSchema');
+const AddressSchema            = require('./addressSchema');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -124,7 +124,7 @@ CartSchema.virtual('delivery.price').get(function () {
 
         if (!self.delivery.freePriceLimit || priceTotal.ati < self.delivery.freePriceLimit) {
             deliveryPrice.ati = self.delivery.value.ati;
-            deliveryPrice.et  = aqlUtils.toET(self.delivery.value.ati, defaultVAT);
+            deliveryPrice.et  = toET(self.delivery.value.ati, defaultVAT);
         }
         return deliveryPrice;
     }
@@ -205,7 +205,7 @@ CartSchema.pre('save', function (next) {
  */
 CartSchema.post('save', async function (doc, next) {
     if (doc.wasNew) {
-        aqlUtils.aquilaEvents.emit('aqNewCart', doc, next);
+        aquilaEvents.emit('aqNewCart', doc, next);
     } else {
         await updateCarts(this, doc._id, next);
     }
@@ -228,13 +228,13 @@ CartSchema.post('findOneAndUpdate', async function (doc, next) {
 
 // Permet d'envoyer un evenement avant que le schema cart ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema cart de nouveaux attributs
-aqlUtils.aquilaEvents.emit('cartSchemaInit', CartSchema);
+aquilaEvents.emit('cartSchemaInit', CartSchema);
 
 async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await aqlUtils.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }

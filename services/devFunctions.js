@@ -8,7 +8,7 @@
 
 const path         = require('path');
 const mongoose     = require('mongoose');
-const fs           = require('aql-utils');
+const {fs}         = require('aql-utils');
 const {Products}   = require('../orm/models');
 const utilsModules = require('../utils/modules');
 

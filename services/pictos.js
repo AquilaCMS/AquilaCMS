@@ -7,7 +7,7 @@
  */
 
 const path         = require('path');
-const aqlUtils     = require('aql-utils');
+const {slugify}    = require('aql-utils');
 const {Pictos}     = require('../orm/models');
 const QueryBuilder = require('../utils/QueryBuilder');
 const ServiceRules = require('./rules');
@@ -42,7 +42,7 @@ const createPicto = async (picto) => {
         && picto.enabled !== undefined
         && picto.location !== undefined
     ) {
-        picto.code   = aqlUtils.slugify(picto.code);
+        picto.code   = slugify(picto.code);
         const result = await Pictos.create(picto);
         return result;
     }

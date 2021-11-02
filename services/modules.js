@@ -6,21 +6,19 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip           = require('adm-zip');
-const path             = require('path');
-const mongoose         = require('mongoose');
-const rimraf           = require('rimraf');
-const semver           = require('semver');
-const fs               = require('aql-utils');
-const {aquilaEvents}   = require('aql-utils');
-const packageManager   = require('aql-utils');
-const {isEqual}        = require('../utils/utils');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const modulesUtils     = require('../utils/modules');
-const {isProd, getEnv} = require('../utils/server');
-const NSErrors         = require('../utils/errors/NSErrors');
-const {Modules}        = require('../orm/models');
-const themesService    = require('./themes');
+const AdmZip                      = require('adm-zip');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const rimraf                      = require('rimraf');
+const semver                      = require('semver');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const {isEqual}                   = require('../utils/utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const modulesUtils                = require('../utils/modules');
+const {isProd, getEnv}            = require('../utils/server');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Modules}                   = require('../orm/models');
+const themesService               = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -452,8 +450,8 @@ const activateModule = async (idModule, toBeChanged) => {
                         packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                         await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                         console.log(`Installing dependencies of the module in ${position}...`);
-                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                        await packageManager.execCmd('yarn upgrade', installPath);
+                        await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                        await execCmd('yarn upgrade', installPath);
                     }
                 }
             }
@@ -560,8 +558,8 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await packageManager.execCmd('yarn install', installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd('yarn install', installPath);
+                await execCmd('yarn upgrade', installPath);
             }
         }
 

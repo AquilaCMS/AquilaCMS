@@ -7,7 +7,7 @@
  */
 
 const path                     = require('path');
-const fs                       = require('aql-utils');
+const {fs}                     = require('aql-utils');
 const themeServices            = require('../services/themes');
 const serverUtils              = require('../utils/server');
 const {themeInstallAndCompile} = require('../utils/themes');

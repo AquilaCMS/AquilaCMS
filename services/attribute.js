@@ -7,7 +7,7 @@
  */
 
 const mongoose                                                 = require('mongoose');
-const aqlUtils                                                 = require('aql-utils');
+const {slugify}                                                = require('aql-utils');
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder                                             = require('../utils/QueryBuilder');
 const NSErrors                                                 = require('../utils/errors/NSErrors');
@@ -53,7 +53,7 @@ const getAttribute = async (PostBody, lean) => {
 };
 
 const setAttribute = async (body) => {
-    body.code         = aqlUtils.slugify(body.code);
+    body.code         = slugify(body.code);
     const updateF     = body.update;
     const setToAdd    = body.multiModifAdd;
     const setToRemove = body.multiModifRemove;

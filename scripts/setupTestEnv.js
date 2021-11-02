@@ -1,4 +1,4 @@
-const fs = require('aql-utils');
+const {fs} = require('aql-utils');
 
 (async () => {
     try {

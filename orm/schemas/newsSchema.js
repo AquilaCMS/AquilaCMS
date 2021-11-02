@@ -6,13 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose            = require('mongoose');
-const aqlUtils            = require('aql-utils');
-const {aquilaEvents}      = require('aql-utils');
-const utilsDatabase       = require('../../utils/database');
-const {checkCustomFields} = require('../../utils/translation');
-const translation         = require('../../utils/translation');
-const Schema              = mongoose.Schema;
+const mongoose                = require('mongoose');
+const {aquilaEvents, slugify} = require('aql-utils');
+const utilsDatabase           = require('../../utils/database');
+const {checkCustomFields}     = require('../../utils/translation');
+const translation             = require('../../utils/translation');
+const Schema                  = mongoose.Schema;
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -50,9 +49,9 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.slug === undefined || lang.slug === '') {
-                lang.slug = aqlUtils.slugify(lang.title);
+                lang.slug = slugify(lang.title);
             } else {
-                lang.slug = aqlUtils.slugify(lang.slug);
+                lang.slug = slugify(lang.slug);
             }
 
             if (updateQuery) {

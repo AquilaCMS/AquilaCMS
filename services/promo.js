@@ -14,12 +14,12 @@ const {
     Languages,
     ProductSimple,
     Cart
-}                  = require('../orm/models');
-const ServiceRules  = require('./rules');
-const QueryBuilder  = require('../utils/QueryBuilder');
-const promoUtils    = require('../utils/promo');
-const utilsDatabase = require('aql-utils');
-const NSErrors      = require('../utils/errors/NSErrors');
+}                     = require('../orm/models');
+const ServiceRules    = require('./rules');
+const QueryBuilder    = require('../utils/QueryBuilder');
+const promoUtils      = require('../utils/promo');
+const {populateItems} = require('aql-utils');
+const NSErrors        = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -378,7 +378,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
             if (promo.actions.length > 0) {
                 promo = await promo.populate('actions').execPopulate();
 
-                await utilsDatabase.populateItems(copyCart.items);
+                await populateItems(copyCart.items);
 
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
                     // we test every action on every product
