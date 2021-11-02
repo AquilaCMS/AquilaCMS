@@ -18,7 +18,7 @@ const {
 const ServiceRules  = require('./rules');
 const QueryBuilder  = require('../utils/QueryBuilder');
 const promoUtils    = require('../utils/promo');
-const utilsDatabase = require('../utils/database');
+const utilsDatabase = require('aql-utils');
 const NSErrors      = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];

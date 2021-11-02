@@ -17,7 +17,7 @@ const {
     Configuration
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
-const utilsDatabase     = require('../utils/database');
+const utilsDatabase     = require('aql-utils');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
