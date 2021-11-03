@@ -79,7 +79,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
-    let decomposedAttribute = [];
+    const decomposedAttribute = [];
     for (let j = 0; j < data.length; j++) {
         const line = data[j];
         for (const [key, value] of Object.entries(line)) {
@@ -92,9 +92,20 @@ const json2csv = async (data, fields, folderPath, filename) => {
                             for (let x = 0; x < Object.entries(value[i]).length; x++) {
                                 fields.push(`${key}.${Object.entries(value[i])[x][0]}`);
                                 if (decomposedAttribute.includes(key) === false) {
-                                    decomposedAttribute = key;
+                                    decomposedAttribute.push(key);
                                 }
                             }
+                        }
+                    }
+                }
+            } else if (value && typeof value === 'object') {
+                const index = fields.indexOf(key);
+                if (key !== '_id' && index !== -1) {
+                    fields.splice(index, 1);
+                    for (let x = 0; x < Object.entries(value).length; x++) {
+                        fields.push(`${key}.${Object.entries(value)[x][0]}`);
+                        if (decomposedAttribute.includes(key) === false) {
+                            decomposedAttribute.push(key);
                         }
                     }
                 }
