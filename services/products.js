@@ -84,17 +84,44 @@ const getProducts = async (PostBody, reqRes, lang) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds              = await Products.find(PostBody.filter).lean();
+    // Calculate discount for this products
+    if (reqRes !== undefined && PostBody.withPromos !== false) {
+        reqRes.res.locals = result;
+        result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+    }
+
+    // Calculate the min and max price for all products
+    const {min, max, specialPriceMin, specialPriceMax} = await calculateMinMaxPrice(PostBody.filter, reqRes?.req, reqRes?.res, PostBody.withPromos);
+
+    result.min             = min;
+    result.max             = max;
+    result.specialPriceMin = specialPriceMin;
+    result.specialPriceMax = specialPriceMax;
+
+    return result;
+};
+
+const calculateMinMaxPrice = async (filter, req, res, withPromos) => {
+    let result = [];
+
+    let {min, max, specialPriceMin, specialPriceMax} = {min: 0, max: 0, specialPriceMin: 0, specialPriceMax: 0};
+
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
-    for (const prd of prds) {
+    const prds              = await Products.find(filter).lean();
+
+    if (withPromos !== false) {
+        result = await servicePromos.checkPromoCatalog(prds, req.info, req.body.lang, false, false, false, res.keepPromos);
+    }
+
+    for (const prd of result) {
         if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
+            arraySpecialPrice.et.push(prd.price.et.special);
         } else {
             arrayPrice.et.push(prd.price.et.normal);
         }
         if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
+            arraySpecialPrice.ati.push(prd.price.ati.special);
         } else {
             arrayPrice.ati.push(prd.price.ati.normal);
         }
@@ -105,37 +132,12 @@ const getProducts = async (PostBody, reqRes, lang) => {
     if (arrayPrice.ati.length === 0) {
         arrayPrice.ati.push(0);
     }
-    result.min = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    result.max = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
+    min             = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
+    max             = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
+    specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
+    specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
-    if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals = result;
-        result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-    }
-
-    for (const prd of result.datas) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
-        }
-    }
-
-    result.specialPriceMin = {
-        et  : Math.min(...arraySpecialPrice.et),
-        ati : Math.min(...arraySpecialPrice.ati)
-    };
-    result.specialPriceMax = {
-        et  : Math.max(...arraySpecialPrice.et),
-        ati : Math.max(...arraySpecialPrice.ati)
-    };
-
-    return result;
+    return {min, max, specialPriceMin, specialPriceMax};
 };
 
 /**
@@ -943,7 +945,9 @@ const downloadProduct = async (req, res) => {
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
-        if (['PAID', 'BILLED'].indexOf(order.status) === -1) {
+
+        const {orderStatuses} = require('./orders');
+        if ([orderStatuses.PAID, orderStatuses.BILLED].indexOf(order.status) === -1) {
             throw NSErrors.OrderNotPaid;
         }
         prd = order.items.find((item) => item._id.toString() === req.query.op_id.toString()).id;

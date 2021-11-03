@@ -107,6 +107,8 @@
         "shipments":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Transporteurs.</a>",
         "cmsBlocks":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Block CMS.</a>",
         "articles":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Articles.</a>",
+        "categories":"Organisez vos produits par catégories (rayons)",
+        "menu":"Organisez le menu du thème",
         "contacts":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Contacts.</a>",
         "medias":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Médias.</a>",
         "gallery":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation de la Gallerie.</a>",

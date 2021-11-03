@@ -827,6 +827,16 @@ adminCatagenDirectives.directive("nsBox", function ()
                     translationValues = "{url:'https://www.aquila-cms.com/medias/tutorial_aquila_fr_produits.pdf'}";
                     showAdvice(type, translation, translationValues);
                     break;
+                case "#/categories?type=category":
+                    type = "categories";
+                    translation = "ns.help.categories";
+                    showAdvice(type, translation, translationValues);
+                    break;
+                case "#/categories?type=menu":
+                    type = "menu";
+                    translation = "ns.help.menu";
+                    showAdvice(type, translation, translationValues);
+                    break;
                 case "#/shipments":
                     type = "shipments";
                     translation = "ns.help.shipments";

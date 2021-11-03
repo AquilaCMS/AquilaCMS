@@ -7,11 +7,12 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.lang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
-        $scope.isEditMode = true;
-        $scope.category = {};
-        $scope.category._id = $routeParams.id;
-        $scope.currentPage = 1;
-        $scope.rule = {};
+        $scope.type          = $location.search().type;
+        $scope.isEditMode    = true;
+        $scope.category      = {};
+        $scope.category._id  = $routeParams.id;
+        $scope.currentPage   = 1;
+        $scope.rule          = {};
         $scope.usedInFilters = [];
         $scope.selectedAttributes;
         $scope.selectedFilters;
@@ -120,6 +121,51 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 $scope.pageSelelected = $scope.pages[0].translation[$scope.lang].slug;
             }
             $scope.group = staticsList.datas.getAndSortGroups()[0];
+        });
+
+
+        $scope.categoryList = [];
+        CategoryV2.list({
+            PostBody: {
+                filter: {
+                    type: 'category'
+                },
+                populate: ["ancestors"],
+                limit: 0
+            }
+        }, function (response) {
+            // Create function to get the parent's category name
+            function getParentName(category) {
+                if (category.ancestors && category.ancestors.length > 0) {
+                    if (category.ancestors[0].translation && category.ancestors[0].translation[$scope.lang]) {
+                        const currentName = category.ancestors[0].translation[$scope.lang].name;
+                        const parentName  = getParentName(category.ancestors[0]);
+                        return parentName ? parentName + " > " + currentName : currentName;
+                    }
+                    // Find the parent's category in categories list
+                    const ancestorId = category.ancestors[0];
+                    const parentCategory = response.datas.find(ou => ou._id === ancestorId);
+                    if (parentCategory)
+                        return getParentName(parentCategory);
+                    return 'N/A';
+                }
+                return '';
+            }
+
+            for (var i = 0; i < response.datas.length; i++) {
+                let parentName = getParentName(response.datas[i]);
+                let currentName = '';
+                if (response.datas[i].translation && response.datas[i].translation[$scope.lang]) {
+                    currentName = response.datas[i].translation[$scope.lang].name;
+                }
+
+                $scope.categoryList.push({
+                    id: response.datas[i]._id,
+                    name: parentName.length > 0 ? parentName + " > " + currentName : currentName
+                });
+            }
+        },function(error) {
+            console.error(error);
         });
 
         $scope.exist = function(item){
@@ -693,58 +739,61 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.clickImport = function() {
             document.getElementById('importCsv').click()
         }
-        $scope.additionnalButtons = [
-            {
-                text: 'category.detail.export',
-                onClick: function () {
-                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
-                    $http.get('/v2/category/export/' + $scope.category._id, {headers: {Authorization: window.localStorage.getItem('jwtAdmin')}}).then(function (response) {
-                        const separator = ';';
-                        const keys = Object.keys(response.data[0]);
-                        const csvContent = keys.join(separator) +
-                            '\n' +
-                            response.data.map(row => {
-                            return keys.map(k => {
-                                let cell = row[k] === null || row[k] === undefined ? '' : row[k];
-                                cell = cell instanceof Date
-                                ? cell.toLocaleString()
-                                : cell.toString().replace(/"/g, '""');
-                                if (cell.search(/("|,|\n)/g) >= 0) {
-                                cell = `"${cell}"`;
-                                }
-                                return cell;
-                            }).join(separator);
-                            }).join('\n');
         
-                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                            if (navigator.msSaveBlob) { // IE 10+
-                              navigator.msSaveBlob(blob, 'export_prds.csv');
-                            } else {
-                              const link = document.createElement('a');
-                              if (link.download !== undefined) {
-                                // Browsers that support HTML5 download attribute
-                                const url = URL.createObjectURL(blob);
-                                link.setAttribute('href', url);
-                                link.setAttribute('download', 'export_prds.csv');
-                                link.style.visibility = 'hidden';
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                              }
-                            }
-                    })
+        if($scope.type === 'category') {
+            $scope.additionnalButtons = [
+                {
+                    text: 'category.detail.export',
+                    onClick: function () {
+                        if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
+                        $http.get('/v2/category/export/' + $scope.category._id, {headers: {Authorization: window.localStorage.getItem('jwtAdmin')}}).then(function (response) {
+                            const separator = ';';
+                            const keys = Object.keys(response.data[0]);
+                            const csvContent = keys.join(separator) +
+                                '\n' +
+                                response.data.map(row => {
+                                return keys.map(k => {
+                                    let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+                                    cell = cell instanceof Date
+                                    ? cell.toLocaleString()
+                                    : cell.toString().replace(/"/g, '""');
+                                    if (cell.search(/("|,|\n)/g) >= 0) {
+                                    cell = `"${cell}"`;
+                                    }
+                                    return cell;
+                                }).join(separator);
+                                }).join('\n');
+            
+                                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                if (navigator.msSaveBlob) { // IE 10+
+                                navigator.msSaveBlob(blob, 'export_prds.csv');
+                                } else {
+                                const link = document.createElement('a');
+                                if (link.download !== undefined) {
+                                    // Browsers that support HTML5 download attribute
+                                    const url = URL.createObjectURL(blob);
+                                    link.setAttribute('href', url);
+                                    link.setAttribute('download', 'export_prds.csv');
+                                    link.style.visibility = 'hidden';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                                }
+                        })
+                    },
+                    icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
                 },
-                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
-            },
-            {
-                text: 'category.detail.import',
-                onClick: function () {
-                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
-                    document.getElementById('importCsv').click()
-                },
-                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
-            }
-        ];
+                {
+                    text: 'category.detail.import',
+                    onClick: function () {
+                        if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
+                        document.getElementById('importCsv').click()
+                    },
+                    icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
+                }
+            ];
+        }
 
         $scope.getCategory()
 
@@ -756,8 +805,8 @@ CategoryControllers.controller("CategoryListCtrl", [
     function ($scope, $modal, $q, toastService, $translate, $modal, CategoryV2, $location) {
 
         var selectedLang = "";
-
-        const structure = {
+        $scope.type      = $location.search().type;
+        const structure  = {
             _id: 1,
             children: 1,
             ancestor: 1,
@@ -797,6 +846,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             CategoryV2.list({
                 PostBody: {
                     filter: {
+                        type: $scope.type,
                         ['ancestors.0']: {$exists: false}
                     },
                     populate: ["children"],
@@ -1052,8 +1102,8 @@ CategoryControllers.controller("CategoryListCtrl", [
 ]);
 
 CategoryControllers.controller("CategoryNewCtrl", [
-    "$scope", "$modalInstance", "CategoryV2", "parent", "lang", "toastService", "allCats",
-    function ($scope, $modalInstance, CategoryV2, parent, lang, toastService, allCats) {
+    "$scope", "$modalInstance", "$location", "CategoryV2", "parent", "lang", "toastService", "allCats",
+    function ($scope, $modalInstance, $location, CategoryV2, parent, lang, toastService, allCats) {
         let displayOrder;
         let id_parent;
         if(parent){
@@ -1063,23 +1113,26 @@ CategoryControllers.controller("CategoryNewCtrl", [
             id_parent = [];
             displayOrder = allCats.length;
         }
-        $scope.lang = lang;
+        $scope.lang     = lang;
         $scope.category = {
             ancestors: id_parent,
             translation: {
                 [lang]: {}
             },
-            displayOrder: displayOrder
+            displayOrder: displayOrder,
+            type: $location.search().type
         };
 
         $scope.save = function (category) {
             CategoryV2.save(category, function (rep) {
+                const newCat = rep._id;
                 if(id_parent.length > 0){
                     parent.children.push(rep);
                     parent.nodes.push(rep);
                     CategoryV2.save(parent, function (rep) {
                         //we added a children to the parents
                         $modalInstance.close(rep);
+                        $location.path(`/categories/${newCat}`);
                     }, function(err) {
                         if(err.data.code === "Conflict"){
                             toastService.toast("danger", err.data.message + " : code already exists");
@@ -1089,6 +1142,7 @@ CategoryControllers.controller("CategoryNewCtrl", [
                     });
                 }else{
                     $modalInstance.close(rep);
+                    $location.path(`/categories/${newCat}`);
                 }
             }, function(err) {
                 if(err.data.code === "Conflict"){
@@ -1117,7 +1171,7 @@ CategoryControllers.controller("NsCategoryListController", [
         }).code;
 
         $scope.getCategories = function() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}, type:"category"}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 0}}, function (response) {
                 $scope.categories = response.datas;
                 //we expand all the categories
                 $scope.expandAll();
@@ -1125,7 +1179,9 @@ CategoryControllers.controller("NsCategoryListController", [
         }
         
         $scope.catIsDisabled = function (node){
-            if(typeof $scope.categoryIsDisabled !== "undefined" && $scope.categoryIsDisabled !== null){
+            if(node.action !== "catalog"){
+                return true;
+            } else if(typeof $scope.categoryIsDisabled !== "undefined" && $scope.categoryIsDisabled !== null){
                 return $scope.categoryIsDisabled(node);
             } else {
                 console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryDisabled'");

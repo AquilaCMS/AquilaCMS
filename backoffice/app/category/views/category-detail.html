@@ -1,11 +1,11 @@
-<ns-box data-title="category.detail.title" title-icon="fa fa-list-ul fa-lg">
+<ns-box data-title="{{type === 'menu' ? 'category.list.t2' : 'category.list.t1'}}" title-icon="fa fa-list-ul fa-lg">
     <form name="form" novalidate ng-submit="save()">
         <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave" more-buttons="additionnalButtons">
         <ns-translation ng-model="lang" class="pull-right" style="margin-top: 50px;float:right"></ns-translation>
 
-        <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
+        <h3>{{category.translation[lang].name}} <span style="font-size:9px">({{category.code}})</span></h3>
         <br/>
-        <div class = "scrollmenu">
+        <div class = "scrollmenu" ng-if="type === 'category'">
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
@@ -24,7 +24,7 @@
         <div class="tab-content">
             <input style="display: none;" type="file" id="importCsv" onchange="angular.element(this).scope().readCsv(event)" ng-model="fileCsv">
             <div id="general" class="tab-pane fade in active">
-                <table style="clear: both" id="switch">
+                <table style="clear: both" id="switch" ng-if="type === 'menu'">
                     <tbody>
                         <tr>
                             <td width="30%">
@@ -32,27 +32,18 @@
                                 <label class="switch">
                                     :
                                     <ns-switch ng-click="changeSwitch()" ng-model="category.active" name="active"></ns-switch>
-                                    <!-- <input type="checkbox" ng-model="category.active" class="switch-input">
-                                    <span class="switch-label" data-on="On" data-off="Off"></span>
-                                    <span class="switch-handle"></span> -->
                                 </label>
                             </td>
                             <td width="35%">
                                 <span translate>category.detail.afficher</span>
                                 <label class="switch">
                                     <ns-switch id="isDisplayed" ng-model="category.isDisplayed" name="isDisplayed"></ns-switch>
-                                    <!-- <input type="checkbox" ng-model="category.isDisplayed" class="switch-input">
-                                    <span class="switch-label" data-on="On" data-off="Off"></span>
-                                    <span class="switch-handle"></span> -->
                                 </label>
                             </td>
                             <td width="35%">
                                 <span translate>category.detail.cliquable</span>
                                 <label class="switch">
                                     <ns-switch id="clickable" ng-model="category.clickable" name="clickable"></ns-switch>
-                                    <!-- <input type="checkbox" ng-model="category.clickable" class="switch-input">
-                                    <span class="switch-label" data-on="On" data-off="Off"></span>
-                                    <span class="switch-handle"></span> -->
                                 </label>
                             </td>
                         </tr>
@@ -63,7 +54,8 @@
                     <tbody>
                         <tr id="type">
                             <td width="30%">
-                                <span translate>category.detail.type</span>
+                                <span translate ng-if="type === 'category'">category.detail.type</span>
+                                <span translate ng-if="type === 'menu'">category.detail.action</span>
                                 <i style="margin-left:10px" class="fa fa-question-circle" popover="{{'category.detail.containerHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
                             </td>
                             <td width="70%">
@@ -72,9 +64,9 @@
                                         translate>category.detail.container</label>
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                         translate>category.detail.catalogue</label>
-                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'" ng-if="type === 'menu'"
                                         translate>category.detail.page</label>
-                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'url'"
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'url'" ng-if="type === 'menu'"
                                         translate>category.detail.url</label>
                                 </div>
                             </td>
@@ -85,13 +77,13 @@
                                 <input ng-model="category.translation[lang].name" name="name" class="form-control" required />
                             </td>
                         </tr>
-                        <tr  ng-if="category.action == 'catalog'">
+                        <tr ng-if="type === 'category' && category.action == 'catalog'">
                             <td translate>category.detail.metaDesc</td>
                             <td>
                                 <input ng-model="category.translation[lang].metaDescription" name="description" class="form-control" />
                             </td>
                         </tr>
-                        <tr id="slug" ng-if="category.action == 'catalog'">
+                        <tr id="slug" ng-if="type === 'category' && category.action == 'catalog'">
                             <td translate>category.detail.slugCat</td>
                             <td>
                                 <input ng-model="category.translation[lang].slug" name="slug" class="form-control" required/>
@@ -114,7 +106,15 @@
                                 <input ng-model="category.translation[lang].url" class="form-control" title="category.detail.t1" required />
                             </td>
                         </tr>
-                        <tr ng-if="category.action == 'catalog'">
+                        <tr ng-if="type === 'menu' && category.action == 'catalog'">
+                            <td translate>category.detail.title</td>
+                            <td>
+                                <select ng-model="category.category" class="form-control ng-pristine ng-valid ng-not-empty ng-touched">
+                                    <option ng-repeat="option in categoryList" value="{{option.id}}">{{option.name}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr ng-if="type === 'category' && category.action == 'catalog'">
                             <td translate>category.detail.pdsCanonCat</td>
                             <td>
                                 <input type="number" class="form-control" ng-model="category.canonical_weight" required>
@@ -122,8 +122,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both" ng-if="category.action !== 'container'">
+                <br ng-if="type === 'menu'" />
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both" ng-if="type === 'menu' && category.action !== 'container'">
                     <tbody>
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
@@ -145,8 +145,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage" ng-if="category.action !== 'container'">
+                <br ng-if="type === 'menu'" />
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage" ng-if="type === 'menu' && category.action !== 'container'">
                     <tbody>
                         <tr>
                             <td width="30%" translate>category.detail.nameColor</td>
@@ -173,7 +173,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog'">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="type === 'category' && category.action === 'catalog'">
                     <tbody>
                         <tr id="text1">
                             <td translate>

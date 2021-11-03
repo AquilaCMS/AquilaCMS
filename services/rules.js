@@ -526,7 +526,9 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                                 }
                             }
                             await cat.save();
+                            require('./categories').saveMenuFromCategory(cat);
                         }
+
                     // Segementation picto
                     } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;

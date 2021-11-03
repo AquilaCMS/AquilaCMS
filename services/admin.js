@@ -110,6 +110,19 @@ const controlAllDatas = async () => {
                         returnErrors += `<b>Category ${category.code}</b> : empty URL (${currentLang})<br/>`;
                     }
                 }
+
+                // Control connexion between menu and category
+                if (category.type === 'menu' && category.action === 'catalog') {
+                    if (!category.category) {
+                        returnErrors += `<b>Menu ${category.code}</b> : no category selected<br/>`;
+                    } else {
+                        // Control if linked category exists
+                        const cat = await Categories.find({_id: category.category}).lean();
+                        if (!cat.length) {
+                            returnErrors += `<b>Menu ${category.code}</b> : category not found<br/>`;
+                        }
+                    }
+                }
             }
 
             // Detect duplicated

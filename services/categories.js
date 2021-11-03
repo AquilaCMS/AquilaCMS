@@ -146,10 +146,37 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
 
 const setCategory = async (postBody) => {
     await Categories.updateOne({_id: postBody._id}, {$set: postBody});
+    saveMenuFromCategory(postBody);
     return Categories.findOne({_id: postBody._id}).lean();
 };
 
+const saveMenuFromCategory = async (category) => {
+    if (category.type === 'category') {
+        // Find all Menus and update them from this category
+        const menus = await Categories.find({type: 'menu', category: category._id});
+        for (const menu of menus) {
+            menu.filters      = category.filters;
+            menu.productsList = category.productsList;
+            menu.save();
+        }
+    } else if (category.type === 'menu' && category.category) {
+        // Find the category of this menu and update date
+        const menu = await Categories.findOne({_id: category._id});
+        const cat  = await Categories.findOne({type: 'category', action: 'catalog', _id: category.category});
+        if (!menu || !cat) return;
+        menu.filters      = cat.filters;
+        menu.productsList = cat.productsList;
+        menu.save();
+    }
+};
+
 const createCategory = async (postBody) => {
+    // Generate code if empty
+    if (!postBody.code || postBody.code.length === 0) {
+        const {v4: uuidv4} = require('uuid');
+        postBody.code      = uuidv4();
+    }
+
     const newMenu   = new Categories(postBody);
     const id_parent = postBody.id_parent;
     const _menu     = await Categories.findOne({_id: id_parent});
@@ -433,6 +460,7 @@ module.exports = {
     generateFilters,
     getCategory,
     setCategory,
+    saveMenuFromCategory,
     createCategory,
     getCategoryChild,
     execRules,

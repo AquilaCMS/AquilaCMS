@@ -76,7 +76,7 @@
                     </a>
                 </li>
                 <li ng-if="!(accessList.includes('categories'))">
-                    <a href="#/categories" class="menuClick">
+                    <a href="#/categories?type=category" class="menuClick">
                         <span class="icon">
                             <i class="fa fa-list-ul fa-lg i-style"></i>
                         </span>
@@ -173,6 +173,14 @@
                             <i class="fa fa-file-text fa-lg i-style"></i>
                         </span>
                         <span translate>menu.pages</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('categories'))">
+                    <a href="#/categories?type=menu" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-list-ul fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.menu</span>
                     </a>
                 </li>
                 <li ng-if="!(accessList.includes('cmsBlocks'))">

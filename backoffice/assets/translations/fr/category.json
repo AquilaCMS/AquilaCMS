@@ -6,7 +6,7 @@
         "ph3": "Generation automatique par le nom si vide",
         "createNewCat": "Créer une nouvelle catégorie",
         "code": "Code",
-        "nom": "Nom",
+        "nom": "Nom *",
         "slug": "Slug",
         "cancel": "Annuler",
         "save": "Enregistrer"
@@ -84,6 +84,7 @@
     },
     "list": {
         "t1": "Catégories",
+        "t2": "Menu",
         "noCatCreated": "Aucune catégorie n'a encore été créée.",
         "occurErrorAPI": "Une erreur est survenue lors d'une requete API",
         "pictureDelete": "Image supprimée",

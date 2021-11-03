@@ -6,7 +6,7 @@
         "ph3": "Automatic generation from name if empty",
         "createNewCat": "Create new category",
         "code": "Code",
-        "nom": "Name",
+        "nom": "Name *",
         "slug": "Slug",
         "cancel": "Cancel",
         "save": "Save"
@@ -83,6 +83,7 @@
     },
     "list": {
         "t1": "Categories",
+        "t2": "Menu",
         "noCatCreated": "No category has been created.",
         "occurErrorAPI": "An error occurred during an API request",
         "pictureDelete": "Deleted image",

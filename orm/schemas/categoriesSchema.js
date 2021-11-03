@@ -20,6 +20,8 @@ const CategoriesSchema = new Schema({
     clickable    : {type: Boolean, default: true},
     isDisplayed  : {type: Boolean, default: true},
     action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container']},
+    type         : {type: String, default: 'category', enum: ['category', 'menu']},
+    category     : {type: ObjectId, ref: 'categories'},
     // thumbnailUrl : {type: String},
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},

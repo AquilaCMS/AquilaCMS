@@ -107,6 +107,8 @@
         "shipments": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the shipments documentation.</a>",
         "cmsBlocks": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the block cms documentation.</a>",
         "articles": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the blogs documentation.</a>",
+        "categories":"Organize your products by categories",
+        "menu":"Organize the theme's menu",
         "contacts": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the contacts documentation.</a>",
         "medias": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the medias documentation.</a>",
         "gallery": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the gallery documentation. </a>",
