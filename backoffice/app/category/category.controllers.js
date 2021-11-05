@@ -503,7 +503,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             if (this.form.$invalid) {
                 if (this.form.$error && this.form.$error.required) {
                     this.form.$error.required.forEach((requiredField, index) => {
-                        console.log(requiredField)
                         strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
