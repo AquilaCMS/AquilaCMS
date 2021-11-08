@@ -74,7 +74,7 @@
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
                     <h2 translate>order.detail.compteCli</h2>
-                    <a target="_blank" ng-href="#/clients/{{order.customer.id}}" class="caseOfIcon">
+                    <a target="_blank" ng-href="#/clients/{{order.customer.id}}" class="caseOfIcon" ng-if="customer !== null">
                         <i class="fa fa-2x fa-eye buttonIconStyle"></i>
                     </a>
                 </div>
@@ -166,8 +166,9 @@
                     <span editable-text="order.addresses.delivery.country" onbeforesave="updateOrder('addresses.delivery.country', $data)">{{ order.addresses.delivery.country || '&nbsp;' }}</span>
                 </div>
 
-                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method === 'delivery'">
-                    <span translate>{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
+                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
+                    {{order.addresses.delivery.companyName}}
+                    <span translate ng-show="order.addresses.delivery.firstname">{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
                     <span>
                         {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
                         {{order.addresses.delivery.line1}}<br />
@@ -269,26 +270,26 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.aqlRound(2)}} €</td>
                             </tr>
                             <tr ng-if="order.promos[0]">
                                 <td><strong translate>order.detail.reduc</strong></td>
                                 <td class="text-left order-emphase">{{order.promos[0].name}}</td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).toFixed(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><strong translate>order.detail.total</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).toFixed(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.toFixed(2) }}€</strong></td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.aqlRound(2) }}€</strong></td>
                                 <td class="text-center">
                                     <span ng-show="order.priceTotal.paidTax === undefined || order.priceTotal.paidTax" translate>order.detail.paidTax</span>
                                     <span ng-show="order.priceTotal.paidTax === false" translate>order.detail.taxFree</span>
@@ -359,7 +360,7 @@
                             <tbody class="box-content">
                                 <tr>
                                     <td class="col-md-12">
-                                        <p ng-hide="!order.delivery.name && order.orderReceipt.method === 'withdrawal'">
+                                        <p ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
                                             <b translate>order.detail.trans</b> : {{order.delivery.name ? order.delivery.name : "N/A"}}<br />
                                             <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : getDeliveryDate()}}
                                         </p>

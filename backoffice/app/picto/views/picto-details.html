@@ -64,6 +64,22 @@
                             </div>
                             <br/>
                             <div class="form-group row">
+                                <label for="startDate" class="col-sm-3 control-label" translate>picto.details.startDate</label>
+                                <div class="col-sm-9">
+                                    <ns-datepicker name="startDate" class="fullDatepicker form-datepicker" ng-model="picto.startDate">
+                                    </ns-datepicker>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
+                                <label for="endDate" class="col-sm-3 control-label" translate>picto.details.endDate</label>
+                                <div class="col-sm-9">
+                                    <ns-datepicker name="endDate" class="fullDatepicker form-datepicker" ng-model="picto.endDate">
+                                    </ns-datepicker>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
                                 <label for="location" class="col-sm-3 control-label" translate>picto.details.place</label>
                                 <style>
                                     .paddingForTable{
@@ -139,6 +155,7 @@
                     </div>
                 </div>
                 <div id="rules" class="tab-pane fade">
+                    <h3 translate>picto.details.infoRules</h3>
                     <ng-form novalidate name="ruleForm">
                         <ns-rules rule="rule" type="picto"></ns-rules>
                     </ng-form>

@@ -130,6 +130,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
@@ -161,8 +162,8 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageDetailCtrl", [
-    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate",
-    function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate) {
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate", "$q",
+    function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate, $q) {
         $scope.local = { url: "" };
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
@@ -189,10 +190,11 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             StaticV2.query({ PostBody: { filter: { code: $routeParams.code }, structure: '*', limit: 1 } }, function (staticPage) {
                 $scope.static = staticPage;
                 $scope.local.url = staticPage.code;
-                $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
+                $scope.selectedDropdownItem = staticPage.group || "";
                 if ($scope.static && !$scope.static.translation[$scope.lang].html) {
                     $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
                 }
+                $scope.getGroups()
             });
         }
 
@@ -247,20 +249,27 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            $scope.dropdownItems = [];
-            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }).$promise.then(function (staticsList) {
-                $scope.groups = staticsList.datas.getAndSortGroups(userInput);
-                return $scope.groups;
+            var filter = $q.defer();
+            var normalisedInput = userInput.toLowerCase();
+            $scope.static.group = userInput
+
+            var filteredArray = $scope.groups.filter(function(group) {
+                return group.toLowerCase().indexOf(normalisedInput) === 0;
             });
+
+            filter.resolve(filteredArray);
+            return filter.promise;
         };
 
-        $scope.filterDropdown();
+        $scope.getGroups = function() {
+            StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }).$promise.then(function (staticsList) {
+                $scope.groups = staticsList.datas.getAndSortGroups();
+            });
+        };
 
         $scope.langChange = function (lang) {
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
@@ -275,7 +284,6 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         };
 
         $scope.saveStatic = function (isQuit) {
-            $scope.static.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save($scope.static, function () {
                 toastService.toast("success", $translate.instant("global.saveDone"));

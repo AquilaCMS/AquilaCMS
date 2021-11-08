@@ -153,7 +153,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '(';
                         }
-                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['et'].aqlRound(2)} €)`;
                         //put the TTC text
                         text+= '/ATI: '
                         if(productOfBundle.modifier_price['ati'] > 0){
@@ -161,7 +161,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '';
                         }
-                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['ati'].aqlRound(2)} €)`;
                     }
                     displayHtml += `<li key="${j}">${productSection.name} ${text}</li>`;
                 }
@@ -205,6 +205,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                         console.log(error);
                     });
                 }
+                else {
+                    $scope.customer = null;
+                }
+                
                 $scope.status = $scope.order.status;
                 $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
@@ -284,7 +288,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             let basePriceATI = null;
             if(item.price.special && item.price.special.ati)
             {
-                return item.price.unit.ati.toFixed(2);
+                return item.price.unit.ati.aqlRound(2);
             }
             if(_order.quantityBreaks && _order.quantityBreaks.productsId.length)
             {
@@ -293,7 +297,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 if(prdPromoFound)
                 {
                     basePriceATI = prdPromoFound.basePriceATI;
-                    return (basePriceATI).toFixed(2);
+                    return (basePriceATI).aqlRound(2);
                 }
             }
             return false;
@@ -406,7 +410,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == orderStatuses.RETURNED || data == orderStatuses.CANCELED) {
+                } else if (data == orderStatuses.RETURNED) {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -1092,7 +1096,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             comment: "",
             mode: "",
             sendMail: true,
-            amount: $scope.order.priceTotal.ati,
+            amount: Number($scope.order.priceTotal.ati.aqlRound(2)),
             type: "CREDIT",
             status: "DONE",
             products: []

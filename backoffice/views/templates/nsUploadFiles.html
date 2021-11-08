@@ -13,11 +13,6 @@
             </span>
         </span>
     </div>
-    <div class="row form-group">
-        <div class="col-sm-12" ng-show="files">
-            <button class="btn btn-default" type="button" ng-click="upload(files)" ng-disabled="disableUpload" ng-show="files.length > 0" translate>medias.uploadMedias.upload</button>
-        </div>
-    </div>
     <div ng-repeat="f in files" class="image-frame {{multiple ? 'col-sm-4' : 'col-sm-12'}}">
         <div class="row">
             <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">

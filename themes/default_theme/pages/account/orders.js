@@ -60,7 +60,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                         <strong className="price">
                                                                                             {
                                                                                                 order.priceTotal && order.priceTotal[taxDisplay[index]] !== undefined
-                                                                                                    ? order.priceTotal[taxDisplay[index]].toFixed(2)
+                                                                                                    ? order.priceTotal[taxDisplay[index]].aqlRound(2)
                                                                                                     : ''
                                                                                             } €
                                                                                         </strong>
@@ -90,10 +90,10 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                 if (prdPromoFound) {
                                                                                                                     basePrice = prdPromoFound[`basePrice${taxDisplay[index].toUpperCase()}`];
                                                                                                                     descPromo = (
-                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice).toFixed(2)}€</span></del>
+                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice).aqlRound(2)}€</span></del>
                                                                                                                     );
                                                                                                                     descPromoT = (
-                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).toFixed(2)}€</span></del>
+                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).aqlRound(2)}€</span></del>
                                                                                                                     );
                                                                                                                 }
                                                                                                             }
@@ -139,23 +139,23 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                         {
                                                                                                                             item.price.special && item.price.special[taxDisplay[index]]
                                                                                                                                 ? (
-                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{item.price.unit[taxDisplay[index]].toFixed(2)}€</span>
+                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{item.price.unit[taxDisplay[index]].aqlRound(2)}€</span>
                                                                                                                                     </del>
                                                                                                                                 )
                                                                                                                                 : descPromo
                                                                                                                         }
-                                                                                                                        <strong className="price">{this.getUnitPrice(item, order).toFixed(2)}€</strong>
+                                                                                                                        <strong className="price">{this.getUnitPrice(item, order).aqlRound(2)}€</strong>
                                                                                                                     </td>
                                                                                                                     <td>
                                                                                                                         {
                                                                                                                             item.price.special && item.price.special[taxDisplay[index]]
                                                                                                                                 ? (
-                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{(item.price.unit[taxDisplay[index]] * item.quantity).toFixed(2)}€</span>
+                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{(item.price.unit[taxDisplay[index]] * item.quantity).aqlRound(2)}€</span>
                                                                                                                                     </del>
                                                                                                                                 )
                                                                                                                                 : descPromoT
                                                                                                                         }
-                                                                                                                        <strong className="price">{(this.getUnitPrice(item, order) * item.quantity).toFixed(2)}€</strong>
+                                                                                                                        <strong className="price">{(this.getUnitPrice(item, order) * item.quantity).aqlRound(2)}€</strong>
                                                                                                                     </td>
                                                                                                                     {
                                                                                                                         item.type === 'virtual' && (
@@ -180,26 +180,26 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                         <footer className="order__foot">
                                                                                             <div className="order__discount">
                                                                                                 <p>
-                                                                                                    {t(`account:orders.page.label.total_order.${taxDisplay[index]}`)} : <strong>{order.priceTotal[taxDisplay[index]].toFixed(2)}€</strong><br />
+                                                                                                    {t(`account:orders.page.label.total_order.${taxDisplay[index]}`)} : <strong>{order.priceTotal[taxDisplay[index]].aqlRound(2)}€</strong><br />
                                                                                                     {
                                                                                                         order.delivery && order.delivery.price && order.delivery.price[taxDisplay[index]] > 0
-                                                                                                            ? <sub>{t(`account:orders.page.label.total_delivery.${taxDisplay[index]}`)} : <strong>{order.delivery.price[taxDisplay[index]].toFixed(2)}€</strong><br /></sub>
+                                                                                                            ? <sub>{t(`account:orders.page.label.total_delivery.${taxDisplay[index]}`)} : <strong>{order.delivery.price[taxDisplay[index]].aqlRound(2)}€</strong><br /></sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay[index].toUpperCase()}`]
                                                                                                             ? (
-                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI.toFixed(2)}€</strong><br /></sub>
+                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI.aqlRound(2)}€</strong><br /></sub>
                                                                                                             ) : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.promos && order.promos.length && (order.promos[0].productsId.length === 0)
-                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`].toFixed(2)}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
+                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`].aqlRound(2)}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.additionnalFees[taxDisplay[index]] > 0
-                                                                                                            ? <sub>{t('account:orders.page.label.additionnal_fees')}: <strong>{order.additionnalFees[taxDisplay[index]].toFixed(2)}€</strong></sub>
+                                                                                                            ? <sub>{t('account:orders.page.label.additionnal_fees')}: <strong>{order.additionnalFees[taxDisplay[index]].aqlRound(2)}€</strong></sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                 </p>

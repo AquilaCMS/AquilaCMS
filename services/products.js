@@ -634,7 +634,7 @@ const setProduct = async (req) => {
         throw NSErrors.SlugAlreadyExist;
     }
     await ProductsPreview.deleteOne({code: req.body.code});
-    return Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
+    return Products.findOne({code: result.code}).populate(['bundle_sections.products.id']);
 };
 
 const createProduct = async (req) => {

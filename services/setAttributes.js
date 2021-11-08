@@ -76,9 +76,9 @@ exports.setSetAttribute = async function (code, name, attributes) {
     return SetAttributes.findOneAndUpdate({code}, {$set: upd}, {upsert: true, new: true});
 };
 
-exports.createOrUpdateSetAttribute = async function (req) {
-    const code                                      = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-    const {name, update : updateF, questions, type} = req.body;
+exports.createOrUpdateSetAttribute = async function (postBody) {
+    const code                                      = postBody.code.replace(/[^A-Z0-9]+/ig, '_');
+    const {name, update : updateF, questions, type} = postBody;
     const setAttribute                              = await SetAttributes.findOne({code});
     if (setAttribute && updateF) {
         const resSetAttribute = await SetAttributes.findOneAndUpdate({code}, {name, questions, type}, {new: true});
@@ -93,8 +93,8 @@ exports.createOrUpdateSetAttribute = async function (req) {
     await SetAttributes.create({code, name, questions, type});
     return {status: true};
 };
-exports.deleteSetAttribute = async function (req) {
-    const setAttr = await SetAttributes.findOne({_id: req.params.id});
+exports.deleteSetAttribute = async function (id) {
+    const setAttr = await SetAttributes.findOne({_id: id});
     if (!setAttr) throw NSErrors.SetAttributeNotFound;
     const product = await Products.findOne({set_attributes: setAttr._id});
     if (product) throw NSErrors.SetAttributeLinkedWithProduct;

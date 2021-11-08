@@ -76,7 +76,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
     } else if (req.url.startsWith('/google')) {
         res.sendFile(path.join(global.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
-        await require('../services/medias').getImageStream(req, res);
+        await require('../services/medias').getImageStream(req.url, res);
     } else if (
         global.envConfig
         && req.url.length > global.envConfig.environment.adminPrefix.length + 2

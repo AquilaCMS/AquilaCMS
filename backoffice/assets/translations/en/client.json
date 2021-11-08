@@ -13,10 +13,11 @@
         "pseudo": "Pseudo",
         "phone": "Telephone",
         "type": "Type",
-        "inscription": "Registration :",
-        "birthday": "Birthday :",
+        "inscription": "Registration",
+        "birthday": "Birthday",
+        "lastConnexion":"Last connexion",
         "taxDisplay": "Display taxes",
-        "checkAccount": "Verify :",
+        "checkAccount": "Verify",
         "mdp": "Password",
         "connectAs": "Log as this customer",
         "resetMdp": "Reset password",
@@ -90,6 +91,7 @@
         "prenom2": "First name",
         "company": "Company",
         "companyName": "Company name",
-        "creationDate": "Creation date"
+        "creationDate": "Creation date",
+        "lastConnexion": "Last connexion"
     }
 }
