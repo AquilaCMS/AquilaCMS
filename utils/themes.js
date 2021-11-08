@@ -6,12 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path            = require('path');
-const slash           = require('slash');
-const fs              = require('fs');
-const packageManager  = require('./packageManager');
-const {isProd}        = require('./server');
-const {Configuration} = require('../orm/models');
+const path           = require('path');
+const slash          = require('slash');
+const fs             = require('fs');
+const packageManager = require('./packageManager');
+/* /!\ Ne pas faire de require sur des models pour ne pas casser l'ordre d'initilaisation des modeles avec les modules */
 
 /**
  * Do a yarn install and compile the theme passed as a parameter or the current theme
@@ -42,7 +41,7 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
     }
     let command = 'yarn install --production=true';
     // If the NODE_ENV variable is not equal to 'production', yarn install will always install the devDependencies
-    if (devDependencies === true || !isProd) {
+    if (devDependencies === true || require('./server').dev) {
         command = 'yarn install --production=false';
     }
     const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));

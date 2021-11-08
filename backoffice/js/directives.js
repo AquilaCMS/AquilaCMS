@@ -471,6 +471,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.size = {};
                             $scope.size.max = true;
+                            $scope.size.keepRatio = true;
+                            $scope.size.ratio = 1
 
                             $scope.changeSwitch = function(){
                                 if ($scope.size.max === true){
@@ -483,7 +485,29 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             $scope.selectImage = function(image){
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
+                                $scope.getMeta(image.link)
                             };
+
+                            $scope.sizeChange = function (type, size) {
+                                if($scope.size.keepRatio) {
+                                    if(type === 'width') {
+                                        $scope.size.height = Math.round(size / $scope.size.ratio)
+                                    } else {
+                                        $scope.size.width = Math.round(size * $scope.size.ratio)
+                                    }
+                                }
+                            }
+
+                            $scope.getMeta = function (url) {
+                                const img = new Image();
+                                img.src = url;
+                                img.onload = function() { 
+                                    $scope.size.ratio = this.width / this.height;
+                                    $scope.size.width = this.width;
+                                    $scope.size.height = this.height;
+                                    $scope.$apply()
+                                }
+                            }
 
                             $scope.generate = function () {
                                 let url = $scope.imageSelected.split('medias/')[1];
@@ -497,6 +521,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
+                            };
+
+                            $scope.media = {
+                                link : "",
+                                name : 'new-' + Math.floor(Math.random() * 1024),
+                                group: "",
                             };
 
                         }],
@@ -2385,6 +2415,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
+                                                $scope.afterFunction();
                                                 break;
                                             }
                                             case 'gallery': {

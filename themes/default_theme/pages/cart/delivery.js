@@ -223,7 +223,7 @@ class CartDelivery extends React.Component {
                                                                         </em>
                                                                     </label>
                                                                 </div>{ /* <!-- /.radio --> */}
-                                                                <strong className="delivery-price">{arrayPrices[ship.code].toFixed(2)}€</strong>
+                                                                <strong className="delivery-price">{arrayPrices[ship.code].aqlRound(2)}€</strong>
                                                                 {(ship.component_template_front && nsModules) ? this.displayFrontModule(ship, index) : null}
                                                             </div>
                                                         )) : <p>{t('delivery:no_shipment')}</p>

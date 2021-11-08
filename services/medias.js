@@ -441,8 +441,8 @@ const uploadFiles = async (body, files) => {
             await Medias.updateOne({_id: body._id}, {$set: {link: target_path_full, extension: path.extname(target_path_full)}});
             return {name: name + extension, path: target_path_full, id: body._id};
         }
-        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full)});
-        return {name: name + extension, path: target_path_full, id: media._id};
+        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full), name});
+        return {name, path: target_path_full, id: media._id};
     }
     case 'gallery': {
         if (body.entity._id) { // When you change the image of an item

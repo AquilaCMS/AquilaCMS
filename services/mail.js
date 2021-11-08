@@ -366,8 +366,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 '{{product.name}}'             : translation[lang].name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -375,10 +375,10 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
             };
 
             /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}']    = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}']  = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}']     = (getUnitPrice(item, order) * item.quantity).toFixed(2);
+                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).aqlRound(2);
+                prdData['{{product.specialUnitPriceWithPromo}}']    = getUnitPrice(item, order).aqlRound(2);
+                prdData['{{product.sumSpecialPriceWithoutPromo}}']  = (item.price.unit[taxDisplay] * item.quantity).aqlRound(2);
+                prdData['{{product.sumSpecialPriceWithPromo}}']     = (getUnitPrice(item, order) * item.quantity).aqlRound(2);
             } */
 
             if (item.parent && translation[lang]) {
@@ -392,8 +392,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -428,7 +428,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{quantityBreaks}}'             : '',
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
-        '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].toFixed(2)} €`,
+        '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].aqlRound(2)} €`,
         '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
@@ -447,14 +447,14 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        datas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
+        datas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         datas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
     const htmlBody = await generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, attachments});
@@ -513,7 +513,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         '{{order.paymentMode}}'         : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'  : order._doc.payment[0].description,
         '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
-        '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].toFixed(2)} €`
+        '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
     if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -521,18 +521,18 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        mailDatas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        mailDatas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         mailDatas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        mailDatas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        mailDatas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
+        mailDatas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (order.additionnalFees && order.additionnalFees[taxDisplay] && order.additionnalFees[taxDisplay] !== 0) {
-        mailDatas['{{additionnalFees}}'] = order.additionnalFees[taxDisplay].toFixed(2);
+        mailDatas['{{additionnalFees}}'] = order.additionnalFees[taxDisplay].aqlRound(2);
     }
 
     let mailByType;
@@ -566,8 +566,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 '{{product.name}}'             : translation[lang].name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -575,10 +575,10 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
             };
 
             /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).toFixed(2);
+                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).aqlRound(2);
+                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).aqlRound(2);
+                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).aqlRound(2);
+                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).aqlRound(2);
             } */
 
             if (item.parent && translation[lang]) {
@@ -593,8 +593,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -950,8 +950,8 @@ async function sendMailPendingCarts(cart) {
                 '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : item.name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -968,8 +968,8 @@ async function sendMailPendingCarts(cart) {
                 const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -987,7 +987,7 @@ async function sendMailPendingCarts(cart) {
         '{{customer.firstname}}' : customer.firstname,
         '{{customer.lastname}}'  : customer.lastname,
         '{{quantityBreaks}}'     : '',
-        '{{order.priceTotal}}'   : `${cart.priceTotal[taxDisplay].toFixed(2)} €`
+        '{{order.priceTotal}}'   : `${cart.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
     if (cart.quantityBreaks && cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -995,14 +995,14 @@ async function sendMailPendingCarts(cart) {
     }
 
     if (cart.delivery && cart.delivery.price && cart.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = `${cart.delivery.price[taxDisplay].toFixed(2)} €`;
+        mailDatas['{{delivery.price}}'] = `${cart.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = `${cart.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${cart.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         datas['{{promo.code}}']     = cart.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
     const htmlBody = generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, attachments});

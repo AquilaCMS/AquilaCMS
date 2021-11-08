@@ -130,6 +130,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
@@ -247,8 +248,8 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         }
 
         $scope.itemObjectSelected = function (item) {
-            console.log(item)
             $scope.selectedDropdownItem = item;
+            $scope.static.group = item
         };
 
         $scope.filterDropdown = function (userInput) {
@@ -267,7 +268,6 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         $scope.getGroups = function() {
             StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }).$promise.then(function (staticsList) {
                 $scope.groups = staticsList.datas.getAndSortGroups();
-                console.log($scope.groups)
             });
         };
 

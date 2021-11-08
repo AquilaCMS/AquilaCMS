@@ -231,6 +231,7 @@ MediasControllers.controller("MediasDetailsCtrl",
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.media.group = item
         };
 
         $scope.isPicture = function(media) {

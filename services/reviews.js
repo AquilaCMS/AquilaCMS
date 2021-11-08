@@ -198,13 +198,13 @@ const computeAverageRateAndCountReviews = async (product) => {
             const globalQuestion = product.reviews.questions[i];
             if (!oSumQuestion[globalQuestion.idQuestion.toString()]) continue;
             const {reviews_nb, sum} = oSumQuestion[globalQuestion.idQuestion];
-            globalQuestion.average  = Number((sum / reviews_nb).toFixed(1));
+            globalQuestion.average  = Number((sum / reviews_nb).aqlRound(1));
         }
     }
     product.reviews.average    = 0;
     product.reviews.reviews_nb = 0;
     if (count) {
-        product.reviews.average    = Number((sum / count).toFixed(1));
+        product.reviews.average    = Number((sum / count).aqlRound(1));
         product.reviews.reviews_nb = count;
     }
 };
