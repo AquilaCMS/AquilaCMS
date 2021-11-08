@@ -10,6 +10,8 @@ node_js:
 services:
   - docker
 
+before_install:
+  - rm yarn.lock
 before_script:
   - touch .env
   - touch ./config/env.json
