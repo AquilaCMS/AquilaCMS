@@ -85,7 +85,7 @@
     "list": {
         "t1": "Catégories",
         "t2": "Menu",
-        "noCatCreated": "Aucune catégorie n'a encore été créée.",
+        "noCatCreated": "Aucun élement n'a encore été créée.",
         "occurErrorAPI": "Une erreur est survenue lors d'une requete API",
         "pictureDelete": "Image supprimée",
         "errorCategoryMove": "Une erreur est survenue lors du déplacement de la catégorie",
