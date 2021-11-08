@@ -565,9 +565,40 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 toastService.toast("danger", `${text} : ${strInvalidFields}`);
                 return;
             }
+            if ($scope.type === "menu") {
+                switch ($scope.category.action) {
+                    case 'catalog':
+                        if(!$scope.category.category) {
+                            const text = $translate.instant("product.toast.notValid");
+                            toastService.toast("danger", `${text} : category`);
+                            return
+                        }
+                        break
+                    case 'page':
+                        for(const lng of $rootScope.languages) {
+                            if(!$scope.category.translation[lng.code]?.pageSlug) {
+                                const text = $translate.instant("product.toast.notValid");
+                                toastService.toast("danger", `${text} : page ${lng.code}`);
+                                return
+                            }
+                        }
+                        break
+                    case 'url':
+                        for(const lng of $rootScope.languages) {
+                            if(!$scope.category.translation[lng.code]?.url) {
+                                const text = $translate.instant("product.toast.notValid");
+                                toastService.toast("danger", `${text} : URL ${lng.code}`);
+                                return
+                            }
+                        }
+                        break
+                    case 'container':
+                        break
+                }
+            }
 
             if ($scope.rule.operand !== undefined) {
-                RulesV2.save($scope.rule, function (response){
+                RulesV2.save($scope.rule, function (response) {
                         toastService.toast("success",$translate.instant("category.detail.ruleSaved"));
                         saveCategory();
                     }, function (err) {
