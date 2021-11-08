@@ -19,9 +19,48 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             productInCategory: "true" // default value
         };
 
-        $scope.getCategory = function(id){
-            CategoryV2.get({PostBody: {filter: {_id: id}, structure: '*'}}, function (response) {
+        $scope.getCategory = function() {
+            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
                 $scope.category = response;
+                if($scope.category && $scope.category.productsList){
+                    if($scope.category.productsList.length > 0){
+                        $scope.products = $scope.category.productsList.map((element) => {
+                            return {
+                                checked: true,
+                                sortWeight: element.sortWeight || 0,
+                                ...element.id
+                            }
+                        })
+                        $scope.totalItems = $scope.category.productsList.length;
+                        $scope.products = filterProducts($scope.products);
+                        $scope.products = $scope.products.filter(function(value, index){
+                            return index < 14; // it the first page
+                        });
+                    }else{
+                        // no products in this cat, so we need to change the setup
+                        $scope.searchObj.productInCategory == "false";
+                        $scope.getProducts();
+                    }
+                }else{
+                    // no products in this cat, so we need to change the setup
+                    $scope.searchObj.productInCategory == "false";
+                    $scope.getProducts();
+                }
+                $scope.getAttrib();
+            });
+    
+            RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule) {
+                if(rule.operand === undefined) {
+                    Object.assign($scope.rule, {
+                        owner_id: $scope.category._id,
+                        conditions: [],
+                        other_rules: []
+                    });
+                } else {
+                    $scope.rule = rule;
+                }
+            }, function(error){
+                console.error(error);
             });
         }
 
@@ -96,7 +135,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             return group;
         }
-        function getAttrib(){
+        $scope.getAttrib = function () {
             // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
             CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 0, filter: { "usedInFilters":true}}}, function (resp)
             {
@@ -109,17 +148,11 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // Si l'attribut est déjà présent dans la category alors nous le supprimons de usedInFilters et nous ajoutons le code
                 // a l'objet category.filters.attributes[i].code
                 if($scope.category.filters && $scope.category.filters.attributes){
-                    const attributesLength = $scope.category.filters.attributes.length;
-                    for(var i = 0; i < attributesLength; i++) {
-                        // On recherche l'index de usedInFilters existant dans $scope.category.filters.attributes afin de le supprimer de usedInFilters
-                        var indexFound = $scope.usedInFilters.findIndex(function (filter) {
-                            return filter.id_attribut === $scope.category.filters.attributes[i]._id;
-                        });
-                        if(indexFound !== -1)
-                        {
-                            // On ajoute au category.filters.attributes le code afin qu'il soit visible dans la partie de droite des filtres
-                            $scope.category.filters.attributes[i].code = $scope.usedInFilters[indexFound].code;
-                            $scope.usedInFilters.splice(indexFound, 1);
+                    $scope.usedInFilters = []
+                    for(var i = 0; i < response.length; i++) {
+                        console.log($scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code))
+                        if(!$scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code)) {
+                            $scope.usedInFilters.push(response[i])
                         }
                     }
                 }
@@ -319,52 +352,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }).reverse();
         }
 
-        function init(){
-            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
-                $scope.category = response;
-                if($scope.category && $scope.category.productsList){
-                    if($scope.category.productsList.length > 0){
-                        $scope.products = $scope.category.productsList.map((element) => {
-                            return {
-                                checked: true,
-                                sortWeight: element.sortWeight || 0,
-                                ...element.id
-                            }
-                        })
-                        $scope.totalItems = $scope.category.productsList.length;
-                        $scope.products = filterProducts($scope.products);
-                        $scope.products = $scope.products.filter(function(value, index){
-                            return index < 14; // it the first page
-                        });
-                    }else{
-                        // no products in this cat, so we need to change the setup
-                        $scope.searchObj.productInCategory == "false";
-                        $scope.getProducts();
-                    }
-                }else{
-                    // no products in this cat, so we need to change the setup
-                    $scope.searchObj.productInCategory == "false";
-                    $scope.getProducts();
-                }
-            });
-        }
-        init();
-        getAttrib();
-
-        RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule) {
-            if(rule.operand === undefined) {
-                Object.assign($scope.rule, {
-                    owner_id: $scope.category._id,
-                    conditions: [],
-                    other_rules: []
-                });
-            } else {
-                $scope.rule = rule;
-            }
-        }, function(error){
-            console.error(error);
-        });
-
         $scope.changePosition = function (id, pos) {
             const index = $scope.category.productsList.findIndex(function (prd) {
                 return prd.id._id == id;
@@ -384,9 +371,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             // we re-build the correct array
             const newCat = angular.copy($scope.category);
-            for(let oneProduct of newCat.productsList){
-                oneProduct.id = oneProduct.id._id;
-            }
             CategoryV2.save(newCat, function (res) {
                 toastService.toast("success", $translate.instant("category.detail.positionSaved"));
                 if($scope.formMenu) {
@@ -468,9 +452,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         function saveCategory() {
             // we re-build the correct array
             const newCat = angular.copy($scope.category);
-            for(let oneProduct of newCat.productsList){
-                oneProduct.id = oneProduct.id._id;
-            }
             CategoryV2.save(newCat, function (res) {
                 $scope.category = res;
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
@@ -522,7 +503,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             if (this.form.$invalid) {
                 if (this.form.$error && this.form.$error.required) {
                     this.form.$error.required.forEach((requiredField, index) => {
-                        console.log(requiredField)
                         strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
@@ -668,6 +648,104 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
             from.length = 0;
         };
+
+        $scope.importJson = function (data) {
+            $http.post('/v2/category/import', {data, category: $scope.category}, {headers: {Authorization: window.localStorage.getItem('jwtAdmin')}}).then(function (response) {
+                if(response.data === true) {
+                    toastService.toast("success",$translate.instant("category.detail.importDone"));
+                    $scope.getCategory()
+                } else {
+                    toastService.toast("danger",$translate.instant("category.detail.importFailed"));
+                }
+            })
+        }
+
+        $scope.readCsv = function () {
+            var filename = document.getElementById("importCsv");            
+            if (filename.value.length < 1 ){
+                ($scope.warning = "Please upload a file");
+            } else {
+                $scope.title = "Confirm file";
+                var files = filename.files;
+                if (files.length) {
+                var r = new FileReader();
+                r.onload = function(e) {
+                    var contents = e.target.result;
+                    const jsonResult = []
+                    if(contents) {
+                        const rows = contents.split('\n');
+                        for(const [index, row] of rows.entries()) {
+                            if(index !== 0) {
+                                const cells = row.split(';')
+                                jsonResult.push({code: cells[0], isInclude: cells[1], checked: cells[2]})
+                            }
+                        }
+                        $scope.importJson(jsonResult)
+                    }
+                };
+
+                r.readAsText(files[0]);
+                }
+            }
+        }
+
+        $scope.clickImport = function() {
+            document.getElementById('importCsv').click()
+        }
+        $scope.additionnalButtons = [
+            {
+                text: 'category.detail.export',
+                onClick: function () {
+                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
+                    $http.get('/v2/category/export/' + $scope.category._id, {headers: {Authorization: window.localStorage.getItem('jwtAdmin')}}).then(function (response) {
+                        const separator = ';';
+                        const keys = Object.keys(response.data[0]);
+                        const csvContent = keys.join(separator) +
+                            '\n' +
+                            response.data.map(row => {
+                            return keys.map(k => {
+                                let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+                                cell = cell instanceof Date
+                                ? cell.toLocaleString()
+                                : cell.toString().replace(/"/g, '""');
+                                if (cell.search(/("|,|\n)/g) >= 0) {
+                                cell = `"${cell}"`;
+                                }
+                                return cell;
+                            }).join(separator);
+                            }).join('\n');
+        
+                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                            if (navigator.msSaveBlob) { // IE 10+
+                              navigator.msSaveBlob(blob, 'export_prds.csv');
+                            } else {
+                              const link = document.createElement('a');
+                              if (link.download !== undefined) {
+                                // Browsers that support HTML5 download attribute
+                                const url = URL.createObjectURL(blob);
+                                link.setAttribute('href', url);
+                                link.setAttribute('download', 'export_prds.csv');
+                                link.style.visibility = 'hidden';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }
+                            }
+                    })
+                },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
+            },
+            {
+                text: 'category.detail.import',
+                onClick: function () {
+                    if($scope.category.action !== 'catalog') return toastService.toast("warning",$translate.instant("category.detail.noCatalog"))
+                    document.getElementById('importCsv').click()
+                },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
+            }
+        ];
+
+        $scope.getCategory()
 
     }
 ]);

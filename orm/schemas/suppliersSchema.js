@@ -29,17 +29,6 @@ const SuppliersSchema = new Schema({
     id         : false
 });
 
-SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
-    const res = await this.find({name: supplierName});
-    if (res.length === 0) {
-        const s     = {name: supplierName};
-        const Model = mongoose.model('suppliers', SuppliersSchema);
-        const sp    = new Model(s);
-        sp.save();
-        cb(sp._id, res);
-    }
-};
-
 SuppliersSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('suppliers', that._id, that.code);
 };

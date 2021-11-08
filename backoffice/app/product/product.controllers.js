@@ -209,16 +209,22 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
+            const structure = {
+                code: 1,
+                active: 1,
+                _visible: 1,
+                stock: 1
+            };
+            $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                structure[field.replace(/{{|}}|product\./ig, '')] = 1
+            })
+
             const paramsV2 = {
                 lang: "fr",
                 PostBody: {
                     filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
-                    structure: {
-                        code: 1,
-                        active: 1,
-                        _visible: 1,
-                        stock: 1
-                    },
+                    structure,
                     limit: $scope.nbItemsPerPage,
                     page: $scope.currentPage,
                     sort: params.sortObj
@@ -272,8 +278,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2", "$translate",
-    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope", "$translate",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, $rootScope, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
 
@@ -301,11 +307,28 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
+        $scope.isGoodCanonical = function () {
+            if ($scope.product) {
+                // Detect canonical for all languages
+                let isGoodCanonicalForAllLang = true;
+                for (let index = 0; index < $rootScope.languages.length; index++) {
+                    const aLang = $rootScope.languages[index];
+                    if(!($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                        isGoodCanonicalForAllLang = false;
+                    }
+                }
+
+                if($scope.product.active || isGoodCanonicalForAllLang){
+                    return true;
+                }
+            }
+            return false;
+        };
 
         $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
-                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
+                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules) {
                     $scope.product = product;
                     $scope.adminUrl = "";
                     ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
@@ -324,13 +347,7 @@ ProductControllers.controller("nsProductGeneral", [
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', $translate.instant("product.general.finished"))
-                                ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
-                                    $scope.product = response;
-                                    $scope.product.active = true;
-                                    ProductsV2.save({}, $scope.product, function (response) {
-                                        window.location.reload()
-                                    })
-                                })
+                                window.location.reload();
                             })
                         }, function (error) {
                             console.log(error)

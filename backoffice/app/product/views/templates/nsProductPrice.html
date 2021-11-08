@@ -23,8 +23,8 @@
         <label class="col-sm-5 control-label" translate>product.price.margin</label>
         <div class="col-sm-6">
 
-            <div ng-if="(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.normal - product.price.purchase).toFixed(2)}}</div>
-            <div ng-if="!(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.special - product.price.purchase).toFixed(2)}}</div>
+            <div ng-if="(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.normal - product.price.purchase).aqlRound(2)}}</div>
+            <div ng-if="!(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.special - product.price.purchase).aqlRound(2)}}</div>
         </div>
     </div>
 </div>
@@ -50,12 +50,12 @@
     <div class="col-sm-3">
         <label class="col-sm-5 control-label" translate>product.price.coefficient</label>
         <div class="col-sm-6" ng-if="product.price.et.special === null || product.price.et.special === undefined"  >
-            <div ng-if="(product.price.et.normal / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.normal / product.price.purchase).toFixed(2) === 'Infinity'" class="form-control" disabled></div>
-            <div ng-if="!((product.price.et.normal / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.normal / product.price.purchase).toFixed(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.normal / product.price.purchase).toFixed(2)}}</div>
+            <div ng-if="(product.price.et.normal / product.price.purchase).aqlRound(2) === 'NaN' || (product.price.et.normal / product.price.purchase).aqlRound(2) === 'Infinity'" class="form-control" disabled></div>
+            <div ng-if="!((product.price.et.normal / product.price.purchase).aqlRound(2) === 'NaN' || (product.price.et.normal / product.price.purchase).aqlRound(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.normal / product.price.purchase).aqlRound(2)}}</div>
         </div>
         <div class="col-sm-6" ng-if="!(product.price.et.special === null || product.price.et.special === undefined)">
-            <div ng-if="(product.price.et.special / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.special  / product.price.purchase).toFixed(2) === 'Infinity'" class="form-control" disabled></div>
-            <div ng-if="!((product.price.et.special / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.special  / product.price.purchase).toFixed(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.special / product.price.purchase).toFixed(2)}}</div>
+            <div ng-if="(product.price.et.special / product.price.purchase).aqlRound(2) === 'NaN' || (product.price.et.special  / product.price.purchase).aqlRound(2) === 'Infinity'" class="form-control" disabled></div>
+            <div ng-if="!((product.price.et.special / product.price.purchase).aqlRound(2) === 'NaN' || (product.price.et.special  / product.price.purchase).aqlRound(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.special / product.price.purchase).aqlRound(2)}}</div>
         </div>
     </div>
 </div>

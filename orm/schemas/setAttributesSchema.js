@@ -8,6 +8,7 @@
 
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
+const aquilaEvents  = require('../../utils/aquilaEvents');
 const Schema        = mongoose.Schema;
 const {ObjectId}    = Schema.Types;
 
@@ -41,5 +42,7 @@ SetAttributesSchema.pre('findOneAndUpdate', async function (next) {
 SetAttributesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
 });
+
+aquilaEvents.emit('setAttributesSchemaInit', SetAttributesSchema);
 
 module.exports = SetAttributesSchema;

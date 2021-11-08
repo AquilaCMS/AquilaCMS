@@ -532,9 +532,15 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         let picto;
                         // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
                         if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {
-                            picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
+                            picto = await Pictos.findOne({
+                                _id     : splittedRules[splittedRulesKeys[i]][j].owner_id,
+                                enabled : true,
+                                $and    : [{$or: [{startDate: undefined}, {startDate: {$lte: new Date(Date.now())}}]}, {$or: [{endDate: undefined}, {endDate: {$gte: new Date(Date.now())}}]}]});
                         } else {
-                            picto = await Pictos.findOne({_id: optionPictoId, enabled: true});
+                            picto = await Pictos.findOne({
+                                _id     : optionPictoId,
+                                enabled : true,
+                                $and    : [{$or: [{startDate: undefined}, {startDate: {$lte: new Date(Date.now())}}]}, {$or: [{endDate: undefined}, {endDate: {$gte: new Date(Date.now())}}]}]});
                         }
                         if (picto) {
                             const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};

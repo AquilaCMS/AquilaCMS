@@ -16,9 +16,9 @@ const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
-const getLanguages = async (PostBody) => queryBuilder.find(PostBody);
+const getLanguages = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getLang = async (PostBody) => queryBuilder.findOne(PostBody);
+const getLang = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const saveLang = async (lang) => {
     let result = {};

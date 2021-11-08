@@ -216,10 +216,10 @@ class PageProduct extends NSPageProduct {
                                     <div className="product__actions-mobile visible-xs-block">
                                         <NSProductStock stock={product.stock} />
                                         <div className="product-price">
-                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.aqlRound(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
 
                                             <strong>
-                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).aqlRound(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                             </strong>
                                         </div>
 
@@ -278,11 +278,11 @@ class PageProduct extends NSPageProduct {
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
                                                 {
-                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.aqlRound(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
                                                 }
 
                                                 <strong>
-                                                    <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                    <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).aqlRound(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                                 </strong>
                                             </div>
                                         </div>
@@ -322,7 +322,7 @@ class PageProduct extends NSPageProduct {
                             </section>{/* <!-- /.section-product-main --> */}
 
                             {
-                                product.description1 && product.description1.length > 0 && (
+                                product.description1 && (
                                     <section className="section-product-description">
                                         <header className="section__head">
                                             <h4>{product.description1.title ? product.description1.title : null}</h4>
@@ -448,7 +448,7 @@ class PageProduct extends NSPageProduct {
                                             <div className="rating-value">
                                                 {
                                                     product.reviews && product.reviews.average
-                                                        ? <strong>{product.reviews.average.toFixed(1)}/5</strong>
+                                                        ? <strong>{product.reviews.average.aqlRound(1)}/5</strong>
                                                         : t('product:noReview')
                                                 }
                                             </div>{/* <!-- /.rating-value --> */}
@@ -595,7 +595,7 @@ class PageProduct extends NSPageProduct {
                                             <NSBundleProduct product={product} />
 
                                             <div className="product-price">
-                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} €</strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).aqlRound(2)} €</strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">

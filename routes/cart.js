@@ -54,7 +54,7 @@ const getCartforClient = async (req, res, next) => {
  */
 const getCartById = async (req, res, next) => {
     try {
-        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
+        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req.info);
         if (result) {
             return res.json(result);
         }
@@ -99,7 +99,7 @@ const addItem = async (req, res, next) => {
     // YES : add product
     // NO : create and add
     try {
-        const result = await ServiceCart.addItem(req);
+        const result = await ServiceCart.addItem(req.body, req.info);
         if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }
@@ -115,7 +115,7 @@ const addItem = async (req, res, next) => {
  */
 async function updateQty(req, res, next) {
     try {
-        const result = await ServiceCart.updateQty(req);
+        const result = await ServiceCart.updateQty(req.body, req.info);
         if (result.data) {
             return res.json(result.data.cart);
         }
@@ -132,7 +132,7 @@ async function updateQty(req, res, next) {
 async function updateComment(req, res, next) {
     try {
         const result = await ServiceCart.setComment(req.body.cartId, req.body.comment);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {
         return next(error);
@@ -146,7 +146,7 @@ async function updateComment(req, res, next) {
 async function updateAddresses(req, res, next) {
     try {
         const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {
         return next(error);
@@ -160,7 +160,7 @@ async function updateAddresses(req, res, next) {
 async function updateDelivery(req, res, next) {
     try {
         const result = await ServiceCart.updateDelivery(req.body, req.query ? req.query.removeDeliveryDatas : false);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.send(result.data.cart);
     } catch (err) {
         return next(err);

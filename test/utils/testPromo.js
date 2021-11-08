@@ -29,6 +29,7 @@ const testPromo = async (app, params) => {
         items  : [
             {
                 ...resPrd.body,
+                slug  : resPrd.body.slug.fr || resPrd.body.slug.en,
                 price : {
                     ...resPrd.body.price,
                     unit : {

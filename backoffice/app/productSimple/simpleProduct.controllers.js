@@ -74,7 +74,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             ProductsV2.query({ PostBody: { filter: { code: $routeParams.code, type: $routeParams.type }, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false } }, function (product) {
                 $scope.product = product;
 
-                genAttributes();
+                $scope.genAttributes();
 
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
@@ -139,8 +139,8 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             }
         ];
 
-        function genAttributes() {
-            angular.forEach($scope.product.attributes, function (attributeI) {
+        $scope.genAttributes = function () {
+            angular.forEach($scope.produit.attributes, function (attributeI) {
                 AttributesV2.query({ PostBody: { filter: { _id: attributeI.id }, structure: '*' } }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
@@ -267,7 +267,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
                             $scope.product = savedPrd;
-                            genAttributes();
+                            $scope.genAttributes();
                         } else {
                             window.location.href = `#/products/${savedPrd.type}/${savedPrd.code}`;
                             $location.path(window.location.href);
