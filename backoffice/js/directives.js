@@ -646,7 +646,8 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
         scope: {
             returnPath: "@",
             form: "=",
-            isSelected: "="
+            isSelected: "=",
+            model: "=?"
         },
         templateUrl: "views/templates/nsReturnButton.html",
         controller: [
@@ -661,7 +662,7 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
                         let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                         if (!response) { return }
                     }
-                    if($scope.form.$dirty)
+                    if($scope.form.$dirty || ($scope.model && !angular.equals($scope.originalModel, angular.copy($scope.model))))
                     {
                         if(
                             confirm($translate.instant("confirm.changesNotSaved"))
@@ -684,6 +685,10 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
                         $scope.form.$setPristine();
                     }
                 });
+
+                if($scope.model) {
+                    $scope.originalModel = angular.copy($scope.model)
+                }
             }
         ]
     };
@@ -708,7 +713,8 @@ adminCatagenDirectives.directive("nsButtons", function ()
             onLoad: "&?",
             isSelected: "=",
             additionnalButtons: "=?",
-            moreButtons: "=?"
+            moreButtons: "=?",
+            model: "=?"
         },
         templateUrl: "views/templates/nsButtons.html",
         link: function (scope)

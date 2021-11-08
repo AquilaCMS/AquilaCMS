@@ -1,6 +1,6 @@
 <div>
     <div class="row position text-right" style="margin-bottom: 25px;padding: 0 10px;">
-        <ns-return-button is-selected="isSelected" style="pointer-events:auto;float:left" form="form" return-path="{{returnPath}}" ng-hide="hideReturn"></ns-return-button>
+        <ns-return-button is-selected="isSelected" style="pointer-events:auto;float:left" form="form" return-path="{{returnPath}}" ng-hide="hideReturn" model="model"></ns-return-button>
 
         <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave" ng-hide="hideSave"><span translate>ns.save</span><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
         <button style="pointer-events:auto" type="button" class="btn btn-default btn-s&q" ng-click="saveAndQuit()" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
