@@ -163,8 +163,12 @@ InvoiceController.controller("InvoicesController", [
                 }
             }
 
-
-            Invoice.query({ PostBody: { filter, limit: $scope.nbItemsPerPage, page, populate: ['order_id'] } }, function (invoicesList) {
+            const structure = {};
+            $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                structure[field.replace(/{{|}}|invoice\./ig, '')] = 1
+            })
+            Invoice.query({ PostBody: { filter, limit: $scope.nbItemsPerPage, page, populate: ['order_id'], structure } }, function (invoicesList) {
                 $scope.showLoader = false;
                 $scope.invoices = invoicesList.datas.map(function (invoice) {
 

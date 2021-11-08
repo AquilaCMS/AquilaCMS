@@ -337,7 +337,7 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
                         if (typeof current_category_slugs[currentLang] === 'undefined') { // 1st time
                             current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
                         }
-                        current_category_slugs[currentLang] = `${current_category_slugs[currentLang]}/${parent_category.translation[currentLang].slug}`;
+                        if (parent_category.translation[currentLang].slug) current_category_slugs[currentLang] += `/${parent_category.translation[currentLang].slug}`;
                     }
                 }
             }
