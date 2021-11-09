@@ -208,35 +208,38 @@ const duplicateProduct = async (idProduct, newCode) => {
     const doc       = await Products.findById(idProduct);
     doc._id         = mongoose.Types.ObjectId();
     const languages = await mongoose.model('languages').find({});
+
+    for (const lang of Object.entries(doc.translation)) {
+        if (doc.translation[lang[0]].canonical) {
+            delete doc.translation[lang[0]].canonical;
+            delete doc.translation[lang[0]].slug;
+        }
+    }
+
     for (const lang of languages) {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
         doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
     }
-    doc.isNew   = true;
-    doc.images  = [];
-    doc.reviews = {
+    doc.isNew    = true;
+    doc.images   = [];
+    doc.reviews  = {
         average    : 0,
         reviews_nb : 0,
         questions  : [],
         datas      : []
     };
-    doc.stats   = {
+    doc.stats    = {
         views : 0
     };
-    doc.stock   = {
+    doc.stock    = {
         qty        : 0,
         qty_booked : 0,
         orderable  : false,
         status     : 'liv'
     };
-    doc.code    = newCode;
-    for (const lang of Object.entries(doc.translation)) {
-        if (doc.translation[lang[0]].canonical) {
-            delete doc.translation[lang[0]].canonical;
-        }
-    }
+    doc.code     = newCode;
     doc.active   = false;
     doc._visible = false;
     await doc.save();

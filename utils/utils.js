@@ -165,7 +165,11 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text) => require('slug')(text, {lower: true});
+const slugify = (text) => {
+    const slug = require('slug');
+    slug.extend({_: '_'});
+    return slug(text, {lower: true});
+};
 
 /**
  * transform a price in ATI to ET
