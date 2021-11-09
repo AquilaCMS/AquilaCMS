@@ -140,7 +140,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         ];
 
         $scope.genAttributes = function () {
-            angular.forEach($scope.produit.attributes, function (attributeI) {
+            angular.forEach($scope.product.attributes, function (attributeI) {
                 AttributesV2.query({ PostBody: { filter: { _id: attributeI.id }, structure: '*' } }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
