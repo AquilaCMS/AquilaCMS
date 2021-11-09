@@ -88,16 +88,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
-        }
+        arrayPrice.et.push(prd.price.et.normal);
+        arrayPrice.ati.push(prd.price.ati.normal);
     }
     if (arrayPrice.et.length === 0) {
         arrayPrice.et.push(0);
@@ -116,13 +108,9 @@ const getProducts = async (PostBody, reqRes, lang) => {
     for (const prd of result.datas) {
         if (prd.price.et.special) {
             arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
         }
         if (prd.price.ati.special) {
             arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
         }
     }
 
@@ -420,16 +408,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     for (const prd of prds) {
         if (prd.price) {
-            if (prd.price.et.special) {
-                arrayPrice.et.push(prd.price.et.special);
-            } else {
-                arrayPrice.et.push(prd.price.et.normal);
-            }
-            if (prd.price.ati.special) {
-                arrayPrice.ati.push(prd.price.ati.special);
-            } else {
-                arrayPrice.ati.push(prd.price.ati.normal);
-            }
+            arrayPrice.et.push(prd.price.et.normal);
+            arrayPrice.ati.push(prd.price.ati.normal);
         }
     }
 
@@ -440,13 +420,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         if (prd.price) {
             if (prd.price.et.special) {
                 arraySpecialPrice.et.push(prd.price.et.special);
-            } else {
-                arraySpecialPrice.et.push(prd.price.et.normal);
             }
             if (prd.price.ati.special) {
                 arraySpecialPrice.ati.push(prd.price.ati.special);
-            } else {
-                arraySpecialPrice.ati.push(prd.price.ati.normal);
             }
         }
     }
