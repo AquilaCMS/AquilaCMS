@@ -420,7 +420,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     }
     returnData.name          = paymentMethod.translation[lang]?.name;
     returnData.operationDate = Date.now();
-    if (returnData.type === 'DEBIT') {
+    if (returnData.type === 'CREDIT') {
         await setStatus(orderId, orderStatuses.PAID);
     }
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
