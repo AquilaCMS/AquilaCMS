@@ -10,14 +10,15 @@
       "clickable": false,
       "isDisplayed": false,
       "action": "catalog",
+      "type": "menu",
       "ancestors": [],
       "children": [
-        "5c6676a1583a67281c09f77c",
+        "61937c010c81053ba0a1d644",
         "5c66985b28a49c049c58664c",
         "5c91f90fb8a46740e46c7ff1",
         "5c920856ff724742a0922257"
       ],
-      "displayOrder": 99,
+      "displayOrder": 0,
       "canonical_weight": 0,
       "_id": "5b7ea55c09c72307ffb3c7dd",
       "code": "menu-header",
@@ -33,7 +34,8 @@
       },
       "productsList": [],
       "createdAt": "2020-05-13T09:07:33.482Z",
-      "openDate": "2020-05-13T09:07:33.482Z"
+      "openDate": "2020-05-13T09:07:33.482Z",
+      "updatedAt": "2021-11-16T09:41:16.652Z"
     },
     {
       "filters": {
@@ -84,15 +86,14 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "catalog",
-      "ancestors": [
-        "5b7ea55c09c72307ffb3c7dd"
-      ],
+      "type": "category",
+      "ancestors": [],
       "children": [
         "5d25f0964aa9c1692db052a6",
         "5d25f0a14aa9c1692db052a7",
         "5d25f0b14aa9c1692db052a8"
       ],
-      "displayOrder": 1,
+      "displayOrder": 0,
       "canonical_weight": 0,
       "_id": "5c6676a1583a67281c09f77c",
       "code": "my-products",
@@ -172,8 +173,9 @@
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a6",
           "id": "5eb2cfdb6cdf0b436c831f23"
-        }        
-      ]
+        }
+      ],
+      "updatedAt": "2021-11-16T09:41:16.658Z"
     },
     {
       "filters": {
@@ -184,11 +186,12 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "page",
+      "type": "menu",
       "ancestors": [
         "5b7ea55c09c72307ffb3c7dd"
       ],
       "children": [],
-      "displayOrder": 4,
+      "displayOrder": 1,
       "canonical_weight": 0,
       "_id": "5c66985b28a49c049c58664c",
       "code": "contact",
@@ -208,7 +211,8 @@
       },
       "openDate": "2020-05-13T09:07:33.482Z",
       "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2021-11-16T09:41:16.663Z"
     },
     {
       "filters": {
@@ -219,11 +223,12 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "page",
+      "type": "menu",
       "ancestors": [
         "5b7ea55c09c72307ffb3c7dd"
       ],
       "children": [],
-      "displayOrder": 3,
+      "displayOrder": 2,
       "canonical_weight": 0,
       "_id": "5c91f90fb8a46740e46c7ff1",
       "code": "blog",
@@ -241,7 +246,8 @@
       },
       "openDate": "2020-05-13T09:07:33.482Z",
       "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2021-11-16T09:41:16.666Z"
     },
     {
       "filters": {
@@ -252,11 +258,12 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "page",
+      "type": "menu",
       "ancestors": [
         "5b7ea55c09c72307ffb3c7dd"
       ],
       "children": [],
-      "displayOrder": 2,
+      "displayOrder": 3,
       "canonical_weight": 0,
       "_id": "5c920856ff724742a0922257",
       "code": "gallery",
@@ -274,7 +281,8 @@
       },
       "openDate": "2020-05-13T09:07:33.482Z",
       "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2021-11-16T09:41:16.669Z"
     },
     {
       "filters": {
@@ -325,6 +333,7 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "catalog",
+      "type": "category",
       "ancestors": [
         "5c6676a1583a67281c09f77c"
       ],
@@ -379,7 +388,8 @@
           "id": "5d24a4844aa9c1692db04ae4"
         }
       ],
-      "colorName": ""
+      "colorName": "",
+      "updatedAt": "2021-11-16T09:41:16.672Z"
     },
     {
       "filters": {
@@ -430,6 +440,7 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "catalog",
+      "type": "category",
       "ancestors": [
         "5c6676a1583a67281c09f77c"
       ],
@@ -465,7 +476,8 @@
           "_id": "5da57915de6bed65e1d2a8b3",
           "id": "5d307a164aa9c1692db054a4"
         }
-      ]
+      ],
+      "updatedAt": "2021-11-16T09:41:16.676Z"
     },
     {
       "filters": {
@@ -516,6 +528,7 @@
       "clickable": true,
       "isDisplayed": true,
       "action": "catalog",
+      "type": "category",
       "ancestors": [
         "5c6676a1583a67281c09f77c"
       ],
@@ -551,7 +564,266 @@
           "_id": "5da57915de6bed65e1d2a8b5",
           "id": "5d3078aa4aa9c1692db05498"
         }
-      ]
+      ],
+      "updatedAt": "2021-11-16T09:41:16.679Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "type": "menu",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [
+        "61937c1b0c81053ba0a1d645",
+        "61937c390c81053ba0a1d656",
+        "61937c480c81053ba0a1d65f"
+      ],
+      "displayOrder": 0,
+      "canonical_weight": 0,
+      "_id": "61937c010c81053ba0a1d644",
+      "translation": {
+        "fr": {
+          "name": "PRODUITS",
+          "slug": "produits"
+        },
+        "en": {
+          "name": "PRODUCTS",
+          "slug": "products"
+        }
+      },
+      "code": "product_menu",
+      "openDate": "2021-11-16T09:38:09.942Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8ad",
+          "id": "5c667f8a28a49c049c5863c8"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8ac",
+          "id": "5c667ff128a49c049c5863c9"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8ab",
+          "id": "5d24a3e94aa9c1692db04ac7"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8aa",
+          "id": "5d24a43a4aa9c1692db04ad8"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a9",
+          "id": "5d24a4844aa9c1692db04ae4"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a8",
+          "id": "5d3074d44aa9c1692db0534d"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a7",
+          "id": "5d3078aa4aa9c1692db05498"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a6",
+          "id": "5d3079de4aa9c1692db0549d"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a5",
+          "id": "5d307a164aa9c1692db054a4"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8a6",
+          "id": "5eb2cfdb6cdf0b436c831f23"
+        }
+      ],
+      "createdAt": "2021-11-16T09:38:09.948Z",
+      "updatedAt": "2021-11-16T09:41:16.682Z",
+      "category": "5c6676a1583a67281c09f77c"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "type": "menu",
+      "ancestors": [
+        "61937c010c81053ba0a1d644"
+      ],
+      "children": [],
+      "displayOrder": 0,
+      "canonical_weight": 0,
+      "_id": "61937c1b0c81053ba0a1d645",
+      "translation": {
+        "fr": {
+          "name": "T-SHIRT",
+          "slug": "tshirt"
+        },
+        "en": {
+          "name": "T-SHIRT",
+          "slug": "tshirt"
+        }
+      },
+      "code": "tshirt_menu",
+      "openDate": "2021-11-16T09:38:35.187Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b2",
+          "id": "5c667f8a28a49c049c5863c8"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b1",
+          "id": "5c667ff128a49c049c5863c9"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b0",
+          "id": "5d24a3e94aa9c1692db04ac7"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8af",
+          "id": "5d24a43a4aa9c1692db04ad8"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8ae",
+          "id": "5d24a4844aa9c1692db04ae4"
+        }
+      ],
+      "createdAt": "2021-11-16T09:38:35.193Z",
+      "updatedAt": "2021-11-16T09:41:16.685Z",
+      "category": "5d25f0964aa9c1692db052a6"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "type": "menu",
+      "ancestors": [
+        "61937c010c81053ba0a1d644"
+      ],
+      "children": [],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "61937c390c81053ba0a1d656",
+      "translation": {
+        "fr": {
+          "name": "SWEAT",
+          "slug": "sweat1637055590513"
+        },
+        "en": {
+          "name": "SWEAT",
+          "slug": "sweat1637055590519"
+        }
+      },
+      "code": "sweat_menu",
+      "openDate": "2021-11-16T09:39:05.932Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b4",
+          "id": "5d3079de4aa9c1692db0549d"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b3",
+          "id": "5d307a164aa9c1692db054a4"
+        }
+      ],
+      "createdAt": "2021-11-16T09:39:05.939Z",
+      "updatedAt": "2021-11-16T09:41:16.688Z",
+      "category": "5d25f0a14aa9c1692db052a7"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "type": "menu",
+      "ancestors": [
+        "61937c010c81053ba0a1d644"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "61937c480c81053ba0a1d65f",
+      "translation": {
+        "fr": {
+          "name": "CHAUSSETTES",
+          "slug": "chaussette"
+        },
+        "en": {
+          "name": "SOCKS",
+          "slug": "chaussette"
+        }
+      },
+      "code": "chaussette_menu",
+      "openDate": "2021-11-16T09:39:20.780Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b6",
+          "id": "5d3074d44aa9c1692db0534d"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "5da57915de6bed65e1d2a8b5",
+          "id": "5d3078aa4aa9c1692db05498"
+        }
+      ],
+      "createdAt": "2021-11-16T09:39:20.785Z",
+      "updatedAt": "2021-11-16T09:41:16.691Z",
+      "category": "5d25f0b14aa9c1692db052a8"
     }
   ]
 }
