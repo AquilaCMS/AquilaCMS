@@ -2266,7 +2266,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 showalt: '@',
                 accepttype: '@',
                 beforeFunction: '&',
-                afterFunction: '&',
+                afterFunction: '=',
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
@@ -2397,79 +2397,63 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             case 'productsVariant':
                                             case 'products': {
                                                 $scope.images.push(response.data);
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction();
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction();
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction();
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'module': {
                                                 $scope.afterFunction({module: response.data});
                                                 break;
                                             }
-                                            case 'theme': {
-                                                $scope.afterFunction();
-                                                break;
-                                            }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                break;
-                                            }
-                                            case 'document': {
-                                                $scope.afterFunction();
-                                                break;
-                                            }
-                                            case 'mediaMass': {
-                                                $scope.afterFunction();
-                                                break;
-                                            }
-                                            case 'genericFile': {
-                                                $scope.afterFunction();
-                                                break;
-                                            }
-                                            case 'category': {
-                                                $scope.afterFunction();
-                                                break;
-                                            }
-                                            case 'mail': {
-                                                $scope.afterFunction();
+                                                $scope.afterFunction(response.data);
                                                 break;
                                             }
                                             default:
+                                                $scope.afterFunction(response.data);
                                                 break;
                                         }
                                         $scope.disableUpload = false;
