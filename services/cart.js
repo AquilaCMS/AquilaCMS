@@ -275,7 +275,7 @@ const updateQty = async (postBody, userInfo) => {
         throw NSErrors.InactiveCart;
     }
 
-    const item     = cart.items.find((item) => item._id.toString() === req.body.item._id.toString());
+    const item     = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
     const _product = await Products.findOne({_id: item.id});
 
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
@@ -285,12 +285,12 @@ const updateQty = async (postBody, userInfo) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, req.body.item.selected_variant)).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, postBody.item.selected_variant)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
             // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, req.body.item.selected_variant);
+            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, postBody.item.selected_variant);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
