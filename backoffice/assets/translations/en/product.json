@@ -143,5 +143,6 @@
     "toast": {
         "URLcanonical": "Can't generate URL because canonical is empty",
         "notValid": "Informations entered are not valid"
-    }
+    },
+    "beforeConfigCat": "Save product before adding it to catgories"
 }
