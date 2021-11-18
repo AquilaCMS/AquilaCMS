@@ -22,7 +22,7 @@ const BillsSchema = new Schema({
     facture     : {type: String, required: true},
     montant     : {type: String, required: true},
     withTaxes   : {type: Boolean, required: true},
-    client      : {type: ObjectId, ref: 'users', required: true},
+    client      : {type: ObjectId, ref: 'users'/* , required: true */},
     nom         : {type: String, required: true},
     prenom      : {type: String, required: true},
     societe     : {type: String},

@@ -12,39 +12,19 @@ const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
-    code   : {type: String, unique: true},
-    name   : {type: String, required: true, unique: true},
-    active : {type: Boolean, default: true}
+    code        : {type: String, unique: true},
+    name        : {type: String, required: true, unique: true},
+    active      : {type: Boolean, default: true},
+    logo        : {type: String},
+    translation : {}
 }, {
     timestamps : true,
     id         : false
 });
 
-TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {
-    const res = await this.find({name: trademarkName});
-    if (res.length === 0) {
-        const t               = {name: trademarkName};
-        const ModelTrademarks = mongoose.model('trademarks', TrademarksSchema);
-        const tm              = new ModelTrademarks(t);
-        tm.save();
-    }
-    cb(trademarkName, res);
-};
-
 TrademarksSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('trademarks', that._id, that.code);
 };
-
-/*
-TrademarksSchema.pre('updateOne', async function () {
-    await utilsDatabase.preUpdates(this, next, TrademarksSchema);
-});
-
-TrademarksSchema.pre('findOneAndUpdate', async function () {
-    await utilsDatabase.preUpdates(this, next, TrademarksSchema);
-    //we don't update the code but the name
-});
-*/
 
 TrademarksSchema.pre('save', async function (next) {
     this.code = slugify(this.name);

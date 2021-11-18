@@ -1,4 +1,5 @@
 import React from 'react';
+import 'aql-utils';
 import axios from 'axios';
 import App from 'next/app';
 import Head from 'next/head';

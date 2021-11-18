@@ -15,6 +15,8 @@ const ServiceRules         = require('../services/rules');
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
+    app.get('/v2/category/export/:catId', adminAuth, exportCategoryProducts);
+    app.post('/v2/category/import', adminAuth, importCategoryProducts);
     app.post('/v2/category/execRules', adminAuth, execRules);
     app.post('/v2/category/canonical', adminAuth, execCanonical);
     app.post('/v2/category/applyTranslatedAttribs', adminAuth, applyTranslatedAttribs);
@@ -114,4 +116,23 @@ function checkPostBody(postBody, req_headers_authorization) {
     // TODO : lors de la canonicalisation, prendre aussi en comptes les dates et ne pas mettre de produit dedans si en dehors des dates, ou si inactive
 
     return postBody;
+}
+
+async function importCategoryProducts(req, res, next) {
+    try {
+        const {data, category} = req.body;
+        res.json(await ServiceCategory.importCategoryProducts(data, category));
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
+}
+
+async function exportCategoryProducts(req, res, next) {
+    try {
+        res.json(await ServiceCategory.exportCategoryProducts(req.params.catId));
+    } catch (err) {
+        console.log(err);
+        next(err);
+    }
 }

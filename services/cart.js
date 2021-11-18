@@ -355,6 +355,8 @@ const checkCountryTax = async (_cart, _user) => {
 };
 
 const cartToOrder = async (cartId, _user, lang = '') => {
+    const {orderStatuses} = require('./orders');
+
     try {
         const _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         if (!_cart) {
@@ -441,11 +443,11 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             delivery       : cartObj.delivery,
             lang,
             // if priceTotal === 0, then the order is set to status 'PAID'
-            status         : (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'),
+            status         : (priceTotal.ati === 0 ? orderStatuses.PAID : orderStatuses.PAYMENT_PENDING),
             priceTotal,
             priceSubTotal,
             comment        : cartObj.comment,
-            historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
+            historyStatus  : [{status: (priceTotal.ati === 0 ? orderStatuses.PAID : orderStatuses.PAYMENT_PENDING), date: moment(new Date())}],
             customer       : {
                 ..._user,
                 id : _user._id

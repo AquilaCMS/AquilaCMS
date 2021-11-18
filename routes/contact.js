@@ -13,14 +13,13 @@ const {getUploadDirectory} = require('../utils/server');
 const {adminAuth}          = require('../middleware/authentication');
 const {
     fsp,
-    captchaValidation,
     modules: modulesUtils
 }                          = require('../utils');
 
 module.exports = function (app) {
     app.post('/v2/contacts', adminAuth, getContacts);
     app.delete('/v2/contact/:id', adminAuth, deleteContact);
-    app.post('/v2/contact/:mode', captchaValidation, setContact);
+    app.post('/v2/contact/:mode', setContact);
 };
 
 /**

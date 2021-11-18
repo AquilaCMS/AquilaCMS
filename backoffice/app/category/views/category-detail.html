@@ -1,6 +1,6 @@
 <ns-box data-title="category.detail.title" title-icon="fa fa-list-ul fa-lg">
     <form name="form" novalidate ng-submit="save()">
-        <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave">
+        <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave" more-buttons="additionnalButtons">
         <ns-translation ng-model="lang" class="pull-right" style="margin-top: 50px;float:right"></ns-translation>
 
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
@@ -14,14 +14,15 @@
                     <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+                    <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
+                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
                 </li>
             </ul>
         </div>
         <div class="tab-content">
+            <input style="display: none;" type="file" id="importCsv" onchange="angular.element(this).scope().readCsv(event)" ng-model="fileCsv">
             <div id="general" class="tab-pane fade in active">
                 <table style="clear: both" id="switch">
                     <tbody>
@@ -61,11 +62,14 @@
                 <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
                     <tbody>
                         <tr id="type">
-                            <td width="30%" translate>
-                                category.detail.type
+                            <td width="30%">
+                                <span translate>category.detail.type</span>
+                                <i style="margin-left:10px" class="fa fa-question-circle" popover="{{'category.detail.containerHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
                             </td>
                             <td width="70%">
                                 <div class="btn-group" style="z-index: 1;">
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'container'"
+                                        translate>category.detail.container</label>
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                         translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
@@ -107,10 +111,10 @@
                         <tr id="url" ng-if="category.action == 'url'">
                             <td>URL</td>
                             <td>
-                                <input ng-model="category.url" class="form-control" title="category.detail.t1" required />
+                                <input ng-model="category.translation[lang].url" class="form-control" title="category.detail.t1" required />
                             </td>
                         </tr>
-                        <tr>
+                        <tr ng-if="category.action == 'catalog'">
                             <td translate>category.detail.pdsCanonCat</td>
                             <td>
                                 <input type="number" class="form-control" ng-model="category.canonical_weight" required>
@@ -119,7 +123,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both" ng-if="category.action !== 'container'">
                     <tbody>
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
@@ -142,7 +146,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage" ng-if="category.action !== 'container'">
                     <tbody>
                         <tr>
                             <td width="30%" translate>category.detail.nameColor</td>
@@ -169,7 +173,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog'">
                     <tbody>
                         <tr id="text1">
                             <td translate>
@@ -420,6 +424,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <ng-form novalidate name="ruleForm" ng-submit="">
+                            <h3 translate>category.detail.infoRules</h3>
                             <ns-rules rule="rule" type="category"></ns-rules>
                         </ng-form>
                     </div>

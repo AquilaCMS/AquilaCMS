@@ -5,7 +5,11 @@
     </span>
     <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookInfo" style="display:block;"></span>
 </span>
-
+<style>
+    .form-goup{
+        display: inline;
+    }
+</style>
 <h3 translate>product.general.infoGen</h3>
 <div class="form-group">
     <div class="col-sm-11">
@@ -72,7 +76,7 @@
 </div>
 
 <div class="form-group">
-    <div ng-if="product.translation[lang].canonical || product.active" class="col-sm-11">
+    <div ng-if="isEditMode && isGoodCanonical()" class="col-sm-11">
             <label for="active" class="col-sm-2 control-label" translate>product.general.actif</label>
             <div class="col-sm-2">
                 <ns-switch id="active" ng-model="product.active" name="active"></ns-switch>
@@ -86,7 +90,7 @@
             <div bind-html-compile="product.component_template"></div>
     </div>
 
-    <div ng-if="!product.translation[lang].canonical && !product.active && isEditMode" class="col-sm-11">
+    <div ng-if="isEditMode && !isGoodCanonical()" class="col-sm-11">
         <label for="active" class="col-sm-2 control-label" translate>product.general.actifVisible</label>
         <div class="col-sm-2">
             <div ng-click="changeActiveVisible(product)">

@@ -27,7 +27,8 @@
         "ruleSaved": "Saved rule(s)",
         "pictorisation": "Perform pictorization",
         "startDate": "Start date",
-        "endDate": "End date"
+        "endDate": "End date",
+        "infoRules":"The products whose following this rules will contain this pictogram :"
 
     },
     "list": {

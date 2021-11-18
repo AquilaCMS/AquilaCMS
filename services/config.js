@@ -128,7 +128,7 @@ const saveEnvFile = async (body, files) => {
 
 const saveEnvConfig = async (body) => {
     const oldConfig = await Configuration.findOne({});
-    if (typeof body.environment.contentSecurityPolicy !== 'undefined') {
+    if (typeof body.environment?.contentSecurityPolicy !== 'undefined') {
         const tempValueActive = body.environment.contentSecurityPolicy.active;
         if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
             if (typeof tempValueActive === 'string') {

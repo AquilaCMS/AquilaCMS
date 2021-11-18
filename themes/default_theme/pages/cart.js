@@ -78,10 +78,10 @@ class PageCart extends NSPageCart {
                                                                     if (prdPromoFound) {
                                                                         basePriceATI = prdPromoFound.basePriceATI;
                                                                         descPromo = (
-                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePriceATI).toFixed(2)}€</span></del>
+                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePriceATI).aqlRound(2)}€</span></del>
                                                                         );
                                                                         descPromoT = (
-                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePriceATI * item.quantity).toFixed(2)}€</span></del>
+                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePriceATI * item.quantity).aqlRound(2)}€</span></del>
                                                                         );
                                                                     }
                                                                 }
@@ -180,7 +180,7 @@ class PageCart extends NSPageCart {
                                                                                             ? (
                                                                                                 <del><span
                                                                                                     className="price__old"
-                                                                                                >{item.price.unit.ati.toFixed(2)}€</span>
+                                                                                                >{item.price.unit.ati.aqlRound(2)}€</span>
                                                                                                 </del>
                                                                                             )
                                                                                             : descPromo
@@ -188,7 +188,7 @@ class PageCart extends NSPageCart {
                                                                                     <strong>
                                                                                         <span>
                                                                                             {
-                                                                                                this.getUnitPrice(item).toFixed(2)
+                                                                                                this.getUnitPrice(item).aqlRound(2)
                                                                                             }
                                                                                         </span>€
                                                                                     </strong>
@@ -200,13 +200,13 @@ class PageCart extends NSPageCart {
                                                                                             ? (
                                                                                                 <del><span
                                                                                                     className="price__old"
-                                                                                                >{(item.price.unit.ati * item.quantity).toFixed(2)}€</span>
+                                                                                                >{(item.price.unit.ati * item.quantity).aqlRound(2)}€</span>
                                                                                                 </del>
                                                                                             )
                                                                                             : descPromoT
                                                                                     }
                                                                                     <strong>
-                                                                                        {(this.getUnitPrice(item) * item.quantity).toFixed(2)}€
+                                                                                        {(this.getUnitPrice(item) * item.quantity).aqlRound(2)}€
                                                                                     </strong>
                                                                                 </div>
                                                                             </div>
@@ -249,7 +249,7 @@ class PageCart extends NSPageCart {
                                                         <div className="price price-total">
                                                             <span>{`${t('cart:page.cart.sousTotal')} ${t(`common:price.${taxDisplay}`)}`}</span>
 
-                                                            <span style={{ whiteSpace: 'nowrap' }}>{cart.priceSubTotal[taxDisplay].toFixed(2)} €</span>
+                                                            <span style={{ whiteSpace: 'nowrap' }}>{cart.priceSubTotal[taxDisplay].aqlRound(2)} €</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -302,7 +302,7 @@ class PageCart extends NSPageCart {
                                                                                     ? (
                                                                                         <>
                                                                                             <span style={{ float: 'left' }}>{t(`cart:page.delivery.estimate_fee.${taxDisplay}`)}</span>
-                                                                                            <span style={{ float: 'right', fontWeight: 'bold' }}>{estimatedFee.toFixed(2)} €</span>
+                                                                                            <span style={{ float: 'right', fontWeight: 'bold' }}>{estimatedFee.aqlRound(2)} €</span>
                                                                                         </>
                                                                                     )
                                                                                     : <span>{t('cart:page.delivery.no_shipment')}</span>
@@ -319,7 +319,7 @@ class PageCart extends NSPageCart {
                                                                                     }}
                                                                                     >
                                                                                         <span style={{ float: 'left' }}>{t('cart:page.cart.additionnal_fees')}</span>
-                                                                                        <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].toFixed(2)} €</span>
+                                                                                        <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].aqlRound(2)} €</span>
                                                                                     </div>
                                                                                 )
                                                                         }

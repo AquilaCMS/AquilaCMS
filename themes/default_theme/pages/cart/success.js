@@ -229,10 +229,10 @@ class CartSuccess extends React.Component {
                                                                                     if (prdPromoFound) {
                                                                                         basePrice = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
                                                                                         descPromo = (
-                                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePrice).toFixed(2)}€</span></del>
+                                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePrice).aqlRound(2)}€</span></del>
                                                                                         );
                                                                                         descPromoT = (
-                                                                                            <><del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).toFixed(2)}€</span></del><br /></>
+                                                                                            <><del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).aqlRound(2)}€</span></del><br /></>
                                                                                         );
                                                                                     }
                                                                                 }
@@ -278,12 +278,12 @@ class CartSuccess extends React.Component {
                                                                                                                     ? (
                                                                                                                         <del><span
                                                                                                                             className="price__old"
-                                                                                                                        >{item.price.unit[taxDisplay].toFixed(2)} €</span>
+                                                                                                                        >{item.price.unit[taxDisplay].aqlRound(2)} €</span>
                                                                                                                         </del>
                                                                                                                     )
                                                                                                                     : descPromo
                                                                                                             }
-                                                                                                            <span>{this.getUnitPrice(item).toFixed(2)}</span> €
+                                                                                                            <span>{this.getUnitPrice(item).aqlRound(2)}</span> €
                                                                                                         </span>
                                                                                                     </span>
                                                                                                 </h5>
@@ -299,12 +299,12 @@ class CartSuccess extends React.Component {
                                                                                                         ? (
                                                                                                             <del><span
                                                                                                                 className="price__old"
-                                                                                                            >{item.price.unit[taxDisplay].toFixed(2)} €</span>
+                                                                                                            >{item.price.unit[taxDisplay].aqlRound(2)} €</span>
                                                                                                             </del>
                                                                                                         )
                                                                                                         : descPromo
                                                                                                 }
-                                                                                                <span>{this.getUnitPrice(item).toFixed(2)} €</span>
+                                                                                                <span>{this.getUnitPrice(item).aqlRound(2)} €</span>
                                                                                             </span>
                                                                                         </td>
                                                                                         <td>
@@ -314,14 +314,14 @@ class CartSuccess extends React.Component {
                                                                                                         ? (
                                                                                                             <><del><span
                                                                                                                 className="price__old"
-                                                                                                            >{(item.price.unit[taxDisplay] * item.quantity).toFixed(2)} €</span>
+                                                                                                            >{(item.price.unit[taxDisplay] * item.quantity).aqlRound(2)} €</span>
                                                                                                             </del><br /></>
                                                                                                         )
                                                                                                         : descPromoT
                                                                                                 }
-                                                                                                <span>{(this.getUnitPrice(item) * item.quantity).toFixed(2)}</span> €
+                                                                                                <span>{(this.getUnitPrice(item) * item.quantity).aqlRound(2)}</span> €
                                                                                                 {taxDisplay === 'ati' && (
-                                                                                                    <span className="price__meta"><br />{t('success:page.taxes_includes')} : <span>{((this.getUnitPrice(item, true) * item.quantity) - (this.getUnitPrice(item, false) * item.quantity)).toFixed(2)}</span> €
+                                                                                                    <span className="price__meta"><br />{t('success:page.taxes_includes')} : <span>{((this.getUnitPrice(item, true) * item.quantity) - (this.getUnitPrice(item, false) * item.quantity)).aqlRound(2)}</span> €
                                                                                                     </span>
                                                                                                 )}
                                                                                             </span>
@@ -362,10 +362,10 @@ class CartSuccess extends React.Component {
                                                                             {
                                                                                 order.promos && order.promos.length > 0 ? order.promos.map((promo, index) => {
                                                                                     if (index === 0) {
-                                                                                        priceBefore.push((order.priceTotal[taxDisplay] + promo[`discount${taxDisplay.toUpperCase()}`]).toFixed(2));
+                                                                                        priceBefore.push((order.priceTotal[taxDisplay] + promo[`discount${taxDisplay.toUpperCase()}`]).aqlRound(2));
                                                                                     } else {
                                                                                         const find = index - 1;
-                                                                                        priceBefore.push((parseFloat(priceBefore[find]) + promo[`discount${taxDisplay.toUpperCase()}`]).toFixed(2));
+                                                                                        priceBefore.push((parseFloat(priceBefore[find]) + promo[`discount${taxDisplay.toUpperCase()}`]).aqlRound(2));
                                                                                     }
                                                                                     return '';
                                                                                 }) : ''
@@ -379,7 +379,7 @@ class CartSuccess extends React.Component {
                                                                                             <br />
                                                                                             <span>
                                                                                                 <small style={{ color: '#dc5d45' }}>
-                                                                                                    {t('success:page.discount_code')} ({promo.code}) : -{promo[`discount${taxDisplay.toUpperCase()}`].toFixed(2)}€<br />
+                                                                                                    {t('success:page.discount_code')} ({promo.code}) : -{promo[`discount${taxDisplay.toUpperCase()}`].aqlRound(2)}€<br />
                                                                                                     {promo.description}
                                                                                                 </small>
                                                                                             </span>
@@ -388,12 +388,12 @@ class CartSuccess extends React.Component {
                                                                                 }) : ''
                                                                             }
                                                                             <h6 className="table__total-value">
-                                                                                {t(`success:page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].toFixed(2)}€
+                                                                                {t(`success:page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].aqlRound(2)}€
                                                                                 <br />
                                                                                 {
                                                                                     taxDisplay === 'ati'
                                                                                     && <small style={{ color: '#dc5d45' }}>
-                                                                                        {t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).toFixed(2)} €
+                                                                                        {t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).aqlRound(2)} €
                                                                                     </small>
                                                                                 }
                                                                                 {
@@ -401,7 +401,7 @@ class CartSuccess extends React.Component {
                                                                                         ? <>
                                                                                             <br />
                                                                                             <small style={{ color: '#dc5d45' }}>
-                                                                                                {t(`success:page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).toFixed(2)} €
+                                                                                                {t(`success:page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).aqlRound(2)} €
                                                                                             </small>
                                                                                         </>
                                                                                         : ''
@@ -411,7 +411,7 @@ class CartSuccess extends React.Component {
                                                                                         ? <>
                                                                                             <br />
                                                                                             <small style={{ color: '#dc5d45' }}>
-                                                                                                {t('success:page.additionnal_fees')}: {order.additionnalFees[taxDisplay].toFixed(2)} €
+                                                                                                {t('success:page.additionnal_fees')}: {order.additionnalFees[taxDisplay].aqlRound(2)} €
                                                                                             </small>
                                                                                         </>
                                                                                         : ''

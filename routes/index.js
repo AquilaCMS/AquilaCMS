@@ -95,7 +95,8 @@ const manageExceptionsRoutes = async (req, res, next) => {
             }
         }
     } else {
-        if (!global.installMode) {
+        const isAdmin = (req && req.info && req.info.isAdmin) || false;
+        if (!global.installMode && !isAdmin) {
             require('../services/stats').addUserVisitReq(req);
         }
 

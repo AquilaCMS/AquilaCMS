@@ -141,9 +141,14 @@ ClientControllers.controller("ClientCtrl", [
 
             $scope.currentClientsPage = page;
             let filter = getFilter();
+            const structure = {lastConnexion: 1, company: 1};
+            $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                structure[field.replace(/{{|}}|client\./ig, '')] = 1
+            })
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {lastConnexion: 1, company : 1},
+                structure,
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri

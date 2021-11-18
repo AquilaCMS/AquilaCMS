@@ -88,16 +88,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
-        }
+        arrayPrice.et.push(prd.price.et.normal);
+        arrayPrice.ati.push(prd.price.ati.normal);
     }
     if (arrayPrice.et.length === 0) {
         arrayPrice.et.push(0);
@@ -116,13 +108,9 @@ const getProducts = async (PostBody, reqRes, lang) => {
     for (const prd of result.datas) {
         if (prd.price.et.special) {
             arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
         }
         if (prd.price.ati.special) {
             arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
         }
     }
 
@@ -208,35 +196,38 @@ const duplicateProduct = async (idProduct, newCode) => {
     const doc       = await Products.findById(idProduct);
     doc._id         = mongoose.Types.ObjectId();
     const languages = await mongoose.model('languages').find({});
+
+    for (const lang of Object.entries(doc.translation)) {
+        if (doc.translation[lang[0]].canonical) {
+            delete doc.translation[lang[0]].canonical;
+            delete doc.translation[lang[0]].slug;
+        }
+    }
+
     for (const lang of languages) {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
         doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
     }
-    doc.isNew   = true;
-    doc.images  = [];
-    doc.reviews = {
+    doc.isNew    = true;
+    doc.images   = [];
+    doc.reviews  = {
         average    : 0,
         reviews_nb : 0,
         questions  : [],
         datas      : []
     };
-    doc.stats   = {
+    doc.stats    = {
         views : 0
     };
-    doc.stock   = {
+    doc.stock    = {
         qty        : 0,
         qty_booked : 0,
         orderable  : false,
         status     : 'liv'
     };
-    doc.code    = newCode;
-    for (const lang of Object.entries(doc.translation)) {
-        if (doc.translation[lang[0]].canonical) {
-            delete doc.translation[lang[0]].canonical;
-        }
-    }
+    doc.code     = newCode;
     doc.active   = false;
     doc._visible = false;
     await doc.save();
@@ -417,16 +408,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     for (const prd of prds) {
         if (prd.price) {
-            if (prd.price.et.special) {
-                arrayPrice.et.push(prd.price.et.special);
-            } else {
-                arrayPrice.et.push(prd.price.et.normal);
-            }
-            if (prd.price.ati.special) {
-                arrayPrice.ati.push(prd.price.ati.special);
-            } else {
-                arrayPrice.ati.push(prd.price.ati.normal);
-            }
+            arrayPrice.et.push(prd.price.et.normal);
+            arrayPrice.ati.push(prd.price.ati.normal);
         }
     }
 
@@ -437,13 +420,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         if (prd.price) {
             if (prd.price.et.special) {
                 arraySpecialPrice.et.push(prd.price.et.special);
-            } else {
-                arraySpecialPrice.et.push(prd.price.et.normal);
             }
             if (prd.price.ati.special) {
                 arraySpecialPrice.ati.push(prd.price.ati.special);
-            } else {
-                arraySpecialPrice.ati.push(prd.price.ati.normal);
             }
         }
     }
@@ -634,7 +613,7 @@ const setProduct = async (req) => {
         throw NSErrors.SlugAlreadyExist;
     }
     await ProductsPreview.deleteOne({code: req.body.code});
-    return Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
+    return Products.findOne({code: result.code}).populate(['bundle_sections.products.id']);
 };
 
 const createProduct = async (req) => {

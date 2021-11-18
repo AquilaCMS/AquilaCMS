@@ -42,7 +42,6 @@ const ProductVirtualPreviewSchema = require('./productVirtualPreviewSchema');
 const ProductsSchema              = require('./productsSchema');
 const PromoSchema                 = require('./promoSchema');
 const RulesSchema                 = require('./rulesSchema');
-const SequencesSchema             = require('./sequencesSchema');
 const SetAttributesSchema         = require('./setAttributesSchema');
 const ShipmentSchema              = require('./shipmentSchema');
 const SliderSchema                = require('./sliderSchema');
@@ -94,7 +93,6 @@ module.exports = {
     ProductsSchema,
     PromoSchema,
     RulesSchema,
-    SequencesSchema,
     SetAttributesSchema,
     ShipmentSchema,
     SliderSchema,

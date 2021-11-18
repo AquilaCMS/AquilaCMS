@@ -253,7 +253,14 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: orderStatuses.PAYMENT_PENDING, createdAt: {$lt: dateAgo}})
+    return Orders.find({
+        createdAt : {$lt: dateAgo},
+        status    : {
+            $in : [
+                orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING
+            ]
+        }})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -385,7 +392,7 @@ const rma = async (orderId, returnData, lang) => {
 
     await Bills.create(data);
 
-    if (returnData.sendMail) {
+    if (returnData.sendMail && _order.customer.id) {
         const articles = [];
         const datas    = {
             number    : _order.number,
@@ -413,7 +420,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     }
     returnData.name          = paymentMethod.translation[lang]?.name;
     returnData.operationDate = Date.now();
-    if (returnData.type === 'DEBIT') {
+    if (returnData.type === 'CREDIT') {
         await setStatus(orderId, orderStatuses.PAID);
     }
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
@@ -750,7 +757,7 @@ async function payOrder(req) {
         if (method.isDeferred) {
             return await deferredPayment(req, method);
         }
-        return await immediateCashPayment(req, method.code);
+        return await immediateCashPayment(req, method);
     } catch (err) {
         return err;
     }
@@ -758,7 +765,7 @@ async function payOrder(req) {
 
 async function deferredPayment(req, method) {
     try {
-        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        const order = await Orders.findOne({number: req.params.orderNumber, status: orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
@@ -801,12 +808,14 @@ function createDeferredPayment(order, method, lang) {
     };
 }
 
-async function immediateCashPayment(req, paymentMethod) {
+async function immediateCashPayment(req, method) {
     try {
-        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
-        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
-        const paymentService     = require(`${modulePath}/services/${paymentMethod}`);
-        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
+        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        // We set the same value in several places to fit all modules
+        req.query.orderId      = req.params.orderNumber;
+        req.params.paymentCode = req.body.paymentMethod;
+        const form             = await paymentService.getPaymentForm(req);
         return form;
     } catch (e) {
         console.error(e);

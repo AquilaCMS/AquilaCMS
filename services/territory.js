@@ -14,14 +14,14 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Territory, restrictedFields, defaultFields);
 
 exports.getTerritories = async function (PostBody) {
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 
 exports.getTerritory     = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 exports.getTerritoryById = async function (id, PostBody = null) {
-    return queryBuilder.findById(id, PostBody);
+    return queryBuilder.findById(id, PostBody, true);
 };
 
 /**

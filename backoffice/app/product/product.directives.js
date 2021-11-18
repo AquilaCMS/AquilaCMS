@@ -424,13 +424,13 @@ ProductDirectives.directive("nsProductPrice", function () {
 
                         if (fields[0] === "et") {
                             if (prices.et[fields[1]] !== undefined && prices.et[fields[1]] != null) {
-                                prices.ati[fields[1]] = parseFloat((prices.et[fields[1]] * vat).toFixed(2));
+                                prices.ati[fields[1]] = parseFloat((prices.et[fields[1]] * vat).aqlRound(2));
                             } else {
                                 removeFields = true;
                             }
                         } else {
                             if (prices.ati[fields[1]] !== undefined && prices.ati[fields[1]] != null) {
-                                prices.et[fields[1]] = parseFloat((prices.ati[fields[1]] / vat).toFixed(2));
+                                prices.et[fields[1]] = parseFloat((prices.ati[fields[1]] / vat).aqlRound(2));
                             } else {
                                 removeFields = true;
                             }
@@ -442,10 +442,10 @@ ProductDirectives.directive("nsProductPrice", function () {
                         }
                     } else {
                         if (prices.et && prices.et.normal !== undefined && prices.et.normal != null) {
-                            prices.ati.normal = parseFloat((prices.et.normal * vat).toFixed(2));
+                            prices.ati.normal = parseFloat((prices.et.normal * vat).aqlRound(2));
                         }
                         if (prices.et && prices.et.special !== undefined && prices.et.special != null) {
-                            prices.ati.special = parseFloat((prices.et.special * vat).toFixed(2));
+                            prices.ati.special = parseFloat((prices.et.special * vat).aqlRound(2));
                         }
                     }
                 };

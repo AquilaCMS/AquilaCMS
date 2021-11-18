@@ -19,7 +19,7 @@ const CategoriesSchema = new Schema({
     active       : {type: Boolean, default: false},
     clickable    : {type: Boolean, default: true},
     isDisplayed  : {type: Boolean, default: true},
-    action       : {type: String, default: 'catalog'},
+    action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container']},
     // thumbnailUrl : {type: String},
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
@@ -34,7 +34,6 @@ const CategoriesSchema = new Schema({
     // headerUrl    : {type: String},
     img          : {type: String},
     alt          : {type: String},
-    url          : {type: String},
     displayOrder : {type: Number, default: 99}, // Revoir la valeur par défaut
     filters      : {
         attributes : [
@@ -161,7 +160,10 @@ CategoriesSchema.statics.checkCode = async function (that) {
 };
 
 CategoriesSchema.statics.checkSlugExist = async function (that) {
-    await utilsDatabase.checkSlugExist(that, 'categories');
+    // Check slug if the action type is catalog only
+    if (that.action === 'catalog') {
+        await utilsDatabase.checkSlugExist(that, 'categories');
+    }
 };
 
 CategoriesSchema.pre('updateOne', async function (next) {
