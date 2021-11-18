@@ -156,24 +156,24 @@ const addItem = async (postBody, userInfo) => {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
 
-    const _product = await Products.findOne({_id: req.body.item.id});
+    const _product = await Products.findOne({_id: postBody.item.id});
     let variant;
-    await linkCustomerToCart(cart, req);
+    await linkCustomerToCart(cart, userInfo);
     if (!_product) {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (_product.hasVariantsValue(_product) && !req.body.item.selected_variant) {
+    if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
-    } else if (_product.hasVariantsValue(_product) && typeof !req.body.item.selected_variant) {
+    } else if (_product.hasVariantsValue(_product) && typeof !postBody.item.selected_variant) {
         // we set variant in the cart !
         // quick check if all mandatory options are present
-        const isPresent = _product.variants_values.findIndex((oneVariant) => req.body.item.selected_variant._id.toString() === oneVariant._id.toString());
+        const isPresent = _product.variants_values.findIndex((oneVariant) => postBody.item.selected_variant._id.toString() === oneVariant._id.toString());
         if (isPresent === -1 ) {
             throw NSErrors.InvalidParameters;
         } else {
-            req.body.item.selected_variant.id = req.body.item.selected_variant._id;
+            postBody.item.selected_variant.id = postBody.item.selected_variant._id;
             variant                           = _product.variants_values[isPresent];
         }
     }
@@ -192,20 +192,20 @@ const addItem = async (postBody, userInfo) => {
             ) {
                 continue;
             } else {
-                if (typeof req.body.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
+                if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
                     // check if same variant
                     const variantOfItemInCart = cart.items[index].selected_variant;
-                    if (req.body.item.selected_variant._id === variantOfItemInCart.id.toString()) {
+                    if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
                         isANewProduct = index;
                         break;
                     } else {
                         isANewProduct = true;
                     }
                 } else {
-                    if (typeof req.body.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
+                    if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
                         isANewProduct = index;
                         break;
-                    } else  if (typeof req.body.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
+                    } else  if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
                         isANewProduct = index;
                         break;
                     }
@@ -213,23 +213,23 @@ const addItem = async (postBody, userInfo) => {
             }
         }
         if (typeof isANewProduct === 'number') {
-            req.body.item._id = cart.items[isANewProduct]._id.toString();
+            postBody.item._id = cart.items[isANewProduct]._id.toString();
 
-            req.body.item.quantity += cart.items[isANewProduct].quantity;
+            postBody.item.quantity += cart.items[isANewProduct].quantity;
 
-            delete req.body.item.id;
+            delete postBody.item.id;
 
-            delete req.body.item.weight;
+            delete postBody.item.weight;
 
-            return updateQty(req);
+            return updateQty(postBody, userInfo);
         }
     }
     if (_product.translation[_lang.code]) {
         postBody.item.name = _product.translation[_lang.code].name;
         postBody.item.slug = _product.translation[_lang.code].slug;
     }
-    req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
+    postBody.item.code  = _product.code;
+    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
     const idGift        = mongoose.Types.ObjectId();
     if (postBody.item.parent) {
         postBody.item._id = idGift;
