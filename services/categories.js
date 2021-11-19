@@ -315,6 +315,9 @@ const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
     if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
         let ancestorsSlug = [];
         if (current_category.ancestors.length > 0) {
+            if (current_category.ancestors.length > 1) {
+                console.log('To many ancestors. Please fix it');
+            }
             ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
         }
 
