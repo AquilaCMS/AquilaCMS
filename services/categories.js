@@ -256,7 +256,7 @@ const execCanonical = async () => {
             const current_category = categories[iCat];
 
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-            const current_category_slugs = await getCompleteSlugs(current_category._id, tabLang);
+            const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
             // For each product in this category
             const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
@@ -306,40 +306,25 @@ const execCanonical = async () => {
     }
 };
 
-/**
- * Built a category slug from his parents
- * @param {guid} categorie_id category id
- * @param {guid} tabLang Language table
- */
-const getCompleteSlugs = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-    // For the current category
-    const current_category = await Categories.findOne({_id: categorie_id}).lean();
-    const lang             = ServiceLanguages.getDefaultLang();
+    const current_category       = await Categories.findOne({_id: categorie_id}).lean();
+    const defaultLang            = ServiceLanguages.getDefaultLang();
 
-    if (typeof current_category !== 'undefined') {
-        // Add the current category to the list of categories to browse
-        const categoriesToBrowse = current_category.ancestors;
-        categoriesToBrowse.push(categorie_id);
+    if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
+        let ancestorsSlug = [];
+        if (current_category.ancestors.length > 0) {
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
+        }
 
-        // For each "grandparent"
-        for (let iCat = 0; iCat < categoriesToBrowse.length; iCat++) {
-            const parent_category_id = categoriesToBrowse[iCat];
-            const parent_category    = await Categories.findOne({_id: parent_category_id}).lean();
-
-            // We add it to the slug
-            if (typeof parent_category !== 'undefined' && parent_category?.active) { // Usually the root is not taken, so it must be deactivated
-                // For each of the languages
-                for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                    const currentLang = tabLang[iLang];
-                    if (typeof parent_category.translation[currentLang] !== 'undefined') {
-                        if (typeof current_category_slugs[currentLang] === 'undefined') { // 1st time
-                            current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
-                        }
-                        if (parent_category.translation[currentLang].slug) current_category_slugs[currentLang] += `/${parent_category.translation[currentLang].slug}`;
-                    }
-                }
+        for (let iLang = 0; iLang < tabLang.length; iLang++) {
+            const currentLang = tabLang[iLang];
+            const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
+                current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
+            } else {
+                current_category_slugs[currentLang] = `${baseLang}/${current_category.translation[currentLang].slug}`;
             }
         }
     }
@@ -437,7 +422,6 @@ module.exports = {
     getCategoryChild,
     execRules,
     execCanonical,
-    getCompleteSlugs,
     applyTranslatedAttribs,
     removeChildren,
     deleteCategory,
