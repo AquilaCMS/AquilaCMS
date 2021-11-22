@@ -2393,47 +2393,47 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         $scope.files.splice(index, 1);
                                         switch ($scope.type) {
                                             case 'productsVariant':
-                                            case 'products': {
+                                            case 'product': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'module': {
@@ -2442,16 +2442,16 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             default:
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                         }
                                         $scope.disableUpload = false;
