@@ -1507,7 +1507,7 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'error',
-                            description : 'L\'erreur a envoyer'
+                            description : 'The error to send'
                         }
                     ]
 
