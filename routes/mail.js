@@ -127,7 +127,7 @@ async function sendContact(req, res, next) {
 }
 
 /**
- * Send an email error (only for dev). Need to set manually (in db) the type of mail
+ * Send an email error
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -135,8 +135,8 @@ async function sendContact(req, res, next) {
 async function sendError(req, res, next) {
     try {
         console.error('sendError', req.body);
-        await ServiceMail.sendError(req.body);
-        res.status(200).end();
+        const result = await ServiceMail.sendError(req.body);
+        return res.json(result);
     } catch (error) {
         return next(error);
     }
