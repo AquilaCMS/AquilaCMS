@@ -757,7 +757,7 @@ async function payOrder(req) {
         if (method.isDeferred) {
             return await deferredPayment(req, method);
         }
-        return await immediateCashPayment(req, method.code);
+        return await immediateCashPayment(req, method);
     } catch (err) {
         return err;
     }
@@ -808,12 +808,14 @@ function createDeferredPayment(order, method, lang) {
     };
 }
 
-async function immediateCashPayment(req, paymentMethod) {
+async function immediateCashPayment(req, method) {
     try {
-        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
-        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
-        const paymentService     = require(`${modulePath}/services/${paymentMethod}`);
-        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
+        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        // We set the same value in several places to fit all modules
+        req.query.orderId      = req.params.orderNumber;
+        req.params.paymentCode = req.body.paymentMethod;
+        const form             = await paymentService.getPaymentForm(req);
         return form;
     } catch (e) {
         console.error(e);

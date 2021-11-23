@@ -157,6 +157,9 @@ const initServer = async () => {
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
+
+        console.log(`%s@@ Admin : '/${global.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
+
         // we check if we compile (default: true)
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 

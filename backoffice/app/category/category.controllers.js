@@ -254,6 +254,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     structure: {
                         code: 1,
                         active: 1,
+                        isDisplayed: 1,
                         _visible: 1,
                         stock: 1
                     },
@@ -761,6 +762,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             children: 1,
             ancestor: 1,
             active: 1,
+            isDisplayed: 1,
             code: 1,
             nodes: 1,
             translation: 1,
@@ -772,7 +774,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 oneCat.children = [];
             }
             if(oneCat.children.length > 0){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, structure: '*', populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
                     oneCat.nodes = response.datas || [];
                     for(let oneNode of oneCat.nodes){
                         $scope.expandOneCat(oneNode);

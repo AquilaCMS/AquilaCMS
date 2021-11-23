@@ -343,7 +343,7 @@ table.ns-table-grey td
     .boxTop > .box-header
     {
         border: none !important;
-        z-index: 2;
+        z-index: 1001;
     }
 
     .header

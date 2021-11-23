@@ -1487,6 +1487,32 @@ const initDBValues = async () => {
 
                 }
             }
+        },
+        {
+            code        : 'error',
+            position    : 14,
+            translation : {
+                fr : {
+                    name      : 'Envoyer une erreur par mail',
+                    variables : [
+                        {
+                            value       : 'error',
+                            description : 'L\'erreur a envoyer'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'Send an error by mail',
+                    variables : [
+                        {
+                            value       : 'error',
+                            description : 'The error to send'
+                        }
+                    ]
+
+                }
+            }
         }
     ];
     // Populate mailType in BDD
