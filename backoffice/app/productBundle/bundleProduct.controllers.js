@@ -66,7 +66,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 $scope.product = product;
 
-                genAttributes();
+                $scope.genAttributes();
             });
             $scope.promos = ProductsV2.getPromos({PostBody: { filter: {code: $routeParams.code}, structure: '*'}}, function (result) {
                 $scope.promos = result.datas.promos;
@@ -94,7 +94,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product.characteristics = [];
         }
 
-        function genAttributes()
+        $scope.genAttributes = function ()
         {
             angular.forEach($scope.product.attributes, function (attributeI)
             {
