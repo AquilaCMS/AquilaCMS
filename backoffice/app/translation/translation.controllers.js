@@ -28,7 +28,7 @@ TranslationControllers.controller('LanguagesCtrl',
                     }
                 }
             }
-            LanguagesApiV2.list({}, {PostBody: {filter, limit: 0}}, function (languages) {
+            LanguagesApiV2.list({}, {PostBody: {filter, limit: 0, structure: '*'}}, function (languages) {
                 $scope.languages = languages.datas;
             });
         }
