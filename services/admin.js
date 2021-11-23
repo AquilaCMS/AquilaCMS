@@ -127,6 +127,7 @@ const controlAllDatas = async () => {
             }
 
             // Verify ancestors (exists and valid)
+            await fixCatAncestors(category);
             for (const ancestor of category.ancestors) {
                 // Does this ancestor really exist?
                 const logs    = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
@@ -149,6 +150,16 @@ const controlAllDatas = async () => {
     } catch (error) {
         if (error.message) {return error.message;}
         return error;
+    }
+};
+
+const fixCatAncestors = async (currentCategory) => {
+    // We need only one ancestor
+    if (currentCategory.ancestors.length > 1) {
+        const realAncestor = await Categories.findOne({_id: {$in: currentCategory.ancestors}, children: currentCategory._id}).lean();
+        if (realAncestor) {
+            await Categories.updateOne({_id: currentCategory._id}, {$set: {ancestors: [realAncestor]}});
+        }
     }
 };
 

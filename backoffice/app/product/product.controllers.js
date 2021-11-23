@@ -400,7 +400,7 @@ ProductControllers.controller("nsProductCategories", [
         
         $scope.catDisabled = function (node){
             let final = false;
-            if(node.action == "page"){
+            if(node.action !== "catalog"){
                 final = true;
             }else{
                 if(node.productsList){

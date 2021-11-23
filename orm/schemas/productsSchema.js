@@ -55,7 +55,6 @@ const ProductsSchema = new Schema({
         {
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
-            values      : String,
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
