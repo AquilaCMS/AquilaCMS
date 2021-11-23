@@ -59,6 +59,10 @@ TranslationControllers.controller('LanguagesCtrl',
                         $scope.getLanguages();
                         var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
                         window.dispatchEvent(event);
+
+                        if(lang.status === "visible") {
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        }
                         
                         $rootScope.languages.splice($scope.languages.indexOf(lang), 1);
                     }, 200) 
@@ -97,11 +101,14 @@ TranslationControllers.controller('LanguageEditCtrl',
                         if(oldLang.defaultLanguage !== lang.defaultLanguage){
                             toastService.toast("warning", $translate.instant("translation.toast.defaultLangChang"));
                             toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        } else if (oldLang.visible !== lang.visible) {
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
                         }
                     }
                     LanguagesApiV2.save({lang}, function () {
                         var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
                         window.dispatchEvent(event);
+                        toastService.toast("success", $translate.instant("global.saveDone"));
                         $modalInstance.close();
                         $scope.getLanguages();
                         $rootScope.languages.push(lang)
