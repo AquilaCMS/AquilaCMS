@@ -191,21 +191,6 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         $scope.nsUploadFiles = {
             isSelected: false
         };
-        
-        $scope.additionnalButtons = [
-            {
-                text: 'product.general.preview',
-                onClick: function () {
-                    $scope.articles.lang = selectedLang;
-                    ArticlesV2.preview($scope.articles, function (response) {
-                        if (response && response.url) {
-                            window.open(response.url);
-                        }
-                    });
-                },
-                icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
-            }
-        ]
 
         $scope.langChange = function (lang)
         {
@@ -346,6 +331,18 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 onClick: function () {
                     $scope.addTag(selectedLang);
                 }
+            },
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    $scope.articles.lang = selectedLang;
+                    ArticlesV2.preview($scope.articles, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url);
+                        }
+                    });
+                },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
         ];
 
