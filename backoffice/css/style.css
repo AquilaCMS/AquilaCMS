@@ -1400,7 +1400,7 @@ img.ico{
     background: #576fa1;
     padding: 0px 15px 15px;
     position: relative;
-    z-index: 1001;
+    z-index: 3;
     height: 60px;
 }
 
