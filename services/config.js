@@ -233,8 +233,8 @@ const needRebuildAndRestart = async (restart = false, rebuild = false) => {
                 text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila <a href="#/themes">here</a>`
             },
             fr : {
-                title : _config.environment.needRebuild ? 'Rebuild & Redemarrez Aquila' : 'Redemarrez Aquila',
-                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'rebuildez & redemarrez' : 'redemarrez'} Aquila <a href="#/themes">ici</a>`
+                title : _config.environment.needRebuild ? 'Compilez & Redemarrez Aquila' : 'Redemarrez Aquila',
+                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'compilez & redemarrez' : 'redemarrez'} Aquila <a href="#/themes">ici</a>`
             }
         }
     });
