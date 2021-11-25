@@ -117,20 +117,24 @@ async function getTranslatePath(lang) {
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
 const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
-    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
-
-    const originalContentFile = await fs.readFile(linkToFile);
-    const _languages          = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
-    const contentFile         = `module.exports = [${_languages}];`;
-
-    if (originalContentFile.toString() !== contentFile) {
-        console.log('dynamic_lang file changes');
-        await ServiceConfig.needRebuildAndRestart(true, true);
-    }
-
     try {
+        const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
+        const contentFile = `module.exports = [${_languages}];`;
+        const linkToFile  = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        if (await fs.existsSync(linkToFile)) {
+            const originalContentFile = await fs.readFile(linkToFile);
+
+            if (originalContentFile.toString() !== contentFile) {
+                console.log('dynamic_lang file changes');
+                await ServiceConfig.needRebuildAndRestart(true, true);
+            }
+        } else {
+            await ServiceConfig.needRebuildAndRestart(true, true);
+        }
+
         await fs.writeFile(linkToFile, contentFile);
     } catch (e) {
+        console.log(e);
         throw 'Error writing file "dynamic_langs.js"';
     }
 };
