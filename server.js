@@ -67,6 +67,7 @@ const initDatabase = async () => {
     if (global.envFile.db) {
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
+        utilsDB.getMongdbVersion();
         await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
         await utilsModules.modulesLoadInit(server);

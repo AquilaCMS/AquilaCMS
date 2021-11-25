@@ -1994,6 +1994,15 @@ const initDBValues = async () => {
     console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
+const getMongdbVersion = async () => {
+    try {
+        const mongoVersion = await mongoose.connection.db.admin().buildInfo();
+        console.log(`%s@@ MongoDB version : ${mongoVersion.version}%s`, '\x1b[32m', '\x1b[0m');
+    } catch (e) {
+        console.error('MongoDB version : Unknow');
+    }
+};
+
 const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
@@ -2066,6 +2075,7 @@ module.exports = {
     connect,
     // checkIfReplicaSet,
     initDBValues,
+    getMongdbVersion,
     applyMigrationIfNeeded,
     populateItems,
     preUpdates,
