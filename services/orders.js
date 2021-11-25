@@ -269,6 +269,41 @@ const cancelOrders = () => {
         });
 };
 
+const cancelOrdersPaymentFailed = async () => {
+    const dateAgo = new Date();
+    dateAgo.setDate(dateAgo.getDate() - (global.envConfig.stockOrder.cancelOrderPaymentFailedDelay || 0));
+
+    return Orders.find({
+        $pull : {
+            payment : {
+                $elemMatch : {
+                    status       : 'FAILED',
+                    creationDate : dateAgo
+                }
+            }
+        }
+    });/*
+        .select(['payment', 'number'])
+        .then(function (_orders) {
+            return _orders.forEach(async (_order) => {
+                console.log(`Clean order #${_order.number}`);
+                await cleanFailedPayment(_order, dateAgo);
+            });
+        }); */
+};
+
+const cleanFailedPayment = async (order, date) => {
+    for (let i = 0; i < order.payment.length; i++) {
+        console.log(order.payment[i].creationDate);
+        console.log(`${date}\n\n`);
+        if ((!order.payment[i].creationDate || (new Date(order.payment[i].creationDate).getTime() < new Date(date).getTime()) ) && order.payment[i].status === 'FAILED') {
+            order.payment = order.payment.splice(i, 1);
+            console.log('Payment deleted');
+            if (i < 0) i--;
+        }
+    }
+};
+
 const rma = async (orderId, returnData, lang) => {
     const upd = {rma: returnData};
 
@@ -842,5 +877,6 @@ module.exports = {
     updatePayment,
     updateStatus,
     cancelOrderRequest,
-    orderStatuses
+    orderStatuses,
+    cancelOrdersPaymentFailed
 };
