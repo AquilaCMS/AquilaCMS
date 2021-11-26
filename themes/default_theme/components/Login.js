@@ -237,6 +237,17 @@ class Login extends NSLogin {
                                                 </select>
                                             </div>{/* <!-- /.form__controls --> */}
                                         </div>{/* <!-- /.form__row --> */}
+                                        
+                                        {
+                                            subUser.attributes && subUser.attributes.filter(attr => attr.param === "Oui").map(attr => (
+                                                <div className="form__row form__row--flex align-right">
+                                                    <label htmlFor="field-lastname" className="form__label">{attr.name}<span>*</span></label>
+                                                    <div className="form__controls" style={{ textAlign: 'end' }}>
+                                                        <input type="text" className="field" name={attr.code} id="field-lastname" value={attr.value} onChange={this.handleAttributeValueEdit} />
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
 
                                         <div className="form__row form__row--flex align-right">
                                             <label htmlFor="field-email3" className="form__label">{t('login:page.client_sign_up.email.label')}<span>*</span></label>
