@@ -133,6 +133,7 @@ const createDynamicLangFile = async (selectedTheme = global.envConfig.environmen
         }
 
         await fs.writeFile(linkToFile, contentFile);
+        console.og('5555');
     } catch (e) {
         console.log(e);
         throw 'Error writing file "dynamic_langs.js"';
