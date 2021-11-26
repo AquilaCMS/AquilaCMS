@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path         = require('path');
-const fs           = require('../utils/fsp');
-const {Languages}  = require('../orm/models');
-const NSErrors     = require('../utils/errors/NSErrors');
-const QueryBuilder = require('../utils/QueryBuilder');
+const path          = require('path');
+const fs            = require('../utils/fsp');
+const ServiceConfig = require('./config');
+const {Languages}   = require('../orm/models');
+const NSErrors      = require('../utils/errors/NSErrors');
+const QueryBuilder  = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
@@ -40,6 +41,7 @@ const saveLang = async (lang) => {
 
 const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
+
     await createDynamicLangFile();
     return deletedLang;
 };
@@ -115,13 +117,25 @@ async function getTranslatePath(lang) {
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
 const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
-    const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
-    const contentFile = `module.exports = [${_languages}];`;
-
-    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
     try {
+        const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
+        const contentFile = `module.exports = [${_languages}];`;
+        const linkToFile  = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        if (await fs.existsSync(linkToFile)) {
+            const originalContentFile = await fs.readFile(linkToFile);
+
+            if (originalContentFile.toString() !== contentFile) {
+                console.log('dynamic_lang file changes');
+                await ServiceConfig.needRebuildAndRestart(true, true);
+            }
+        } else {
+            await ServiceConfig.needRebuildAndRestart(true, true);
+        }
+
         await fs.writeFile(linkToFile, contentFile);
+        console.og('5555');
     } catch (e) {
+        console.log(e);
         throw 'Error writing file "dynamic_langs.js"';
     }
 };
