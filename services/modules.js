@@ -71,12 +71,13 @@ const initModule = async (files) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolder       = 'modules/';
-    const zipFilePath        = path.resolve(global.appRoot, moduleFolder, originalname);
-    const extractZipFilePath = zipFilePath.replace('.zip', '/');
+    const moduleFolderName    = 'modules/';
+    const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);
+    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname);
+    const extractZipFilePath  = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
-    await fs.mkdir(path.resolve(global.appRoot, moduleFolder), {recursive: true});
+    await fs.mkdir(moduleFolderAbsPath, {recursive: true});
     await fs.copyFile(
         path.resolve(global.appRoot, filepath),
         path.resolve(global.appRoot, zipFilePath)
@@ -114,7 +115,7 @@ const initModule = async (files) => {
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
-            zip.extractAllToAsync(moduleFolder, true, (err) => {
+            zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
                 if (err) {
                     console.error(err);
                     reject();
