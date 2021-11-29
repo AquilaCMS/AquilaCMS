@@ -386,7 +386,7 @@ const uploadFiles = async (body, files) => {
             position : body.position ? body.position : false,
             alt      : body.alt,
             name     : name + extension,
-            title    : name,
+            title    : utils.slugify(files[0].originalname),
             url      : target_path_full,
             extension
         };

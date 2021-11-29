@@ -86,13 +86,13 @@
     },
     "photo": {
         "add": "Ajouter",
-        "nom": "Nom",
-        "title": "Balise Title",
+        "nom": "Originale",
+        "title": "Nom",
         "picturessaved": "Images sauvegardées :",
         "alt": "Balise Alt",
         "pos": "Position",
-        "img": "Image Principale",
-        "url": "URL",
+        "img": "Principale",
+        "url": "Chemin",
         "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
     },
     "list": {

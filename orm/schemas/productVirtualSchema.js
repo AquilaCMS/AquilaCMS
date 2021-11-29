@@ -10,6 +10,7 @@ const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
 const reviewService        = require('../../services/reviews');
 const aquilaEvents         = require('../../utils/aquilaEvents');
+const helper               = require('../../utils/utils');
 const Schema               = mongoose.Schema;
 
 const ProductVirtualSchema = new Schema({
@@ -28,6 +29,12 @@ ProductVirtualSchema.methods.updateData = async function (data) {
         ati : data.price.ati.special || data.price.ati.normal
     };
     reviewService.computeAverageRateAndCountReviews(data);
+
+    // Slugify images name
+    for (const image of data.images) {
+        image.title = helper.slugify(image.title);
+    }
+
     try {
         const updPrd = await this.model('virtual').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
         return updPrd;
