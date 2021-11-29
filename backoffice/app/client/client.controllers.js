@@ -13,7 +13,7 @@ ClientControllers.controller("ClientCtrl", [
             "email": "",
             "firstname": "",
             "lastname": "",
-            "min_createdAt":null,
+            "min_lastConnexion":null,
         };
 
         if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
@@ -32,7 +32,7 @@ ClientControllers.controller("ClientCtrl", [
                 $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
             }else{
                 $scope.valeurTri = -1;
-                $scope.tri = { createdAt: -1 }
+                $scope.tri = { lastConnexion: -1 }
             }
         }
         
@@ -105,7 +105,7 @@ ClientControllers.controller("ClientCtrl", [
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {createdAt: 1, company : 1},
+                structure : {lastConnexion: 1, company : 1},
                 page      : $scope.page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -141,9 +141,14 @@ ClientControllers.controller("ClientCtrl", [
 
             $scope.currentClientsPage = page;
             let filter = getFilter();
+            const structure = {lastConnexion: 1, company: 1};
+            $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                structure[field.replace(/{{|}}|client\./ig, '')] = 1
+            })
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {createdAt: 1, company : 1},
+                structure,
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri

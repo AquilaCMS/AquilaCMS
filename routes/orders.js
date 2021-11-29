@@ -43,7 +43,8 @@ async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         if (!isAdmin(req.info)) {
-            PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
+            const {orderStatuses}          = require('../services/orders');
+            PostBodyVerified.filter.status = {$nin: [orderStatuses.PAYMENT_FAILED]};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
         return res.json(result);
@@ -137,7 +138,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
             {_id: req.body.idOrder || null},
             'customer.id'
         );
-        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req));
+        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req.body, req.info));
     } catch (err) {
         return next(err);
     }

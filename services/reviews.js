@@ -66,7 +66,7 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
         throw NSErrors.InvalidRequest;
     }
     if (questions.length) {
-        const foundNotRated = questions.find((question) => question.rate === 0);
+        const foundNotRated = questions.find((question) => question.rate === 0).lean();
         if (foundNotRated) {
             throw NSErrors.NotFound;
         }

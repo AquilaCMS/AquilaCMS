@@ -70,7 +70,7 @@ const initModule = async (files) => {
     }
     console.log('Upload module...');
     const moduleFolder       = 'modules/';
-    const zipFilePath        = `${moduleFolder}${originalname}`;
+    const zipFilePath        = path.resolve(global.appRoot, moduleFolder, originalname);
     const extractZipFilePath = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
@@ -805,7 +805,7 @@ const removeModuleAddon = async (_module) => {
 };
 
 const initComponentTemplate = async (model, component, moduleName) => {
-    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'gm'}}, {component_template: undefined}]});
+    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'gm'}}, {component_template: undefined}]}).select('_id component_template').lean();
     for (const elem of elements) {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';

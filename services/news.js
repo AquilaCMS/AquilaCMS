@@ -14,9 +14,9 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields);
 
-const getNews = async (PostBody) => queryBuilder.find(PostBody);
+const getNews = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
+const getNew = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const getNewsTags = async (query, lang) => {
     if (!lang) {

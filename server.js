@@ -67,6 +67,7 @@ const initDatabase = async () => {
     if (global.envFile.db) {
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
+        utilsDB.getMongdbVersion();
         await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
         await utilsModules.modulesLoadInit(server);
@@ -80,6 +81,11 @@ const setEnvConfig = async () => {
     const configuration   = await Configuration.findOne();
     if (!configuration) {
         throw new Error('Configuration collection is missing');
+    }
+    if (!configuration.environment.needRebuild && configuration.environment.needRestart) {
+        configuration.environment.needRestart = false;
+        await configuration.save();
+        await require('./services/admin').removeAdminInformation('server_restart_rebuild');
     }
     global.envConfig = configuration.toObject();
 
@@ -157,6 +163,9 @@ const initServer = async () => {
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
+
+        console.log(`%s@@ Admin : '/${global.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
+
         // we check if we compile (default: true)
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 

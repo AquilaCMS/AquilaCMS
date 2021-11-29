@@ -32,7 +32,7 @@ const getAllAttributes = async (PostBody) => {
         PostBody.filter._type = {$in: ['products', null]};
     }
 
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 
 const getAttribute = async (PostBody, lean) => {

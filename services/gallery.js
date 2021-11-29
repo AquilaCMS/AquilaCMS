@@ -22,7 +22,7 @@ const queryBuilder     = new QueryBuilder(Gallery, restrictedFields, defaultFiel
 /**
  * @description Return all galleries
  */
-const getGalleries = async (PostBody) => queryBuilder.find(PostBody);
+const getGalleries = async (PostBody) => queryBuilder.find(PostBody, true);
 
 /**
  * @description Returns a gallery whose id is passed in parameter
@@ -30,7 +30,7 @@ const getGalleries = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getGallery = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-    const result = await Gallery.findById(_id);
+    const result = await Gallery.findById(_id).lean();
     if (!result) throw NSErrors.GalleryNotFound;
     return result;
 };
@@ -42,7 +42,7 @@ const getGallery = async (_id) => {
  * @param initItemNumber : the number of items to display (equivalent to limit in mongodb)
  */
 const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
-    const doc = await Gallery.findOne({code});
+    const doc = await Gallery.findOne({code}).lean();
     if (!doc) throw NSErrors.GalleryNotFound;
     let items = doc.items.sort((itemA, itemB) => itemA.order - itemB.order);
     if (!skip && !initItemNumber) {

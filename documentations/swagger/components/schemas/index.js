@@ -32,9 +32,7 @@ const productSimple    = require('./productSimple.json');
 const products         = require('./products.json');
 const productVirtual   = require('./productVirtual.json');
 const promo            = require('./promo.json');
-const relayPoint       = require('./relayPoint.json');
 const rules            = require('./rules.json');
-const sequences        = require('./sequences.json');
 const setAttributes    = require('./setAttributes.json');
 const shipment         = require('./shipment.json');
 const shortcodes       = require('./shortcodes.json');
@@ -85,9 +83,7 @@ module.exports = {
     ...products,
     ...productVirtual,
     ...promo,
-    ...relayPoint,
     ...rules,
-    ...sequences,
     ...setAttributes,
     ...shipment,
     ...shortcodes,

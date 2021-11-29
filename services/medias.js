@@ -20,7 +20,8 @@ const {
     News,
     Gallery,
     Slider,
-    Mail
+    Mail,
+    Trademarks
 }                  = require('../orm/models');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -240,6 +241,14 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             filePathCache = path.join(cacheFolder, type, fileName);
             await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
+        case 'trademark':
+            const trademark = await mongoose.model('trademarks').findOne({_id});
+            fileName        = path.basename(trademark.logo, path.extname(trademark.logo));
+            filePath        = path.join(_path, 'medias/trademark', trademark.logo);
+            fileName        = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(trademark.logo)}`;
+            filePathCache   = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
         default:
             return null;
         }
@@ -282,7 +291,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             sharpOptions.height = Number(size.split('x')[1]);
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
-            console.error('Image not resized : Sharp may not be installed', exc);
+            console.error('Image not resized : ', exc);
 
             try {
                 // Take the original file size
@@ -293,7 +302,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                     await fs.copyFileSync(filePath, filePathCache);
                 });
             } catch (err) {
-                console.error('defaultImage not found', err);
                 return '/';
             }
         }
@@ -405,6 +413,12 @@ const uploadFiles = async (body, files) => {
         await Pictos.updateOne({_id: body._id}, {$set: {filename: name + extension}});
         return {name: name + extension};
     }
+    case 'trademark': {
+        const result = await Trademarks.findOne({_id: body._id});
+        await deleteFileAndCacheFile(`medias/trademark/${result.logo}`, 'trademark');
+        await Trademarks.updateOne({_id: body._id}, {$set: {logo: name + extension}});
+        return {name: name + extension};
+    }
     case 'language': {
         const result = await Languages.findOne({_id: body._id});
         if (result.img) {
@@ -426,8 +440,8 @@ const uploadFiles = async (body, files) => {
             await Medias.updateOne({_id: body._id}, {$set: {link: target_path_full, extension: path.extname(target_path_full)}});
             return {name: name + extension, path: target_path_full, id: body._id};
         }
-        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full)});
-        return {name: name + extension, path: target_path_full, id: media._id};
+        const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full), name});
+        return {name, path: target_path_full, id: media._id};
     }
     case 'gallery': {
         if (body.entity._id) { // When you change the image of an item
@@ -553,9 +567,9 @@ const uploadFiles = async (body, files) => {
     }
 };
 
-const listMedias = async (PostBody) => queryBuilder.find(PostBody);
+const listMedias = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getMedia = async (PostBody) => queryBuilder.findOne(PostBody);
+const getMedia = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const saveMedia = async (media) => {
     if (media._id) {
@@ -585,17 +599,14 @@ const removeMedia = async (_id) => {
 };
 
 const getMediasGroups = async (query, filter = {}) => {
-    const medias       = await Medias.find(filter);
-    const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
+    const medias       = await Medias.find(filter).lean();
+    const sortedGroups = ([...new Set(medias.map((media) => (!media.group ? 'general' : media.group)))]).sort((a, b) => a - b);
     // if it is there, we put "general" in the first index
     if (sortedGroups.includes('general')) {
         sortedGroups.splice(sortedGroups.indexOf('general'), 1);
         sortedGroups.unshift('general');
     }
-    if (query) {
-        return sortedGroups.filter((group) => group.match(new RegExp(query, 'gim')));
-    }
-    return sortedGroups;
+    return sortedGroups.filter((group) => group.match(new RegExp(query || '', 'gim')));
 };
 
 const deleteFileAndCacheFile = async (link, type) => {
@@ -605,11 +616,11 @@ const deleteFileAndCacheFile = async (link, type) => {
     }
 };
 
-const getImageStream = async (req, res) => {
-    const type    = req.url.split('/')[2];
+const getImageStream = async (url, res) => {
+    const type    = url.split('/')[2];
     let quality;
     const option  = {};
-    const options = req.url.split('/')[3];
+    const options = url.split('/')[3];
 
     if (options.includes('crop')) {
         if (options.split('-crop')[0].split('-').length > 1) {
@@ -643,9 +654,9 @@ const getImageStream = async (req, res) => {
         }
     }
 
-    const size      = req.url.split('/')[3].split('-')[0];
-    const _id       = req.url.split('/')[4];
-    const extension = path.extname(req.url).replace('.', '');
+    const size      = url.split('/')[3].split('-')[0];
+    const _id       = url.split('/')[4];
+    const extension = path.extname(url).replace('.', '');
     if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';

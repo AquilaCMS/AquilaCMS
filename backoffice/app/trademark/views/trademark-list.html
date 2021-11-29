@@ -1,16 +1,7 @@
 <ns-box data-title="trademark.detail.t2" title-icon="fa fa-creative-commons fa-lg" new-href="#/trademarks/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-        <!--<div class="row">
-            <div class="col-lg-12">
-                <div class="dataTables_filter">
-                    <label>
-                        <input type="search" ng-model="query" ng-model-options="{debounce: 500}" ng-change="search()" name="q" id="q" value="" placeholder="Rechercher…" class="search-field">
-                    </label>
-                </div>
-            </div>
-        </div>-->
         <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable"
-               id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
             <tr role="row" style="cursor: pointer">
                 <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
@@ -40,9 +31,9 @@
             </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all"
-                   infinite-scroll="scroller.next()" infinite-scroll-distance="1"
-                   infinite-scroll-immediate-check="true"
-                   infinite-scroll-disabled='scroller.busy'>
+                infinite-scroll="scroller.next()" infinite-scroll-distance="1"
+                infinite-scroll-immediate-check="true"
+                infinite-scroll-disabled='scroller.busy'>
             <tr ng-class-odd="'odd'" ng-class-even="'even'"
                 ng-repeat="trademark in trademarks | orderBy:sortType:sortReverse"
                 ng-click="editTrademark(trademark)"
@@ -54,5 +45,9 @@
             </tr>
             </tbody>
         </table>
+        
+        <pagination ng-if="totalItems > 12" total-items="totalItems" page="currentPage" on-select-page="getTradeMarks(page)" items-per-page="12" max-size="maxSize" boundary-links="true"
+            rotate="false"></pagination>
+        </div>
     </div>
 </ns-box>

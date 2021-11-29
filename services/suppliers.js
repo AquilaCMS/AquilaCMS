@@ -15,11 +15,11 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Suppliers, restrictedFields, defaultFields);
 
 exports.listSuppliers = async function (PostBody) {
-    return queryBuilder.find(PostBody);
+    return queryBuilder.find(PostBody, true);
 };
 
 exports.getSupplier = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 
 exports.saveSupplier = async function (_new) {

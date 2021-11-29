@@ -8,7 +8,6 @@
 
 const mongoose          = require('./database').connect;
 const logger            = require('./logger');
-const captchaValidation = require('./captchaValidation');
 const encryption        = require('./encryption');
 const modules           = require('./modules');
 const translation       = require('./translation');
@@ -22,7 +21,6 @@ const NSErrors          = require('./errors/NSErrors');
 module.exports = {
     mongoose,
     logger,
-    captchaValidation,
     encryption,
     modules,
     translation,

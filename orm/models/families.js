@@ -8,5 +8,8 @@
 
 const mongoose         = require('mongoose');
 const {FamiliesSchema} = require('../schemas');
+const aquilaEvents     = require('../../utils/aquilaEvents');
+
+aquilaEvents.emit('familiesSchemaInit', FamiliesSchema);
 
 module.exports = mongoose.model('families', FamiliesSchema);

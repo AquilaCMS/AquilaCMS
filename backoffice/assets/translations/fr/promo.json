@@ -34,7 +34,7 @@
         "ph6": "Limite / Personne",
         "gen": "Général",
         "codePromo": "Code promo",
-        "seg": "Segmentation",
+        "seg": "Règle",
         "action": "Action",
         "type": "Type",
         "promoCart": "Promotion panier",
@@ -81,7 +81,8 @@
         "promoDeleted": "Promo supprimé",
         "promoCloned": "Promotion clonée !",
         "errorQteMaxEnter": "Quantité maximale et Utilisation max par client doivent être des nombres ou '*'",
-        "msgDiscount": "La promotion est négative, le prix va augmenter !"
+        "msgDiscount": "La promotion est négative, le prix va augmenter !",
+        "infoRules" : "Cette promotion s'applique avec les règles suivantes :"
     },
     "list": {
         "t1": "Promotions",

@@ -9,6 +9,7 @@
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
 const reviewService        = require('../../services/reviews');
+const aquilaEvents         = require('../../utils/aquilaEvents');
 const Schema               = mongoose.Schema;
 
 const ProductVirtualSchema = new Schema({
@@ -42,5 +43,7 @@ ProductVirtualSchema.methods.addToCart = async function (cart, item, user, lang)
 };
 // Permet de récupérer les champs virtuel après un lean
 ProductVirtualSchema.plugin(mongooseLeanVirtuals);
+
+aquilaEvents.emit('productVirtualSchemaInit', ProductVirtualSchema);
 
 module.exports = ProductVirtualSchema;

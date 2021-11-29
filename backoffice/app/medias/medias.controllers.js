@@ -12,14 +12,19 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         };
 
         $scope.addMedia = function () {
-            var modalInstance = $modal.open({
-                templateUrl: "app/medias/views/modals/media-new.html",
-                controller: "MediasModalNewCtrl"
-            });
+            const newMedia = {
+                link : "",
+                name : 'new-' + Math.floor(Math.random() * 1024),
+                group: "",
+            };
 
-            modalInstance.result.then(function (returnedValue) {
-                if(returnedValue.create == true){
-                    $scope.mediaDetails({_id: `${returnedValue._id}:new`})
+            MediaApiV2.save({media: newMedia}, function (rep) {
+                $scope.mediaDetails({_id: `${rep._id}:new`})
+            }, function(err) {
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
                 }
             });
         };
@@ -105,13 +110,12 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
 );
 
 MediasControllers.controller("MediasDetailsCtrl",
-    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate", "$q",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate, $q) {
         $scope.media = {
             link : "",
             name : "",
             group: "",
-            groups: []
         };
 
         $scope.nsUploadFiles = {
@@ -135,7 +139,6 @@ MediasControllers.controller("MediasDetailsCtrl",
             if(mode == true){
                 // it is a new media
                 id = $routeParams.id.substring(0, $routeParams.id.length - 4);
-                $scope.filterDropdown();
                 $scope.additionnalButtons = [
                     {
                         text: 'medias.medias.uploadButton',
@@ -151,11 +154,22 @@ MediasControllers.controller("MediasDetailsCtrl",
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
             MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 0}}, function (response) {
                 $scope.media = response;
-                $scope.filterDropdown();
+
+                if($location.$$url.lastIndexOf(':new') > 1) {
+                    $scope.media.name = '';
+                }
+            });
+            MediaApiV2.getGroups({query: ''}, function (groups) {
+                $scope.groups = groups.filter(gp => typeof gp === 'string');
                 if($scope.media.group){
                     // to bind the input "group"
                     $scope.selectedDropdownItem = $scope.media.group;
+                    $scope.filterDropdown($scope.selectedDropdownItem)
+                } else {
+                    $scope.selectedDropdownItem = null
                 }
+            }, function (error){
+                console.log(error);
             });
         }
 
@@ -186,7 +200,6 @@ MediasControllers.controller("MediasDetailsCtrl",
                     return
                 }
             }
-            $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", $translate.instant("medias.medias.mediaSaved"));
                 if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
@@ -208,23 +221,21 @@ MediasControllers.controller("MediasDetailsCtrl",
 
 
         $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            let params = {};
-            if($scope.selectedDropdownItem){
-                params = {query: $scope.selectedDropdownItem};
-            }
-            MediaApiV2.getGroups(params, function (groups) {
-                $scope.groups = [];
-                $scope.groups = groups;
-            }, function (error){
-                console.log(error);
+            var filter = $q.defer();
+            var normalisedInput = userInput.toLowerCase();
+            $scope.media.group = userInput
+
+            var filteredArray = $scope.groups.filter(function(group) {
+                return group.toLowerCase().indexOf(normalisedInput) === 0;
             });
+
+            filter.resolve(filteredArray);
+            return filter.promise;
         };
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.media.group = item
         };
 
         $scope.isPicture = function(media) {
@@ -389,29 +400,3 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
     }
 ]);
 
-MediasControllers.controller("MediasModalNewCtrl", [
-    "$scope", "$modalInstance", "MediaApiV2", "toastService",
-    function ($scope, $modalInstance, MediaApiV2, toastService) {
-        $scope.media = {
-            link : "",
-            name : "",
-            group: "",
-        };
-
-        $scope.save = function (category) {
-            MediaApiV2.save({media: $scope.media}, function (rep) {
-                $modalInstance.close({create: true, _id: rep._id});
-            }, function(err) {
-                if(err.data.code === "Conflict"){
-                    toastService.toast("danger", err.data.message + " : code already exists");
-                }else{
-                    toastService.toast("danger", err.data.message);
-                }
-            });
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.close({create: false});
-        };
-    }
-]);

@@ -194,10 +194,6 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value       : 'activate_account_token',
-                            description : 'Lien d\'activation du compte'
-                        },
-                        {
                             value       : 'URL_SITE',
                             description : 'Url du site'
                         },
@@ -228,12 +224,8 @@ const initDBValues = async () => {
                             description : 'Company name'
                         },
                         {
-                            value       : 'activate_account_token',
-                            description : 'Account activation link'
-                        },
-                        {
                             value       : 'URL_SITE',
-                            description : 'Url du site'
+                            description : 'App URL'
                         },
                         {
                             value       : 'token',
@@ -796,10 +788,6 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value       : 'tokenlink',
-                            description : 'Lien pour changer le mot de passe'
-                        },
-                        {
                             value       : 'URL_SITE',
                             description : 'Url du site'
                         },
@@ -826,12 +814,8 @@ const initDBValues = async () => {
                             description : 'Company name'
                         },
                         {
-                            value       : 'tokenlink',
-                            description : 'Recovery password link'
-                        },
-                        {
                             value       : 'URL_SITE',
-                            description : 'Url du site'
+                            description : 'App URL'
                         },
                         {
                             value       : 'token',
@@ -1318,12 +1302,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value       : 'activate_account_token',
-                            description : 'Lien d\'activation du compte'
-                        },
-                        {
-                            value       : 'URL_SITE',
-                            description : 'Url du site'
+                            value      : 'URL_SITE',
+                            descripton : 'URL du site'
                         },
                         {
                             value       : 'token',
@@ -1348,12 +1328,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value       : 'activate_account_token',
-                            description : 'Account activation link'
-                        },
-                        {
-                            value       : 'URL_SITE',
-                            description : 'Url du site'
+                            value      : 'URL_SITE',
+                            descripton : 'App URL'
                         },
                         {
                             value       : 'token',
@@ -1507,6 +1483,32 @@ const initDBValues = async () => {
                         //     value       : 'enditems',
                         //     description : 'Insert after products informations'
                         // }
+                    ]
+
+                }
+            }
+        },
+        {
+            code        : 'error',
+            position    : 14,
+            translation : {
+                fr : {
+                    name      : 'Envoyer une erreur par mail',
+                    variables : [
+                        {
+                            value       : 'error',
+                            description : 'L\'erreur a envoyer'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'Send an error by mail',
+                    variables : [
+                        {
+                            value       : 'error',
+                            description : 'The error to send'
+                        }
                     ]
 
                 }
@@ -1992,6 +1994,15 @@ const initDBValues = async () => {
     console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
+const getMongdbVersion = async () => {
+    try {
+        const mongoVersion = await mongoose.connection.db.admin().buildInfo();
+        console.log(`%s@@ MongoDB version : ${mongoVersion.version}%s`, '\x1b[32m', '\x1b[0m');
+    } catch (e) {
+        console.error('MongoDB version : Unknow');
+    }
+};
+
 const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
@@ -2054,6 +2065,7 @@ module.exports = {
     connect,
     // checkIfReplicaSet,
     initDBValues,
+    getMongdbVersion,
     applyMigrationIfNeeded,
     preUpdates,
     testdb,

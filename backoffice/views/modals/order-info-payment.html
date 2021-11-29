@@ -12,7 +12,7 @@
                         <div class="col-sm-12">
                             <label class="col-sm-2 control-label" translate>order-info-payment.payType</label>
                             <div class="col-sm-10">
-                                <select name="mode" class="form-control" ng-model="return.type" ng-disabled="pay.disabled" required>
+                                <select name="mode" class="form-control" ng-model="return.type" ng-init="return.type = 'CREDIT'" ng-disabled="pay.disabled" required>
                                     <option value="DEBIT" translate>order-info-payment.DEBIT</option>
                                     <option value="CREDIT" translate>order-info-payment.CREDIT</option>
                                 </select>

@@ -8,6 +8,7 @@
 
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
+const {aquilaEvents}       = require('aql-utils');
 const reviewService        = require('../../services/reviews');
 const Schema               = mongoose.Schema;
 const NSErrors             = require('../../utils/errors/NSErrors');
@@ -74,5 +75,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
 };
 // Permet de récupérer les champs virtuel après un lean
 ProductSimpleSchema.plugin(mongooseLeanVirtuals);
+
+aquilaEvents.emit('productSimpleSchemaInit', ProductSimpleSchema);
 
 module.exports = ProductSimpleSchema;

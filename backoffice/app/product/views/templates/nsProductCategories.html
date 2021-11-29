@@ -1,2 +1,8 @@
-<ns-category-list category-is-checked="catCheck" category-is-disabled="catDisabled" category-on-click="selectNode">
-</ns-category-list>
+<span ng-hide="product._id" style="color: red;">
+    <br /><br />
+    <span translate>product.beforeConfigCat</span>
+</span>
+<div ng-show="product._id">
+    <ns-category-list category-is-checked="catCheck" category-is-disabled="catDisabled" category-on-click="selectNode">
+    </ns-category-list>
+</div>

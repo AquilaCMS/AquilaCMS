@@ -13,7 +13,7 @@ const utilsDatabase  = require('../../utils/database');
 
 const ShipmentSchema = new Schema({
     code        : {type: String, unique: true, sparse: true},
-    type        : {type: String, enum: ['DELIVERY', 'RELAY_POINT']},
+    type        : {type: String, enum: ['DELIVERY']},
     active      : {type: Boolean, default: true},
     translation : {},
     countries   : [{

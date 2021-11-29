@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose   = require('mongoose');
-const {slugify}  = require('aql-utils');
-const NSErrors   = require('../../utils/errors/NSErrors');
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const mongoose     = require('mongoose');
+const {slugify}    = require('aql-utils');
+const NSErrors     = require('../../utils/errors/NSErrors');
+const aquilaEvents = require('../../utils/aquilaEvents');
+const Schema       = mongoose.Schema;
+const {ObjectId}   = Schema.Types;
 
 const ProductBundleSchema = new Schema({
     qty             : {type: Number},
@@ -230,5 +231,7 @@ async function rebuildSelectionProducts(item, lang) {
     }
     return item;
 }
+
+aquilaEvents.emit('productBundleSchemaInit', ProductBundleSchema);
 
 module.exports = ProductBundleSchema;

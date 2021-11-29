@@ -19,7 +19,7 @@ const insertAdminInformation = async (dataInformation) => {
         dataInformation.date    = new Date();
         dataInformation.deleted = false;
         const _admininformation = new AdminInformation(dataInformation);
-        _admininformation.save();
+        await _admininformation.save();
     }
 };
 
@@ -28,7 +28,7 @@ const insertAdminInformation = async (dataInformation) => {
  */
 /* eslint-disable-next-line arrow-body-style */
 const getAdminInformation = async () => {
-    return AdminInformation.find({deleted: false}).sort({date: -1});
+    return AdminInformation.find({deleted: false}).sort({date: -1}).lean();
 };
 
 /**
@@ -36,6 +36,13 @@ const getAdminInformation = async () => {
  */
 const deleteAdminInformation = async (code) => {
     await AdminInformation.updateOne({code}, {$set: {deleted: true}});
+};
+
+/**
+ * @description Remove adminInformation from DB
+ */
+const removeAdminInformation = async (code) => {
+    await AdminInformation.deleteOne({code});
 };
 
 /**
@@ -73,7 +80,7 @@ const controlAllDatas = async () => {
         let fixChildrenDuplicated = false;
 
         // Categories
-        const categories = await Categories.find({});
+        const categories = await Categories.find({}).lean();
         for (const category of categories) {
             // Code control
             if (typeof category.code === 'undefined' || category.code === '') {
@@ -97,8 +104,18 @@ const controlAllDatas = async () => {
                 }
 
                 // Slug control
-                if (typeof category.translation[currentLang].slug === 'undefined' || category.translation[currentLang].slug === '') {
-                    returnErrors += `<b>Category ${category.code}</b> : Slug undefined (${currentLang})<br/>`;
+                if (category.action === 'catalog') {
+                    if (typeof category.translation[currentLang].slug === 'undefined' || category.translation[currentLang].slug === '') {
+                        returnErrors += `<b>Category ${category.code}</b> : Slug undefined (${currentLang})<br/>`;
+                    }
+                } else if (category.action === 'page') {
+                    if (typeof category.translation[currentLang].pageSlug === 'undefined' || category.translation[currentLang].pageSlug === '') {
+                        returnErrors += `<b>Category ${category.code}</b> : Page not selected (${currentLang})<br/>`;
+                    }
+                } else if (category.action === 'url') {
+                    if (typeof category.translation[currentLang].url === 'undefined' || category.translation[currentLang].url === '') {
+                        returnErrors += `<b>Category ${category.code}</b> : empty URL (${currentLang})<br/>`;
+                    }
                 }
             }
 
@@ -110,15 +127,16 @@ const controlAllDatas = async () => {
 
             // Verify children (exists and valid)
             for (const child of category.children) {
-                // Est ce que ce child existe bien ?
+                // Does this child really exist?
                 const logs    = await existAndValid(child, category, returnErrors, returnWarning, 'child');
                 returnErrors  = logs.returnErrors;
                 returnWarning = logs.returnWarning;
             }
 
             // Verify ancestors (exists and valid)
+            await fixCatAncestors(category);
             for (const ancestor of category.ancestors) {
-            // Does this ancestor really exist?
+                // Does this ancestor really exist?
                 const logs    = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
                 returnErrors  = logs.returnErrors;
                 returnWarning = logs.returnWarning;
@@ -142,20 +160,38 @@ const controlAllDatas = async () => {
     }
 };
 
-const existAndValid = async (element, category, returnErrors, returnWarning, type) => {
-    const thisChild = await Categories.findOne({_id: element});
+const fixCatAncestors = async (currentCategory) => {
+    // We need only one ancestor
+    if (currentCategory.ancestors.length > 1) {
+        const realAncestor = await Categories.findOne({_id: {$in: currentCategory.ancestors}, children: currentCategory._id}).lean();
+        if (realAncestor) {
+            await Categories.updateOne({_id: currentCategory._id}, {$set: {ancestors: [realAncestor]}});
+        }
+    }
+};
+
+const existAndValid = async (element, currentCategory, returnErrors, returnWarning, type) => {
+    const thisChild = await Categories.findOne({_id: element}).lean();
     if (!thisChild) {
-        returnErrors += `<b>Category ${category.code}</b> : No ${type} '${element}' existing<br/>`;
+        returnErrors += `<b>Category ${currentCategory.code}</b> : No ${type} '${element}' existing<br/>`;
     } else {
         // The child exists, see if the parent is well written there
         let isValid = false;
-        for (let i = 0; i <= thisChild.ancestors.length; i++) {
-            if (thisChild.ancestors[i] && thisChild.ancestors[i].toString() === category._id.toString()) {
-                isValid = true;
+        if (type === 'child') {
+            for (let i = 0; i <= thisChild.ancestors.length; i++) {
+                if (thisChild.ancestors[i] && thisChild.ancestors[i].toString() === currentCategory._id.toString()) {
+                    isValid = true;
+                }
+            }
+        } else {
+            for (let i = 0; i <= thisChild.children.length; i++) {
+                if (thisChild.children[i] && thisChild.children[i].toString() === currentCategory._id.toString()) {
+                    isValid = true;
+                }
             }
         }
         if (!isValid) {
-            returnWarning += `<b>Category ${category.code}</b> : The ${type} ${element} don't contain the reference to his parent<br/>`;
+            returnWarning += `<b>Category ${currentCategory.code}</b> : The ${type} <i>${element}</i> doesn't contain the reference to his ${type === 'ancestor' ? 'child' : 'ancestor'} <i>${currentCategory._id}</i><br/>`;
         }
     }
     return {returnErrors, returnWarning};
@@ -166,5 +202,6 @@ module.exports = {
     getAdminInformation,
     deleteAdminInformation,
     welcome,
-    controlAllDatas
+    controlAllDatas,
+    removeAdminInformation
 };

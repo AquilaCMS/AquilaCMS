@@ -10,14 +10,15 @@
         <div class="col-lg-10" style="margin-top:50px">
             <!-- Nested node template -->
             <script type="text/ng-template" id="nodes_renderer.html" ui-tree="treeOptions">
-                <div ui-tree-handle class="tree-node tree-node-content cleanBorder">
-                    <a class="btn btn-blue" ng-if="node.children.length > 0" ng-click="listChildren(node)" data-nodrag>
+                <div ui-tree-handle class="tree-node tree-node-content cleanBorder" ng-click="editCategory(node)">
+                    <a class="btn btn-blue" ng-if="node.children.length > 0" ng-click="$event.stopPropagation();listChildren(node)" data-nodrag>
                         <span class="glyphicon" ng-class="{'glyphicon-chevron-right': node.collapsed, 'glyphicon-chevron-down': !node.collapsed}"></span>
                     </a>
-                    <a class="pull-right btn btn-primary btn-xs" style="height: 21px;margin-top: 5px;" ng-click="addCategory(node)" data-nodrag>
+                    <a class="pull-right btn btn-primary btn-xs" style="height: 21px;margin-top: 5px;" ng-click="$event.stopPropagation();addCategory(node)" data-nodrag>
                         <span class="glyphicon glyphicon-plus"></span>
                     </a>
-                    <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}" ng-click="editCategory(node)">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
+                    <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
+                    <span class="label" ng-class="{'label-danger': !node.active || !node.isDisplayed, 'label-success': node.active && node.isDisplayed}" style="font-size:10px;margin:9px 10px 0 0;float:right">{{node.action}}</span>
                 </div>
                 <ol ui-tree-nodes="" ng-if="node.children.length > 0" ng-model="node.nodes" ng-class="{'hidden': node.collapsed}">
                     <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder"></li>
