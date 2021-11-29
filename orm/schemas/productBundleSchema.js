@@ -63,6 +63,12 @@ ProductBundleSchema.methods.updateData = async function (data) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
+
+    // Slugify images name
+    for (const image of data.images) {
+        image.title = helper.slugify(image.title);
+    }
+
     const updPrd = await this.model('bundle').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
     return updPrd;
 };

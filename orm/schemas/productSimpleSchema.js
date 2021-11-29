@@ -12,6 +12,7 @@ const aquilaEvents         = require('../../utils/aquilaEvents');
 const reviewService        = require('../../services/reviews');
 const Schema               = mongoose.Schema;
 const NSErrors             = require('../../utils/errors/NSErrors');
+const helper               = require('../../utils/utils');
 
 const ProductSimpleSchema = new Schema({
     stock : {
@@ -50,6 +51,11 @@ ProductSimpleSchema.methods.updateData = async function (data) {
                 };
             }
         }
+    }
+
+    // Slugify images name
+    for (const image of data.images) {
+        image.title = helper.slugify(image.title);
     }
 
     reviewService.computeAverageRateAndCountReviews(data);
