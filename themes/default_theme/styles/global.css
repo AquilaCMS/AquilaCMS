@@ -3953,3 +3953,10 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle-upper { /*transform: translate
 }
 
 .ns-breadcrumb { margin: 20px 0; }
+
+.section-product-main .product__images .list-images {
+    display: flex;
+}
+.section-product-main .product__images .list-images li {
+    margin: 3px;
+}
