@@ -9,7 +9,6 @@
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
 const {aquilaEvents}       = require('aql-utils');
-const reviewService        = require('../../services/reviews');
 const Schema               = mongoose.Schema;
 const NSErrors             = require('../../utils/errors/NSErrors');
 
@@ -34,31 +33,6 @@ const ProductSimpleSchema = new Schema({
 ProductSimpleSchema.virtual('stock.qty_real').get(function () {
     return this.stock.qty - this.stock.qty_booked;
 });
-
-ProductSimpleSchema.methods.updateData = async function (data) {
-    data.price.priceSort = {
-        et  : data.price.et.special || data.price.et.normal,
-        ati : data.price.ati.special || data.price.ati.normal
-    };
-    if (data.attributes) {
-        for (const attribute of data.attributes) {
-            for (const lang of Object.keys(attribute.translation)) {
-                const translationValues     = attribute.translation[lang];
-                attribute.translation[lang] = {
-                    value : translationValues.value,
-                    name  : translationValues.name
-                };
-            }
-        }
-    }
-
-    reviewService.computeAverageRateAndCountReviews(data);
-    if (!data._id) {
-        data._id = this._id;
-    }
-    const updPrd = await this.model('simple').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-    return updPrd;
-};
 
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {
     const prdServices = require('../../services/products');

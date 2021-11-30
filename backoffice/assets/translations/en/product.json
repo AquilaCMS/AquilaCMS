@@ -86,13 +86,13 @@
     },
     "photo": {
         "add": "Add",
-        "nom": "Name",
-        "title": "Title tag",
+        "nom": "Original",
+        "title": "Name",
         "picturessaved": "Pictures saved :",
         "alt": "Alt tag",
         "pos": "Position",
-        "img": "Main Picture",
-        "url": "URL",
+        "img": "Main",
+        "url": "Image",
         "noPics": "There are no images in this product, the default image will be displayed in the theme"
     },
     "list": {

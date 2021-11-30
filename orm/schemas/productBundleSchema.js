@@ -7,7 +7,6 @@
  */
 
 const mongoose     = require('mongoose');
-const {slugify}    = require('aql-utils');
 const NSErrors     = require('../../utils/errors/NSErrors');
 const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
@@ -52,20 +51,6 @@ const ProductBundleSchema = new Schema({
 /* ProductBundleSchema.virtual("stock").get(function () {
     return this.stock.qty - this.stock.qty_booked;
 }); */
-
-ProductBundleSchema.methods.updateData = async function (data) {
-    const updatedData           = data;
-    updatedData.price.priceSort = {
-        et  : updatedData.price.et.special || updatedData.price.et.normal,
-        ati : updatedData.price.ati.special || updatedData.price.ati.normal
-    };
-    if (updatedData.autoSlug) {
-        // On met à jour le slug du produit
-        updatedData._slug = `${slugify(updatedData.name)}-${updatedData.id}`;
-    }
-    const updPrd = await this.model('bundle').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
-    return updPrd;
-};
 
 ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) {
     if (!item.selections) {
