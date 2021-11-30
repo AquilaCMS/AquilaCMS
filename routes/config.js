@@ -18,7 +18,7 @@ const {getUploadDirectory} = require('../utils/server');
 module.exports = function (app) {
     app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
-    app.get('/restart', adminAuth, restart);
+    app.get('/restart', adminAuth, restartServer);
     app.get('/robot', adminAuth, getRobot);
     app.post('/robot', adminAuth, setRobot);
 
@@ -87,7 +87,7 @@ async function saveEnvConfig(req, res, next) {
 /**
  * GET /api/restart
  */
-const restart = async (req, res, next) => {
+const restartServer = async (req, res, next) => {
     try {
         await restart();
     } catch (err) {
