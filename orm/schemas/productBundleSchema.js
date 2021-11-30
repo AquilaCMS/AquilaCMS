@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const NSErrors     = require('../../utils/errors/NSErrors');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const Schema       = mongoose.Schema;
-const {ObjectId}   = Schema.Types;
+const mongoose       = require('mongoose');
+const NSErrors       = require('../../utils/errors/NSErrors');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const ProductBundleSchema = new Schema({
     qty             : {type: Number},
