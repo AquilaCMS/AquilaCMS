@@ -15,7 +15,8 @@ const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
-const {fsp, translation, serverUtils} = require('../utils');
+const {fs}                            = require('aql-utils');
+const {translation, serverUtils}      = require('../utils');
 const {retrieveUser}                  = require('./authentication');
 
 const getUserFromRequest = async (req) => {
@@ -187,7 +188,7 @@ const initExpress = async (server, passport) => {
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
         require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
-        JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
+        JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
     ));
 };
 
@@ -198,7 +199,7 @@ const maintenance = async (req, res, next) => {
             && global.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
         const maintenanceFile = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'maintenance.html');
-        if (fsp.existsSync(maintenanceFile)) {
+        if (fs.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }
         return res.status(301).send('<h1>Maintenance</h1>');

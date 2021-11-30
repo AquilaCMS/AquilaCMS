@@ -247,7 +247,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             filePath        = path.join(_path, 'medias/trademark', trademark.logo);
             fileName        = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(trademark.logo)}`;
             filePathCache   = path.join(cacheFolder, type, fileName);
-            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
             break;
         default:
             return null;
