@@ -621,11 +621,11 @@ const createProduct = async (req) => {
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     let body = req.body;
-    if (req.body.set_attributes === undefined) {
-        body = await serviceSetAttributs.addAttributesToProduct(req.body);
+    if (body.set_attributes === undefined) {
+        body = await serviceSetAttributs.addAttributesToProduct(body);
     }
-    req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(body);
+    body.code = utils.slugify(body.code);
+    const res = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
