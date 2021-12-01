@@ -187,8 +187,10 @@ ProductsSchema.methods.updateData = async function (data) {
     // }
 
     // Slugify images name
-    for (const image of data.images) {
-        image.title = helper.slugify(image.title);
+    if (data.images) {
+        for (const image of data.images) {
+            image.title = helper.slugify(image.title);
+        }
     }
 
     reviewService.computeAverageRateAndCountReviews(data);
