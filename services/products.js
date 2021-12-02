@@ -607,7 +607,7 @@ const setProduct = async (req) => {
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     if (result.code === 'SlugAlreadyExist' ) {
         throw NSErrors.SlugAlreadyExist;
@@ -621,11 +621,11 @@ const createProduct = async (req) => {
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     let body = req.body;
-    if (req.body.set_attributes === undefined) {
-        body = await serviceSetAttributs.addAttributesToProduct(req.body);
+    if (body.set_attributes === undefined) {
+        body = await serviceSetAttributs.addAttributesToProduct(body);
     }
-    req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(body);
+    body.code = utils.slugify(body.code);
+    const res = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };

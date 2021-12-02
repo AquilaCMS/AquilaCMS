@@ -187,8 +187,10 @@ ProductsSchema.methods.updateData = async function (data) {
     // }
 
     // Slugify images name
-    for (const image of data.images) {
-        image.title = helper.slugify(image.title);
+    if (data.images) {
+        for (const image of data.images) {
+            image.title = helper.slugify(image.title);
+        }
     }
 
     reviewService.computeAverageRateAndCountReviews(data);
@@ -321,8 +323,8 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
         for (let i = 0; i < oldPrd.images.length; i++) {
-            if (this.getUpdate().$set.images) {
-                if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
+            if (oldPrd.images[i]._id && this.getUpdate().$set.images) {
+                if (this.getUpdate().$set.images.findIndex((img) => `${oldPrd.images[i]._id}` === `${img._id}`) === -1) {
                     try {
                         await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {

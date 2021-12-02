@@ -165,7 +165,7 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text) => {
+const slugify = (text = '') => {
     const slug = require('slug');
     slug.extend({_: '_'});
     return slug(text, {lower: true});
