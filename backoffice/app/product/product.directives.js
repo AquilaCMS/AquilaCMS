@@ -386,7 +386,8 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 };
 
                 $scope.getImageUrl = function (image) {
-                    return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
+                    const imageName = image.title ? image.title : image.name;
+                    return `images/products/300x300-50/${image._id}/${imageName}${image.extension}`;
                 };
             }
         ]

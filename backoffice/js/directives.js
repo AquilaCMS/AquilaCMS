@@ -908,90 +908,94 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         restrict: "E",
         link: function (scope, element, attrs)
         {
-            var el = angular.element("<span/>");
-            scope.optionColor = {
-                format: "hexString",
-                required: false,
-                allowEmpty: true
-            }
-            switch(scope.att.type)
-            {
-                case "date":
-                    el.append("<div class='col-sm-10'><ns-datepicker name='value' ng-model='att.translation[lang].value'></ns-datepicker></div>");
-                    break;
-                case "textfield":
-                    el.append("<div class='col-sm-10'><input class='form-control' type='text' ng-model='att.translation[lang].value'/></div>");
-                    break;
-                case "number":
-                    if(scope.att.param == "Non") {
-                        el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/></div>");
-                    } else if (scope.att.param == "Oui") {
-                        el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/><span>La valeur entrée dans ce champ sera la valeur par défaut lors de la séléction par l'utilisateur</span></div>");
-                    }
-                    break;
-                case "textarea":
-                    el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce lang='lang' text='att.translation[lang].value'></ns-tinymce></div></div>");
-                    break;
-                case "bool":
-                    el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
-                    break;
-                case "list":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <select class='form-control' ng-model='att.translation[lang].value'>" +
-                        "        <option value='' disabled>Choix dans la liste déroulante</option>" +
-                        "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
-                        "    </select>" +
-                        "</div>");
-                    break;
-                case "multiselect":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <select class='form-control' ng-model='att.translation[lang].value' size='10' multiple>" +
-                        "        <option value='' disabled>Choix dans la liste</option>" +
-                        "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
-                        "    </select>" +
-                        "</div>");
-                    break;
-                case "interval":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <span class='col-sm-offset-1 col-sm-2'>Minimum</span>" +
-                        "    <div class='col-sm-1'>" +
-                        "        <input name='min' class='form-control' numericbinding type='number' max='{{att.translation[lang].max}}' ng-model='att.translation[lang].min' />" +
-                        "    </div>" +
-                        "    <span class='col-sm-offset-1 col-sm-2'>Maximum</span>" +
-                        "    <div class='col-sm-1'>" +
-                        "        <input name='max' class='form-control' numericbinding type='number' min='{{att.translation[lang].min}}' ng-model='att.translation[lang].max' />" +
-                        "    </div>" +
-                        "</div>");
-                    break;
-                case "doc/pdf":
-                    el.append(
-                        "<div class='col-sm-2' style='margin-top: 3px;'><input readonly type='text' class='form-control' ng-model='att.translation[lang].value'></div><div class='col-sm-2'><a target='_blank' href='{{ att.translation[lang].value }}' class='btn btn-info' ng-show='att.translation[lang].value != null'>Afficher le PDF</a></div>" +
-                        "<div class=\"col-sm-5\"><ns-upload-files lang=\"lang\" style-prop=\"{height: '35px', margin: '0px 0px 12px 0px'}\" accepttype=\"application/pdf\" multiple=\"false\" code=\"att.id\" type=\"attribute\" id=\"product._id\" entity=\"att.translation[lang]\"></ns-upload-files></div>" +
-                        "<div class=\"col-sm-1\"><button type=\"button\" class=\"btn btn-danger\" ng-click=\"removeImage(att.translation[lang].value); att.translation[lang].value = null\" style=\"min-width: 10px; float: right;\"><i class=\"fa fa-trash\"/></div>");
-                    break;
-                case "image":
-                    el.append(
-                        '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2"><a title="Image" data-trigger="hover" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<img src=\'{{ att.translation[lang].value }}\' width=\'250\' height=\'200\'>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher l\'image</a></div>' +
-                        '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="image/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
-                        '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>'
-                    );
-                    break;
-                case "video":
-                    el.append(
-                        '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2 popVideo"><a title="Vidéo" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<video width=\'800\' controls><source src=\'{{ att.translation[lang].value }}\'>Votre navigateur ne supporte pas les vidéos HTML5.</video>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher la vidéo</a></div>' +
-                        '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="video/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
-                        '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>');
-                    break;
-                case "color":
-                    el.append("<div class=\"col-sm-10\" style=\"display: flex\">"+
-                            "<color-picker ng-model=\"att.translation[lang].value\" options=\"optionColor\"></color-picker>"+
-                            "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
-                        "</div>"
-                    );
-                    break;
-            }
-            $compile(el)(scope);
-            element.append(el);
+            var el;
+            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+                el = angular.element("<span/>");
+                scope.optionColor = {
+                    format: "hexString",
+                    required: false,
+                    allowEmpty: true
+                }
+                switch(scope.att.type)
+                {
+                    case "date":
+                        el.append("<div class='col-sm-10'><ns-datepicker name='value' ng-model='att.translation[lang].value'></ns-datepicker></div>");
+                        break;
+                    case "textfield":
+                        el.append("<div class='col-sm-10'><input class='form-control' type='text' ng-model='att.translation[lang].value'/></div>");
+                        break;
+                    case "number":
+                        if(scope.att.param == "Non") {
+                            el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/></div>");
+                        } else if (scope.att.param == "Oui") {
+                            el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/><span>La valeur entrée dans ce champ sera la valeur par défaut lors de la séléction par l'utilisateur</span></div>");
+                        }
+                        break;
+                    case "textarea":
+                        el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce lang='lang' text='att.translation[lang].value'></ns-tinymce></div></div>");
+                        break;
+                    case "bool":
+                        el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
+                        break;
+                    case "list":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <select class='form-control' ng-model='att.translation[lang].value'>" +
+                            "        <option value='' disabled>Choix dans la liste déroulante</option>" +
+                            "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
+                            "    </select>" +
+                            "</div>");
+                        break;
+                    case "multiselect":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <select class='form-control' ng-model='att.translation[lang].value' size='10' multiple>" +
+                            "        <option value='' disabled>Choix dans la liste</option>" +
+                            "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
+                            "    </select>" +
+                            "</div>");
+                        break;
+                    case "interval":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <span class='col-sm-offset-1 col-sm-2'>Minimum</span>" +
+                            "    <div class='col-sm-1'>" +
+                            "        <input name='min' class='form-control' numericbinding type='number' max='{{att.translation[lang].max}}' ng-model='att.translation[lang].min' />" +
+                            "    </div>" +
+                            "    <span class='col-sm-offset-1 col-sm-2'>Maximum</span>" +
+                            "    <div class='col-sm-1'>" +
+                            "        <input name='max' class='form-control' numericbinding type='number' min='{{att.translation[lang].min}}' ng-model='att.translation[lang].max' />" +
+                            "    </div>" +
+                            "</div>");
+                        break;
+                    case "doc/pdf":
+                        el.append(
+                            "<div class='col-sm-2' style='margin-top: 3px;'><input readonly type='text' class='form-control' ng-model='att.translation[lang].value'></div><div class='col-sm-2'><a target='_blank' href='{{ att.translation[lang].value }}' class='btn btn-info' ng-show='att.translation[lang].value != null'>Afficher le PDF</a></div>" +
+                            "<div class=\"col-sm-5\"><ns-upload-files lang=\"lang\" style-prop=\"{height: '35px', margin: '0px 0px 12px 0px'}\" accepttype=\"application/pdf\" multiple=\"false\" code=\"att.id\" type=\"attribute\" id=\"product._id\" entity=\"att.translation[lang]\"></ns-upload-files></div>" +
+                            "<div class=\"col-sm-1\"><button type=\"button\" class=\"btn btn-danger\" ng-click=\"removeImage(att.translation[lang].value); att.translation[lang].value = null\" style=\"min-width: 10px; float: right;\"><i class=\"fa fa-trash\"/></div>");
+                        break;
+                    case "image":
+                        el.append(
+                            '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2"><a title="Image" data-trigger="hover" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<img src=\'{{ att.translation[lang].value }}\' width=\'250\' height=\'200\'>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher l\'image</a></div>' +
+                            '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="image/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
+                            '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>'
+                        );
+                        break;
+                    case "video":
+                        el.append(
+                            '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2 popVideo"><a title="Vidéo" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<video width=\'800\' controls><source src=\'{{ att.translation[lang].value }}\'>Votre navigateur ne supporte pas les vidéos HTML5.</video>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher la vidéo</a></div>' +
+                            '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="video/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
+                            '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>');
+                        break;
+                    case "color":
+                        el.append("<div class=\"col-sm-10\" style=\"display: flex\">"+
+                                "<color-picker ng-model=\"att.translation[lang].value\" options=\"optionColor\"></color-picker>"+
+                                "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
+                            "</div>"
+                        );
+                        break;
+                }
+                $compile(el)(scope);
+                element.append(el);
+                
+            })
         }
     };
 });

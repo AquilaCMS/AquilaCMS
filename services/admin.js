@@ -39,6 +39,13 @@ const deleteAdminInformation = async (code) => {
 };
 
 /**
+ * @description Remove adminInformation from DB
+ */
+const removeAdminInformation = async (code) => {
+    await AdminInformation.deleteOne({code});
+};
+
+/**
  * @description Create welcome message
  */
 const welcome = async () => {
@@ -195,5 +202,6 @@ module.exports = {
     getAdminInformation,
     deleteAdminInformation,
     welcome,
-    controlAllDatas
+    controlAllDatas,
+    removeAdminInformation
 };
