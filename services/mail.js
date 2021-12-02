@@ -1009,7 +1009,7 @@ async function sendMailPendingCarts(cart) {
     // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 
-const sendError = async (error) => {
+const sendErrorMail = async (error) => {
     const errorMail = await Mail.findOne({type: 'error'}).lean();
     if (!errorMail) {
         return; // We don't want to generate an error
@@ -1045,5 +1045,5 @@ module.exports = {
     sendContact,
     sendMailOrderRequestCancel,
     sendMailPendingCarts,
-    sendError
+    sendErrorMail
 };
