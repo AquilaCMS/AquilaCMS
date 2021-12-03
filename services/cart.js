@@ -159,7 +159,7 @@ const addItem = async (postBody, userInfo) => {
     }
     const _product = await Products.findOne({_id: postBody.item.id});
     await linkCustomerToCart(cart, userInfo);
-    if (!_product) {
+    if (!_product || !_product.stock?.orderable || _product.stock?.date_selling > Date.now()) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
@@ -520,7 +520,10 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
     if (removeDeliveryDatas) {
         cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
     } else {
-        let {shipment}                       = datas;
+        let shipment = await ServiceShipment.getShipment({filter: {_id: datas.shipmentId}, structure: '*'}); // Historically, it was an object, now we just want an id
+        // TODO : shipment doit avoir .dateDelivery (et d'autre ? voir ce qui arrive de datas) et le recalculer
+        // let {shipment}                       = datas;
+
         const {lang, cartId, isoCountryCode} = datas;
         const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
         if (!shipment.countries || !shipment.preparation) {
@@ -530,7 +533,7 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
         const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
         const delaysT       = country.translation;
         const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
-        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
+        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart._id);
         const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
         const delivery      = {
             method : shipment._id,
