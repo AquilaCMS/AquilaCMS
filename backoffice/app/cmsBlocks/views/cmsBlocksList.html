@@ -26,6 +26,9 @@
                         <th width="40%" translate>
                             cmsBlocks.list.desc
                         </th>
+                        <th width="10%" translate>
+                            static.list.etats
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,6 +38,7 @@
                         ng-click="goToCmsBlockDetails(block.code)">
                         <td data-label="Code :" >{{block.code}}</td>
                         <td data-label="Description :" >{{block.translation[defaultLang].description}}</td>
+                        <td data-label="Description :" ><span ng-bind-html='block.active | checked'></span></td>
                     </tr>
                 </tbody>
             </table>

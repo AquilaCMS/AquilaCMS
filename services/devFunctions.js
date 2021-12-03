@@ -13,11 +13,12 @@ const {Products}   = require('../orm/models');
 const utilsModules = require('../utils/modules');
 
 const createModelData = async () => {
-    const schemas     = [];
-    const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+    const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
+    const schemas        = [];
+    const themeFolder    = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
-        if (['configuration', 'modules', 'BundleProduct', 'SimpleProduct'].indexOf(modelName) === -1) {
+        if (forbidenModels.indexOf(modelName) === -1) {
             schemas.push({collection: modelName, datas: model});
         }
     }

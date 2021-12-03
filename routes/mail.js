@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/v2/mail/form/:lang?', sendContact);
     app.delete('/v2/mail/:_id', adminAuth, deleteMail);
     app.post('/v2/mail/test', adminAuth, sendTestEmail);
-    app.post('/v2/mail/error', sendError);
+    app.post('/v2/mail/error', sendErrorMail);
 };
 
 async function sendTestEmail(req, res, next) {
@@ -132,10 +132,10 @@ async function sendContact(req, res, next) {
  * @param {Express.Response} res
  * @param {Function} next
  */
-async function sendError(req, res, next) {
+async function sendErrorMail(req, res, next) {
     try {
-        console.error('sendError', req.body);
-        const result = await ServiceMail.sendError(req.body);
+        console.error('sendErrorMail', req.body);
+        const result = await ServiceMail.sendErrorMail(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
