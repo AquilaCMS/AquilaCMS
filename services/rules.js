@@ -200,7 +200,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
                         }
                     }
                 } else if (target.startsWith('categorie.') && cart) {
-                    isTrue = await checkCartPrdInCategory(cart, target, value, isTrue);
+                    isTrue = await checkCartPrdInCategory(cart, target, value, isTrue, condition.operator);
                 } else if (target.startsWith('panier.') && cart) {
                     target = target.replace('panier.', '');
                     isTrue = conditionOperator(condition.operator, {priceTotal: await calculateCartTotal(cart)}, target, value);
@@ -585,15 +585,16 @@ module.exports = {
     applyRecursiveRulesDiscount
 };
 
-async function checkCartPrdInCategory(cart, target, value, isTrue) {
-    const key  = target.slice(target.indexOf('.') + 1);
-    const _cat = await Categories.findOne({[key]: value});
+async function checkCartPrdInCategory(cart, target, value, isTrue, operator) {
+    const key    = target.slice(target.indexOf('.') + 1);
+    const _cat   = await Categories.findOne({[key]: value});
+    let prdFound = false;
 
     if (_cat) {
         let i      = 0;
         const leni = cart.items.length;
 
-        while (isTrue === false && i < leni) {
+        while (prdFound === false && i < leni) {
             const prd = _cat.productsList.find((_prd) => {
                 // if items[i].id exist it's a Cart else items is an array of products
                 if (cart.items[i].id) {
@@ -605,10 +606,13 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
                 return _prd.id.toString() === cart.items[i]._id.toString();
             });
             if (prd) {
-                isTrue = true;
+                prdFound = true;
             }
             i++;
         }
+    }
+    if ((prdFound && (['contains', 'eq']).includes(operator)) || (!prdFound && (['ncontains', 'neq']).includes(operator))) {
+        isTrue = true;
     }
     return isTrue;
 }
