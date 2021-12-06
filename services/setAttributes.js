@@ -96,6 +96,7 @@ exports.createOrUpdateSetAttribute = async function (postBody) {
 exports.deleteSetAttribute = async function (id) {
     const setAttr = await SetAttributes.findOne({_id: id});
     if (!setAttr) throw NSErrors.SetAttributeNotFound;
+    if (setAttr.code === 'defaut' || setAttr.code === 'defautUser') throw NSErrors.Unauthorized;
     const product = await Products.findOne({set_attributes: setAttr._id});
     if (product) throw NSErrors.SetAttributeLinkedWithProduct;
     await setAttr.remove();
