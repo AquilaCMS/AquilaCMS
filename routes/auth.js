@@ -68,7 +68,7 @@ const loginAdminAsClient = async (req, res, next) => {
         if (!param) {
             throw NSErrors.NotFound;
         }
-        const token = generateJWTToken(res, user, user.isAdmin);
+        const token = await generateJWTToken(res, user, user.isAdmin);
         return res.status(200).send({
             code : 'LOGIN_SUCCESS',
             data : token
