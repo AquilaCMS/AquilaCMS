@@ -240,7 +240,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
             const appliedPromoProduct = cloneDeep(products[i]);
             applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
-            if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
+            if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et || appliedPromoProduct.price.priceSort.ati < products[i].price.priceSort.ati) {
                 products[i] = appliedPromoProduct;
             }
         }
@@ -651,7 +651,7 @@ function calculDiscountItem(prd, promo) {
     if (prd && prd.price && discountType === 'P') {
         // We calculate the discount to apply on the product, if discount > the price of the item then we
         // apply a discount equal to the price of the item in order not to have a negative price, so we will have a price = 0
-        values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et * (discountValue / 100));
+        values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et > 0 ? prd.price.priceSort.et * (discountValue / 100) : undefined, prd.price.priceSort.ati > 0 ? prd.price.priceSort.ati * (discountValue / 100) : undefined);
     } else if (prd && prd.price && discountType === 'Aet') {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
     } else if (prd && prd.price && discountType === 'Aati') {
@@ -768,7 +768,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
 function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
     let discountET  = 0;
     let discountATI = 0;
-    const rate      = Number((prices.ati / prices.et).aqlRound(2));
+    const rate      = prices.et == 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(2));
 
     if (discountValueET) {
         discountET  = prices.et - discountValueET;
