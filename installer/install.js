@@ -174,6 +174,7 @@ const createConfiguration = async (datas, bOverride) => {
             bookingStock              : 'none'
         },
         taxerate : [
+            {rate: 0},
             {rate: 2.1},
             {rate: 5.5},
             {rate: 10.0},

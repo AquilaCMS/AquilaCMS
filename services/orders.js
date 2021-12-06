@@ -819,6 +819,8 @@ async function immediateCashPayment(req, method) {
         return form;
     } catch (e) {
         console.error(e);
+        if (e.status === 404) return {status: 404, code: e.code, message: "Error with the payment method configuration"};
+        return e;
     }
 }
 
