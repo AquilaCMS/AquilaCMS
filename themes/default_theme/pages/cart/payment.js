@@ -125,9 +125,17 @@ class CartPayment extends React.Component {
         // Paiement de la commande
         try {
             const paymentForm = await deferredPaymentOrder(order.number, paymentMethod.code, lang); // /!\ S'APPELLE deffered MAIS RENVOIE BIEN VERS LA FONCTION GENERIQUE
-            this.setState({ paymentForm : paymentForm.data }, () => {
-                document.getElementById('paymentid').submit();
-            });
+            if (paymentForm.status && paymentForm.status !== 200) {
+                if (paymentForm.message) {
+                    NSToast.error(paymentForm.message);
+                } else {
+                    NSToast.error('common:error_occured');
+                }
+            } else {
+                this.setState({ paymentForm }, () => {
+                    document.getElementById('paymentid').submit();
+                });
+            }
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 NSToast.error(err.response.data.message);
