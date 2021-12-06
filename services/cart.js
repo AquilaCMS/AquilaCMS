@@ -520,10 +520,7 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
     if (removeDeliveryDatas) {
         cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
     } else {
-        let shipment = await ServiceShipment.getShipment({filter: {_id: datas.shipmentId}, structure: '*'}); // Historically, it was an object, now we just want an id
-        // TODO : shipment doit avoir .dateDelivery (et d'autre ? voir ce qui arrive de datas) et le recalculer
-        // let {shipment}                       = datas;
-
+        let {shipment}                       = datas;
         const {lang, cartId, isoCountryCode} = datas;
         const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
         if (!shipment.countries || !shipment.preparation) {
@@ -533,7 +530,7 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
         const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
         const delaysT       = country.translation;
         const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
-        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart._id);
+        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
         const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
         const delivery      = {
             method : shipment._id,
