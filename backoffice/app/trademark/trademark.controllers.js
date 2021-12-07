@@ -136,7 +136,7 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
             }, function(error){
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
-                        toastService.toast("danger",  error.data.message);
+                        toastService.toast("danger",  $translate.instant("trademark.detail.errorName"));
                     }
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
