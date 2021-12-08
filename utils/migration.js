@@ -162,6 +162,24 @@ const migration_9_adminRights = async () => {
     // Deprecated
 };
 
+const migration_10_deleteOrderPaymentsJob = async () => {
+    await mongoose.connection.db.collection('agendaJobs').insertOne({
+        name : 'Remove failed payments from old orders',
+        type : 'single',
+        data : {
+            api     : '/services/orders/deleteFailedPayment',
+            comment : {
+                fr : 'Supprime els anciens paiements echoués des anciennes commandes',
+                en : 'Remove failed payments from old orders'
+            },
+            method              : 'service',
+            flag                : 'system',
+            lastExecutionResult : '',
+            params              : ''
+        }
+    });
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -172,7 +190,8 @@ const migrationScripts = [
     migration_6_contentSecurityPolicy,
     migration_7_Job_Translations,
     migration_8_CmsBlocks,
-    migration_9_adminRights
+    migration_9_adminRights,
+    migration_10_deleteOrderPaymentsJob
     // sample
 ];
 
