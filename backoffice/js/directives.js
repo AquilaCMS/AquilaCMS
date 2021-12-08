@@ -1574,7 +1574,7 @@ adminCatagenDirectives.directive("nsRule", [
                 condType: "="
             },
             replace: true,
-            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2)
+            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2, PictoApi)
             {
                 var langs = [];
 
@@ -1617,6 +1617,19 @@ adminCatagenDirectives.directive("nsRule", [
                     })
                     TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
+                    })
+                    PictoApi.list({PostBody: {filter: {}, limit: 99}}, function (response) {
+                        $scope.attributesClassed.push(
+                        {
+                            value: "pictos.code",
+                            type: "select",
+                            params: {
+                                values: response.datas.map(data => data.code),
+                                type: 'pictos'
+                            },
+                            name: 'pictos_code'
+                        })
+
                     })
                     AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
                     {
