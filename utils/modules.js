@@ -23,7 +23,12 @@ let loadedModules;
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
-        return global.moduleExtend[property].function(params);
+        try {
+            const fct = await global.moduleExtend[property].function(params);
+            return fct; // Be careful, we need to define 'fct' before return it ! (don't know why)
+        } catch (err) {
+            console.error(`Overide function ${property} from module rise an error. Use native function instead.`, err);
+        }
     }
     if (functionToExecute && typeof functionToExecute === 'function') {
         return functionToExecute();

@@ -13,7 +13,8 @@
         "enterValue": "Entrer une valeur",
         "creaDate": "Date de création",
         "logo": "Logo",
-        "link": "Liens"
+        "link": "Liens",
+        "errorName": "Ce nom existe deja"
     },
     "new": {
         "t1": "Créer une Nouvelle Marque",
