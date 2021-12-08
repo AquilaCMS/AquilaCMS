@@ -46,6 +46,8 @@ const orderStatuses = {
     RETURNED                     : 'RETURNED'
 };
 
+const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
+
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
@@ -819,8 +821,32 @@ async function immediateCashPayment(req, method) {
         return form;
     } catch (e) {
         console.error(e);
-        if (e.status === 404) return {status: 404, code: e.code, message: "Error with the payment method configuration"};
+        if (e.status === 404) return {status: 404, code: e.code, message: 'Error with the payment method configuration'};
         return e;
+    }
+}
+
+// delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
+async function deleteFailedPayment() {
+    console.log('==> Start removing failed payment from orders <==');
+    try {
+        const dateToDelete = new Date();
+        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        const orders = await Orders.find({
+            payment : {
+                $elemMatch : {
+                    status       : 'FAILED',
+                    creationDate : {$lte: dateToDelete}
+                }
+            }
+        });
+        for (const order of orders) {
+            order.payment = order.payment.filter((payment) => (payment.status !== 'FAILED' || (new Date(payment.creationDate) > dateToDelete)));
+            await order.save();
+        }
+        console.log('==> End removing failed payment from orders <==');
+    } catch (e) {
+        console.error(e);
     }
 }
 
@@ -844,5 +870,6 @@ module.exports = {
     updatePayment,
     updateStatus,
     cancelOrderRequest,
-    orderStatuses
+    orderStatuses,
+    deleteFailedPayment
 };
