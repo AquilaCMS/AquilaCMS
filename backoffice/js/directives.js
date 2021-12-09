@@ -469,65 +469,17 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     return false
                                 }
 
-                            $scope.size = {};
-                            $scope.size.max = true;
-                            $scope.size.keepRatio = true;
-                            $scope.size.ratio = 1
-
-                            $scope.changeSwitch = function(){
-                                if ($scope.size.max === true){
-                                    $scope.size.max = false;
-                                }else{
-                                    $scope.size.max = true;
-                                }
-                            }
-
-                            $scope.selectImage = function(image){
+                            $scope.selectImage = function (image) {
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
-                                $scope.getMeta(image.link)
-                            };
-
-                            $scope.sizeChange = function (type, size) {
-                                if($scope.size.keepRatio) {
-                                    if(type === 'width') {
-                                        $scope.size.height = Math.round(size / $scope.size.ratio)
-                                    } else {
-                                        $scope.size.width = Math.round(size * $scope.size.ratio)
-                                    }
-                                }
-                            }
-
-                            $scope.getMeta = function (url) {
-                                const img = new Image();
-                                img.src = url;
-                                img.onload = function() { 
-                                    $scope.size.ratio = this.width / this.height;
-                                    $scope.size.width = this.width;
-                                    $scope.size.height = this.height;
-                                    $scope.$apply()
-                                }
-                            }
-
-                            $scope.generate = function () {
-                                let url = $scope.imageSelected.split('medias/')[1];
-                                if($scope.size.max){
-                                    url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
-                                }else{
-                                    url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
-                                }
-                                $modalInstance.close(url);
+                                $scope.media = image
                             };
 
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
                             };
 
-                            $scope.media = {
-                                link : "",
-                                name : 'new-' + Math.floor(Math.random() * 1024),
-                                group: "",
-                            };
+                            $scope.media = {};
 
                         }],
                         resolve: {
@@ -2509,5 +2461,159 @@ adminCatagenDirectives.directive('replaceComma', function () {
             })
 
         }
+    }
+});
+
+adminCatagenDirectives.directive('nsFormImageCache', function () {
+    return {
+        scope: false,
+        templateUrl: "views/templates/nsFormImageCache.html",
+        controller: ["$scope", "toastService", "$translate",
+            function ($scope, toastService, $translate) {
+            $scope.positions = [
+                {
+                    pos: "center",
+                    id: "center"
+                },
+                {
+                    pos: "top",
+                    id: "top"
+                },
+                {
+                    pos: "bottom",
+                    id: "bottom"
+                },
+                {
+                    pos: "left",
+                    id: "left"
+                },
+                {
+                    pos: "right",
+                    id: "right"
+                },
+                {
+                    pos: "top-left",
+                    id: "topLeft"
+                },
+                {
+                    pos: "top-right",
+                    id: "topRight"
+                },
+                {
+                    pos: "bottom-left",
+                    id: "bottomLeft"
+                },
+                {
+                    pos: "bottom-right",
+                    id: "bottomRight"
+                }
+            ];
+    
+            $scope.getTranslation = function(pos){
+                return `medias.modal.${pos}`;
+            }
+            $scope.info = {
+                max: true,
+                keepRatio: true,
+                ratio: 1,
+    
+                crop:false,
+                position:"center",
+                background:false,
+                largeur: "",
+                longueur: "",
+                quality: "",
+                r:255,
+                g:255,
+                b:255,
+                alpha:1
+            };
+    
+            $scope.generer = function () {
+                let size = 'max'
+                if(!$scope.info.max) {
+                    size = $scope.info.largeur + "x" + $scope.info.longueur
+                }
+                
+                const quality = $scope.info.quality;
+                let filename = "";
+                if ($scope.info.name !== undefined) {
+                    filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
+                        + "." + $scope.media.link.replace(`medias/`, "")
+                            .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
+                } else {
+                    filename = $scope.media.link.replace(`medias/`, "");
+                }
+    
+                let background  = '';
+                let crop        = '';
+                if (
+                    (!$scope.info.largeur || !$scope.info.longueur || !quality)
+                    || (
+                        $scope.info.background
+                        && (
+                            !$scope.info.r || !$scope.info.g || !$scope.info.b ||
+                            !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
+                    )
+                ) {
+                    toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
+                } else {
+                    if ($scope.info.background) {
+                        if ($scope.info.alpha) {
+                            if ($scope.info.alpha > 1) {
+                                $scope.info.alpha = 1;
+                            }
+                        }
+                        background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
+                    }
+                    if ($scope.info.crop) {
+                        crop = `-crop-${$scope.info.position}`;
+                    }
+                    toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
+                    console.log( `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`)
+                    $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    const elem = document.getElementById("copy-link");
+                    elem.focus();
+                    elem.select();
+                }
+            };
+    
+            $scope.copierLien = function() {
+                const elem = document.getElementById("copy-link");
+                elem.focus();
+                elem.select();
+                if (document.execCommand('copy')) {
+                    toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
+                }
+            }
+    
+            $scope.sizeChange = function (type, size) {
+                if($scope.info.keepRatio) {
+                    if(type === 'width') {
+                        $scope.info.largeur = Math.round(size / $scope.info.ratio)
+                    } else {
+                        $scope.info.longueur = Math.round(size * $scope.info.ratio)
+                    }
+                }
+            }
+    
+            $scope.getMeta = function (url) {
+                const img = new Image();
+                $scope.info.name = $scope.media.name
+                img.src = url;
+                img.onload = function() { 
+                    $scope.info.ratio = this.width / this.height;
+                    $scope.info.longueur = this.width;
+                    $scope.info.largeur = this.height;
+                    $scope.$apply()
+                }
+            }
+
+            $scope.$watch('media', function(newValue, oldValue) {
+                if (newValue)
+                    $scope.getMeta(newValue.link)
+            }, true);
+
+        }]
     }
 });
