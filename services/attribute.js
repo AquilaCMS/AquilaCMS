@@ -72,7 +72,6 @@ const setAttribute = async (body) => {
             }
             const code = body.code;
             delete body.code;
-            console.log(body);
             const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
             await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
             await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
