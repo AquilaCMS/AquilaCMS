@@ -227,7 +227,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         orderable  : false,
         status     : 'liv'
     };
-    doc.code     = newCode;
+    doc.code     = utils.slugify(newCode);
     doc.active   = false;
     doc._visible = false;
     await doc.save();
