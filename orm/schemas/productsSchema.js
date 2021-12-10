@@ -73,7 +73,8 @@ const ProductsSchema = new Schema({
             position         : Number,
             modificationDate : String,
             default          : {type: Boolean, default: false},
-            extension        : {type: String, default: '.jpg'}
+            extension        : {type: String, default: '.jpg'},
+            content          : String
         }
     ],
     code_ean    : String,

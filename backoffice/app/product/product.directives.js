@@ -351,6 +351,12 @@ ProductDirectives.directive("nsProductPhoto", function () {
             ngModel.$render = function () {
                 if (ngModel.$modelValue) {
                     scope.product = ngModel.$modelValue;
+                    scope.product.images = scope.product.images.map((img) => {
+                        return {
+                            ...img,
+                            isYoutube: !!img.content
+                        }
+                    })
                 }
             };
         },
@@ -389,6 +395,14 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     const imageName = image.title ? image.title : image.name;
                     return `images/products/300x300-50/${image._id}/${imageName}${image.extension}`;
                 };
+
+                $scope.switchType = function (image) {
+                    if(image.content) {
+                        image.content = undefined
+                    } else {
+                        image.url = undefined
+                    }
+                }
             }
         ]
     };
