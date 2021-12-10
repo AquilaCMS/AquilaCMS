@@ -2188,8 +2188,21 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*'}}, function ({datas})
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*', populate: {
+                                path : 'parent',
+                                populate : {
+                                    path : 'parent'
+                                }
+                            }}}, function ({datas})
                             {
+                                for(const data of datas) {
+                                    if(data.parent) {
+                                        data.name = data.parent.name + ' > ' + data.name
+                                        if(data.parent.parent) {
+                                            data.name = data.parent.parent.name + ' > ' + data.name
+                                        }
+                                    }
+                                }
                                 $scope.families[attr.value] = datas;
                             });
                         } else if(attr.type === "select" || attr.type === "multiselect")
