@@ -478,6 +478,10 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
                             };
+                            
+                            $scope.generate = function (url) {
+                                $modalInstance.close(url);
+                            };
 
                             $scope.media = {};
 
@@ -2583,11 +2587,11 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    console.log( `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`)
                     $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                     const elem = document.getElementById("copy-link");
                     elem.focus();
                     elem.select();
+                    return $scope.link
                 }
             };
     

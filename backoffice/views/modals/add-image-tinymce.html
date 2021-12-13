@@ -207,6 +207,6 @@
     <div class="modal-footer">
         <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>tinymce.modal.medias</button></a>
         <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
-        <button class="btn btn-default" ng-disabled="!imageSelected || (info.max === false && (info.longueur === undefined || info.longueur === null || info.hauteur === undefined || info.hauteur === null || info.longueur < 0 || info.hauteur < 0 )) " ng-click="generate()" translate>tinymce.modal.add</button>
+        <button class="btn btn-default" ng-disabled="!imageSelected || (info.max === false && (info.longueur === undefined || info.longueur === null || info.hauteur === undefined || info.hauteur === null || info.longueur < 0 || info.hauteur < 0 )) " ng-click="generate(generer())" translate>tinymce.modal.add</button>
     </div>
 </div>
