@@ -490,12 +490,20 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         }
                     });
                     modalInstance.result.then(function (url) {
+                        let tag = '<img src="' + url + '"/>'
+                        const stringSizeQual = url.split('/')[url.split('/').length - 3]
+                        if(stringSizeQual) {
+                            const size = stringSizeQual.split('-')[0]
+                            if(size && size.toLowerCase() !== 'max') {
+                                tag = '<img src="' + url + '" width="' + size.split("x")[0] + '" height="' + size.split("x")[1] + '"/>'
+                            }
+                        }
                         if ($scope.tinymceId) {
-                        tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
-                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                    } else {
-                        tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
-                    }
+                            tinyMCE.get($scope.tinymceId).selection.setContent(tag);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent(tag);
+                        }
                     });
                 };
 
