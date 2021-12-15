@@ -137,13 +137,13 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
                 const _product  = await Products.findOne({_id: orderItem.id});
-                if (_product.kind === 'SimpleProduct') {
+                if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
                     await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
-                } else if (_product.kind === 'BundleProduct') {
+                } else if (_product.type === 'bundle') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {
@@ -190,12 +190,12 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
 
 const failedPayment = async (query, update) => {
     if (update.status) { delete update.status; }
-    if (update.$set && update.$set.status) {
+    if (update.$set) {
         update.$set.status = ServiceOrders.orderStatuses.PAYMENT_FAILED;
     } else {
         update.$set = {status: ServiceOrders.orderStatuses.PAYMENT_FAILED};
     }
-    return Orders.findOneAndUpdate(query, update);
+    return Orders.findOneAndUpdate(query, update, {new: true});
 };
 
 const infoPayment = async (orderId, returnData, sendMail, lang) => {
@@ -205,7 +205,9 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     }
     returnData.name          = paymentMethod.translation[lang].name;
     returnData.operationDate = Date.now();
-    await ServiceOrders.setStatus(orderId, ServiceOrders.orderStatuses.PAID);
+    if (returnData.type === 'CREDIT') {
+        await ServiceOrders.setStatus(orderId, ServiceOrders.orderStatuses.PAID);
+    }
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
@@ -222,9 +224,21 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
         /**
          * DO NOT DELETE THE COMMENTED CODE ABOVE
          */
-        ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
-            console.error(err);
-        });
+        if (returnData.type === 'DEBIT') {
+            const datas = {
+                ..._order,
+                articles  : '',
+                firstname : _order.customer.fullname.split(' ')[0],
+                lastname  : _order.customer.fullname.split(' ')[1],
+                fullname  : _order.customer.fullname,
+                number    : _order.number
+            };
+            await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.amount, date: returnData.operationDate});
+        } else {
+            ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
+                console.error(err);
+            });
+        }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
     return _order;
@@ -269,7 +283,7 @@ async function orderPayment(req) {
         if (method.isDeferred) {
             return await deferredPayment(req, method);
         }
-        return await immediateCashPayment(req, method.code);
+        return await immediateCashPayment(req, method);
     } catch (err) {
         return err;
     }
@@ -277,7 +291,7 @@ async function orderPayment(req) {
 
 async function deferredPayment(req, method) {
     try {
-        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        const order = await Orders.findOne({number: req.params.orderNumber, status: ServiceOrders.orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
@@ -292,8 +306,17 @@ async function deferredPayment(req, method) {
             }
         });
         await Cart.deleteOne({_id: order.cartId});
-
-        return `<form method='POST' id='paymentid' action='${req.params.lang ? `/${req.params.lang}` : ''}/cart/success'></form>`;
+        let action;
+        if (req.body.returnURL) {
+            action = req.body.returnURL;
+        } else {
+            if (req.params.lang) {
+                action = `/${req.params.lang}/cart/success`;
+            } else {
+                action = '/cart/success';
+            }
+        }
+        return `<form method='POST' id='paymentid' action='${action}'></form>`;
     } catch (err) {
         return err;
     }
@@ -311,13 +334,41 @@ function createDeferredPayment(order, method, lang) {
     };
 }
 
-async function immediateCashPayment(req, paymentMethod) {
+async function immediateCashPayment(req, method) {
     try {
-        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
-        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
-        const paymentService     = require(`${modulePath}/services/${paymentMethod}`);
-        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
+        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        // We set the same value in several places to fit all modules
+        req.query.orderId      = req.params.orderNumber;
+        req.params.paymentCode = req.body.paymentMethod;
+        const form             = await paymentService.getPaymentForm(req);
         return form;
+    } catch (e) {
+        console.error(e);
+        if (e.status === 404) return {status: 404, code: e.code, message: 'Error with the payment method configuration'};
+        return e;
+    }
+}
+
+// delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
+async function deleteFailedPayment() {
+    console.log('==> Start removing failed payment from orders <==');
+    try {
+        const dateToDelete = new Date();
+        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        const orders = await Orders.find({
+            payment : {
+                $elemMatch : {
+                    status       : 'FAILED',
+                    creationDate : {$lte: dateToDelete}
+                }
+            }
+        });
+        for (const order of orders) {
+            order.payment = order.payment.filter((payment) => (payment.status !== 'FAILED' || (new Date(payment.creationDate) > dateToDelete)));
+            await order.save();
+        }
+        console.log('==> End removing failed payment from orders <==');
     } catch (e) {
         console.error(e);
     }
@@ -333,5 +384,6 @@ module.exports = {
     failedPayment,
     infoPayment,
     updatePayment,
-    orderPayment
+    orderPayment,
+    deleteFailedPayment
 };
