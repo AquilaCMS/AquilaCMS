@@ -19,6 +19,8 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
 
+const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
+
 const getOrdersPayments = async (postBody) => {
     postBody.limit = postBody.limit || 12;
     if (!postBody.page) {

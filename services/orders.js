@@ -44,8 +44,6 @@ const orderStatuses = {
     RETURNED                     : 'RETURNED'
 };
 
-const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
-
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
@@ -582,6 +580,5 @@ module.exports = {
     delPackage,
     updateStatus,
     cancelOrderRequest,
-    orderStatuses,
-    deleteFailedPayment
+    orderStatuses    
 };
