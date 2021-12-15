@@ -2545,9 +2545,9 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 crop:false,
                 position:"center",
                 background:false,
-                largeur: "",
-                longueur: "",
-                quality: "",
+                height: "",
+                width: "",
+                quality: 80,
                 r:255,
                 g:255,
                 b:255,
@@ -2557,7 +2557,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
             $scope.generer = function () {
                 let size = 'max'
                 if(!$scope.info.max) {
-                    size = $scope.info.largeur + "x" + $scope.info.longueur
+                    size = $scope.info.width + "x" + $scope.info.height
                 }
                 
                 const quality = $scope.info.quality;
@@ -2573,7 +2573,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 let background  = '';
                 let crop        = '';
                 if (
-                    (!$scope.info.largeur || !$scope.info.longueur || !quality)
+                    (!$scope.info.height || !$scope.info.width || !quality)
                     || (
                         $scope.info.background
                         && (
@@ -2596,28 +2596,16 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
                     $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                    const elem = document.getElementById("copy-link");
-                    elem.focus();
-                    elem.select();
                     return $scope.link
                 }
             };
     
-            $scope.copierLien = function() {
-                const elem = document.getElementById("copy-link");
-                elem.focus();
-                elem.select();
-                if (document.execCommand('copy')) {
-                    toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
-                }
-            }
-    
             $scope.sizeChange = function (type, size) {
                 if($scope.info.keepRatio) {
                     if(type === 'width') {
-                        $scope.info.largeur = Math.round(size / $scope.info.ratio)
+                        $scope.info.height = Math.round(size / $scope.info.ratio)
                     } else {
-                        $scope.info.longueur = Math.round(size * $scope.info.ratio)
+                        $scope.info.width = Math.round(size * $scope.info.ratio)
                     }
                 }
             }
@@ -2628,8 +2616,8 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 img.src = url;
                 img.onload = function() { 
                     $scope.info.ratio = this.width / this.height;
-                    $scope.info.longueur = this.width;
-                    $scope.info.largeur = this.height;
+                    $scope.info.width = this.width;
+                    $scope.info.height = this.height;
                     $scope.$apply()
                 }
             }

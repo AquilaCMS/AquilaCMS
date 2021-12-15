@@ -9,13 +9,13 @@
     <div class="form-group">
         <label class="control-label col-md-5" translate>tinymce.modal.width</label>
         <div class="col-md-7">
-            <input type="number" class="form-control" name="width" ng-model="info.longueur" ng-change="sizeChange('width', info.longueur)" />
+            <input type="number" class="form-control" name="width" ng-model="info.width" ng-change="sizeChange('width', info.width)" />
         </div>
     </div>
     <div class="form-group">
         <label class="control-label col-md-5" translate>tinymce.modal.height </label>
         <div class="col-md-7">
-            <input style="float:left" type="number" class="form-control" name="height" ng-model="info.largeur" ng-change="sizeChange('height', info.largeur)" />
+            <input style="float:left" type="number" class="form-control" name="height" ng-model="info.height" ng-change="sizeChange('height', info.height)" />
         </div>
     </div>
     <div class="form-group">
@@ -24,7 +24,7 @@
             <ns-switch id="keepRatio" ng-model="info.keepRatio" name="keepRatio"></ns-switch>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" ng-show="!info.keepRatio">
         <label class="control-label col-sm-5" translate>medias.modal.crop</label>
         <div class="col-sm-7">
             <ns-switch name="crop" ng-model="info.crop" ng-change="info.crop ? false : true;info.background = false">
@@ -77,15 +77,4 @@
     <div class="col-sm-7">
         <input type="number" max="1" min="0" step="0,1" class="form-control" name="code" ng-model="info.alpha" ng-required="true">
     </div>
-</div>
-<div class="form-group">
-    <label class="control-label col-sm-5" translate>medias.modal.link</label>
-        <div class="col-sm-7">
-                <input id="copy-link" type="text" ng-model="link" readonly class="form-control" style="cursor:default">
-        </div>
-    </div>
-</div>
-<div style="text-align: right;margin-top:30px">
-    <button ng-if="link" type="button" class="btn btn-default"
-        ng-click="copierLien()" translate>medias.modal.copy</button>
 </div>

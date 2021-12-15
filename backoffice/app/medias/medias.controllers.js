@@ -262,6 +262,25 @@ MediasControllers.controller("MediasDetailsCtrl",
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
     function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
+
+        $scope.generate = function (url) {
+            $scope.link = url
+            const elem = document.getElementById("copy-link");
+            elem.focus();
+            elem.select();
+            setTimeout(function () {
+                $scope.copierLien()
+            }, 200)
+        }
+    
+        $scope.copierLien = function() {
+            const elem = document.getElementById("copy-link");
+            elem.focus();
+            elem.select();
+            if (document.execCommand('copy')) {
+                toastService.toast("success", $translate.instant("medias.medias.copiedLink"));
+            }
+        }
     
         $scope.cancel = function () {
             $modalInstance.close()

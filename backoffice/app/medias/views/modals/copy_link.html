@@ -4,10 +4,19 @@
     </div>
     <div class="modal-body">
         <ns-form-image-cache></ns-form-image-cache>
+        <hr>
+        
+        <div class="form-group">
+            <br>
+            <div class="col-sm-12">
+                <input id="copy-link" type="text" ng-model="link" readonly class="form-control" style="cursor:default">
+            </div>
+        </div>
+            
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="cancel()" translate>translation.cancel</button>
 
-        <button type="button" class="btn btn-default" ng-click="generer()" translate>medias.modal.generate</button>
+        <button type="button" class="btn btn-default" ng-click="generate(generer())" translate>medias.modal.generate</button>
     </div>
 </form>
