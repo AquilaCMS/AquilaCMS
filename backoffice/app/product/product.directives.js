@@ -403,6 +403,10 @@ ProductDirectives.directive("nsProductPhoto", function () {
                         image.url = undefined
                     }
                 }
+
+                $scope.addMovie = function () {
+                    $scope.product.images.push({isYoutube: true})
+                }
             }
         ]
     };
