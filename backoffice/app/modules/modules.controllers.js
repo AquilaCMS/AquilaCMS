@@ -285,6 +285,26 @@ ModulesControllers.controller("PluginsNewCtrl", [
             $scope.showModuleLoading = true;
         };
 
+        $scope.getDatas = function () {
+            ModuleServiceV2.getModules({
+                PostBody: {
+                    filter: {},
+                    limit: 100,
+                    populate: [],
+                    skip: 0,
+                    sort: { active: -1, name: 1 },
+                    structure: {},
+                    page: null
+                }
+            }, function (response) {
+                $scope.modules = response.datas;
+                $scope.showModuleLoading = false;
+            }, function (error) {
+                console.error(error);
+                toastService.toast("danger", $translate.instant("modules.toast.errGetPlugins"));
+            });
+        };
+
         $scope.uploaded = function (module) {
             ModuleServiceV2.getModules({
                 PostBody : {

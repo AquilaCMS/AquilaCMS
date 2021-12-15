@@ -86,14 +86,16 @@
     },
     "photo": {
         "add": "Add",
-        "nom": "Name",
-        "title": "Title tag",
+        "nom": "Original",
+        "title": "Name",
         "picturessaved": "Pictures saved :",
         "alt": "Alt tag",
         "pos": "Position",
-        "img": "Main Picture",
-        "url": "URL",
-        "noPics": "There are no images in this product, the default image will be displayed in the theme"
+        "img": "Main",
+        "url": "Image",
+        "noPics": "There are no images in this product, the default image will be displayed in the theme",
+        "youtubeId": "Youtube video ID" ,
+        "type": "Youtube video"
     },
     "list": {
         "ph1": "Name",
@@ -143,5 +145,6 @@
     "toast": {
         "URLcanonical": "Can't generate URL because canonical is empty",
         "notValid": "Informations entered are not valid"
-    }
+    },
+    "beforeConfigCat": "Save product before adding it to catgories"
 }

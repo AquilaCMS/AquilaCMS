@@ -14,7 +14,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             isSelected: false
         };
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
             if ($scope.product && $scope.product.set_attributes === undefined) {
                 const set_attributes = datas.find(function (setAttr) {
@@ -30,7 +30,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         
 
         $scope.loadNewAttrs = function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -66,7 +66,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 $scope.product = product;
 
-                genAttributes();
+                $scope.genAttributes();
             });
             $scope.promos = ProductsV2.getPromos({PostBody: { filter: {code: $routeParams.code}, structure: '*'}}, function (result) {
                 $scope.promos = result.datas.promos;
@@ -94,7 +94,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product.characteristics = [];
         }
 
-        function genAttributes()
+        $scope.genAttributes = function ()
         {
             angular.forEach($scope.product.attributes, function (attributeI)
             {
@@ -226,13 +226,13 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
                 if (fields[1] === "et") {
                     if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
-                        prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                        prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).aqlRound(2));
                     } else {
                         removeFields = true;
                     }
                 } else {
                     if (prd.modifier_price.ati !== undefined && prd.modifier_price.ati != null) {
-                        prd.modifier_price.et = parseFloat((prd.modifier_price.ati / vat).toFixed(2));
+                        prd.modifier_price.et = parseFloat((prd.modifier_price.ati / vat).aqlRound(2));
                     } else {
                         removeFields = true;
                     }
@@ -244,10 +244,10 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 }
             } else {
                 if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
-                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).aqlRound(2));
                 }
                 if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
-                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).aqlRound(2));
                 }
             }
         };

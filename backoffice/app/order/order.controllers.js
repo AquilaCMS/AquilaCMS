@@ -68,7 +68,10 @@ OrderControllers.controller("OrderListCtrl", [
                     filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]].toString(), $options: "i"};
                 }
             }
-            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response) {
+            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort, structure: $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                return field.replace(/{{|}}|order\./ig, '')
+            })}}, function (response) {
                 $scope.showLoader = false;
                 $scope.orders = response.datas;
                 $scope.totalItems = response.count;
@@ -142,7 +145,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
                     // we choose the correct bundle
-                    const correctBundle = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    const correctBundle = item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
                     // we choose the correct product in the correct bundle
                     const productOfBundle = correctBundle.products.find((product) => product.id === productSection.id);
                     var text = "";
@@ -153,7 +156,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '(';
                         }
-                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['et'].aqlRound(2)} €)`;
                         //put the TTC text
                         text+= '/ATI: '
                         if(productOfBundle.modifier_price['ati'] > 0){
@@ -161,9 +164,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }else{
                             text += '';
                         }
-                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                        text += `${productOfBundle.modifier_price['ati'].aqlRound(2)} €)`;
                     }
-                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${text}</li>`;
+                    displayHtml += `<li key="${j}">${productSection.name} ${text}</li>`;
                 }
             }
             return displayHtml;
@@ -188,7 +191,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 return lang.defaultLanguage;
             }).code;
 
-            Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
+            Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*'}, function (response)
             {
                 $scope.order = response.datas[0];
                 // sort status
@@ -205,6 +208,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                         console.log(error);
                     });
                 }
+                else {
+                    $scope.customer = null;
+                }
+                
                 $scope.status = $scope.order.status;
                 $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
@@ -284,7 +291,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             let basePriceATI = null;
             if(item.price.special && item.price.special.ati)
             {
-                return item.price.unit.ati.toFixed(2);
+                return item.price.unit.ati.aqlRound(2);
             }
             if(_order.quantityBreaks && _order.quantityBreaks.productsId.length)
             {
@@ -293,7 +300,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 if(prdPromoFound)
                 {
                     basePriceATI = prdPromoFound.basePriceATI;
-                    return (basePriceATI).toFixed(2);
+                    return (basePriceATI).aqlRound(2);
                 }
             }
             return false;
@@ -406,7 +413,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == orderStatuses.RETURNED || data == orderStatuses.CANCELED) {
+                } else if (data == orderStatuses.RETURNED) {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -669,7 +676,7 @@ OrderControllers.controller("InfoAddressCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 99 } }, function (countries) {
+        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, limit: 0 } }, function (countries) {
             $scope.countries = countries;
             $scope.countries.datas.forEach(function (country, i) {
                 $rootScope.languages.forEach(lang => {
@@ -1092,7 +1099,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             comment: "",
             mode: "",
             sendMail: true,
-            amount: $scope.order.priceTotal.ati,
+            amount: Number($scope.order.priceTotal.ati.aqlRound(2)),
             type: "CREDIT",
             status: "DONE",
             products: []
@@ -1103,7 +1110,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
         };
     
         if(status && status == orderStatuses.PAID){
-            $scope.return.type = "CREDIT";
+            $scope.return.type = "DEBIT";
             $scope.pay.disabled = true;
         }
 

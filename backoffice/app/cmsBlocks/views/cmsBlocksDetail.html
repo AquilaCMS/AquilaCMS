@@ -4,6 +4,7 @@
                     is-edit-mode="isEditMode"
                     return-path="/cmsBlocks"
                     remove="delete()"
+                    hide-remove="cmsBlock.code === 'invoice'"
                     save-and-quit="save(true)"
                     disable-save="disableSave"
                     form="form">
@@ -16,7 +17,7 @@
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.code</label>
                     <div class="col-sm-10">
-                        <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" required />
+                        <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" required ng-disabled="cmsBlock.code === 'invoice'" />
                         <div ng-messages="form.id.$error" role="alert">
                             <div ng-message="required" ng-show="form.id.$dirty" translate>cmsBlocks.detail.champRequis</div>
                         </div>
@@ -59,7 +60,7 @@
             <div class="col-sm-10 scrollmenu">
                 <ul class="nav nav-tabs" >
                     <li class="active" ng-click="generateContent();selectTab('result')"><a data-toggle="tab" href="#result" target="_self" translate>cmsBlocks.detail.result</a></li>
-                    <li ng-click="generateVariables();selectTab('variables')"><a data-toggle="tab" href="#variables" target="_self" translate>cmsBlocks.detail.variables</a></li>
+                    <li ng-click="generateVariables();selectTab('variables')" ng-if="cmsBlock.code !== 'invoice'"><a data-toggle="tab" href="#variables" target="_self" translate>cmsBlocks.detail.variables</a></li>
                     <li ng-show="userIsAllowedTo('editHtml')"><a ng-click="selectTab('html')" data-toggle="tab" href="#html" target="_self" translate>cmsBlocks.detail.html</a></li>
                 </ul>
             </div>

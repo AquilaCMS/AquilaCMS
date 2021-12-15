@@ -200,7 +200,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
                         }
                     }
                 } else if (target.startsWith('categorie.') && cart) {
-                    isTrue = await checkCartPrdInCategory(cart, target, value, isTrue);
+                    isTrue = await checkCartPrdInCategory(cart, target, value, isTrue, condition.operator);
                 } else if (target.startsWith('panier.') && cart) {
                     target = target.replace('panier.', '');
                     isTrue = conditionOperator(condition.operator, {priceTotal: await calculateCartTotal(cart)}, target, value);
@@ -455,18 +455,22 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
         logValue = `${new Date()}) Début de la catégorisation(${owner_type}) automatique`;
         console.log('\x1b[1m\x1b[33m', logValue, '\x1b[0m');
         result.push(logValue);
-        inSegment[owner_type] = true;
-        const _rules          = await Rules.find(owner_type ? {owner_type} : {});
-        const splittedRules   = {};
-        const productsPromise = [];
+        inSegment[owner_type]   = true;
+        const _rules            = await Rules.find(owner_type ? {owner_type} : {});
+        const splittedRules     = {};
+        const noConditionsRules = {};
+        const productsPromise   = [];
 
         // Sort the rules according to their type (picto, category ...)
         for (let i = 0; i < _rules.length; i++) {
             if (splittedRules[_rules[i].owner_type] === undefined) {
-                splittedRules[_rules[i].owner_type] = [];
+                splittedRules[_rules[i].owner_type]     = [];
+                noConditionsRules[_rules[i].owner_type] = [];
             }
             if (_rules[i].conditions.length > 0) {
                 splittedRules[_rules[i].owner_type].push(_rules[i]);
+            } else { // No (more) conditions
+                noConditionsRules[_rules[i].owner_type].push(_rules[i]);
             }
         }
 
@@ -488,12 +492,13 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                 result.push(logValue);
             }
             for (let i = 0; i < splittedRulesKeys.length; i++) {
+                // Apply rules
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
                     const productsIds = _products[j].map((prd) => prd._id);
 
                     // Segmentation Categories
                     if (splittedRulesKeys[i] === 'category') {
-                        const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, active: true});
+                        const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id});
                         const cat    = await Categories.findOneAndUpdate(
                             {_id: splittedRules[splittedRulesKeys[i]][j].owner_id},
                             {$set: {productsList: []}},
@@ -532,9 +537,15 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         let picto;
                         // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
                         if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {
-                            picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
+                            picto = await Pictos.findOne({
+                                _id     : splittedRules[splittedRulesKeys[i]][j].owner_id,
+                                enabled : true,
+                                $and    : [{$or: [{startDate: undefined}, {startDate: {$lte: new Date(Date.now())}}]}, {$or: [{endDate: undefined}, {endDate: {$gte: new Date(Date.now())}}]}]});
                         } else {
-                            picto = await Pictos.findOne({_id: optionPictoId, enabled: true});
+                            picto = await Pictos.findOne({
+                                _id     : optionPictoId,
+                                enabled : true,
+                                $and    : [{$or: [{startDate: undefined}, {startDate: {$lte: new Date(Date.now())}}]}, {$or: [{endDate: undefined}, {endDate: {$gte: new Date(Date.now())}}]}]});
                         }
                         if (picto) {
                             const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};
@@ -544,6 +555,22 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         logValue = `=== owner_type(${splittedRulesKeys[i]}) inconnu ===`;
                         console.warn(logValue);
                         result.push(logValue);
+                    }
+                }
+                // For the NoConditions, unset values
+                for (let j = 0; j < noConditionsRules[splittedRulesKeys[i]].length; j++) {
+                    // No (more) conditions, so we remove all the products setted by the (removed) rules
+                    if (splittedRulesKeys[i] === 'category') {
+                        const cat = await Categories.findOne({_id: noConditionsRules[splittedRulesKeys[i]][j].owner_id});
+                        if (cat) {
+                            for (let k = 0; k < cat.productsList.length; k++) {
+                                if (!cat.productsList[k].checked) {
+                                    cat.productsList.splice(k, 1);
+                                    k--;
+                                }
+                            }
+                            await cat.save();
+                        }
                     }
                 }
             }
@@ -579,15 +606,16 @@ module.exports = {
     applyRecursiveRulesDiscount
 };
 
-async function checkCartPrdInCategory(cart, target, value, isTrue) {
-    const key  = target.slice(target.indexOf('.') + 1);
-    const _cat = await Categories.findOne({[key]: value});
+async function checkCartPrdInCategory(cart, target, value, isTrue, operator) {
+    const key    = target.slice(target.indexOf('.') + 1);
+    const _cat   = await Categories.findOne({[key]: value});
+    let prdFound = false;
 
     if (_cat) {
         let i      = 0;
         const leni = cart.items.length;
 
-        while (isTrue === false && i < leni) {
+        while (prdFound === false && i < leni) {
             const prd = _cat.productsList.find((_prd) => {
                 // if items[i].id exist it's a Cart else items is an array of products
                 if (cart.items[i].id) {
@@ -599,10 +627,13 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
                 return _prd.id.toString() === cart.items[i]._id.toString();
             });
             if (prd) {
-                isTrue = true;
+                prdFound = true;
             }
             i++;
         }
+    }
+    if ((prdFound && (['contains', 'eq']).includes(operator)) || (!prdFound && (['ncontains', 'neq']).includes(operator))) {
+        isTrue = true;
     }
     return isTrue;
 }

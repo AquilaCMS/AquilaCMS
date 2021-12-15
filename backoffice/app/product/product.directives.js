@@ -62,7 +62,7 @@ ProductDirectives.directive("nsProductsList", function () {
 
                 // Pagination
                 $scope.onPageChange = function (page) {
-                    SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                    SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                         $scope.suppliers = {"": ""};
                         for (let i = 0; i < datas.length; i++) {
                             $scope.suppliers[datas[i]._id] = datas[i].name;
@@ -195,7 +195,7 @@ ProductDirectives.directive("nsProductMarketing", [
                     if (ngModel.$modelValue) {
                         scope.product = ngModel.$modelValue;
 
-                        SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                        SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                             scope.supplierList = datas;
 
                         });
@@ -206,11 +206,11 @@ ProductDirectives.directive("nsProductMarketing", [
                 "$scope", "$filter", "TrademarksV2", "SuppliersV2", "FamilyV2", function ($scope, $filter, TrademarksV2, SuppliersV2, FamilyV2) {
                     $scope.supplier = {};
                     $scope.trademarkList = [];
-                    TrademarksV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function({datas}) {
+                    TrademarksV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function({datas}) {
                         $scope.trademarkList = datas
                     });
 
-                    FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+                    FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                         $scope.allFamilies = datas;
                         $scope.universeList = $filter("filter")(datas, {type: "universe"}, true);
                         $scope.familyList = $filter("filter")(datas, {type: "family"}, true);
@@ -304,13 +304,13 @@ ProductDirectives.directive("nsProductPrice", function () {
 
                         if (fields[0] === "et") {
                             if (prices.et[fields[1]] !== undefined && prices.et[fields[1]] != null) {
-                                prices.ati[fields[1]] = parseFloat((prices.et[fields[1]] * vat).toFixed(2));
+                                prices.ati[fields[1]] = parseFloat((prices.et[fields[1]] * vat).aqlRound(2));
                             } else {
                                 removeFields = true;
                             }
                         } else {
                             if (prices.ati[fields[1]] !== undefined && prices.ati[fields[1]] != null) {
-                                prices.et[fields[1]] = parseFloat((prices.ati[fields[1]] / vat).toFixed(2));
+                                prices.et[fields[1]] = parseFloat((prices.ati[fields[1]] / vat).aqlRound(2));
                             } else {
                                 removeFields = true;
                             }
@@ -322,10 +322,10 @@ ProductDirectives.directive("nsProductPrice", function () {
                         }
                     } else {
                         if (prices.et && prices.et.normal !== undefined && prices.et.normal != null) {
-                            prices.ati.normal = parseFloat((prices.et.normal * vat).toFixed(2));
+                            prices.ati.normal = parseFloat((prices.et.normal * vat).aqlRound(2));
                         }
                         if (prices.et && prices.et.special !== undefined && prices.et.special != null) {
-                            prices.ati.special = parseFloat((prices.et.special * vat).toFixed(2));
+                            prices.ati.special = parseFloat((prices.et.special * vat).aqlRound(2));
                         }
                     }
                 };
@@ -351,6 +351,12 @@ ProductDirectives.directive("nsProductPhoto", function () {
             ngModel.$render = function () {
                 if (ngModel.$modelValue) {
                     scope.product = ngModel.$modelValue;
+                    scope.product.images = scope.product.images.map((img) => {
+                        return {
+                            ...img,
+                            isYoutube: !!img.content
+                        }
+                    })
                 }
             };
         },
@@ -386,8 +392,17 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 };
 
                 $scope.getImageUrl = function (image) {
-                    return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
+                    const imageName = image.title ? image.title : image.name;
+                    return `images/products/300x300-50/${image._id}/${imageName}${image.extension}`;
                 };
+
+                $scope.switchType = function (image) {
+                    if(image.content) {
+                        image.content = undefined
+                    } else {
+                        image.url = undefined
+                    }
+                }
             }
         ]
     };
@@ -409,7 +424,7 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                 if ($scope.isEditMode) {
                     $scope.$watch("product.code", function (newVal, oldVal) {
                         if (newVal) {
-                            ProductsV2.list({PostBody: {filter: {_id: {$in: $scope.product.associated_prds}}, structure: '*', limit: 99}}, function ({datas, count}) {
+                            ProductsV2.list({PostBody: {filter: {_id: {$in: $scope.product.associated_prds}}, structure: '*', limit: 0}}, function ({datas, count}) {
                                 for (let prd of datas) {
                                     prd.images = prd.images.filter(i => i.default)
                                 }

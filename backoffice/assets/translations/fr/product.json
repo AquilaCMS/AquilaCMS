@@ -86,14 +86,16 @@
     },
     "photo": {
         "add": "Ajouter",
-        "nom": "Nom",
-        "title": "Balise Title",
+        "nom": "Originale",
+        "title": "Nom",
         "picturessaved": "Images sauvegardées :",
         "alt": "Balise Alt",
         "pos": "Position",
-        "img": "Image Principale",
-        "url": "URL",
-        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
+        "img": "Principale",
+        "url": "Chemin",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème",
+        "youtubeId": "Video Youtube ID" ,
+        "type": "Video Youtube"
     },
     "list": {
         "ph1": "Nom",
@@ -143,5 +145,6 @@
     "toast": {
         "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical",
         "notValid": "Les informations saisies ne sont pas valides"
-    }
+    },
+    "beforeConfigCat": "Savegardez le produit pour l'ajouter a des categories"
 }

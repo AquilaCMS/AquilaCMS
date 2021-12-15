@@ -31,7 +31,9 @@ const SliderSchema = new Schema({
         text      : {...stringDefault()},
         name      : {...stringDefault()},
         href      : {...stringDefault()},
-        extension : {type: String, default: '.jpg'}
+        extension : {type: String, default: '.jpg'},
+        startDate : {type: Date},
+        endDate   : {type: Date}
     }],
     accessibility : {
         ...boolDefault(true)

@@ -17,7 +17,7 @@ const fsp                         = require('./fsp');
 const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
-    const filePathOut = pathOut + path.basename(pathIn);
+    const filePathOut = path.join(pathOut, path.basename(pathIn));
     const extension   = path.extname(filename);
     const filePathIn  = pathIn.replace(extension, '');
     if (quality > 100) {
@@ -54,6 +54,8 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
 };
 
 const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
+
+const getProductImageId = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : 'no-image');
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {
@@ -133,6 +135,7 @@ const existsFile = async (key) => {
 module.exports = {
     compressImg,
     getProductImageUrl,
+    getProductImageId,
     deleteFile,
     deleteFolder,
     renameFile,

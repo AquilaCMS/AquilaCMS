@@ -12,7 +12,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             isSelected: false
         };
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
             if ($scope.product && $scope.product.set_attributes === undefined) {
                 const set_attributes = datas.find(function (setAttr) {
@@ -26,7 +26,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         });
 
         $scope.loadNewAttrs = function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -74,7 +74,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             ProductsV2.query({ PostBody: { filter: { code: $routeParams.code, type: $routeParams.type }, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false } }, function (product) {
                 $scope.product = product;
 
-                genAttributes();
+                $scope.genAttributes();
 
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
@@ -139,9 +139,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             }
         ];
 
-        function genAttributes() {
+        $scope.genAttributes = function () {
             angular.forEach($scope.product.attributes, function (attributeI) {
-                AttributesV2.query({ PostBody: { filter: { _id: attributeI.id }, structure: '*' } }, function (attribute) {
+                AttributesV2.query({ PostBody: { filter: { code: attributeI.code }, structure: '*' } }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
@@ -267,7 +267,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
                             $scope.product = savedPrd;
-                            genAttributes();
+                            $scope.genAttributes();
                         } else {
                             window.location.href = `#/products/${savedPrd.type}/${savedPrd.code}`;
                             $location.path(window.location.href);

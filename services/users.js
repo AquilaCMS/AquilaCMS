@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const crypto       = require('crypto');
-const mongoose     = require('mongoose');
-const {Users}      = require('../orm/models');
-const servicesMail = require('./mail');
-const QueryBuilder = require('../utils/QueryBuilder');
-const aquilaEvents = require('../utils/aquilaEvents');
-const NSErrors     = require('../utils/errors/NSErrors');
+const crypto                             = require('crypto');
+const mongoose                           = require('mongoose');
+const {Users, SetAttributes, Attributes} = require('../orm/models');
+const servicesMail                       = require('./mail');
+const QueryBuilder                       = require('../utils/QueryBuilder');
+const aquilaEvents                       = require('../utils/aquilaEvents');
+const NSErrors                           = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -28,20 +28,20 @@ const queryBuilder     = new QueryBuilder(Users, restrictedFields, defaultFields
  * @param {Object} [PostBody.sort] sort
  * @param {Object} [PostBody.structure] structure
  */
-const getUsers = async (PostBody) => queryBuilder.find(PostBody);
+const getUsers = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getUser = async (PostBody) => queryBuilder.findOne(PostBody);
+const getUser = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody);
+    return queryBuilder.findOne(PostBody, true);
 };
 
 const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
 
-const setUser = async (id, info, isAdmin = false) => {
+const setUser = async (id, info, isAdmin = false, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -51,6 +51,15 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.isAdmin;
         }
         const userBase = await Users.findOne({_id: id});
+        if (info.attributes) {
+            for (let i = 0; i < info.attributes.length; i++) {
+                const usrAttr = userBase.attributes.find((attr) => attr.code === info.attributes[i].code);
+                if (usrAttr && lang) {
+                    info.attributes[i].translation             = usrAttr.translation;
+                    info.attributes[i].translation[lang].value = info.attributes[i].value;
+                }
+            }
+        }
         if (userBase.email !== info.email) {
             info.isActiveAccount = false;
         }
@@ -110,6 +119,29 @@ const createUser = async (body, isAdmin = false) => {
     }
     let newUser;
     try {
+        if (!body.set_attributes) {
+            const defaultSet    = await SetAttributes.findOne({code: 'defautUser'}).populate(['attributes']);
+            body.set_attributes = defaultSet._id;
+            body.attributes     = defaultSet.attributes.map((attr) => {
+                if (attr.default_value) {
+                    for (let i = 0; i < Object.keys(attr.translation).length; i++) {
+                        const lang =  Object.keys(attr.translation)[i];
+                        if (attr.translation[lang].value === undefined) attr.translation[lang].value = attr.default_value;
+                    }
+                }
+                return attr;
+            });
+        } else {
+            for (let i = 0; i < body.attributes.length; i++) {
+                const attribute                = await Attributes.findOne({code: body.attributes[i].code});
+                body.attributes[i].translation = attribute.translation;
+                if (attribute.type === 'multiselect') {
+                    body.attributes[i].translation[body.lang].values = body.attributes[i].values;
+                } else {
+                    body.attributes[i].translation[body.lang].value = body.attributes[i].value;
+                }
+            }
+        }
         newUser = await (new Users(body)).save();
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
@@ -170,7 +202,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     }
     const tokenlink = `${link}?token=${resetPassToken}`;
     if (sendMail) {
-        await servicesMail.sendResetPassword(email, tokenlink, lang);
+        await servicesMail.sendResetPassword(email, tokenlink, resetPassToken, lang);
     }
     return {message: email};
 };

@@ -21,7 +21,7 @@ const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
 const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultFields);
 
-const getCategories = async (PostBody) => queryBuilder.find(PostBody);
+const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
 const generateFilters = async (res, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
@@ -140,19 +140,18 @@ const generateFilters = async (res, lang = '') => {
 
 const getCategory = async (PostBody, withFilter = null, lang = '') => {
     lang      = ServiceLanguages.getDefaultLang(lang);
-    const res =  await queryBuilder.findOne(PostBody);
+    const res =  await queryBuilder.findOne(PostBody, true);
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => {
-    await Categories.updateOne({_id: req.body._id}, {$set: req.body});
-    const newCat = await Categories.findOne({_id: req.body._id});
-    return newCat;
+const setCategory = async (postBody) => {
+    await Categories.updateOne({_id: postBody._id}, {$set: postBody});
+    return Categories.findOne({_id: postBody._id}).lean();
 };
 
-const createCategory = async (req) => {
-    const newMenu   = new Categories(req.body);
-    const id_parent = req.body.id_parent;
+const createCategory = async (postBody) => {
+    const newMenu   = new Categories(postBody);
+    const id_parent = postBody.id_parent;
     const _menu     = await Categories.findOne({_id: id_parent});
     if (id_parent) {
         newMenu.ancestors = [..._menu.ancestors, id_parent];
@@ -169,7 +168,7 @@ const createCategory = async (req) => {
 };
 
 const deleteCategory = async (id) => {
-    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)});
+    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)}).lean();
     if (!_menu) {
         throw NSErrors.NotFound;
     }
@@ -235,7 +234,8 @@ const getCategoryChild = async (code, childConds, user = null) => {
                     select   : projectionOptions
                 }
             }
-        });
+        })
+        .lean();
 };
 
 const execRules = async () => ServiceRules.execRules('category');
@@ -256,7 +256,7 @@ const execCanonical = async () => {
             const current_category = categories[iCat];
 
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-            const current_category_slugs = await getCompleteSlugs(current_category._id, tabLang);
+            const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
             // For each product in this category
             const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
@@ -306,40 +306,28 @@ const execCanonical = async () => {
     }
 };
 
-/**
- * Built a category slug from his parents
- * @param {guid} categorie_id category id
- * @param {guid} tabLang Language table
- */
-const getCompleteSlugs = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-    // For the current category
-    const current_category = await Categories.findOne({_id: categorie_id});
-    const lang             = ServiceLanguages.getDefaultLang();
+    const current_category       = await Categories.findOne({_id: categorie_id}).lean();
+    const defaultLang            = ServiceLanguages.getDefaultLang();
 
-    if (typeof current_category !== 'undefined') {
-        // Add the current category to the list of categories to browse
-        const categoriesToBrowse = current_category.ancestors;
-        categoriesToBrowse.push(categorie_id);
+    if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
+        let ancestorsSlug = [];
+        if (current_category.ancestors.length > 0) {
+            if (current_category.ancestors.length > 1) {
+                console.log('To many ancestors. Please fix it');
+            }
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
+        }
 
-        // For each "grandparent"
-        for (let iCat = 0; iCat < categoriesToBrowse.length; iCat++) {
-            const parent_category_id = categoriesToBrowse[iCat];
-            const parent_category    = await Categories.findOne({_id: parent_category_id});
-
-            // We add it to the slug
-            if (typeof parent_category !== 'undefined' && parent_category?.active) { // Usually the root is not taken, so it must be deactivated
-                // For each of the languages
-                for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                    const currentLang = tabLang[iLang];
-                    if (typeof parent_category.translation[currentLang] !== 'undefined') {
-                        if (typeof current_category_slugs[currentLang] === 'undefined') { // 1st time
-                            current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
-                        }
-                        current_category_slugs[currentLang] = `${current_category_slugs[currentLang]}/${parent_category.translation[currentLang].slug}`;
-                    }
-                }
+        for (let iLang = 0; iLang < tabLang.length; iLang++) {
+            const currentLang = tabLang[iLang];
+            const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
+                current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
+            } else {
+                current_category_slugs[currentLang] = `${baseLang}/${current_category.translation[currentLang].slug}`;
             }
         }
     }
@@ -353,12 +341,12 @@ const applyTranslatedAttribs = async (PostBody) => {
         // Get all products
         let _categories = [];
         if (PostBody === undefined || PostBody === {}) {
-            _categories = await Categories.find({});
+            _categories = await Categories.find({}).lean();
         } else {
-            _categories = [await queryBuilder.findOne(PostBody)];
+            _categories = [await queryBuilder.findOne(PostBody, true)];
         }
         // Get all attributes
-        const _attribs = await Attributes.find({});
+        const _attribs = await Attributes.find({}).lean();
 
         for (let i = 0; i < _categories.length; i++) {
             if (_categories[i].filters && _categories[i].filters.attributes !== undefined) {
@@ -396,6 +384,38 @@ async function removeChildren(menu) {
     }
 }
 
+async function importCategoryProducts(datas, cat) {
+    const category = await Categories.findOne({_id: cat._id}).populate(['productsList.id']);
+    if (category) {
+        for (const data of datas) {
+            const foundPrd = category.productsList.find((prd) => prd.id.code === data.code);
+            if ((typeof data.isInclude === 'string' ? (data.isInclude.toLowerCase() === 'false') : (data.isInclude === 'false')) && foundPrd?.checked) {
+                category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
+            } else if (!foundPrd) {
+                const product = await Products.findOne({code: data.code});
+                if (product) {
+                    category.productsList.push({id: product._id, checked: true});
+                }
+            }
+        }
+        await category.save();
+        return true;
+    }
+    return false;
+}
+
+async function exportCategoryProducts(catId) {
+    const category = await Categories.findOne({_id: catId}).populate(['productsList.id']);
+    if (category) {
+        return category.productsList.map((prd) => ({
+            code            : prd.id.code,
+            isInclude       : true,
+            manuallyChecked : !!prd.checked
+        }));
+    }
+    return [];
+}
+
 module.exports = {
     getCategories,
     generateFilters,
@@ -405,8 +425,9 @@ module.exports = {
     getCategoryChild,
     execRules,
     execCanonical,
-    getCompleteSlugs,
     applyTranslatedAttribs,
     removeChildren,
-    deleteCategory
+    deleteCategory,
+    importCategoryProducts,
+    exportCategoryProducts
 };

@@ -20,30 +20,48 @@ const defaultFields    = [
     'infinite', 'fade', 'lazyLoad', 'pauseOnHover', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe'
 ];
 const queryBuilder     = new QueryBuilder(Slider, restrictedFields, defaultFields);
+const filterByDate     = (item) => (!item.startDate || (new Date(item.startDate) <= Date.now())) && (!item.endDate || (new Date(item.endDate) >= Date.now()));
 
 // See more information on react slick: https://react-slick.neostack.com/
-const getSliders = async (PostBody) => queryBuilder.find(PostBody);
-
-const getSlider = async (PostBody) => queryBuilder.findOne(PostBody);
-
-const getSliderById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
-
-const setSlider = async (req) => {
-    const result = await Slider.findByIdAndUpdate(req.body._id, req.body, {new: true});
+const getSliders = async (PostBody, user = null) => {
+    const results = await queryBuilder.find(PostBody, true);
+    if (!user || !user.isAdmin) {
+        for (let i = 0; i < results.length; i++) {
+            results[i].items = results[i].items.filter(filterByDate);
+        }
+    }
+    return results;
+};
+const getSlider = async (PostBody, user = null) => {
+    const result = await queryBuilder.findOne(PostBody, true);
+    if (!user || !user.isAdmin) {
+        result.items = result.items.filter(filterByDate);
+    }
+    return result;
+};
+const getSliderById = async (id, PostBody = null, user = null) => {
+    const result = await queryBuilder.findById(id, PostBody, true);
+    if (!user || !user.isAdmin) {
+        result.items = result.items.filter(filterByDate);
+    }
+    return result;
+};
+const setSlider = async (id, datas) => {
+    const result = await Slider.findByIdAndUpdate(id, datas, {new: true});
     if (!result) throw NSErrors.SliderUpdateError;
     return result;
 };
 
-const createSlider = async (req) => {
-    req.body.code = utils.slugify(req.body.code);
-    return Slider.create(req.body);
+const createSlider = async (datas) => {
+    datas.code = utils.slugify(datas.code);
+    return Slider.create(datas);
 };
 
-const deleteSlider = async (req) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+const deleteSlider = async (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         throw NSErrors.UnprocessableEntity;
     }
-    const doc = await Slider.findOneAndRemove({_id: req.params.id});
+    const doc = await Slider.findOneAndRemove({_id: id});
     if (!doc) {
         throw NSErrors.SliderNotFound;
     }

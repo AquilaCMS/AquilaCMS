@@ -7,17 +7,17 @@
  */
 
 const {securityForceActif}        = require('../middleware/security');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const {adminAuth, adminAuthRight} = require('../middleware/authentication');
 const ServicePayment              = require('../services/payments');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
     app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
     app.put('/v2/paymentMethod', adminAuth, savePaymentMethod);
-    app.post('/v2/payments/order', adminAuth, getOrdersPayments);
+    app.post('/v2/payments/order', adminAuthRight('payments'), getOrdersPayments);
     app.post('/v2/payment/info', adminAuth, infoPayment);
     app.put('/v2/payment/update', adminAuth, updatePayment);
-    app.post('/v2/payment/order/:orderNumber/:lang?', authentication, orderPayment);
+    app.post('/v2/payment/order/:orderNumber/:lang?', adminAuthRight('payments'), orderPayment);
 };
 
 async function getOrdersPayments(req, res, next) {

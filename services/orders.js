@@ -44,6 +44,8 @@ const orderStatuses = {
     RETURNED                     : 'RETURNED'
 };
 
+const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
+
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
@@ -146,7 +148,14 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: orderStatuses.PAYMENT_PENDING, createdAt: {$lt: dateAgo}})
+    return Orders.find({
+        createdAt : {$lt: dateAgo},
+        status    : {
+            $in : [
+                orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING
+            ]
+        }})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -278,7 +287,7 @@ const rma = async (orderId, returnData, lang) => {
 
     await Bills.create(data);
 
-    if (returnData.sendMail) {
+    if (returnData.sendMail && _order.customer.id) {
         const articles = [];
         const datas    = {
             number    : _order.number,
@@ -299,9 +308,9 @@ const rma = async (orderId, returnData, lang) => {
     return _order;
 };
 
-const duplicateItemsFromOrderToCart = async (req) => {
-    const orderId = req.body.idOrder || null;
-    let cartId    = req.body.idCart || null;
+const duplicateItemsFromOrderToCart = async (postBody, userInfo) => {
+    const orderId = postBody.idOrder || null;
+    let cartId    = postBody.idCart || null;
     let products  = [];
     // If we send an order id, we get the items of this order, otherwise we get the products sent directly (ex: foodOption)
     if (orderId) {
@@ -325,7 +334,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
         //             bundle_section_ref : "Plat du menu"
         //         }
         //     ]}];
-        products = req.body.products;
+        products = postBody.products;
     }
     let _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
     if (!_cart) {
@@ -336,7 +345,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
     let isErrorOccured      = false;
     let isErrorOccuredIndex = 0;
     let itemsPushed         = 0;
-    await ServiceCart.linkCustomerToCart(_cart, req);
+    await ServiceCart.linkCustomerToCart(_cart, userInfo);
     for (let i = 0; i < products.length; i++) {
         _cart                   = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         const productThatExists = await Products.findOne({_id: products[i].id, active: true, _visible: true});
@@ -384,9 +393,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+                _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
                 itemsPushed++;
-                _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+                _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
                 await _cart.save();
             }
         } else if (productThatExists && productThatExists.stock && productThatExists.stock.orderable) {
@@ -407,9 +416,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
             }
             item.code  = productThatExists.code;
             item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-            _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+            _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
             itemsPushed++;
-            _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+            _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
             await _cart.save();
         } else {
             isErrorOccured = true;
@@ -573,5 +582,6 @@ module.exports = {
     delPackage,
     updateStatus,
     cancelOrderRequest,
-    orderStatuses
+    orderStatuses,
+    deleteFailedPayment
 };

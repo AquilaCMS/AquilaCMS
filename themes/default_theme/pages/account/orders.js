@@ -5,11 +5,11 @@ import {
     NSPageAccountOrders,
     NSContext,
     NSSidebarAccount,
-    imgDefaultBase64,
     statusColor
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 import { withI18next } from 'lib/withI18n';
 
@@ -60,7 +60,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                         <strong className="price">
                                                                                             {
                                                                                                 order.priceTotal && order.priceTotal[taxDisplay[index]] !== undefined
-                                                                                                    ? order.priceTotal[taxDisplay[index]].toFixed(2)
+                                                                                                    ? order.priceTotal[taxDisplay[index]].aqlRound(2)
                                                                                                     : ''
                                                                                             } €
                                                                                         </strong>
@@ -86,42 +86,31 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                             let descPromoT = '';
                                                                                                             if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
                                                                                                                 // On check si le produit courant a recu une promo
-                                                                                                                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
+                                                                                                                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
                                                                                                                 if (prdPromoFound) {
                                                                                                                     basePrice = prdPromoFound[`basePrice${taxDisplay[index].toUpperCase()}`];
                                                                                                                     descPromo = (
-                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice).toFixed(2)}€</span></del>
+                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice).aqlRound(2)}€</span></del>
                                                                                                                     );
                                                                                                                     descPromoT = (
-                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).toFixed(2)}€</span></del>
+                                                                                                                        <del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).aqlRound(2)}€</span></del>
                                                                                                                     );
                                                                                                                 }
                                                                                                             }
-                                                                                                            let imgDefault = imgDefaultBase64;
                                                                                                             let imgAlt = 'illustration produit';
-                                                                                                            if (item.id && item.id.images && item.id.images.length) {
-                                                                                                                const foundImg = item.id.images.find((img) => img.default);
-                                                                                                                if (foundImg) {
-                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = foundImg.alt || imgAlt;
-                                                                                                                } else {
-                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = item.id.images[0].alt || imgAlt;
-                                                                                                                }
-                                                                                                            }
                                                                                                             return (
                                                                                                                 <tr key={item._id}>
                                                                                                                     <td>
                                                                                                                         <div className="product-small">
                                                                                                                             <div className="product__image">
-                                                                                                                                <img src={imgDefault} alt={imgAlt} />
+                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
-                                                                                                                                <h6>{item.id && item.id.name || 'NO NAME'} x {item.quantity}</h6>
+                                                                                                                                <h6>{item ? item.name : 'NO NAME'} x {item.quantity}</h6>
                                                                                                                                 <p>
                                                                                                                                     {
-                                                                                                                                        item.id && item.id.description1 && item.id.description1.title
-                                                                                                                                            ? item.id.description1.title
+                                                                                                                                        item.description1 && item.description1.title
+                                                                                                                                            ? item.description1.title
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
@@ -129,14 +118,14 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
                                                                                                                                             section.products.map((productSection, indexSel) => (
-                                                                                                                                                <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
-                                                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
+                                                                                                                                                <li key={indexSel}>{productSection.name} {`${(item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
+                                                                                                                                                    (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
                                                                                                                                                         '+' :
                                                                                                                                                         '') +
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
                                                                                                                                                     ''
                                                                                                                                                     }`}</li>
                                                                                                                                             ))
@@ -150,23 +139,23 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                         {
                                                                                                                             item.price.special && item.price.special[taxDisplay[index]]
                                                                                                                                 ? (
-                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{item.price.unit[taxDisplay[index]].toFixed(2)}€</span>
+                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{item.price.unit[taxDisplay[index]].aqlRound(2)}€</span>
                                                                                                                                     </del>
                                                                                                                                 )
                                                                                                                                 : descPromo
                                                                                                                         }
-                                                                                                                        <strong className="price">{this.getUnitPrice(item, order).toFixed(2)}€</strong>
+                                                                                                                        <strong className="price">{this.getUnitPrice(item, order).aqlRound(2)}€</strong>
                                                                                                                     </td>
                                                                                                                     <td>
                                                                                                                         {
                                                                                                                             item.price.special && item.price.special[taxDisplay[index]]
                                                                                                                                 ? (
-                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{(item.price.unit[taxDisplay[index]] * item.quantity).toFixed(2)}€</span>
+                                                                                                                                    <del><span className="price" style={{ color: '#979797' }}>{(item.price.unit[taxDisplay[index]] * item.quantity).aqlRound(2)}€</span>
                                                                                                                                     </del>
                                                                                                                                 )
                                                                                                                                 : descPromoT
                                                                                                                         }
-                                                                                                                        <strong className="price">{(this.getUnitPrice(item, order) * item.quantity).toFixed(2)}€</strong>
+                                                                                                                        <strong className="price">{(this.getUnitPrice(item, order) * item.quantity).aqlRound(2)}€</strong>
                                                                                                                     </td>
                                                                                                                     {
                                                                                                                         item.type === 'virtual' && (
@@ -191,26 +180,26 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                         <footer className="order__foot">
                                                                                             <div className="order__discount">
                                                                                                 <p>
-                                                                                                    {t(`account:orders.page.label.total_order.${taxDisplay[index]}`)} : <strong>{order.priceTotal[taxDisplay[index]].toFixed(2)}€</strong><br />
+                                                                                                    {t(`account:orders.page.label.total_order.${taxDisplay[index]}`)} : <strong>{order.priceTotal[taxDisplay[index]].aqlRound(2)}€</strong><br />
                                                                                                     {
                                                                                                         order.delivery && order.delivery.price && order.delivery.price[taxDisplay[index]] > 0
-                                                                                                            ? <sub>{t(`account:orders.page.label.total_delivery.${taxDisplay[index]}`)} : <strong>{order.delivery.price[taxDisplay[index]].toFixed(2)}€</strong><br /></sub>
+                                                                                                            ? <sub>{t(`account:orders.page.label.total_delivery.${taxDisplay[index]}`)} : <strong>{order.delivery.price[taxDisplay[index]].aqlRound(2)}€</strong><br /></sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay[index].toUpperCase()}`]
                                                                                                             ? (
-                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI.toFixed(2)}€</strong><br /></sub>
+                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI.aqlRound(2)}€</strong><br /></sub>
                                                                                                             ) : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.promos && order.promos.length && (order.promos[0].productsId.length === 0)
-                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`].toFixed(2)}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
+                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`].aqlRound(2)}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.additionnalFees[taxDisplay[index]] > 0
-                                                                                                            ? <sub>{t('account:orders.page.label.additionnal_fees')}: <strong>{order.additionnalFees[taxDisplay[index]].toFixed(2)}€</strong></sub>
+                                                                                                            ? <sub>{t('account:orders.page.label.additionnal_fees')}: <strong>{order.additionnalFees[taxDisplay[index]].aqlRound(2)}€</strong></sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                 </p>
@@ -259,7 +248,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                             </div>
                                         </section>
                                     </div>
-                                    <NSSidebarAccount active="orders" gNext={{ Link, Router }} t={t} />
+                                    <SidebarAccount active="orders" />
                                 </div>
                             </div>
                         </div>

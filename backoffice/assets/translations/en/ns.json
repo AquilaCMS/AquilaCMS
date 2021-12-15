@@ -98,7 +98,8 @@
         "panier_priceTotal_et": "Cart : ET price",
         "panier_priceTotal_ati": "Cart : ATI price",
         "categorie_translation_slug": "Category : Slug ({{lang}})",
-        "client_attr_translation": "Customer : Attribut '{{attr}}' ({{lang}})"
+        "client_attr_translation": "Customer : Attribut '{{attr}}' ({{lang}})",
+        "pictos_code": "Pictogram"
     },
     "help": {
         "products": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the products documentation.</a>",
@@ -110,6 +111,9 @@
         "contacts": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the contacts documentation.</a>",
         "medias": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the medias documentation.</a>",
         "gallery": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the gallery documentation. </a>",
+        "trademarks":"Trademarks allow you to create brands pages, but also to create rules based on brands.",
+        "suppliers":"Suppliers allow you to create rules based on Suppliers.",
+        "families":"Universes, families and sub-families allow you to create rules based on this tree structure.",
         "hide": "Hide"
     }
 }

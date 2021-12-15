@@ -51,7 +51,8 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
                     vat_rate: 1,
                     preparation: 1,
                     translation: 1,
-                    countries: 1
+                    countries: 1,
+                    freePriceLimit: 1
                 },
                 skip: 0,
                 limit: 100
@@ -107,21 +108,12 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 })
             });
         });
-        if ($routeParams.shipmentId === 'new') {
-            if ($routeParams.shipmentType === 'delivery') {
-                $scope.shipment = {
-                    type: 'DELIVERY',
-                    countries: []
-                };
+        if ($routeParams.shipmentId === 'new')  {
+            $scope.shipment = {
+                type: 'DELIVERY',
+                countries: []
             }
-            else if ($routeParams.shipmentType === 'relay_point') {
-                $scope.shipment = {
-                    type: 'RELAY_POINT',
-                    address: {}
-                };
-            }
-        }
-        else {
+        } else {
             $scope.isEditMode = true;
             Shipment.detail({
                 id: $routeParams.shipmentId,

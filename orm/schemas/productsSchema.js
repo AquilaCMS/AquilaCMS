@@ -16,6 +16,8 @@ const {
     checkTranslations
 } = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
+const reviewService = require('../../services/reviews');
+const helper        = require('../../utils/utils');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -55,7 +57,6 @@ const ProductsSchema = new Schema({
         {
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
-            values      : String,
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
@@ -72,7 +73,8 @@ const ProductsSchema = new Schema({
             position         : Number,
             modificationDate : String,
             default          : {type: Boolean, default: false},
-            extension        : {type: String, default: '.jpg'}
+            extension        : {type: String, default: '.jpg'},
+            content          : String
         }
     ],
     code_ean    : String,
@@ -118,7 +120,7 @@ const ProductsSchema = new Schema({
         views : {type: Number, default: 0}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     timestamps       : true,
     usePushEach      : true,
     id               : false
@@ -164,6 +166,43 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     return resp;
+};
+
+ProductsSchema.methods.updateData = async function (data) {
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
+
+    // TODO : delete at least two weeks after the merge
+    // if (data.attributes) {
+    //     for (const attribute of data.attributes) {
+    //         for (const lang of Object.keys(attribute.translation)) {
+    //             const translationValues     = attribute.translation[lang];
+    //             attribute.translation[lang] = {
+    //                 value : translationValues.value,
+    //                 name  : translationValues.name
+    //             };
+    //         }
+    //     }
+    // }
+
+    // Slugify images name
+    if (data.images) {
+        for (const image of data.images) {
+            image.title = helper.slugify(image.title);
+        }
+    }
+
+    reviewService.computeAverageRateAndCountReviews(data);
+
+    // TODO : delete at least two weeks after the merge
+    // if (!data._id) {
+    //     data._id = this._id;
+    // }
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    return updPrd;
 };
 
 ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
@@ -285,8 +324,8 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
         for (let i = 0; i < oldPrd.images.length; i++) {
-            if (this.getUpdate().$set.images) {
-                if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
+            if (oldPrd.images[i]._id && this.getUpdate().$set.images) {
+                if (this.getUpdate().$set.images.findIndex((img) => `${oldPrd.images[i]._id}` === `${img._id}`) === -1) {
                     try {
                         await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {

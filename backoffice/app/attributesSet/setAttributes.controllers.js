@@ -13,7 +13,7 @@ SetAttributesControllers.controller("SetAttributesListCtrl", [
         init();
 
         function getSetAttributes() {
-            SetAttributesV2.list({PostBody: {filter: {type: $scope.type}, limit: 99, structure: '*'}}, function ({datas}) {
+            SetAttributesV2.list({PostBody: {filter: {type: $scope.type}, limit: 0, structure: '*'}}, function ({datas}) {
                 $scope.setAttributes = datas;
             });
         }
@@ -164,7 +164,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
                 SetAttributesV2.delete({id: _id}, function () {
                     $location.path(`/${$scope.type}/setAttributes`);
                 }, function (err) {
-                    toastService.toast("danger", err.data);
+                    toastService.toast("danger", err.data.message);
                 });
             }
         };

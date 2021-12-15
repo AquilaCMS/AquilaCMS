@@ -56,9 +56,9 @@ const copyRecursive = async (src, dest, override = false, excludes = []) => {
             if (path.resolve(pth) === path.resolve(src)) return;
         }
     }
-    // if (excludes !== [] && excludes.includes(src.split('\\')[src.split('\\').length - 1])) {
-    //     return;
-    // }
+    if (excludes !== [] && excludes.includes(src.split('\\')[src.split('\\').length - 1])) {
+        return;
+    }
     try {
         let srcAccess = false;
         try {

@@ -1,5 +1,29 @@
 "use strict";
 
+Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
+    let roundNum = +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+    if (places !== 0 && addingTrailingZeros) {
+        roundNum        = roundNum.toString();
+        let intPart     = roundNum;
+        let decimalPart = '';
+
+        // if we have a decimal number we split it into two parts
+        if (roundNum.includes('.')) {
+            roundNum    = roundNum.split('.');
+            intPart     = roundNum[0];
+            decimalPart = roundNum[1];
+        }
+
+        // if the size of the decimal part is not equal to the number of digits after the decimal point given in parameter, we add the missing zeros
+        if (decimalPart.length !== places) {
+            const numOfMissingZero = places - decimalPart.length;
+            decimalPart            = decimalPart.padEnd(numOfMissingZero + decimalPart.length, 0);
+        }
+        roundNum = `${intPart}.${decimalPart}`;
+    }
+    return roundNum;
+};
+
 /* App Module */
 var adminCatagenApp = angular.module("adminCatagenApp", [
     "ngRoute",
@@ -142,7 +166,7 @@ var delayTimer;
 function input(ele) {
     clearTimeout(delayTimer);
     delayTimer = setTimeout(function() {
-       ele.value = parseFloat(ele.value).toFixed(2).toString();
+       ele.value = parseFloat(ele.value).aqlRound(2).toString();
     }, 800); 
 }
 
@@ -228,7 +252,7 @@ adminCatagenApp
                 var deferred = $q.defer();
                 var translation = {};
 
-                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
+                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 0}}).then(function (response)
                 {
                     const translationArray = []; // {url:"", name:""}
 

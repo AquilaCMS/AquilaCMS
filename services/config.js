@@ -9,11 +9,14 @@
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
 const {merge}                   = require('lodash');
+const ServiceCache              = require('./cache');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
+
+const isProd = !serverUtils.dev;
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -127,7 +130,7 @@ const saveEnvFile = async (body, files) => {
 
 const saveEnvConfig = async (body) => {
     const oldConfig = await Configuration.findOne({});
-    if (typeof body.environment.contentSecurityPolicy !== 'undefined') {
+    if (typeof body.environment?.contentSecurityPolicy !== 'undefined') {
         const tempValueActive = body.environment.contentSecurityPolicy.active;
         if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
             if (typeof tempValueActive === 'string') {
@@ -156,6 +159,7 @@ const saveEnvConfig = async (body) => {
         ) {
             body.needRestart = true;
         }
+        if (environment.defaultImage !== oldConfig.defaultImage) await ServiceCache.flush();
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
@@ -207,9 +211,39 @@ const getConfigTheme = async () => {
     };
 };
 
+// Set config props to true if step is needed (0: rest props1: build)
+const needRebuildAndRestart = async (restart = false, rebuild = false) => {
+    const _config = await Configuration.findOne({});
+    if (isProd && rebuild) {
+        _config.environment.needRebuild = true;
+    } else {
+        _config.environment.needRebuild = false;
+    }
+    if (restart) {
+        _config.environment.needRestart = true;
+    }
+    await _config.save();
+    await require('./admin').removeAdminInformation('server_restart_rebuild');
+    await require('./admin').insertAdminInformation({
+        code        : 'server_restart_rebuild',
+        type        : 'warning',
+        translation : {
+            en : {
+                title : _config.environment.needRebuild ? 'Rebuild & Restart Aquila' : 'Restart Aquila',
+                text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila <a href="#/themes">here</a>`
+            },
+            fr : {
+                title : _config.environment.needRebuild ? 'Compilez & Redemarrez Aquila' : 'Redemarrez Aquila',
+                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'compilez & redemarrez' : 'redemarrez'} Aquila <a href="#/themes">ici</a>`
+            }
+        }
+    });
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
-    getConfigTheme
+    getConfigTheme,
+    needRebuildAndRestart
 };

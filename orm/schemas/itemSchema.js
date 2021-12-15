@@ -23,9 +23,19 @@ const itemsSchema = new Schema({
         ],
         default : 'PROCESSING'
     },
-    name               : String,
-    code               : String,
-    image              : String,
+    name         : String,
+    code         : String,
+    image        : String,
+    slug         : String,
+    description1 : {
+        title : String,
+        text  : String
+    },
+    description2 : {
+        title : String,
+        text  : String
+    },
+    canonical          : String,
     parent             : {type: ObjectId, ref: 'products'},
     children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},
@@ -46,7 +56,18 @@ const itemsSchema = new Schema({
             vat : {type: Number}
         }
     },
-    atts        : [],
+    attributes : [
+        {
+            id          : {type: ObjectId, ref: 'attributes', index: true},
+            code        : String,
+            values      : String,
+            param       : String,
+            type        : {type: String, default: 'unset'},
+            translation : {},
+            position    : {type: Number, default: 1},
+            visible     : {type: Boolean, default: true}
+        }
+    ],
     typeDisplay : {type: String, default: undefined}
 }, {
     discriminatorKey : 'type',
@@ -66,6 +87,14 @@ itemsSchema.virtual('price.total').get(function () {
     }
 
     return {ati: price * self.quantity};
+});
+
+itemsSchema.virtual('stock').get(function () {
+    const self = this;
+    if (self.id._id) {
+        return self.id.stock;
+    }
+    return {};
 });
 
 // Par défaut, le populate spécifique ne fait rien

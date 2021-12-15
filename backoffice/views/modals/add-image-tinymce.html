@@ -41,15 +41,19 @@
 
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-sm-6" style="margin-top: 20px;">
                     <div class="dataTables_filter">
+                        <label for="q" translate>static.list.search</label>
                         <input group="search" ng-model="local.search" ng-change="onPageChange(1)" class="search-field" name="q"
-                            id="q" value="" placeholder="{{'static.list.search' | translate}}">
+                            id="q" value="" placeholder="{{'static.list.search' | translate}}" style="width: 100%; max-width: none;">
                     </div>
                 </div>
+                <div class="col-sm-6" >
+                    <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="media" id="id" entity="media" after-function="onPageChange(1)"></ns-upload-files>
+                </div>
             </div>
-            <div class="scrollmenu">
-                <ul class="nav nav-tabs" style="margin-top: 20px;">
+            <div class="scrollmenu" style="padding-top: -20px;">
+                <ul class="nav nav-tabs">
                     <li ng-show="local.search === ''" class="{{currentTab === group ? 'active' : ''}}"
                         ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)"
                             target="_self">{{group}}</a></li>
@@ -61,7 +65,7 @@
             <div class="row" style="margin-top:20px">
             <!-- <div class="row" style="margin-bottom:30px;overflow:scroll; height:70vh;overflow-x: hidden;padding:15px 20px"> -->
                 <div ng-repeat="media in list">
-                    <div ng-if="media.extension === '.png' || media.extension === '.jpg'" class="col-md-3" style="text-align: center;margin-bottom:20px">
+                    <div ng-if="media.extension && ((['.png', '.jpg']).includes(media.extension.toLowerCase()))" class="col-md-3" style="text-align: center;margin-bottom:20px">
                         <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
                             ng-click="selectImage(media)"><img
                                 ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
@@ -195,35 +199,14 @@
             </div>
         </div> -->
         <hr>
-        <div class='row'>
-            <div  class="col-md-4">
-                <label translate>tinymce.modal.maxSize</label>
-                <ns-switch id="maxSize" ng-model="size.max" name="maxSize"></ns-switch>
-                <!-- <ns-switch id="maxSize" ng-model="false" name="active"></ns-switch> -->
-
-            </div>
-            <div class="col-md-8" ng-if="!size.max">
-
-                <div class="col-md-2">
-                    <label translate>tinymce.modal.width</label>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" class="form-control" ng-model="size.width" />
-                </div>
-
-                <div class="col-md-2">
-                <label translate>tinymce.modal.height </label>
-                </div>
-                <div class="col-md-2">
-                <input style="float:left" type="number" class="form-control" ng-model="size.height" />
-                </div>
-            </div>
+        <div class="form form-horizontal" style="display: block; margin: 0 auto;  max-width: 600px;">
+            <ns-form-image-cache></ns-form-image-cache>
         </div>
     </div>
     
     <div class="modal-footer">
         <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>tinymce.modal.medias</button></a>
         <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
-        <button class="btn btn-default" ng-disabled="!imageSelected || (size.max === false && (size.width === undefined || size.width === null || size.height === undefined || size.height === null || size.width < 0 || size.height < 0 )) " ng-click="generate()" translate>tinymce.modal.add</button>
+        <button class="btn btn-default" ng-disabled="!imageSelected || (info.max === false && (info.longueur === undefined || info.longueur === null || info.largeur === undefined || info.largeur === null || info.longueur < 0 || info.largeur < 0 )) " ng-click="generate(generer())" translate>tinymce.modal.add</button>
     </div>
 </div>
