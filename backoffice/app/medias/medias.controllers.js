@@ -149,6 +149,14 @@ MediasControllers.controller("MediasDetailsCtrl",
                 ];
             }else{
                 id = $routeParams.id;
+                $scope.additionnalButtons = [
+                    {
+                        text: 'medias.medias.cpLien',
+                        onClick: function(){
+                            $scope.copyLink($scope.media);
+                        }
+                    }
+                ];
             }
             $scope.id = id;
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created

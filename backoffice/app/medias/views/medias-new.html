@@ -27,9 +27,6 @@
                     <ns-upload-files id="id" is-selected="nsUploadFiles.isSelected" multiple="false" type="media" entity="media" on-error="onErrorUploadMedia()"></ns-upload-files>
                 </div>
                 <div class="col-sm-5 img-responsive" ng-show="isPicture(media)">
-                    <br/> <br/>
-                    <a class="btn btn-blue btn-with-icon" ng-click="copyLink(media)">{{"medias.medias.cpLien" | translate}}</a>
-                    <br/> <br/>
                     <img ng-src="{{media.link ? '/' + media.link : ''}}" width="300" height="100">
                 </div>
                 <div class="col-sm-5 img-responsive" ng-show="media.link && !isPicture(media)">
