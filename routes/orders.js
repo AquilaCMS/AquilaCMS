@@ -11,6 +11,8 @@ const ServiceAuth                 = require('../services/auth');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {isAdmin}                   = require('../utils/utils');
 
+const PaymentsRoute = require('./payments');
+
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
@@ -23,6 +25,12 @@ module.exports = function (app) {
     app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
     app.put('/v2/order', adminAuth, setOrder);
+
+    /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
+    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, PaymentsRoute.infoPayment);
+    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, PaymentsRoute.payOrder);
+    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, PaymentsRoute.updatePayment);
+    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, PaymentsRoute.payOrder);
 };
 
 /**
