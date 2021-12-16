@@ -802,7 +802,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     },
                     populate: ["children"],
                     sort: {displayOrder: 1},
-                    structure : structure,
+                    structure : '*',
                     limit: 0
                 }
             }, function (response) {
@@ -846,7 +846,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 cat.collapsed = false;
             }
             if(cat.collapsed){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0, structure: '*'}}, function (response) {
                     cat.nodes = response.datas;
                     cat.collapsed = false;
                     for(let oneNode of cat.nodes){
