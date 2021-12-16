@@ -882,6 +882,6 @@ module.exports = {
     paymentFail,
     infoPayment,
     updatePayment,
-    deleteFailedPayment
+    deleteFailedPayment,
     orderStatuses    
 };
