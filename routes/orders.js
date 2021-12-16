@@ -8,6 +8,7 @@
 
 const ServiceOrder                = require('../services/orders');
 const ServiceAuth                 = require('../services/auth');
+const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {isAdmin}                   = require('../utils/utils');
 
