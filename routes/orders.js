@@ -12,7 +12,7 @@ const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {isAdmin}                   = require('../utils/utils');
 
-const PaymentsRoute = require('./payments');
+const ServicePayment              = require('../services/payments');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
@@ -28,10 +28,10 @@ module.exports = function (app) {
     app.put('/v2/order', adminAuth, setOrder);
 
     /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, PaymentsRoute.infoPayment);
-    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, PaymentsRoute.payOrder);
-    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, PaymentsRoute.updatePayment);
-    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, PaymentsRoute.payOrder);
+    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
+    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
+    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, updatePayment);
+    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
 };
 
 /**
@@ -192,5 +192,52 @@ async function cancelOrderRequest(req, res, next) {
         res.end();
     } catch (err) {
         return next(err);
+    }
+}
+
+/* THESE ROUTES HAVE BEEN MOVED TO payments.js */
+/* THIS ROUTE HAS BEEN MOVED TO payments.js */
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+ async function infoPayment(req, res, next) {
+    try {
+        const order = await ServiceOrder.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
+        res.json(order);
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/* THIS ROUTE HAS BEEN MOVED TO payments.js */
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function updatePayment(req, res, next) {
+    try {
+        return res.json(await ServiceOrder.updatePayment(req.body));
+    } catch (e) {
+        next(e);
+    }
+}
+
+/* THIS ROUTE HAS BEEN MOVED TO payments.js */
+/**
+ * Create a payment and return a form for front-end redirection
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function orderPayment(req, res, next) {
+    try {
+        return res.send(await ServiceOrder.payOrder(req));
+    } catch (e) {
+        next(e);
     }
 }
