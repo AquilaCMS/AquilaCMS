@@ -7,6 +7,7 @@
  */
 
 const moment           = require('moment');
+const path             = require('path');
 const {
     Orders,
     Cart,
@@ -568,7 +569,7 @@ function setItemStatus(order, packages, status1, status2) {
 /* THESE SERVICES HAVE BEEN MOVED TO payments.js */
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const paymentSuccess = async (query, updateObject, paymentCode = '') => {
-    console.log('DEPRECATED : please use successfulPayment function in payments.js service')
+    console.log('Deprecated service : please use successfulPayment function in payments.js service')
     console.log('service order successfulPayment()');
 
     try {
@@ -594,7 +595,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
         }
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
-            await ServiceOrders.setStatus(_order._id, ServiceOrders.orderStatuses.PAID);
+            await setStatus(_order._id, orderStatuses.PAID);
         }
         try {
             await ServiceMail.sendMailOrderToClient(_order._id);
@@ -665,19 +666,19 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const paymentFail = async (query, update) => {
-    console.log('DEPRECATED : please use failedPayment function in payments.js service')
+    console.log('Deprecated service : please use failedPayment function in payments.js service')
     if (update.status) { delete update.status; }
     if (update.$set) {
-        update.$set.status = ServiceOrders.orderStatuses.PAYMENT_FAILED;
+        update.$set.status = orderStatuses.PAYMENT_FAILED;
     } else {
-        update.$set = {status: ServiceOrders.orderStatuses.PAYMENT_FAILED};
+        update.$set = {status: orderStatuses.PAYMENT_FAILED};
     }
     return Orders.findOneAndUpdate(query, update, {new: true});
 };
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const infoPayment = async (orderId, returnData, sendMail, lang) => {
-    console.log('DEPRECATED : please use infoPayment function in payments.js service')
+    console.log('Deprecated service : please use infoPayment function in payments.js service')
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
@@ -685,7 +686,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     returnData.name          = paymentMethod.translation[lang].name;
     returnData.operationDate = Date.now();
     if (returnData.type === 'CREDIT') {
-        await ServiceOrders.setStatus(orderId, ServiceOrders.orderStatuses.PAID);
+        await setStatus(orderId, orderStatuses.PAID);
     }
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
@@ -725,7 +726,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const updatePayment = async (body) => {
-    console.log('DEPRECATED : please use updatePayment function in payments.js service')
+    console.log('Deprecated service : please use updatePayment function in payments.js service')
     let msg = {status: true};
     if (body.field !== '') {
         try {
@@ -751,7 +752,7 @@ const updatePayment = async (body) => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 async function payOrder(req) {
-    console.log('DEPRECATED : please use orderPayment function in payments.js service')
+    console.log('Deprecated service : please use orderPayment function in payments.js service')
     try {
         const query  = {...req.body.filterPayment};
         query.active = true;
@@ -775,11 +776,11 @@ async function payOrder(req) {
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 async function deferredPayment(req, method) {
     try {
-        const order = await Orders.findOne({number: req.params.orderNumber, status: ServiceOrders.orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
+        const order = await Orders.findOne({number: req.params.orderNumber, status: orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
-        await successfulPayment({
+        await paymentSuccess({
             number        : req.params.orderNumber,
             status        : 'PAYMENT_PENDING',
             'customer.id' : req.info._id
@@ -839,7 +840,7 @@ async function immediateCashPayment(req, method) {
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 // delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
 async function deleteFailedPayment() {
-    console.log('DEPRECATED : please use deleteFailedPayment function in payments.js service')
+    console.log('Deprecated service : please use deleteFailedPayment function in payments.js service')
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
