@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div class="col-sm-6" >
-                    <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="media" id="id" entity="media" after-function="onPageChange(1)"></ns-upload-files>
+                    <ns-upload-files class="col-md-8" is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="media" id="id" entity="media" after-function="onPageChange(1)"></ns-upload-files>
                 </div>
             </div>
             <div class="scrollmenu" style="padding-top: -20px;">
@@ -207,6 +207,6 @@
     <div class="modal-footer">
         <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>tinymce.modal.medias</button></a>
         <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
-        <button class="btn btn-default" ng-disabled="!imageSelected || (info.max === false && (info.longueur === undefined || info.longueur === null || info.largeur === undefined || info.largeur === null || info.longueur < 0 || info.largeur < 0 )) " ng-click="generate(generer())" translate>tinymce.modal.add</button>
+        <button class="btn btn-default" ng-disabled="!imageSelected || (info.max === false && (info.width === undefined || info.width === null || info.height === undefined || info.height === null || info.width < 0 || info.height < 0 )) " ng-click="generate(generer())" translate>tinymce.modal.add</button>
     </div>
 </div>

@@ -2577,7 +2577,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                     || (
                         $scope.info.background
                         && (
-                            !$scope.info.r || !$scope.info.g || !$scope.info.b ||
+                            ($scope.info.r === undefined || $scope.info.r < 0) || ($scope.info.g === undefined || $scope.info.g < 0) || ($scope.info.b === undefined || $scope.info.b < 0) ||
                             !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
                     )
                 ) {
