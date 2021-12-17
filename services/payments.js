@@ -6,12 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {Orders, PaymentMethods} = require('../orm/models');
-const QueryBuilder             = require('../utils/QueryBuilder');
+const path                                            = require('path');
+const {Cart, Orders, PaymentMethods, Promo, Products} = require('../orm/models');
+const NSErrors                                        = require('../utils/errors/NSErrors');
+const aquilaEvents                                    = require('../utils/aquilaEvents');
+const QueryBuilder                                    = require('../utils/QueryBuilder');
+const ServiceOrders                                   = require('./orders');
+const ServiceMail                                     = require('./mail');
+const ServicesProducts                                = require('./products');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
+
+const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
 
 const getOrdersPayments = async (postBody) => {
     postBody.limit = postBody.limit || 12;
@@ -85,10 +93,299 @@ const savePaymentMethod = async (pm) => {
 
 const deletePaymentMethod = async (_id) => PaymentMethods.findOneAndDelete({_id});
 
+// --------------------------------------------------- POST REFACTOR
+
+const successfulPayment = async (query, updateObject, paymentCode = '') => {
+    console.log('service order successfulPayment()');
+
+    try {
+        let filterCode = paymentCode;
+        if (filterCode === '') {
+            if (updateObject.$set) {
+                filterCode = updateObject.$set.payment[0].mode;
+            } else if (updateObject.$push) {
+                filterCode = updateObject.$push.payment.mode;
+            } else if (updateObject.payment) {
+                filterCode = updateObject.payment[0].mode;
+            } else {
+                console.error('successfulPayment() : no payment in object');
+                return;
+            }
+        }
+        filterCode = filterCode.toLocaleLowerCase();
+
+        const paymentMethod = await PaymentMethods.findOne({code: filterCode});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        if (!_order) {
+            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.'); // TODO Englais
+        }
+        // Immediate payment method (e.g. credit card)
+        if (!paymentMethod.isDeferred) {
+            await ServiceOrders.setStatus(_order._id, ServiceOrders.orderStatuses.PAID);
+        }
+        try {
+            await ServiceMail.sendMailOrderToClient(_order._id);
+        } catch (e) {
+            console.error(e);
+        }
+        try {
+            await ServiceMail.sendMailOrderToCompany(_order._id);
+        } catch (e) {
+            console.error(e);
+        }
+        // We check that the products of the basket are well orderable
+        const {bookingStock} = global.envConfig.stockOrder;
+        if (bookingStock === 'payment') {
+            for (let i = 0; i < _order.items.length; i++) {
+                const orderItem = _order.items[i];
+                const _product  = await Products.findOne({_id: orderItem.id});
+                if (_product.type === 'simple') {
+                    if ((_product.stock.orderable) === false) {
+                        throw NSErrors.ProductNotOrderable;
+                    }
+                    // we book the stock
+                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
+                } else if (_product.type === 'bundle') {
+                    for (let j = 0; j < orderItem.selections.length; j++) {
+                        const section = orderItem.selections[j];
+                        for (let k = 0; k < section.products.length; k++) {
+                            const productId        = section.products[k];
+                            const _product_section = await Products.findOne({_id: productId.id});
+                            if (_product_section.type === 'simple') {
+                                if ((_product_section.stock.orderable) === false) {
+                                    throw NSErrors.ProductNotOrderable;
+                                }
+                                await ServicesProducts.updateStock(_product_section._id, -orderItem.quantity);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // If the order has a discount of type "promo code"
+        if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
+            try {
+            // then we increase the number of uses of this promo
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $inc : {'codes.$.used': 1}
+                });
+                // then we must also update the number of unique users who have used this "promo code"
+                const result = await Orders.distinct('customer.id', {
+                    'promos.promoCodeId' : _order.promos[0].promoCodeId
+                });
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $set : {'codes.$.client_used': result.length}
+                });
+            // TODO P6 : Decrease the stock of the product offered
+            // if (_cart.promos[0].gifts.length)
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        aquilaEvents.emit('aqPaymentReturn', _order._id);
+        return _order;
+    } catch (err) {
+        console.error('La commande est introuvable:', err);
+        throw err;
+    }
+};
+
+const failedPayment = async (query, update) => {
+    if (update.status) { delete update.status; }
+    if (update.$set) {
+        update.$set.status = ServiceOrders.orderStatuses.PAYMENT_FAILED;
+    } else {
+        update.$set = {status: ServiceOrders.orderStatuses.PAYMENT_FAILED};
+    }
+    return Orders.findOneAndUpdate(query, update, {new: true});
+};
+
+const infoPayment = async (orderId, returnData, sendMail, lang) => {
+    const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
+    }
+    returnData.name          = paymentMethod.translation[lang].name;
+    returnData.operationDate = Date.now();
+    if (returnData.type === 'CREDIT') {
+        await ServiceOrders.setStatus(orderId, ServiceOrders.orderStatuses.PAID);
+    }
+    const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
+
+    if (sendMail) {
+        // const orderdata = [];
+        // const datas = {
+        //     number : _order.number
+        // };
+
+        // for(let i = 0; i < returnData.products.length; i++) {
+        //     orderdata.push(`${returnData.products[i].product_code} (${returnData.products[i].qty_returned})`);
+        // }
+
+        // datas.orderdata = orderdata.join(", ");
+        /**
+         * DO NOT DELETE THE COMMENTED CODE ABOVE
+         */
+        if (returnData.type === 'DEBIT') {
+            const datas = {
+                ..._order,
+                articles  : '',
+                firstname : _order.customer.fullname.split(' ')[0],
+                lastname  : _order.customer.fullname.split(' ')[1],
+                fullname  : _order.customer.fullname,
+                number    : _order.number
+            };
+            await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.amount, date: returnData.operationDate});
+        } else {
+            ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
+                console.error(err);
+            });
+        }
+    }
+    aquilaEvents.emit('aqPaymentReturn', _order._id);
+    return _order;
+};
+
+const updatePayment = async (body) => {
+    let msg = {status: true};
+    if (body.field !== '') {
+        try {
+            const updOrder = await Orders.findOneAndUpdate({
+                _id : body._id
+            }, {
+                $set : {
+                    [`payment.$[item].${body.field}`] : body.value
+                }
+            }, {
+                new          : true,
+                arrayFilters : [{'item._id': body.paymentId}]
+            });
+            if (!updOrder) msg = {status: false};
+            return msg;
+        } catch (error) {
+            return {status: false};
+        }
+    } else {
+        return {status: false};
+    }
+};
+
+async function orderPayment(req) {
+    try {
+        const query  = {...req.body.filterPayment};
+        query.active = true;
+        // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
+        // Otherwise, we recover all the active payment methods
+        const paymentMethods = await PaymentMethods.find(query);
+        // We check that the desired payment method is available
+        const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
+        if (!method) {
+            throw NSErrors.PaymentModeNotAvailable;
+        }
+        if (method.isDeferred) {
+            return await deferredPayment(req, method);
+        }
+        return await immediateCashPayment(req, method);
+    } catch (err) {
+        return err;
+    }
+}
+
+async function deferredPayment(req, method) {
+    try {
+        const order = await Orders.findOne({number: req.params.orderNumber, status: ServiceOrders.orderStatuses.PAYMENT_PENDING, 'customer.id': req.info._id});
+        if (!order) {
+            throw NSErrors.OrderNotFound;
+        }
+        await successfulPayment({
+            number        : req.params.orderNumber,
+            status        : 'PAYMENT_PENDING',
+            'customer.id' : req.info._id
+        }, {
+            $set : {
+                status  : 'PAYMENT_RECEIPT_PENDING',
+                payment : [createDeferredPayment(order, method, req.params.lang)]
+            }
+        });
+        await Cart.deleteOne({_id: order.cartId});
+        let action;
+        if (req.body.returnURL) {
+            action = req.body.returnURL;
+        } else {
+            if (req.params.lang) {
+                action = `/${req.params.lang}/cart/success`;
+            } else {
+                action = '/cart/success';
+            }
+        }
+        return `<form method='POST' id='paymentid' action='${action}'></form>`;
+    } catch (err) {
+        return err;
+    }
+}
+
+function createDeferredPayment(order, method, lang) {
+    return {
+        type          : 'CREDIT',
+        operationDate : Date.now(),
+        status        : 'TODO',
+        mode          : method.code.toUpperCase(),
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
+    };
+}
+
+async function immediateCashPayment(req, method) {
+    try {
+        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
+        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        // We set the same value in several places to fit all modules
+        req.query.orderId      = req.params.orderNumber;
+        req.params.paymentCode = req.body.paymentMethod;
+        const form             = await paymentService.getPaymentForm(req);
+        return form;
+    } catch (e) {
+        console.error(e);
+        if (e.status === 404) return {status: 404, code: e.code, message: 'Error with the payment method configuration'};
+        return e;
+    }
+}
+
+// delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
+async function deleteFailedPayment() {
+    console.log('==> Start removing failed payment from orders <==');
+    try {
+        const dateToDelete = new Date();
+        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        const orders = await Orders.find({
+            payment : {
+                $elemMatch : {
+                    status       : 'FAILED',
+                    creationDate : {$lte: dateToDelete}
+                }
+            }
+        });
+        for (const order of orders) {
+            order.payment = order.payment.filter((payment) => (payment.status !== 'FAILED' || (new Date(payment.creationDate) > dateToDelete)));
+            await order.save();
+        }
+        console.log('==> End removing failed payment from orders <==');
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 module.exports = {
     getOrdersPayments,
     getPaymentMethods,
     getPaymentMethod,
     savePaymentMethod,
-    deletePaymentMethod
+    deletePaymentMethod,
+    successfulPayment,
+    failedPayment,
+    infoPayment,
+    updatePayment,
+    orderPayment,
+    deleteFailedPayment
 };

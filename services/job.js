@@ -82,7 +82,7 @@ const initAgendaDB = async () => {
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Delete orders\' failed payments') {
-                            await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/orders/deleteFailedPayment', {
+                            await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/payments/deleteFailedPayment', {
                                 fr : 'Supprime les anciens paiements echoués des anciennes commandes',
                                 en : 'Remove failed payments from old orders'
                             }, 'service', 'system', '', true, '');
