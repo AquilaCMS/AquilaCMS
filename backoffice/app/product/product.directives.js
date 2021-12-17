@@ -361,7 +361,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
             };
         },
         controller : [
-            "$scope", function ($scope) {
+            "$scope", "$modal", function ($scope, $modal) {
                 $scope.switchDefaultImage = function (image, product) {
                     if (image.default) {
                         for (var i = 0, leni = product.images.length; i < leni; i++) {
@@ -405,7 +405,38 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 }
 
                 $scope.addMovie = function () {
-                    $scope.product.images.push({isYoutube: true})
+                    const modalInstance = $modal.open({
+                        templateUrl : "app/product/views/modals/add-youtube-video.html",
+                        backdrop: 'static',
+                        scope       : $scope,
+                        controller  : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                            $scope.item = {
+                                name: '',
+                                content: ''
+                            }
+                            $scope.saveVideo = function () {
+                                $modalInstance.close($scope.item)
+                            }
+                            $scope.close = function () {
+                                $modalInstance.dismiss()
+                            }
+                        }],
+                        resolve     : {
+                            queryFilter() {
+                                return {
+                                    type : $scope.product.type
+                                };
+                            },
+                            productSelected(){
+                                return $scope.associatedPrds;
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function (item) {
+                        $scope.product.images.push({
+                            name: item.name, alt: item.name, isYoutube: true, content: item.content, title: item.name
+                        })
+                    });
                 }
             }
         ]
