@@ -6,24 +6,24 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}        = require('../middleware/authentication');
+const {adminAuthRight}   = require('../middleware/authentication');
 const themesServices     = require('../services/themes');
 const serviceThemeConfig = require('../services/themeConfig');
 const ServiceConfig      = require('../services/config');
 const utilsThemes        = require('../utils/themes');
 
 module.exports = function (app) {
-    app.get('/v2/themes',                  adminAuth, listTheme);
-    app.post('/v2/themes/upload',          adminAuth, uploadTheme);
-    app.post('/v2/themes/delete',          adminAuth, deleteTheme);
-    app.post('/v2/themes/copyDatas',       adminAuth, copyDatas);
-    app.get('/v2/themes/css/:cssName',     adminAuth, getCustomCss);
-    app.post('/v2/themes/css/:cssName',    adminAuth, postCustomCss);
-    app.get('/v2/themes/css',              adminAuth, getAllCssComponentName);
-    app.post('/v2/themes/save/:type',      adminAuth, save);
-    app.post('/v2/themes/package/install', adminAuth, packageInstall);
-    app.post('/v2/themes/package/build',   adminAuth, buildTheme);
-    app.get('/v2/themes/informations',     adminAuth, getThemeInformations);
+    app.get('/v2/themes',                  adminAuthRight('themes'), listTheme);
+    app.post('/v2/themes/upload',          adminAuthRight('themes'), uploadTheme);
+    app.post('/v2/themes/delete',          adminAuthRight('themes'), deleteTheme);
+    app.post('/v2/themes/copyDatas',       adminAuthRight('themes'), copyDatas);
+    app.get('/v2/themes/css/:cssName',     adminAuthRight('design'), getCustomCss);
+    app.post('/v2/themes/css/:cssName',    adminAuthRight('design'), postCustomCss);
+    app.get('/v2/themes/css',              adminAuthRight('design'), getAllCssComponentName);
+    app.post('/v2/themes/save/:type',      adminAuthRight('themes'), save);
+    app.post('/v2/themes/package/install', adminAuthRight('themes'), packageInstall);
+    app.post('/v2/themes/package/build',   adminAuthRight('themes'), buildTheme);
+    app.get('/v2/themes/informations',     adminAuthRight('themes'), getThemeInformations);
 };
 
 /**

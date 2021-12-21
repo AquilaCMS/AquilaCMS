@@ -6,18 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const NSErrors                    = require('../utils/errors/NSErrors');
-const ServiceCart                 = require('../services/cart');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const NSErrors                         = require('../utils/errors/NSErrors');
+const ServiceCart                      = require('../services/cart');
+const {authentication, adminAuthRight} = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/carts',  adminAuth, getCarts);
+    app.post('/v2/carts',  adminAuthRight('cart'), getCarts);
     app.post('/v2/cart/:id', getCartById);
     app.put('/v2/cart/item', addItem);
     app.put('/v2/cart/updateQty', updateQty);
     app.put('/v2/cart/to/order', authentication, setCartToOrder);
     app.delete('/v2/cart/:cartId/item/:itemId', deleteCartItem);
-    app.get('/v2/cart/user/:idclient',  adminAuth, getCartforClient);
+    app.get('/v2/cart/user/:idclient',  adminAuthRight('cart'), getCartforClient);
     app.delete('/v2/cart/discount/:cartId', removeDiscount);
     app.put('/v2/cart/addresses', updateAddresses);
     app.put('/v2/cart/delivery', authentication, updateDelivery);

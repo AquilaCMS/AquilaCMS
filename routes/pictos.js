@@ -6,16 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}  = require('../middleware/authentication');
-const ServiceRule  = require('../services/rules');
-const ServicePicto = require('../services/pictos');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceRule      = require('../services/rules');
+const ServicePicto     = require('../services/pictos');
 
 module.exports = function (app) {
-    app.post('/v2/picto',           adminAuth, getPictos);
-    app.post('/v2/picto/execRules', adminAuth, execRules);
-    app.post('/v2/picto/:id',       adminAuth, getPictoById);
-    app.put('/v2/picto/:id?',       adminAuth, savePicto);
-    app.delete('/v2/picto/:id',     adminAuth, deletePicto);
+    app.post('/v2/picto',           adminAuthRight('picto'), getPictos);
+    app.post('/v2/picto/execRules', adminAuthRight('picto'), execRules);
+    app.post('/v2/picto/:id',       adminAuthRight('picto'), getPictoById);
+    app.put('/v2/picto/:id?',       adminAuthRight('picto'), savePicto);
+    app.delete('/v2/picto/:id',     adminAuthRight('picto'), deletePicto);
 };
 
 /**

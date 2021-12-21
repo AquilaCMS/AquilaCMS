@@ -8,23 +8,23 @@
 
 const showdown           = require('showdown');
 const {middlewareServer} = require('../middleware');
-const {adminAuth}        = require('../middleware/authentication');
+const {adminAuthRight}   = require('../middleware/authentication');
 const serviceModule      = require('../services/modules');
 const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/modules',          adminAuth, getAllModules);
-    app.post('/v2/module',           adminAuth, getModule);
-    app.post('/v2/modules/upload',   adminAuth, uploadModule);
-    app.post('/v2/modules/toggle',   adminAuth, toggleActiveModule);
-    app.post('/v2/modules/md',       adminAuth, getModuleMd);
-    app.delete('/v2/modules/:id',    adminAuth, removeModule);
-    app.get('/v2/modules/check',     adminAuth, checkDependencies);
-    app.post('/v2/module/setConfig', adminAuth, setModuleConfig);
+    app.post('/v2/modules',          adminAuthRight('modules'), getAllModules);
+    app.post('/v2/module',           adminAuthRight('modules'), getModule);
+    app.post('/v2/modules/upload',   adminAuthRight('modules'), uploadModule);
+    app.post('/v2/modules/toggle',   adminAuthRight('modules'), toggleActiveModule);
+    app.post('/v2/modules/md',       adminAuthRight('modules'), getModuleMd);
+    app.delete('/v2/modules/:id',    adminAuthRight('modules'), removeModule);
+    app.get('/v2/modules/check',     adminAuthRight('modules'), checkDependencies);
+    app.post('/v2/module/setConfig', adminAuthRight('modules'), setModuleConfig);
 
     // Deprecated
-    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
-    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
+    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuthRight('modules'), getModuleMd);
+    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuthRight('modules'), setModuleConfigById); // deprecated -> use /v2/module/setConfig
 };
 
 /**

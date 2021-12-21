@@ -7,7 +7,7 @@
  */
 
 const URL                   = require('url');
-const {adminAuth}           = require('../middleware/authentication');
+const {adminAuthRight}      = require('../middleware/authentication');
 const {securityForceFilter} = require('../middleware/security');
 const servicesNews          = require('../services/news');
 const ServicesPreview       = require('../services/preview');
@@ -17,9 +17,9 @@ module.exports = function (app) {
     app.post('/v2/site/news', securityForceFilter([{isVisible: true}]), getNews);
     app.post('/v2/site/new', securityForceFilter([{isVisible: true}]), getNew);
     app.post('/v2/site/news/tags', securityForceFilter([{isVisible: true}]), getNewsTags);
-    app.put('/v2/site/new', adminAuth, saveNew);
-    app.post('/v2/site/preview', adminAuth, previewNew);
-    app.delete('/v2/site/new/:_id', adminAuth, deleteNew);
+    app.put('/v2/site/new', adminAuthRight('articles'), saveNew);
+    app.post('/v2/site/preview', adminAuthRight('articles'), previewNew);
+    app.delete('/v2/site/new/:_id', adminAuthRight('articles'), deleteNew);
 };
 
 /**
