@@ -12,8 +12,6 @@ const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {isAdmin}                   = require('../utils/utils');
 
-const ServicePayment              = require('../services/payments');
-
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
@@ -203,7 +201,7 @@ async function cancelOrderRequest(req, res, next) {
  * @param {Express.Response} res
  * @param {Function} next
  */
- async function infoPayment(req, res, next) {
+async function infoPayment(req, res, next) {
     try {
         const order = await ServiceOrder.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
         res.json(order);
