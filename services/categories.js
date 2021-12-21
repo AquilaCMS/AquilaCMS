@@ -14,7 +14,9 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
+const fsp              = require('../utils/fsp');
 const ServiceRules     = require('./rules');
+const ServiceCache     = require('./cache');
 const ServiceLanguages = require('./languages');
 
 const restrictedFields = ['clickable'];
@@ -145,7 +147,14 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
 };
 
 const setCategory = async (postBody) => {
-    await Categories.updateOne({_id: postBody._id}, {$set: postBody});
+    const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
+    // remove image properly
+    if (oldCat.img && !postBody.img) {
+        ServiceCache.deleteCacheImage('category', oldCat);
+        if (await fsp.existsSync(`${global.envConfig.environment.photoPath}/${oldCat.img}`)) {
+            await fsp.unlinkSync(`${global.envConfig.environment.photoPath}/${oldCat.img}`);
+        }
+    }
     return Categories.findOne({_id: postBody._id}).lean();
 };
 
