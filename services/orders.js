@@ -15,7 +15,8 @@ const {
     Products,
     PaymentMethods,
     Territory,
-    Bills
+    Bills,
+    Promo
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const aquilaEvents     = require('../utils/aquilaEvents');
@@ -44,6 +45,8 @@ const orderStatuses = {
     ASK_CANCEL                   : 'ASK_CANCEL',
     RETURNED                     : 'RETURNED'
 };
+
+const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
 
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
@@ -569,7 +572,7 @@ function setItemStatus(order, packages, status1, status2) {
 /* THESE SERVICES HAVE BEEN MOVED TO payments.js */
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const paymentSuccess = async (query, updateObject, paymentCode = '') => {
-    console.log('Deprecated service : please use successfulPayment function in payments.js service')
+    console.log('Deprecated service : please use successfulPayment function in payments.js service');
     console.log('service order successfulPayment()');
 
     try {
@@ -666,7 +669,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const paymentFail = async (query, update) => {
-    console.log('Deprecated service : please use failedPayment function in payments.js service')
+    console.log('Deprecated service : please use failedPayment function in payments.js service');
     if (update.status) { delete update.status; }
     if (update.$set) {
         update.$set.status = orderStatuses.PAYMENT_FAILED;
@@ -678,7 +681,7 @@ const paymentFail = async (query, update) => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const infoPayment = async (orderId, returnData, sendMail, lang) => {
-    console.log('Deprecated service : please use infoPayment function in payments.js service')
+    console.log('Deprecated service : please use infoPayment function in payments.js service');
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
@@ -726,7 +729,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 const updatePayment = async (body) => {
-    console.log('Deprecated service : please use updatePayment function in payments.js service')
+    console.log('Deprecated service : please use updatePayment function in payments.js service');
     let msg = {status: true};
     if (body.field !== '') {
         try {
@@ -752,7 +755,7 @@ const updatePayment = async (body) => {
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 async function payOrder(req) {
-    console.log('Deprecated service : please use orderPayment function in payments.js service')
+    console.log('Deprecated service : please use orderPayment function in payments.js service');
     try {
         const query  = {...req.body.filterPayment};
         query.active = true;
@@ -840,7 +843,7 @@ async function immediateCashPayment(req, method) {
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
 // delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
 async function deleteFailedPayment() {
-    console.log('Deprecated service : please use deleteFailedPayment function in payments.js service')
+    console.log('Deprecated service : please use deleteFailedPayment function in payments.js service');
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
@@ -884,5 +887,5 @@ module.exports = {
     infoPayment,
     updatePayment,
     deleteFailedPayment,
-    orderStatuses    
+    orderStatuses
 };
