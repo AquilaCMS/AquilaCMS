@@ -847,7 +847,7 @@ async function deleteFailedPayment() {
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        dateToDelete.setDate(dateToDelete.getDate() - (global.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
         const orders = await Orders.find({
             payment : {
                 $elemMatch : {
