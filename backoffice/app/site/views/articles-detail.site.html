@@ -1,6 +1,6 @@
 <form name="form" novalidate class="form-horizontal" ng-submit="save(false)" role="form">
     <ns-box data-title="site.detail.t1" close-href="#/site/articles" title-icon="fa fa-newspaper-o fa-lg">
-        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(articles._id)" additionnal-buttons="additionnalButtons" save-and-quit="save(true)" disable-save="disableSave" return-path="/site/articles" form="form">
+        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(articles._id)" additionnal-buttons="additionnalButtons" save-and-quit="save(true)" disable-save="disableSave" return-path="/site/articles" form="form" hook-articles-detail>
             <div class="form-group">
                 <label for="slug" class="col-sm-1 control-label" translate>site.detail.urlKey</label>
                 <div class="col-sm-6">
