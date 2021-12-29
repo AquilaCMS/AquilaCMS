@@ -1,7 +1,7 @@
 <ns-box data-title="supplier.new.t1" title-icon="fa fa-industry fa-lg" close-href="#/suppliers">    
     <form name="form.supplier" novalidate class="form-horizontal" role="form" ng-submit="save(supplier, false)"> <!--style="padding: 100px;"-->
         <ns-buttons is-edit-mode="isEditMode" remove="remove(supplier.code)" save-and-quit="save(supplier, true)"
-                    disable-save="disableSave" return-path="/suppliers" form="form">
+                    disable-save="disableSave" return-path="/suppliers" form="form" hook-supplier-new>
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#detail" target="_self" translate>supplier.new.details</a></li>

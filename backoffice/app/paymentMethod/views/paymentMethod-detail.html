@@ -1,6 +1,6 @@
 <ns-box data-title="paymentMethod.detail.t1" title-icon="fa fa-credit-card-alt fa-lg" close-href="#/paymentMethods">
     <form name="form" class="form-horizontal" ng-submit="save()" role="form">
-        <ns-buttons save-and-quit="save(true)" disable-save="disableSave" return-path="/paymentMethods" form="form">
+        <ns-buttons save-and-quit="save(true)" disable-save="disableSave" return-path="/paymentMethods" form="form" hook-payment-detail>
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
             <div class="form-group">
                 <div class="col-sm-12">
