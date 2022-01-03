@@ -154,7 +154,7 @@ var checkAccess = function (route) {
                         deferred.reject();
                         toastService.toast("danger", $translate.instant("global.accessForbidden"));
                         $location.path("/");
-                    }, 0);
+                    }, 500);
                 }
             });
             return deferred.promise;
