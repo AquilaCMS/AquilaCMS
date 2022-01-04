@@ -41,7 +41,8 @@
         "preview": "Aperçu",
         "finished": "Terminé",
         "errorCategorization": "Erreur lors de la categorisation",
-        "coherenceTitle": "Cohérence du produit"
+        "coherenceTitle": "Cohérence du produit",
+        "changeType": "Changer le type"
     },
     "modal": {
         "activeProduct": "Activer un produit",

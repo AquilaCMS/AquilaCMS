@@ -604,8 +604,12 @@ const calculateFilters = async (req, result) => {
 
 const setProduct = async (req) => {
     // We update the product
-    const product = await Products.findById(req.body._id);
+    let product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
+    if (product.type !== req.body.type) {
+        product      = await changeProductType(product, req.body.type);
+        req.body._id = product._id;
+    }
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
     const result = await product.updateData(req.body);
@@ -1113,6 +1117,19 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
+const changeProductType = async (product, newType) => {
+    const oldProduct       = await Products.findOne({code: product.code});
+    const convertedProduct = oldProduct.toObject();
+    if (!(['simple', 'bundle', 'virtual']).includes(newType)) throw NSErrors.ProductTypeInvalid;
+    if (oldProduct && newType && newType !== oldProduct.type) {
+        await Products.deleteOne({code: oldProduct.code});
+        convertedProduct.type = newType;
+        delete convertedProduct._id;
+        return createProduct({body: convertedProduct});
+    }
+    return convertedProduct;
+};
+
 module.exports = {
     getProducts,
     getProduct,
@@ -1131,5 +1148,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    changeProductType
 };

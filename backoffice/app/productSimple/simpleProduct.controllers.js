@@ -272,6 +272,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             window.location.href = `#/products/${savedPrd.type}/${savedPrd.code}`;
                             $location.path(window.location.href);
                         }
+                        $location.path( "#/products/" + savedPrd.type + "/" + savedPrd.code)
                     }
                 }, function (err) {
                     if (err.data.translations && err.data.translations[$scope.adminLang]) {
