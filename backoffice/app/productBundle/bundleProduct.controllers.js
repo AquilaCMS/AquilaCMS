@@ -367,7 +367,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     else
                     {
                         toastService.toast("success", $translate.instant("bundle.product.productSaved"));
-                        $location.path( "#/products/" + savedPrd.type + "/" + savedPrd.code)
+                        if($scope.product.type !== $routeParams.type) {
+                            window.location.hash = `/products/${savedPrd.type}/${savedPrd.code}`
+                        }
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {

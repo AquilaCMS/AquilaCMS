@@ -232,7 +232,7 @@ module.exports = {
         en : 'Composant not allowed, it should be prefixed with ns-'
     },
     ProductTypeInvalid : {
-        fr : 'Ce type n\'est pas vvalide',
+        fr : 'Ce type n\'est pas valide',
         en : 'Type not allowed'
     },
     ComponentInvalidModel : {

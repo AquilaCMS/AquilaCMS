@@ -9,6 +9,7 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
 const mongoose                = require('mongoose');
+const {lte}                   = require('lodash/fp');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
 const QueryBuilder            = require('../utils/QueryBuilder');
@@ -606,10 +607,7 @@ const setProduct = async (req) => {
     // We update the product
     let product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
-    if (product.type !== req.body.type) {
-        product      = await changeProductType(product, req.body.type);
-        req.body._id = product._id;
-    }
+    if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
     const result = await product.updateData(req.body);
@@ -1118,16 +1116,12 @@ const calculStock = async (params, product = undefined) => {
 };
 
 const changeProductType = async (product, newType) => {
-    const oldProduct       = await Products.findOne({code: product.code});
-    const convertedProduct = oldProduct.toObject();
+    const oldProduct = await Products.findOne({code: product.code});
     if (!(['simple', 'bundle', 'virtual']).includes(newType)) throw NSErrors.ProductTypeInvalid;
     if (oldProduct && newType && newType !== oldProduct.type) {
-        await Products.deleteOne({code: oldProduct.code});
-        convertedProduct.type = newType;
-        delete convertedProduct._id;
-        return createProduct({body: convertedProduct});
+        return Products.findOneAndUpdate({_id: oldProduct._id}, {$set: {type: newType}}, {new: true});
     }
-    return convertedProduct;
+    return oldProduct;
 };
 
 module.exports = {
