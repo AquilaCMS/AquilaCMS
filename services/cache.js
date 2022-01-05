@@ -7,6 +7,7 @@
  */
 
 const glob           = require('glob');
+const path           = require('path');
 const fs             = require('../utils/fsp');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
@@ -48,11 +49,16 @@ const deleteCacheImage = (type, datas) => {
         filePathCache = `${cacheFolder}medias/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
+    case 'category':
+        const extension = path.extname(datas.img);
+        fileName        = path.basename(datas.img, extension);
+        filePathCache   = `${cacheFolder}category/${fileName}*`;
+        deleteFileCache(filePathCache);
+        break;
     case 'slider':
     case 'gallery':
     case 'blog':
     case 'picto':
-    case 'category':
         fileName      = datas.filename;
         filePathCache = `${cacheFolder}${type}/${fileName}*`;
         deleteFileCache(filePathCache);

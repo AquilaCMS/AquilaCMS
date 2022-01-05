@@ -1,7 +1,7 @@
 var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 'ui.bootstrap']);
 
-ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', '$translate', 'ModuleServiceV2',
-function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate, ModuleServiceV2) {
+ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', '$translate', 'ModuleServiceV2', 'ModuleService',
+function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate, ModuleServiceV2, ModuleService) {
     $scope.showModuleLoading = false;
     $scope.nsUploadFiles     = {
         isSelected : false
@@ -237,6 +237,15 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             }, 10000);
         });
     };
+
+    $scope.installModulesDeps = function () {
+        toastService.toast("success", $translate.instant("modules.installDepsStart"));
+        ModuleService.installModulesDeps(function(res) {
+            toastService.toast("success", $translate.instant("modules.installDepsSuccess"));
+        }, function(err) {
+            toastService.toast("danger", $translate.instant("modules.installDepsFailed"));
+        })
+    }
 
 }]);
 

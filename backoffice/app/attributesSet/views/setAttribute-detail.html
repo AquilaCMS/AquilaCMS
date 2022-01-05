@@ -1,7 +1,7 @@
 <ns-box data-title="setAttribute.detail.t1" title-icon="fa fa-align-justify fa-lg" close-href="#/setAttributes"> <!--'{{ setAttribute.code }}'-->
     <form name="form" class="form-horizontal" role="form" ng-submit="save(setAttribute)">
         <ns-buttons is-edit-mode="true" save-and-quit="save(setAttribute, true)" disable-save="disableSave" return-path="/{{type}}/setAttributes"
-            remove="remove(setAttribute._id)" hide-remove="setAttribute.code == 'defaut'" form="form">
+            remove="remove(setAttribute._id)" hide-remove="setAttribute.code == 'defaut'" form="form" hook-attributesset-detail>
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
                     <li class="active">

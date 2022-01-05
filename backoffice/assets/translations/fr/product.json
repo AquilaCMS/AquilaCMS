@@ -93,7 +93,9 @@
         "pos": "Position",
         "img": "Principale",
         "url": "Chemin",
-        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème",
+        "youtubeId": "Video Youtube ID" ,
+        "type": "Video Youtube"
     },
     "list": {
         "ph1": "Nom",

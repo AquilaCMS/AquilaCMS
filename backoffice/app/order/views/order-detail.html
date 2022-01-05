@@ -1,15 +1,17 @@
-<ns-box data-title="order.detail.t1" title-icon="fa fa-shopping-cart fa-lg" close-href="#/orders">
+<ns-box data-title="order.detail.t1" title-icon="fa fa-shopping-cart fa-lg" close-href="#/orders" hook-order-detail-general>
 
-    <a class="btn btn-default ico" href="#/orders"><span translate>ns.ret</span><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
-    <a class="btn btn-default" style="float: right;"  ng-show="displayBillButton()" ng-click="orderToBill()" translate>order.detail.bill</a>
+    <a class="btn btn-default ico" href="#/orders"><span translate>ns.ret</span><i class="fa fa-chevron-left"
+            aria-hidden="true"></i></a>
+    <a class="btn btn-default" style="float: right;" ng-show="displayBillButton()" ng-click="orderToBill()"
+        translate>order.detail.bill</a>
 
-    <div class="row start_stats orderInfoColor" style="margin: 30px auto;">
+    <div class="row start_stats orderInfoColor" style="margin: 30px auto;" hook-order-detail-head>
 
         <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0;overflow: hidden">
             <i class="fa fa-key" style="color: #5c6bc0"></i>
             <p>
                 <b style="font-size: 25px;">{{order.number}}</b>
-                <br /><br/>
+                <br /><br />
                 <span translate>order.friendlyInfo.order</span>
             </p>
         </div>
@@ -20,7 +22,7 @@
                 <b style="font-size: 25px;">{{order.createdAt | date:'dd/MM/yyyy'}}</b>
                 <br />
                 <b style="font-size: 15px;">{{order.createdAt | date:'HH:mm'}}</b>
-                <br/>
+                <br />
                 <span translate>order.friendlyInfo.date</span>
             </p>
         </div>
@@ -40,12 +42,14 @@
                 <b style="font-size: 30px;">{{order.priceTotal.ati | number:2}}</b><b class="euro">€</b>
                 <br />
                 <span>
-                    <br/>Total
+                    <br />Total
                 </span>
             </p>
         </div>
 
-        <div class="col-md-2" style="background:#80cbc4;border: 1px solid #4db6ac;width:23%;cursor: pointer;overflow: hidden" ng-click="scrollTo('changeStatusId')">
+        <div class="col-md-2"
+            style="background:#80cbc4;border: 1px solid #4db6ac;width:23%;cursor: pointer;overflow: hidden"
+            ng-click="scrollTo('changeStatusId')">
             <i class="fa fa-bookmark" style="color: #4db6ac"></i>
             <p>
                 <b style="font-size: 20px;">{{getStatus(order.status)}}</b>
@@ -66,15 +70,18 @@
 
     <div class="row order-header order-emphase">
         <div class="col-md-12">
-            <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
+            <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template">
+            </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-4 multipleBoxInLine">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
                     <h2 translate>order.detail.compteCli</h2>
-                    <a target="_blank" ng-href="#/clients/{{order.customer.id}}" class="caseOfIcon" ng-if="customer !== null">
+                    <a target="_blank" ng-href="#/clients/{{order.customer.id}}" class="caseOfIcon"
+                        ng-if="customer !== null">
                         <i class="fa fa-2x fa-eye buttonIconStyle"></i>
                     </a>
                 </div>
@@ -95,7 +102,7 @@
                         <span>)</span>
                     </div>
                     <div ng-if="order.comment">
-                        <br/><br/>
+                        <br /><br />
                         <b translate>order.detail.comments</b> : {{order.comment}}
                     </div>
                 </div>
@@ -110,22 +117,40 @@
                     </a>
                 </div>
                 <div ng-show="editableMode" class="box-content">
-                    <span editable-text="order.addresses.billing.firstname" onbeforesave="updateOrder('addresses.billing.firstname', $data)">{{ order.addresses.billing.firstname || '&nbsp;' }}</span>
+                    <span editable-text="order.addresses.billing.firstname"
+                        onbeforesave="updateOrder('addresses.billing.firstname', $data)">{{
+                        order.addresses.billing.firstname || '&nbsp;' }}</span>
                     <span editable-text="order.addresses.billing.lastname"
-                          onbeforesave="updateOrder('addresses.billing.lastname', $data)">{{ order.addresses.billing.lastname || '&nbsp;' }}</span><br />
+                        onbeforesave="updateOrder('addresses.billing.lastname', $data)">{{
+                        order.addresses.billing.lastname || '&nbsp;' }}</span><br />
                     <span editable-text="order.addresses.billing.companyName"
-                          onbeforesave="updateOrder('addresses.billing.companyName', $data)">{{ order.addresses.billing.companyName || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.billing.line1" onbeforesave="updateOrder('addresses.billing.line1', $data)">{{ order.addresses.billing.line1 || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.billing.line2" onbeforesave="updateOrder('addresses.billing.line2', $data)">{{ order.addresses.billing.line2 || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.billing.phone" onbeforesave="updateOrder('addresses.billing.phone', $data)">{{ order.addresses.billing.phone || '&nbsp;' }}</span><br />
+                        onbeforesave="updateOrder('addresses.billing.companyName', $data)">{{
+                        order.addresses.billing.companyName || '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.billing.line1"
+                        onbeforesave="updateOrder('addresses.billing.line1', $data)">{{ order.addresses.billing.line1 ||
+                        '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.billing.line2"
+                        onbeforesave="updateOrder('addresses.billing.line2', $data)">{{ order.addresses.billing.line2 ||
+                        '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.billing.phone"
+                        onbeforesave="updateOrder('addresses.billing.phone', $data)">{{ order.addresses.billing.phone ||
+                        '&nbsp;' }}</span><br />
                     <span editable-text="order.addresses.billing.phone_mobile"
-                          onbeforesave="updateOrder('addresses.billing.phone_mobile', $data)">{{ order.addresses.billing.phone_mobile || ' ' }}</span><br />
-                    <span editable-text="order.addresses.billing.zipcode" onbeforesave="updateOrder('addresses.billing.zipcode', $data)">{{ order.addresses.billing.zipcode || '&nbsp;' }}</span>
-                    <span editable-text="order.addresses.billing.city" onbeforesave="updateOrder('addresses.billing.city', $data)">{{ order.addresses.billing.city || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.billing.country" onbeforesave="updateOrder('addresses.billing.country', $data)">{{ order.addresses.billing.country || '&nbsp;' }}</span>
+                        onbeforesave="updateOrder('addresses.billing.phone_mobile', $data)">{{
+                        order.addresses.billing.phone_mobile || ' ' }}</span><br />
+                    <span editable-text="order.addresses.billing.zipcode"
+                        onbeforesave="updateOrder('addresses.billing.zipcode', $data)">{{
+                        order.addresses.billing.zipcode || '&nbsp;' }}</span>
+                    <span editable-text="order.addresses.billing.city"
+                        onbeforesave="updateOrder('addresses.billing.city', $data)">{{ order.addresses.billing.city ||
+                        '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.billing.country"
+                        onbeforesave="updateOrder('addresses.billing.country', $data)">{{
+                        order.addresses.billing.country || '&nbsp;' }}</span>
                 </div>
                 <div ng-hide="editableMode" class="box-content textInBox">
-                    <span translate>{{"order.detail.civility."+ order.addresses.billing.civility.toString()}}</span><br />
+                    <span translate>{{"order.detail.civility."+
+                        order.addresses.billing.civility.toString()}}</span><br />
                     <span>
                         {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
                         {{order.addresses.billing.companyName}}<br />
@@ -149,26 +174,45 @@
                 </div>
                 <div ng-show="editableMode" class="box-content">
                     <span editable-text="order.addresses.delivery.firstname"
-                          onbeforesave="updateOrder('addresses.delivery.firstname', $data)">{{ order.addresses.delivery.firstname || '&nbsp;' }}</span>
-                    <span editable-text="order.addresses.delivery.lastname" onbeforesave="updateOrder('addresses.delivery.lastname', $data)">
+                        onbeforesave="updateOrder('addresses.delivery.firstname', $data)">{{
+                        order.addresses.delivery.firstname || '&nbsp;' }}</span>
+                    <span editable-text="order.addresses.delivery.lastname"
+                        onbeforesave="updateOrder('addresses.delivery.lastname', $data)">
                         {{ order.addresses.delivery.lastname || '&nbsp;' }}
                     </span><br />
-                    <span editable-text="order.addresses.delivery.companyName" onbeforesave="updateOrder('addresses.delivery.companyName', $data)">
-                        {{order.delivery.name ? order.delivery.name + ": " + order.addresses.delivery.companyName : order.addresses.delivery.companyName || '&nbsp;'}}
+                    <span editable-text="order.addresses.delivery.companyName"
+                        onbeforesave="updateOrder('addresses.delivery.companyName', $data)">
+                        {{order.delivery.name ? order.delivery.name + ": " + order.addresses.delivery.companyName :
+                        order.addresses.delivery.companyName || '&nbsp;'}}
                     </span><br />
-                    <span editable-text="order.addresses.delivery.line1" onbeforesave="updateOrder('addresses.delivery.line1', $data)">{{ order.addresses.delivery.line1 || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.delivery.line2" onbeforesave="updateOrder('addresses.delivery.line2', $data)">{{ order.addresses.delivery.line2 || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.delivery.phone" onbeforesave="updateOrder('addresses.delivery.phone', $data)">{{ order.addresses.delivery.phone || ' ' }}</span><br />
+                    <span editable-text="order.addresses.delivery.line1"
+                        onbeforesave="updateOrder('addresses.delivery.line1', $data)">{{ order.addresses.delivery.line1
+                        || '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.delivery.line2"
+                        onbeforesave="updateOrder('addresses.delivery.line2', $data)">{{ order.addresses.delivery.line2
+                        || '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.delivery.phone"
+                        onbeforesave="updateOrder('addresses.delivery.phone', $data)">{{ order.addresses.delivery.phone
+                        || ' ' }}</span><br />
                     <span editable-text="order.addresses.delivery.phone_mobile"
-                          onbeforesave="updateOrder('addresses.delivery.phone_mobile', $data)">{{ order.addresses.delivery.phone_mobile || ' ' }}</span><br />
-                    <span editable-text="order.addresses.delivery.zipcode" onbeforesave="updateOrder('addresses.delivery.zipcode', $data)">{{ order.addresses.delivery.zipcode || '&nbsp;' }}</span>
-                    <span editable-text="order.addresses.delivery.city" onbeforesave="updateOrder('addresses.delivery.city', $data)">{{ order.addresses.delivery.city || '&nbsp;' }}</span><br />
-                    <span editable-text="order.addresses.delivery.country" onbeforesave="updateOrder('addresses.delivery.country', $data)">{{ order.addresses.delivery.country || '&nbsp;' }}</span>
+                        onbeforesave="updateOrder('addresses.delivery.phone_mobile', $data)">{{
+                        order.addresses.delivery.phone_mobile || ' ' }}</span><br />
+                    <span editable-text="order.addresses.delivery.zipcode"
+                        onbeforesave="updateOrder('addresses.delivery.zipcode', $data)">{{
+                        order.addresses.delivery.zipcode || '&nbsp;' }}</span>
+                    <span editable-text="order.addresses.delivery.city"
+                        onbeforesave="updateOrder('addresses.delivery.city', $data)">{{ order.addresses.delivery.city ||
+                        '&nbsp;' }}</span><br />
+                    <span editable-text="order.addresses.delivery.country"
+                        onbeforesave="updateOrder('addresses.delivery.country', $data)">{{
+                        order.addresses.delivery.country || '&nbsp;' }}</span>
                 </div>
 
-                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
+                <div class="box-content" style="padding: 0 10px;"
+                    ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
                     {{order.addresses.delivery.companyName}}
-                    <span translate ng-show="order.addresses.delivery.firstname">{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
+                    <span translate ng-show="order.addresses.delivery.firstname">{{"order.detail.civility."+
+                        order.addresses.delivery.civility.toString()}}</span><br />
                     <span>
                         {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
                         {{order.addresses.delivery.line1}}<br />
@@ -179,13 +223,16 @@
                         {{order.addresses.delivery.country}}
                     </span>
                 </div>
-                <div class="box-content" ng-repeat="field in fieldsOrderDelivery" bind-html-compile="field.component_template"></div>
+                <div class="box-content" ng-repeat="field in fieldsOrderDelivery"
+                    bind-html-compile="field.component_template"></div>
             </div>
         </div>
     </div>
+
     <br />
+
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" hook-order-detail-items>
             <div class="box subbox" style="padding-bottom:0px;">
                 <div class="box-header box-header-table">
                     <h2 translate>order.detail.orderDet</h2>
@@ -219,8 +266,10 @@
                                         <div ng-if="item.opts.length > 0" translate>order.detail.opt
                                             <p ng-repeat="opt in item.opts">{{opt[0]}}</p>
                                         </div>
-                                        <div ng-show="item.id.trademark" class="trademark" translate>order.detail.marque</div>
-                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;" ng-bind-html="displayProducts(item)"></ul>
+                                        <div ng-show="item.id.trademark" class="trademark" translate>order.detail.marque
+                                        </div>
+                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;"
+                                            ng-bind-html="displayProducts(item)"></ul>
                                         <!--<a ng-href="#/products/{{(item.item_details.itemType ? item.item_details.itemType : 'simple')}}/{{item.item_details._slug}}" target="_blank" class="btn btn-default">Voir</a>-->
                                     </div>
                                 </td>
@@ -232,14 +281,16 @@
                                     {{getUnitPriceEt(item) | number:2}} €
                                 </td>
                                 <td class="text-right order-text-big" data-label="Pu TTC :">
-                                    <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) | number:2}} €</span></del><br /></span>
+                                    <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) |
+                                                number:2}} €</span></del><br /></span>
                                     {{getUnitPrice(item) | number:2}} €
                                 </td>
                                 <td class="text-right order-text-big" data-label="Montant TVA :">
                                     {{getUnitPrice(item) - getUnitPriceEt(item) | number:2}} €
                                 </td>
                                 <td class="text-right order-text-big" data-label="Total TTC :">
-                                    <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) * item.quantity | number:2}} €</span></del><br /></span>
+                                    <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) *
+                                                item.quantity | number:2}} €</span></del><br /></span>
                                     {{getUnitPrice(item) * item.quantity | number:2}} €
                                 </td>
                                 <td class="text-center" data-label="Statut :">
@@ -257,10 +308,14 @@
                                 <td style="width: 130px;"><strong translate>order.detail.fdp</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-text-big" data-label="Pu HT :">{{order.delivery.price.et | number:2}}</td>
-                                <td class="text-right order-text-big" data-label="Pu TTC :">{{order.delivery.price.ati | number:2}}</td>
-                                <td class="text-right order-text-big" data-label="TVA :">{{order.delivery.price.ati - order.delivery.price.et | number:2}} €</td>
-                                <td class="text-right order-text-big" data-label="Total TTC :">{{order.delivery.price.ati | number:2}} €</td>
+                                <td class="text-right order-text-big" data-label="Pu HT :">{{order.delivery.price.et |
+                                    number:2}}</td>
+                                <td class="text-right order-text-big" data-label="Pu TTC :">{{order.delivery.price.ati |
+                                    number:2}}</td>
+                                <td class="text-right order-text-big" data-label="TVA :">{{order.delivery.price.ati -
+                                    order.delivery.price.et | number:2}} €</td>
+                                <td class="text-right order-text-big" data-label="Total TTC :">
+                                    {{order.delivery.price.ati | number:2}} €</td>
                                 <td></td>
                             </tr>
                             <tr ng-if="order.quantityBreaks && order.quantityBreaks.discountATI">
@@ -270,29 +325,40 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">-
+                                    {{order.quantityBreaks.discountATI.aqlRound(2)}} €</td>
                             </tr>
                             <tr ng-if="order.promos[0]">
                                 <td><strong translate>order.detail.reduc</strong></td>
                                 <td class="text-left order-emphase">{{order.promos[0].name}}</td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.aqlRound(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).aqlRound(2)}} €</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">-
+                                    {{order.promos[0].discountET.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="PU TTC :">-
+                                    {{order.promos[0].discountATI.aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI
+                                    - order.promos[0].discountET).aqlRound(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">-
+                                    {{order.promos[0].discountATI.aqlRound(2)}} €</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><strong translate>order.detail.total</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.aqlRound(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.aqlRound(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).aqlRound(2)}}€</td>
-                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.aqlRound(2) }}€</strong></td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">
+                                    {{order.priceTotal.et.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Pu TTC :">
+                                    {{order.priceTotal.ati.aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati -
+                                    order.priceTotal.et).aqlRound(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">
+                                    <strong>{{order.priceTotal.ati.aqlRound(2) }}€</strong></td>
                                 <td class="text-center">
-                                    <span ng-show="order.priceTotal.paidTax === undefined || order.priceTotal.paidTax" translate>order.detail.paidTax</span>
-                                    <span ng-show="order.priceTotal.paidTax === false" translate>order.detail.taxFree</span>
+                                    <span ng-show="order.priceTotal.paidTax === undefined || order.priceTotal.paidTax"
+                                        translate>order.detail.paidTax</span>
+                                    <span ng-show="order.priceTotal.paidTax === false"
+                                        translate>order.detail.taxFree</span>
                                 </td>
                             </tr>
                         </tfoot>
@@ -301,15 +367,15 @@
             </div>
         </div>
     </div>
+
     <br />
+
     <div class="row">
         <div class="col-md-6 multipleBoxInLine">
             <div class="box subbox" style="padding-bottom:0px;">
                 <div class="box-header box-header-table">
                     <h2 translate>order.detail.colis</h2>
-                    <div
-                        ng-show="orderPackagePopup.length > 0"
-                        ng-repeat="orderPP in orderPackagePopup"
+                    <div ng-show="orderPackagePopup.length > 0" ng-repeat="orderPP in orderPackagePopup"
                         bind-html-compile="orderPP.component_template">
                     </div>
                     <a ng-show="orderPackagePopup.length === 0" ng-click="addPackage()" class="caseOfIcon">
@@ -330,11 +396,13 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="pkg in order.delivery.package">
-                                    <td><a ng-href="{{pkg.tracking}}" style="color:blue;text-decoration: underline;" target="_blank" translate>order.detail.suivrePack</a></td>
+                                    <td><a ng-href="{{pkg.tracking}}" style="color:blue;text-decoration: underline;"
+                                            target="_blank" translate>order.detail.suivrePack</a></td>
                                     <td>{{pkg.date | date:"dd/MM/yyyy"}}</td>
                                     <td>{{getProductsDatas(pkg.products, "qty_shipped")}}</td>
                                     <td>{{getPkgTotal(pkg)}}</td>
-                                    <td class="text-center"><i class="fa fa-trash pointer" ng-click="delPkg(pkg._id)"></i></td>
+                                    <td class="text-center"><i class="fa fa-trash pointer"
+                                            ng-click="delPkg(pkg._id)"></i></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -360,22 +428,28 @@
                             <tbody class="box-content">
                                 <tr>
                                     <td class="col-md-12">
-                                        <p ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
-                                            <b translate>order.detail.trans</b> : {{order.delivery.name ? order.delivery.name : "N/A"}}<br />
-                                            <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : getDeliveryDate()}}
+                                        <p
+                                            ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
+                                            <b translate>order.detail.trans</b> : {{order.delivery.name ?
+                                            order.delivery.name : "N/A"}}<br />
+                                            <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ?
+                                            getOrderReceiptDate() : getDeliveryDate()}}
                                         </p>
-                                        <p ng-repeat="orderDelDate in dateOrderDelivery" bind-html-compile="orderDelDate.component_template"></p>
-                                        
+                                        <p ng-repeat="orderDelDate in dateOrderDelivery"
+                                            bind-html-compile="orderDelDate.component_template"></p>
+
                                         <p>
                                             <b translate>order.detail.pdsTotal</b>
                                             <span>:</span>
                                             <span>{{getTotalWeight()}}</span>
                                             <span>g</span>
-                                            <span ng-show="getTotalWeight() > 1000">({{getTotalWeight()/1000}} kg)</span>
+                                            <span ng-show="getTotalWeight() > 1000">({{getTotalWeight()/1000}}
+                                                kg)</span>
                                         </p>
                                     </td>
                                 </tr>
-                                <tr style="margin-bottom: 5px" ng-repeat="orderRP in orderRelayPoint" bind-html-compile="orderRP.component_template"></tr>
+                                <tr style="margin-bottom: 5px" ng-repeat="orderRP in orderRelayPoint"
+                                    bind-html-compile="orderRP.component_template"></tr>
                             </tbody>
                         </table>
                     </div>
@@ -384,6 +458,7 @@
             </div>
         </div>
     </div>
+
     <br />
     <div class="row">
         <div class="col-md-12">
@@ -442,6 +517,7 @@
         </div>
     </div>
     <br />
+
     <div class="row">
         <div class="col-md-6 multipleBoxInLine">
             <div class="box subbox">
@@ -504,35 +580,36 @@
                     </a>
                 </div>
                 <div class="box-content textInBox">
-                        <div class="align-center">
-                            <div ng-show="editStatus">
-                                <div style="margin-bottom:10px">
-                                    <strong><label translate="">order.detail.status </label> : </strong>
-                                    <select style="width: 100%;display:inline-block" name="editStatus" id="editStatus" class="form-control"
-                                        ng-options="s.code as s.name for s in orderStatus"
-                                        ng-model="status">
-                                    </select>
-                                </div>
-                                <div style="margin-bottom:10px">
-                                    <button type="button" class="btn btn-default ng-scope" ng-click="updateOrder('status', status)"
-                                        translate>order.detail.save</button>
-                                    <button type="button" class="btn btn-default ng-scope" ng-click="changeStatus()"
-                                        translate>order.detail.cancel</button>
-                                </div>
+                    <div class="align-center">
+                        <div ng-show="editStatus">
+                            <div style="margin-bottom:10px">
+                                <strong><label translate="">order.detail.status </label> : </strong>
+                                <select style="width: 100%;display:inline-block" name="editStatus" id="editStatus"
+                                    class="form-control" ng-options="s.code as s.name for s in orderStatus"
+                                    ng-model="status">
+                                </select>
                             </div>
-                            <p ng-repeat="status in order.historyStatus | orderBy:'-date'">
-                                {{status.date | date:"dd/MM/yyyy 'à' H:mm"}} ->
-                                <!-- {{status.status}} -->
-                                <!-- <label translate translate-values="test">order.detail.cancel</label> -->
-                                <label translate>{{getTranslation(status.status)}}</label>
-                                <!-- <b translate>{{getStatus(status.status)}} </b> -->
-                            </p>
-
+                            <div style="margin-bottom:10px">
+                                <button type="button" class="btn btn-default ng-scope"
+                                    ng-click="updateOrder('status', status)" translate>order.detail.save</button>
+                                <button type="button" class="btn btn-default ng-scope" ng-click="changeStatus()"
+                                    translate>order.detail.cancel</button>
+                            </div>
                         </div>
+                        <p ng-repeat="status in order.historyStatus | orderBy:'-date'">
+                            {{status.date | date:"dd/MM/yyyy 'à' H:mm"}} ->
+                            <!-- {{status.status}} -->
+                            <!-- <label translate translate-values="test">order.detail.cancel</label> -->
+                            <label translate>{{getTranslation(status.status)}}</label>
+                            <!-- <b translate>{{getStatus(status.status)}} </b> -->
+                        </p>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="row" bind-html-compile="order.component_template"></div>
+
 </ns-box>

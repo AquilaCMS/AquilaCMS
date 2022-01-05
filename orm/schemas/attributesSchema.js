@@ -13,12 +13,13 @@ const Schema        = mongoose.Schema;
 const {ObjectId}    = Schema.Types;
 
 const AttributesSchema = new Schema({
-    code  : {type: String, required: true, unique: true},
+    code  : {type: String, required: true, unique: false},
     type  : {type: String, required: true},
     _type : {
         type    : String,
         enum    : ['products', 'users'],
-        default : 'products'
+        default : 'products',
+        unique  : false
     },
     param          : {type: String, required: true},
     set_attributes : [{type: ObjectId, ref: 'setAttributes'}],
@@ -31,6 +32,8 @@ const AttributesSchema = new Schema({
 }, {
     id : false
 });
+
+AttributesSchema.index({code: 1, _type: 1}, {unique: true});
 
 AttributesSchema.statics.translationValidation = async function (self) {
     let errors = [];
@@ -64,7 +67,7 @@ AttributesSchema.statics.translationValidation = async function (self) {
 };
 
 AttributesSchema.statics.checkCode = async function (data) {
-    await utilsDatabase.checkCode('attributes', data._id, data.code);
+    await utilsDatabase.checkCode('attributes', data._id, data.code, {_type: data._type});
 };
 
 /**

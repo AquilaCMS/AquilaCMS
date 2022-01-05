@@ -428,36 +428,7 @@ const activateModule = async (idModule, toBeChanged) => {
         // If the module contains dependencies usable in the front
         // then we run the install to install the dependencies in aquila
         if (myModule.packageDependencies) {
-            for (const apiOrTheme of Object.keys(toBeChanged)) {
-                let installPath = global.appRoot;
-                let position    = 'aquila';
-                let packagePath = path.resolve(installPath, 'package.json');
-                if (apiOrTheme === 'theme') {
-                    installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-                    position    = 'the theme';
-                    packagePath = path.resolve(installPath, 'package.json');
-                }
-                if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON  = JSON.parse(await fs.readFile(packagePath));
-                    const dependencies = {
-                        ...packageJSON.dependencies,
-                        ...myModule.packageDependencies[apiOrTheme],
-                        ...toBeChanged[apiOrTheme]
-                    };
-                    if (!isEqual(packageJSON.dependencies, dependencies)) {
-                        packageJSON.dependencies = {
-                            ...packageJSON.dependencies,
-                            ...myModule.packageDependencies[apiOrTheme],
-                            ...toBeChanged[apiOrTheme]
-                        };
-                        packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                        console.log(`Installing dependencies of the module in ${position}...`);
-                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                        await packageManager.execCmd('yarn upgrade', installPath);
-                    }
-                }
-            }
+            await installModulesDependencies(myModule, toBeChanged);
         }
 
         // If the module must import components into the front
@@ -474,6 +445,52 @@ const activateModule = async (idModule, toBeChanged) => {
         err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
+};
+
+const installModulesDependencies = async (myModule, toBeChanged) => {
+    for (const apiOrTheme of Object.keys(toBeChanged)) {
+        if (apiOrTheme !== 'theme' && apiOrTheme !== 'api') continue;
+        let installPath = global.appRoot;
+        let position    = 'aquila';
+        let packagePath = path.resolve(installPath, 'package.json');
+        if (apiOrTheme === 'theme') {
+            installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+            position    = 'the theme';
+            packagePath = path.resolve(installPath, 'package.json');
+        }
+        if (myModule.packageDependencies && myModule.packageDependencies[apiOrTheme]) {
+            const packageJSON  = JSON.parse(await fs.readFile(packagePath));
+            const dependencies = {
+                ...packageJSON.dependencies,
+                ...myModule.packageDependencies[apiOrTheme],
+                ...toBeChanged[apiOrTheme]
+            };
+            if (!isEqual(packageJSON.dependencies, dependencies)) {
+                packageJSON.dependencies = {
+                    ...packageJSON.dependencies,
+                    ...myModule.packageDependencies[apiOrTheme],
+                    ...toBeChanged[apiOrTheme]
+                };
+                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                console.log(`Installing dependencies of the module in ${position}...`);
+                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await packageManager.execCmd('yarn upgrade', installPath);
+            }
+        }
+    }
+};
+
+const installDependencies = async () => {
+    // get active modules
+    console.log('Modules packageDependecies install start');
+    const modules = await getModules({filter: {active: true}, structure: '*', limit: 99, lean: true});
+    for (const module of modules.datas) {
+        const moduleDependencies = require(path.join((module.path.startsWith('module') ? (`../${module.path}`) :  module.path), 'info.json')).info.packageDependencies;
+        if (moduleDependencies) {await installModulesDependencies(module, moduleDependencies);}
+    }
+    console.log('Modules packageDependecies installed');
+    return true;
 };
 
 /**
@@ -932,6 +949,7 @@ module.exports = {
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
     activateModule,
+    installDependencies,
     deactivateModule,
     removeModule,
     setFrontModules,

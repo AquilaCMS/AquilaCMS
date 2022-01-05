@@ -351,11 +351,17 @@ ProductDirectives.directive("nsProductPhoto", function () {
             ngModel.$render = function () {
                 if (ngModel.$modelValue) {
                     scope.product = ngModel.$modelValue;
+                    scope.product.images = scope.product.images.map((img) => {
+                        return {
+                            ...img,
+                            isYoutube: !!img.content
+                        }
+                    })
                 }
             };
         },
         controller : [
-            "$scope", function ($scope) {
+            "$scope", "$modal", function ($scope, $modal) {
                 $scope.switchDefaultImage = function (image, product) {
                     if (image.default) {
                         for (var i = 0, leni = product.images.length; i < leni; i++) {
@@ -389,6 +395,49 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     const imageName = image.title ? image.title : image.name;
                     return `images/products/300x300-50/${image._id}/${imageName}${image.extension}`;
                 };
+
+                $scope.switchType = function (image) {
+                    if(image.content) {
+                        image.content = undefined
+                    } else {
+                        image.url = undefined
+                    }
+                }
+
+                $scope.addMovie = function () {
+                    const modalInstance = $modal.open({
+                        templateUrl : "app/product/views/modals/add-youtube-video.html",
+                        backdrop: 'static',
+                        scope       : $scope,
+                        controller  : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                            $scope.item = {
+                                name: '',
+                                content: ''
+                            }
+                            $scope.saveVideo = function () {
+                                $modalInstance.close($scope.item)
+                            }
+                            $scope.close = function () {
+                                $modalInstance.dismiss()
+                            }
+                        }],
+                        resolve     : {
+                            queryFilter() {
+                                return {
+                                    type : $scope.product.type
+                                };
+                            },
+                            productSelected(){
+                                return $scope.associatedPrds;
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function (item) {
+                        $scope.product.images.push({
+                            name: item.name, alt: item.name, isYoutube: true, content: item.content, title: item.name
+                        })
+                    });
+                }
             }
         ]
     };

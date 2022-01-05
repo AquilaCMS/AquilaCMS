@@ -162,22 +162,16 @@ const migration_9_adminRights = async () => {
     // Deprecated
 };
 
-const migration_10_deleteOrderPaymentsJob = async () => {
-    await mongoose.connection.db.collection('agendaJobs').insertOne({
-        name : 'Remove failed payments from old orders',
-        type : 'single',
-        data : {
-            api     : '/services/orders/deleteFailedPayment',
-            comment : {
-                fr : 'Supprime els anciens paiements echoués des anciennes commandes',
-                en : 'Remove failed payments from old orders'
-            },
-            method              : 'service',
-            flag                : 'system',
-            lastExecutionResult : '',
-            params              : ''
-        }
-    });
+const migration_10_clearSetAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_10_clearSetAttributesIndexes"...');
+    await mongoose.connection.collection('setattributes').dropIndex('code_1');
+    console.log('End migration script "migration_10_clearSetAttributesIndexes"...');
+};
+
+const migration_11_clearAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_11_clearAttributesIndexes"...');
+    await mongoose.connection.collection('attributes').dropIndex('code_1');
+    console.log('End migration script "migration_11_clearAttributesIndexes"...');
 };
 
 // Scripts must be in order: put the new scripts at the bottom
@@ -191,7 +185,8 @@ const migrationScripts = [
     migration_7_Job_Translations,
     migration_8_CmsBlocks,
     migration_9_adminRights,
-    migration_10_deleteOrderPaymentsJob
+    migration_10_clearSetAttributesIndexes,
+    migration_11_clearAttributesIndexes
     // sample
 ];
 

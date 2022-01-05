@@ -101,10 +101,10 @@ const checkSlugExist = async (doc, modelName) => {
     }
 };
 
-const checkCode = async (modelName, id, code) => {
+const checkCode = async (modelName, id, code, moreFilters = {}) => {
     if (!code) return;
 
-    const query = {code};
+    const query = {code, ...moreFilters};
     if (id) {
         query._id = {$ne: id};
     }

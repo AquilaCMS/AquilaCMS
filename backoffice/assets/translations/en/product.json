@@ -93,7 +93,9 @@
         "pos": "Position",
         "img": "Main",
         "url": "Image",
-        "noPics": "There are no images in this product, the default image will be displayed in the theme"
+        "noPics": "There are no images in this product, the default image will be displayed in the theme",
+        "youtubeId": "Youtube video ID" ,
+        "type": "Youtube video"
     },
     "list": {
         "ph1": "Name",

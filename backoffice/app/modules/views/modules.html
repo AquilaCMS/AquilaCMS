@@ -15,7 +15,10 @@
     }
 </style>
 
-<ns-box data-title="modules.t1" title-icon="fa fa-plug fa-lg" ng-show="!showLoading" new-click="addPlugin()">   
+<ns-box data-title="modules.t1" title-icon="fa fa-plug fa-lg" ng-show="!showLoading" new-click="addPlugin()">  
+    <div class="form-group">
+        <button type="button" class="btn btn-default" ng-click="installModulesDeps()" translate>global.installDeps</button>
+    </div> 
     <br/>
     <div class="tableWrapperOverflow">
         <table class="shortTable table table-striped table-bordered">

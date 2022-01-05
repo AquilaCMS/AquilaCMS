@@ -98,7 +98,8 @@
         "panier_priceTotal_et": "Cart : ET price",
         "panier_priceTotal_ati": "Cart : ATI price",
         "categorie_translation_slug": "Category : Slug ({{lang}})",
-        "client_attr_translation": "Customer : Attribut '{{attr}}' ({{lang}})"
+        "client_attr_translation": "Customer : Attribut '{{attr}}' ({{lang}})",
+        "pictos_code": "Pictogram"
     },
     "help": {
         "products": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Click here to read the products documentation.</a>",
