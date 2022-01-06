@@ -79,45 +79,40 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
-    const decomposedAttribute = [];
-    for (let j = 0; j < data.length; j++) {
-        const line = data[j];
-        for (const [key, value] of Object.entries(line)) {
-            if (Array.isArray(value)) {
-                for (let i = 0; i < value.length; i++) {
-                    if (typeof value[i] === 'object') {
-                        const index = fields.indexOf(key);
-                        if (index !== -1) {
-                            fields.splice(index, 1);
-                            for (let x = 0; x < Object.entries(value[i]).length; x++) {
-                                fields.push(`${key}.${Object.entries(value[i])[x][0]}`);
-                                if (decomposedAttribute.includes(key) === false) {
-                                    decomposedAttribute.push(key);
-                                }
-                            }
+    const _fields = [];
+    for (let i = 0; i < data.length; i++) {
+        const line = data[i];
+        for (let ii = 0; ii < Object.keys(line).length; ii++) {
+            const key   = Object.keys(line)[ii];
+            const value = line[key];
+            if (mongoose.Types.ObjectId.isValid(value)) {
+                if (!_fields.includes(key)) {
+                    _fields.push(key);
+                }
+            } else if (Array.isArray(value) && value.length > 0) {
+                line[key] = {...value};
+                for (let iii = 0; iii < value.length; iii++) {
+                    if (typeof value[iii] === 'object') {
+                        const subKeys = Object.keys(value[iii]);
+                        for (const subKey of subKeys) {
+                            if (!_fields.includes(`${key}.${iii}.${subKey}`)) {_fields.push(`${key}.${iii}.${subKey}`);}
                         }
                     }
                 }
-            } else if (value && typeof value === 'object') {
-                const index = fields.indexOf(key);
-                if (key !== '_id' && index !== -1) {
-                    fields.splice(index, 1);
-                    for (let x = 0; x < Object.entries(value).length; x++) {
-                        fields.push(`${key}.${Object.entries(value)[x][0]}`);
-                        if (decomposedAttribute.includes(key) === false) {
-                            decomposedAttribute.push(key);
-                        }
-                    }
+            } else if (typeof value === 'object' && value && value !== {}) {
+                for (const subKey of Object.keys(value)) {
+                    if (!_fields.includes(`${key}.${subKey}`)) {_fields.push(`${key}.${subKey}`);}
                 }
+            } else if (value) {
+                if (!_fields.includes(key)) {_fields.push(key);}
             }
         }
     }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
     const transforms     = [
-        unwind({paths: decomposedAttribute}),
-        flatten({objects: true})
+        flatten({objects: true, arrays: true})
     ];
-    const json2csvParser = new Json2csvParser({fields, transforms});
+    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,
