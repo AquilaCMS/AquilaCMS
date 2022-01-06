@@ -1,5 +1,5 @@
 <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(supplier, false)"> <!--style="padding: 100px;"-->
-    <ns-box data-title="supplier.detail.t1" title-icon="fa fa-industry fa-lg" close-href="#/suppliers">    
+    <ns-box data-title="supplier.detail.t1" title-icon="fa fa-industry fa-lg" close-href="#/suppliers" hook-supplier-detail>    
         <ns-buttons is-edit-mode="isEditMode" remove="remove(supplier._id)" save-and-quit="save(supplier, true)"
                     disable-save="disableSave" return-path="/suppliers" form="form">
             <div class="scrollmenu">

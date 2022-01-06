@@ -12,9 +12,12 @@ const ServicePayment              = require('../services/payments');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
-    app.post('/v2/paymentMethod',  securityForceActif(['active']), getPaymentMethod);
-    app.put('/v2/paymentMethod',   adminAuth, savePaymentMethod);
+    app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
+    app.put('/v2/paymentMethod', adminAuth, savePaymentMethod);
     app.post('/v2/payments/order', adminAuthRight('payments'), getOrdersPayments);
+    app.post('/v2/payment/info', adminAuth, infoPayment);
+    app.put('/v2/payment/update', adminAuth, updatePayment);
+    app.post('/v2/payment/order/:orderNumber/:lang?', adminAuthRight('payments'), orderPayment);
 };
 
 async function getOrdersPayments(req, res, next) {
@@ -51,5 +54,48 @@ async function savePaymentMethod(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function infoPayment(req, res, next) {
+    try {
+        const order = await ServicePayment.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
+        res.json(order);
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function updatePayment(req, res, next) {
+    try {
+        return res.json(await ServicePayment.updatePayment(req.body));
+    } catch (e) {
+        next(e);
+    }
+}
+
+/**
+ * Create a payment and return a form for front-end redirection
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function orderPayment(req, res, next) {
+    try {
+        return res.send(await ServicePayment.orderPayment(req));
+    } catch (e) {
+        next(e);
     }
 }

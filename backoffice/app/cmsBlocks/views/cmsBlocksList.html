@@ -1,5 +1,5 @@
 <ns-box data-title="cmsBlocks.list.t1" title-icon="fa fa-file-code-o fa-lg" new-href="#/cmsBlocks/new">
-    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" hook-cmsblock-list>
         <div class="row">
             <div class="pull-right" style="width:45%">
                 <div class="searchBar dataTables_filter">
@@ -26,6 +26,9 @@
                         <th width="40%" translate>
                             cmsBlocks.list.desc
                         </th>
+                        <th width="10%" translate>
+                            static.list.etats
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,6 +38,7 @@
                         ng-click="goToCmsBlockDetails(block.code)">
                         <td data-label="Code :" >{{block.code}}</td>
                         <td data-label="Description :" >{{block.translation[defaultLang].description}}</td>
+                        <td data-label="Description :" ><span ng-bind-html='block.active | checked'></span></td>
                     </tr>
                 </tbody>
             </table>

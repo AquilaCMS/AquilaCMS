@@ -71,12 +71,13 @@ const initModule = async (files) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolder       = 'modules/';
-    const zipFilePath        = `${moduleFolder}${originalname}`;
-    const extractZipFilePath = zipFilePath.replace('.zip', '/');
+    const moduleFolderName    = 'modules/';
+    const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);
+    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname);
+    const extractZipFilePath  = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
-    await fs.mkdir(path.resolve(global.appRoot, moduleFolder), {recursive: true});
+    await fs.mkdir(moduleFolderAbsPath, {recursive: true});
     await fs.copyFile(
         path.resolve(global.appRoot, filepath),
         path.resolve(global.appRoot, zipFilePath)
@@ -114,7 +115,7 @@ const initModule = async (files) => {
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
-            zip.extractAllToAsync(moduleFolder, true, (err) => {
+            zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
                 if (err) {
                     console.error(err);
                     reject();
@@ -358,8 +359,8 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy    = path.resolve(`backoffice/app/${myModule.name}`);
-        const copyF   = path.resolve(`modules/${myModule.name}/app/`);
+        const copy    = `backoffice/app/${myModule.name}`;
+        const copyF   = `modules/${myModule.name}/app/`;
         const copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
@@ -376,8 +377,8 @@ const activateModule = async (idModule, toBeChanged) => {
 
         if (myModule.loadTranslationBack) {
             console.log('Loading back translation for module...');
-            const src  = path.resolve('modules', myModule.name, 'translations/back');
-            const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
+            const src  = path.join('modules', myModule.name, 'translations/back');
+            const dest = path.join('backoffice/assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
                     await fs.copyRecursive(
@@ -406,8 +407,8 @@ const activateModule = async (idModule, toBeChanged) => {
                         if (lang === 'index.js') {
                             continue;
                         }
-                        const src  = path.join(global.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
-                        const dest = path.resolve('themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                        const src  = path.resolve(global.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
+                        const dest = path.resolve(global.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
                         if (await fs.hasAccess(src)) {
                             try {
                                 await fs.copyRecursive(src, dest, true);
@@ -427,36 +428,7 @@ const activateModule = async (idModule, toBeChanged) => {
         // If the module contains dependencies usable in the front
         // then we run the install to install the dependencies in aquila
         if (myModule.packageDependencies) {
-            for (const apiOrTheme of Object.keys(toBeChanged)) {
-                let installPath = global.appRoot;
-                let position    = 'aquila';
-                let packagePath = path.resolve(installPath, 'package.json');
-                if (apiOrTheme === 'theme') {
-                    installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-                    position    = 'the theme';
-                    packagePath = path.resolve(installPath, 'package.json');
-                }
-                if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON  = JSON.parse(await fs.readFile(packagePath));
-                    const dependencies = {
-                        ...packageJSON.dependencies,
-                        ...myModule.packageDependencies[apiOrTheme],
-                        ...toBeChanged[apiOrTheme]
-                    };
-                    if (!isEqual(packageJSON.dependencies, dependencies)) {
-                        packageJSON.dependencies = {
-                            ...packageJSON.dependencies,
-                            ...myModule.packageDependencies[apiOrTheme],
-                            ...toBeChanged[apiOrTheme]
-                        };
-                        packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                        console.log(`Installing dependencies of the module in ${position}...`);
-                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                        await packageManager.execCmd('yarn upgrade', installPath);
-                    }
-                }
-            }
+            await installModulesDependencies(myModule, toBeChanged);
         }
 
         // If the module must import components into the front
@@ -473,6 +445,52 @@ const activateModule = async (idModule, toBeChanged) => {
         err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
+};
+
+const installModulesDependencies = async (myModule, toBeChanged) => {
+    for (const apiOrTheme of Object.keys(toBeChanged)) {
+        if (apiOrTheme !== 'theme' && apiOrTheme !== 'api') continue;
+        let installPath = global.appRoot;
+        let position    = 'aquila';
+        let packagePath = path.resolve(installPath, 'package.json');
+        if (apiOrTheme === 'theme') {
+            installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+            position    = 'the theme';
+            packagePath = path.resolve(installPath, 'package.json');
+        }
+        if (myModule.packageDependencies && myModule.packageDependencies[apiOrTheme]) {
+            const packageJSON  = JSON.parse(await fs.readFile(packagePath));
+            const dependencies = {
+                ...packageJSON.dependencies,
+                ...myModule.packageDependencies[apiOrTheme],
+                ...toBeChanged[apiOrTheme]
+            };
+            if (!isEqual(packageJSON.dependencies, dependencies)) {
+                packageJSON.dependencies = {
+                    ...packageJSON.dependencies,
+                    ...myModule.packageDependencies[apiOrTheme],
+                    ...toBeChanged[apiOrTheme]
+                };
+                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                console.log(`Installing dependencies of the module in ${position}...`);
+                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await packageManager.execCmd('yarn upgrade', installPath);
+            }
+        }
+    }
+};
+
+const installDependencies = async () => {
+    // get active modules
+    console.log('Modules packageDependecies install start');
+    const modules = await getModules({filter: {active: true}, structure: '*', limit: 99, lean: true});
+    for (const module of modules.datas) {
+        const moduleDependencies = require(path.join((module.path.startsWith('module') ? (`../${module.path}`) :  module.path), 'info.json')).info.packageDependencies;
+        if (moduleDependencies) {await installModulesDependencies(module, moduleDependencies);}
+    }
+    console.log('Modules packageDependecies installed');
+    return true;
 };
 
 /**
@@ -931,6 +949,7 @@ module.exports = {
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
     activateModule,
+    installDependencies,
     deactivateModule,
     removeModule,
     setFrontModules,

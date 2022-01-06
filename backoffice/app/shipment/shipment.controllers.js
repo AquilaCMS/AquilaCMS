@@ -51,7 +51,8 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
                     vat_rate: 1,
                     preparation: 1,
                     translation: 1,
-                    countries: 1
+                    countries: 1,
+                    freePriceLimit: 1
                 },
                 skip: 0,
                 limit: 100

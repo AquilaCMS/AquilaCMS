@@ -68,7 +68,7 @@ adminCatagenControllers.controller("wrapperCtrl", [
             // }
         });
 
-        window.addEventListener("getLanguages", function(e) { getLanguages() });
+        window.addEventListener("updateLangs", function(e) { getLanguages() });
 
         getLanguages()
 

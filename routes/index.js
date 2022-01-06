@@ -58,7 +58,7 @@ const loadDynamicRoutes = (app) => {
  * Route exceptions
  */
 const manageExceptionsRoutes = async (req, res, next) => {
-    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico'].includes(path.extname(req.url).toLowerCase())) {
+    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', '.mp4'].includes(path.extname(req.url).toLowerCase())) {
         res.setHeader('Cache-Control', 'public, max-age=2592000');
 
         const dt = new Date(Date.now());
@@ -95,7 +95,8 @@ const manageExceptionsRoutes = async (req, res, next) => {
             }
         }
     } else {
-        if (!global.installMode) {
+        const isAdmin = (req && req.info && req.info.isAdmin) || false;
+        if (!global.installMode && !isAdmin) {
             require('../services/stats').addUserVisitReq(req);
         }
 

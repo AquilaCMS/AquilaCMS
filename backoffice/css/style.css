@@ -2978,10 +2978,10 @@ input:-webkit-autofill {
 }
 
 .box {
-    background: #dfe6ee;
-    border: 1px solid #bec4ca;
-    border-radius: 3px;
     padding: 0px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .box+.box {

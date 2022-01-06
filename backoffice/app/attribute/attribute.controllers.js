@@ -139,6 +139,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.generateInputs();
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
+                $scope.attribute.update = true;
             });
         };
 
@@ -245,7 +246,6 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                     }
                 }
 
-                data.update = true;
                 data._type  = $scope._type;
                 AttributesV2.save(data, function (res) {
                     if (res._id) {

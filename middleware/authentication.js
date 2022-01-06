@@ -10,6 +10,7 @@ const jwt               = require('jsonwebtoken');
 const NSErrors          = require('../utils/errors/NSErrors');
 const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
+const utilsModules      = require('../utils/modules');
 // Be careful, add requied here is dangerous (modules can change schema)
 
 const retrieveUser = async (req, res, next) => {
@@ -108,37 +109,40 @@ const isAdminRights = async (req, requiredRights) => {
  * @param {any} user
  * @param {boolean} isAdmin
  */
-const generateJWTToken = (res, user, isAdmin) => {
-    // Ne pas mettre trop de propriétés dans le token pour ne pas dépasser les limites du header
-    let token = jwt.sign({
-        type   : 'USER',
-        userId : user._id,
-        info   : {
-            _id             : user._id,
-            email           : user.email,
-            isAdmin         : user.isAdmin,
-            active          : user.active,
-            type            : user.type,
-            taxDisplay      : user.taxDisplay,
-            isActiveAccount : user.isActiveAccount
+const generateJWTToken = async (res, user, isAdmin) => {
+    const jwtToken = await utilsModules.modulesLoadFunctions('generateJWTToken', {res, user, isAdmin}, () => {
+        // Ne pas mettre trop de propriétés dans le token pour ne pas dépasser les limites du header
+        let token = jwt.sign({
+            type   : 'USER',
+            userId : user._id,
+            info   : {
+                _id             : user._id,
+                email           : user.email,
+                isAdmin         : user.isAdmin,
+                active          : user.active,
+                type            : user.type,
+                taxDisplay      : user.taxDisplay,
+                isActiveAccount : user.isActiveAccount
+            }
+        },
+        global.envFile.jwt.secret,
+        {expiresIn: 172800 /* 48 hours in second */});
+        token     = `JWT ${token}`;
+
+        if (!isAdmin) {
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() + 2);
+            res.cookie('jwt', token, {
+                expires  : currentDate,
+                httpOnly : false,
+                encode   : String,
+                secure   : !!global.isServerSecure
+            });
         }
-    },
-    global.envFile.jwt.secret,
-    {expiresIn: 172800 /* 48 hours in second */});
-    token     = `JWT ${token}`;
 
-    if (!isAdmin) {
-        const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + 2);
-        res.cookie('jwt', token, {
-            expires  : currentDate,
-            httpOnly : false,
-            encode   : String,
-            secure   : !!global.isServerSecure
-        });
-    }
-
-    return token;
+        return token;
+    });
+    return jwtToken;
 };
 
 module.exports = {

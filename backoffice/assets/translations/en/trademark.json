@@ -13,7 +13,8 @@
         "enterValue": "Enter a value",
         "creaDate": "Creation date",
         "logo": "Logo",
-        "link": "Link"
+        "link": "Link",
+        "errorName": "Name already exists"
     },
     "new": {
         "t1": "Create New Brand",

@@ -162,6 +162,18 @@ const migration_9_adminRights = async () => {
     // Deprecated
 };
 
+const migration_10_clearSetAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_10_clearSetAttributesIndexes"...');
+    await mongoose.connection.collection('setattributes').dropIndex('code_1');
+    console.log('End migration script "migration_10_clearSetAttributesIndexes"...');
+};
+
+const migration_11_clearAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_11_clearAttributesIndexes"...');
+    await mongoose.connection.collection('attributes').dropIndex('code_1');
+    console.log('End migration script "migration_11_clearAttributesIndexes"...');
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -172,7 +184,9 @@ const migrationScripts = [
     migration_6_contentSecurityPolicy,
     migration_7_Job_Translations,
     migration_8_CmsBlocks,
-    migration_9_adminRights
+    migration_9_adminRights,
+    migration_10_clearSetAttributesIndexes,
+    migration_11_clearAttributesIndexes
     // sample
 ];
 

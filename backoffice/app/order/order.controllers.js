@@ -68,7 +68,10 @@ OrderControllers.controller("OrderListCtrl", [
                     filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]].toString(), $options: "i"};
                 }
             }
-            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response) {
+            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort, structure: $scope.columns.map((col) => {
+                let field = col.cell.component_template
+                return field.replace(/{{|}}|order\./ig, '')
+            })}}, function (response) {
                 $scope.showLoader = false;
                 $scope.orders = response.datas;
                 $scope.totalItems = response.count;

@@ -149,11 +149,23 @@ MediasControllers.controller("MediasDetailsCtrl",
                 ];
             }else{
                 id = $routeParams.id;
+                $scope.additionnalButtons = [
+                    {
+                        text: 'medias.medias.cpLien',
+                        onClick: function(){
+                            $scope.copyLink($scope.media);
+                        }
+                    }
+                ];
             }
             $scope.id = id;
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
             MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 0}}, function (response) {
                 $scope.media = response;
+
+                if($location.$$url.lastIndexOf(':new') > 1) {
+                    $scope.media.name = '';
+                }
             });
             MediaApiV2.getGroups({query: ''}, function (groups) {
                 $scope.groups = groups.filter(gp => typeof gp === 'string');
@@ -258,120 +270,30 @@ MediasControllers.controller("MediasDetailsCtrl",
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
     function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
-        $scope.positions = [
-            {
-                pos: "center",
-                id: "center"
-            },
-            {
-                pos: "top",
-                id: "top"
-            },
-            {
-                pos: "bottom",
-                id: "bottom"
-            },
-            {
-                pos: "left",
-                id: "left"
-            },
-            {
-                pos: "right",
-                id: "right"
-            },
-            {
-                pos: "top-left",
-                id: "topLeft"
-            },
-            {
-                pos: "top-right",
-                id: "topRight"
-            },
-            {
-                pos: "bottom-left",
-                id: "bottomLeft"
-            },
-            {
-                pos: "bottom-right",
-                id: "bottomRight"
-            }
-        ];
 
-        $scope.getTranslation = function(pos){
-            return `medias.modal.${pos}`;
+        $scope.generate = function (url) {
+            $scope.link = url
+            const elem = document.getElementById("copy-link");
+            elem.focus();
+            elem.select();
+            setTimeout(function () {
+                $scope.copierLien()
+            }, 200)
         }
-        $scope.info = {
-            crop:false,
-            position:"center",
-            background:false,
-            largeur: "",
-            longueur: "",
-            quality: "",
-            r:255,
-            g:255,
-            b:255,
-            alpha:1
-        };
-        if (media.name) {
-            $scope.info.name = media.name;
-        }
-
-        $scope.generer = function () {
-            const size = $scope.info.largeur + "x" + $scope.info.longueur;
-            const quality = $scope.info.quality;
-            let filename = "";
-            if ($scope.info.name !== undefined) {
-                filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
-                    + "." + $scope.media.link.replace(`medias/`, "")
-                        .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
-            } else {
-                filename = $scope.media.link.replace(`medias/`, "");
-            }
-
-            let background  = '';
-            let crop        = '';
-            if (
-                (!$scope.info.largeur || !$scope.info.longueur || !quality)
-                || (
-                    $scope.info.background
-                    && (
-                        !$scope.info.r || !$scope.info.g || !$scope.info.b ||
-                        !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
-                )
-            ) {
-                toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
-            } else {
-                if ($scope.info.background) {
-                    if ($scope.info.alpha) {
-                        if ($scope.info.alpha > 1) {
-                            $scope.info.alpha = 1;
-                        }
-                    }
-                    background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
-                }
-                if ($scope.info.crop) {
-                    crop = `-crop-${$scope.info.position}`;
-                }
-                toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                const elem = document.getElementById("copy-link");
-                elem.focus();
-                elem.select();
-            }
-        };
-
+    
         $scope.copierLien = function() {
             const elem = document.getElementById("copy-link");
             elem.focus();
             elem.select();
             if (document.execCommand('copy')) {
-                toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
+                toastService.toast("success", $translate.instant("medias.medias.copiedLink"));
             }
         }
-
+    
         $scope.cancel = function () {
             $modalInstance.close()
         };
+        
     }
 ]);
 

@@ -1009,9 +1009,8 @@ async function sendMailPendingCarts(cart) {
     // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 
-const sendError = async (error) => {
+const sendErrorMail = async (error) => {
     const errorMail = await Mail.findOne({type: 'error'}).lean();
-
     if (!errorMail) {
         return; // We don't want to generate an error
     }
@@ -1019,7 +1018,7 @@ const sendError = async (error) => {
     const lang     = determineLanguage();
     const content  = errorMail.translation[lang].content ? errorMail.translation[lang].content : '';
     const subject  = errorMail.translation[lang].subject ? errorMail.translation[lang].subject : 'Error';
-    const htmlBody = content + JSON.stringify(error);
+    const htmlBody = generateHTML(content, {'{{error}}': JSON.stringify(error)});
     sendMail({subject, htmlBody, mailTo: errorMail.from, mailFrom: errorMail.from, fromName: errorMail.fromName});
 };
 
@@ -1046,5 +1045,5 @@ module.exports = {
     sendContact,
     sendMailOrderRequestCancel,
     sendMailPendingCarts,
-    sendError
+    sendErrorMail
 };

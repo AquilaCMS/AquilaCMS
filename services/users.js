@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const crypto                 = require('crypto');
-const mongoose               = require('mongoose');
-const {Users, SetAttributes} = require('../orm/models');
-const servicesMail           = require('./mail');
-const QueryBuilder           = require('../utils/QueryBuilder');
-const aquilaEvents           = require('../utils/aquilaEvents');
-const NSErrors               = require('../utils/errors/NSErrors');
+const crypto                             = require('crypto');
+const mongoose                           = require('mongoose');
+const {Users, SetAttributes, Attributes} = require('../orm/models');
+const servicesMail                       = require('./mail');
+const QueryBuilder                       = require('../utils/QueryBuilder');
+const aquilaEvents                       = require('../utils/aquilaEvents');
+const NSErrors                           = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -41,7 +41,7 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
 
 const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
 
-const setUser = async (id, info, isAdmin = false) => {
+const setUser = async (id, info, isAdmin = false, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -51,6 +51,15 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.isAdmin;
         }
         const userBase = await Users.findOne({_id: id});
+        if (info.attributes) {
+            for (let i = 0; i < info.attributes.length; i++) {
+                const usrAttr = userBase.attributes.find((attr) => attr.code === info.attributes[i].code);
+                if (usrAttr && lang) {
+                    info.attributes[i].translation             = usrAttr.translation;
+                    info.attributes[i].translation[lang].value = info.attributes[i].value;
+                }
+            }
+        }
         if (userBase.email !== info.email) {
             info.isActiveAccount = false;
         }
@@ -122,6 +131,16 @@ const createUser = async (body, isAdmin = false) => {
                 }
                 return attr;
             });
+        } else {
+            for (let i = 0; i < body.attributes.length; i++) {
+                const attribute                = await Attributes.findOne({code: body.attributes[i].code});
+                body.attributes[i].translation = attribute.translation;
+                if (attribute.type === 'multiselect') {
+                    body.attributes[i].translation[body.lang].values = body.attributes[i].values;
+                } else {
+                    body.attributes[i].translation[body.lang].value = body.attributes[i].value;
+                }
+            }
         }
         newUser = await (new Users(body)).save();
     } catch (err) {

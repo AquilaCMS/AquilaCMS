@@ -13,14 +13,15 @@ const serviceModule      = require('../services/modules');
 const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/modules',          adminAuth, getAllModules);
-    app.post('/v2/module',           adminAuth, getModule);
-    app.post('/v2/modules/upload',   adminAuth, uploadModule);
-    app.post('/v2/modules/toggle',   adminAuth, toggleActiveModule);
-    app.post('/v2/modules/md',       adminAuth, getModuleMd);
-    app.delete('/v2/modules/:id',    adminAuth, removeModule);
-    app.get('/v2/modules/check',     adminAuth, checkDependencies);
-    app.post('/v2/module/setConfig', adminAuth, setModuleConfig);
+    app.post('/v2/modules',                    adminAuth, getAllModules);
+    app.post('/v2/module',                     adminAuth, getModule);
+    app.post('/v2/modules/upload',             adminAuth, uploadModule);
+    app.post('/v2/modules/toggle',             adminAuth, toggleActiveModule);
+    app.post('/v2/modules/md',                 adminAuth, getModuleMd);
+    app.delete('/v2/modules/:id',              adminAuth, removeModule);
+    app.get('/v2/modules/check',               adminAuth, checkDependencies);
+    app.post('/v2/module/setConfig',           adminAuth, setModuleConfig);
+    app.get('/v2/module/installDependencies',  installDependencies);
 
     // Deprecated
     app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
@@ -150,5 +151,15 @@ async function setModuleConfigById(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
+    }
+}
+
+async function installDependencies(req, res, next) {
+    try {
+        console.log('INSTALL DEPS');
+        return res.json(await serviceModule.installDependencies());
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
 }

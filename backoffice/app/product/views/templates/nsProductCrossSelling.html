@@ -5,7 +5,7 @@
     </button>
 </div>
 
-<div ng-repeat="prd in associatedPrds" class="image-frame" style="margin-top: 15px;">
+<div ng-repeat="prd in associatedPrds" class="image-frame" style="margin-top: 15px;" hook-product-detail-cross>
     <div class="row">
         <div class="col-sm-4 img-responsive">
             <img ng-src="/images/products/300x300-50/{{prd.images[0]._id}}/{{prd.images[0].title+prd.images[0].extension}}" class='no-product-image' style="min-width: 100px;" />
