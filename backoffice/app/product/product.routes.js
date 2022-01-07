@@ -12,14 +12,14 @@ ProductRoutes.config(['$routeProvider',
 						checkAccess: checkAccess('products'),
                     }
                 })
-                .when('/products/new/settings', {
-                    templateUrl: 'app/product/views/product-beforeCreate.html',
-                    controller: 'ProductBeforeCreateCtrl',
-                    resolve: {
-                        loggedin: checkLoggedin,
-						checkAccess: checkAccess('products'),
-                    }
-                })
+                // .when('/products/new/settings', {
+                //     templateUrl: 'app/product/views/product-beforeCreate.html',
+                //     controller: 'ProductBeforeCreateCtrl',
+                //     resolve: {
+                //         loggedin: checkLoggedin,
+				// 		checkAccess: checkAccess('products'),
+                //     }
+                // })
 
 
     }]);

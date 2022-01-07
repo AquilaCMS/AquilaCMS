@@ -43,7 +43,8 @@
         "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product",
         "changeType": "Change product type",
-        "type": "Type"
+        "type": "Type",
+        "typeTooltip": "Change the type of product (requires save)"
     },
     "modal": {
         "activeProduct": "Activate a product",
