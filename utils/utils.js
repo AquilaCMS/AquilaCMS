@@ -100,18 +100,14 @@ const getJSONKeys = (fields, data, parentKey = '') => {
     for (let ii = 0; ii < Object.keys(data).length; ii++) {
         const key   = Object.keys(data)[ii];
         const value = data[key];
-        if (mongoose.Types.ObjectId.isValid(value)) {
-            if (!fields.includes(parentKey + key)) {
-                fields.push(parentKey + key);
-            }
+        if (mongoose.Types.ObjectId.isValid(value) && !fields.includes(parentKey + key)) {
+            fields.push(parentKey + key);
         } else if (Array.isArray(value) && value.length > 0) {
             data[key] = {...value};
             fields    = getJSONKeys(fields, data[key], `${parentKey}${key}.`);
         } else if (typeof value === 'object' && value && value !== {}) {
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
-        } else if (value) {
-            if (!fields.includes(parentKey + key)) {fields.push(parentKey + key);}
-        }
+        } else if (value && !fields.includes(parentKey + key)) fields.push(parentKey + key);
     }
     return fields;
 };
