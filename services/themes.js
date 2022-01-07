@@ -475,5 +475,6 @@ module.exports = {
     loadTranslation,
     listTheme,
     getDemoDatasFilesName,
-    installTheme
+    installTheme,
+    languageInitExec
 };
