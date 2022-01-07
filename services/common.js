@@ -108,7 +108,12 @@ const exportData = async (model, PostBody) => {
         PostBody.structure = !PostBody.structure            ? [] : PostBody.structure;
 
         const {filter, populate, sort, structure} = PostBody;
-        if (model === 'users') structure.push('-password');
+        if (model === 'users') {
+            structure.push('-password');
+            structure.push('-resetPassToken');
+        } else if (model === 'products') {
+            structure.push('-reviews');
+        }
         const datas     = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
         const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
 
