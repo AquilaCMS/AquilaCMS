@@ -79,34 +79,10 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
-    const _fields = [];
+    let _fields = [];
     for (let i = 0; i < data.length; i++) {
         const line = data[i];
-        for (let ii = 0; ii < Object.keys(line).length; ii++) {
-            const key   = Object.keys(line)[ii];
-            const value = line[key];
-            if (mongoose.Types.ObjectId.isValid(value)) {
-                if (!_fields.includes(key)) {
-                    _fields.push(key);
-                }
-            } else if (Array.isArray(value) && value.length > 0) {
-                line[key] = {...value};
-                for (let iii = 0; iii < value.length; iii++) {
-                    if (typeof value[iii] === 'object') {
-                        const subKeys = Object.keys(value[iii]);
-                        for (const subKey of subKeys) {
-                            if (!_fields.includes(`${key}.${iii}.${subKey}`)) {_fields.push(`${key}.${iii}.${subKey}`);}
-                        }
-                    }
-                }
-            } else if (typeof value === 'object' && value && value !== {}) {
-                for (const subKey of Object.keys(value)) {
-                    if (!_fields.includes(`${key}.${subKey}`)) {_fields.push(`${key}.${subKey}`);}
-                }
-            } else if (value) {
-                if (!_fields.includes(key)) {_fields.push(key);}
-            }
-        }
+        _fields    = getJSONKeys(_fields, line);
     }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
     const transforms     = [
@@ -118,6 +94,26 @@ const json2csv = async (data, fields, folderPath, filename) => {
         file       : filename,
         exportPath : folderPath
     };
+};
+
+const getJSONKeys = (fields, data, parentKey = '') => {
+    for (let ii = 0; ii < Object.keys(data).length; ii++) {
+        const key   = Object.keys(data)[ii];
+        const value = data[key];
+        if (mongoose.Types.ObjectId.isValid(value)) {
+            if (!fields.includes(parentKey + key)) {
+                fields.push(parentKey + key);
+            }
+        } else if (Array.isArray(value) && value.length > 0) {
+            data[key] = {...value};
+            fields    = getJSONKeys(fields, data[key], `${parentKey}${key}.`);
+        } else if (typeof value === 'object' && value && value !== {}) {
+            fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
+        } else if (value) {
+            if (!fields.includes(parentKey + key)) {fields.push(parentKey + key);}
+        }
+    }
+    return fields;
 };
 
 /**
