@@ -8,12 +8,14 @@
 
 const mongoose                     = require('mongoose');
 const path                         = require('path');
+const slash                        = require('slash');
 const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
+const packageManager               = require('../utils/packageManager');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -340,8 +342,14 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        const isDynamicFileHere = await generateDynamicLangFile(theme);
-        if (isDynamicFileHere === 'OK') {
+        // To let the theme manage the languages, it must come with a "languageInit.js" file
+        const isLanguageInitHere = await languageInitExec(theme);
+        // If there is no "languageInit.js" file, the language management will go through the "dynamic_lang.js" file which will be created at the root of the theme
+        let isDynamicFileHere = 'KO';
+        if (isLanguageInitHere !== 'OK') {
+            isDynamicFileHere = await generateDynamicLangFile(theme);
+        }
+        if (isDynamicFileHere === 'OK' || isLanguageInitHere === 'OK') {
             const returnValues = await themesUtils.yarnBuildCustom(theme);
             if (returnValues?.stdout === 'Build failed') {
                 return {
@@ -356,8 +364,33 @@ async function buildTheme(theme) {
         }
         return {
             msg    : 'KO',
-            result : 'No dynamic lang file'
+            result : 'No lang file'
         };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+}
+
+async function languageInitExec(theme) {
+    let returnValues;
+    try {
+        const pathToTheme        = path.join(global.appRoot, 'themes', theme);
+        const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
+        const isExist            = await fs.existsSync(pathToLanguageInit);
+        if (isExist) {
+            returnValues = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage()"`, slash(path.join(pathToTheme, '/')));
+            if (returnValues.stderr === '') {
+                console.log('Language init exec log : ', returnValues.stdout);
+            } else {
+                returnValues.stdout = 'Language init exec failed';
+                console.error(returnValues.stderr);
+            }
+            return 'OK';
+        }
+        return 'KO';
     } catch (err) {
         return {
             msg   : 'KO',

@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/v2/order/rma', adminAuth, rma);
     /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
     app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
-    /********************************************* */
+    /** ******************************************* */
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
     app.post('/v2/order/addpkg', adminAuth, addPackage);
     app.post('/v2/order/delpkg', adminAuth, delPackage);
@@ -26,7 +26,7 @@ module.exports = function (app) {
     /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
     app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
     app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, updatePayment);
-    /********************************************* */
+    /** ******************************************* */
     app.post('/v2/order/:id', getOrderById);
     app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
