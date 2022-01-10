@@ -46,8 +46,6 @@ const orderStatuses = {
     RETURNED                     : 'RETURNED'
 };
 
-const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
-
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
@@ -841,13 +839,13 @@ async function immediateCashPayment(req, method) {
 }
 
 /* THIS SERVICE HAS BEEN MOVED TO payments.js */
-// delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
+// delete failed payment from orders older than nbDaysToDeleteOlderFailedPayment days
 async function deleteFailedPayment() {
     console.log('Deprecated service : please use deleteFailedPayment function in payments.js service');
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        dateToDelete.setDate(dateToDelete.getDate() - (global.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
         const orders = await Orders.find({
             payment : {
                 $elemMatch : {

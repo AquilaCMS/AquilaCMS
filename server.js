@@ -102,7 +102,9 @@ const initFrontFramework = async (themeName = null) => {
     }
     const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
     const pathToInit  = path.join(pathToTheme, 'themeInit.js');
-    if (!(await fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
+    if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
+        await require('./services/themes').languageInitExec(themeName);
+    } else if (!(fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
         await require('./services/languages').createDynamicLangFile();
     }
     themeInfo = utilsThemes.loadInfoTheme(themeName);

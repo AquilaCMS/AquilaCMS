@@ -152,3 +152,13 @@ async function setModuleConfigById(req, res, next) {
         return next(error);
     }
 }
+
+async function installDependencies(req, res, next) {
+    try {
+        console.log('INSTALL DEPS');
+        return res.json(await serviceModule.installDependencies());
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+}

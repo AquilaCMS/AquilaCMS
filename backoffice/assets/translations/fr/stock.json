@@ -29,5 +29,6 @@
     "additionnalFeesTax": "Frais supplémentaires (Tax)",
     "additionnalFeesEt": "Frais supplémentaires (HT)",
     "order&StockSaved": "Stock & commandes sauvegardée !",
-    "automaticBilling": "Facturation automatique (la commande est payée)"
+    "automaticBilling": "Facturation automatique (la commande est payée)",
+    "nbDaysToDeleteOlderFailedPayment": "Nb de jours avant suppression des paiments echoués"
 }
