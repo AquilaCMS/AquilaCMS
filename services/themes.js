@@ -13,6 +13,7 @@ const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
+const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
 const packageManager               = require('../utils/packageManager');
@@ -381,7 +382,10 @@ async function languageInitExec(theme) {
         const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
         const isExist            = await fs.existsSync(pathToLanguageInit);
         if (isExist) {
-            returnValues = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage()"`, slash(path.join(pathToTheme, '/')));
+            const langs       = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
+            const tabLang     = langs.datas.map((_lang) => _lang.code);
+            const defaultLang = await ServiceLanguages.getDefaultLang();
+            returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
             if (returnValues.stderr === '') {
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {
