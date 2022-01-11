@@ -35,14 +35,14 @@ const saveLang = async (lang) => {
         result = await Languages.create(lang);
     }
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
     return result;
 };
 
 const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
     return deletedLang;
 };
 

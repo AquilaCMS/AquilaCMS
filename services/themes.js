@@ -375,7 +375,17 @@ async function buildTheme(theme) {
     }
 }
 
-async function languageInitExec(theme) {
+async function languageManagement(theme = global.envConfig.environment.currentTheme) {
+    const pathToTheme = path.join(global.appRoot, 'themes', theme, '/');
+    if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
+        await languageInitExec(theme);
+    } else if (!(fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
+        await ServiceLanguages.createDynamicLangFile();
+    }
+    return 'OK';
+}
+
+async function languageInitExec(theme = global.envConfig.environment.currentTheme) {
     let returnValues;
     try {
         const pathToTheme        = path.join(global.appRoot, 'themes', theme);
@@ -411,8 +421,7 @@ async function generateDynamicLangFile(theme) {
         const isExist            = await fs.existsSync(pathToDynamicLangs);
         if (!isExist) {
             // Create the file if not exist
-            const {createDynamicLangFile} = require('./languages');
-            await createDynamicLangFile(theme);
+            await ServiceLanguages.createDynamicLangFile(theme);
         }
         return 'OK';
     } catch (err) {
@@ -480,5 +489,5 @@ module.exports = {
     listTheme,
     getDemoDatasFilesName,
     installTheme,
-    languageInitExec
+    languageManagement
 };
