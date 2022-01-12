@@ -41,7 +41,7 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
-            await require('./modules').setFrontModules(selectedTheme);
+            await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
         } if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
@@ -380,7 +380,7 @@ async function languageManagement(theme = global.envConfig.environment.currentTh
     if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
         await languageInitExec(theme);
     } else if (!(fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
-        await ServiceLanguages.createDynamicLangFile();
+        await ServiceLanguages.createDynamicLangFile(theme);
     }
     return 'OK';
 }

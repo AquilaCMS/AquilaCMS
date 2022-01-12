@@ -626,33 +626,47 @@ const removeModule = async (idModule) => {
 };
 
 /**
- * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
+ * Checks the type of module component the theme expects
+ * If a module path is not filled in, this means that all modules registered in the database must be installed (as in the case of a theme change)
+ * @param {*} theme : theme
+ * @param {*} pathModule : module path
  */
-const setFrontModules = async (theme) => {
+const frontModuleComponentManagement = async (theme, modulePath) => {
     const infoTheme            = await themesUtils.loadInfoTheme(theme);
     const themeModuleComponent = infoTheme.moduleComponentType;
     if (themeModuleComponent === 'no-installation') {
         console.log('No component installation is required by this theme');
     } else {
-        console.log("Set module's front files : Loading ...");
-        // Create the file if it does not exist, or reinit of the file
-        await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
-
-        // Update file content (from modules)
-        const listModules = await Modules.find({active: true/* , "et need front" */});
-
-        for (let index = 0; index < listModules.length; index++) {
-            const oneModule = listModules[index];
-
-            // Does this module contain a front?
-            const modulePath = path.join(global.appRoot, oneModule.path);
-            if (await fs.hasAccess(modulePath)) {
-                // Write the file if it's not already in it
-                await setFrontModuleInTheme(modulePath, theme || global.envConfig.environment.currentTheme);
-            }
+        if (modulePath) {
+            await setFrontModuleInTheme(modulePath, theme);
+        } else {
+            await setFrontModules(theme);
         }
-        console.log("Set module's front files : Done");
     }
+};
+
+/**
+ * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
+ */
+const setFrontModules = async (theme) => {
+    console.log("Set module's front files : Loading ...");
+    // Create the file if it does not exist, or reinit of the file
+    await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
+
+    // Update file content (from modules)
+    const listModules = await Modules.find({active: true/* , "et need front" */});
+
+    for (let index = 0; index < listModules.length; index++) {
+        const oneModule = listModules[index];
+
+        // Does this module contain a front?
+        const modulePath = path.join(global.appRoot, oneModule.path);
+        if (await fs.hasAccess(modulePath)) {
+            // Write the file if it's not already in it
+            await setFrontModuleInTheme(modulePath, theme || global.envConfig.environment.currentTheme);
+        }
+    }
+    console.log("Set module's front files : Done");
 };
 
 /**
@@ -752,7 +766,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
                 }
             }
         } else {
-            await setFrontModuleInTheme(pathThemeComponents, currentTheme);
+            await frontModuleComponentManagement(currentTheme, pathThemeComponents);
         }
     }
     // Rebuild du theme
@@ -959,6 +973,7 @@ module.exports = {
     installDependencies,
     deactivateModule,
     removeModule,
+    frontModuleComponentManagement,
     setFrontModules,
     setFrontModuleInTheme,
     addOrRemoveThemeFiles,
