@@ -379,7 +379,7 @@ async function languageManagement(theme = global.envConfig.environment.currentTh
     const pathToTheme = path.join(global.appRoot, 'themes', theme, '/');
     if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
         await languageInitExec(theme);
-    } else if (!(fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
+    } else {
         await ServiceLanguages.createDynamicLangFile(theme);
     }
     return 'OK';
