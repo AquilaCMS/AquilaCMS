@@ -29,6 +29,7 @@ const saveLang = async (lang) => {
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
+    global.defaultLang = lang.code;
     if (lang._id) {
         result = await Languages.findOneAndUpdate({_id: lang._id}, lang);
     } else {
