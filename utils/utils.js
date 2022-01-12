@@ -86,9 +86,9 @@ const json2csv = async (data, fields, folderPath, filename) => {
     }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
     const transforms     = [
-        flatten({objects: true, arrays: true})
+        flatten({objects: false, arrays: true})
     ];
-    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms});
+    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms, delimiter: ';', quote: ''});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,
@@ -100,17 +100,37 @@ const getJSONKeys = (fields, data, parentKey = '') => {
     for (let ii = 0; ii < Object.keys(data).length; ii++) {
         const key   = Object.keys(data)[ii];
         const value = data[key];
-        if (mongoose.Types.ObjectId.isValid(value) && !fields.includes(parentKey + key)) {
+        if (checkForValidMongoDbID.test(value) && !fields.includes(parentKey + key)) {
+            // in case of an ObjectId =>
             fields.push(parentKey + key);
         } else if (Array.isArray(value) && value.length > 0) {
-            data[key] = {...value};
-            fields    = getJSONKeys(fields, data[key], `${parentKey}${key}.`);
-        } else if (typeof value === 'object' && value && value !== {}) {
+            // in case of an array
+            if (typeof value[0] !== 'object') {
+                // if it's an string or number array =>
+                data[key] = value.join(',');
+                if (!fields.includes(parentKey + key)) fields.push(parentKey + key);
+            } else if (typeof value[0] === 'object') {
+                // if it's an object array =>
+                data[key] = {...value};
+                fields    = getJSONKeys(fields, data[key], `${parentKey}${key}.`);
+            }
+        } else if (
+            typeof value === 'object'
+            && !checkForValidMongoDbID.test(value)
+            && value
+            && value !== {}
+        ) {
+            // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
-        } else if (value && !fields.includes(parentKey + key)) fields.push(parentKey + key);
+        } else if (value && !fields.includes(parentKey + key)) {
+            // in case of a string / number =>
+            fields.push(parentKey + key);
+        }
     }
     return fields;
 };
+
+const checkForValidMongoDbID = new RegExp('^[0-9a-fA-F]{24}$');
 
 /**
  * Detect if array contain duplicated values
