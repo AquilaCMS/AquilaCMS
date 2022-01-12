@@ -88,7 +88,7 @@ const json2csv = async (data, fields, folderPath, filename) => {
     const transforms     = [
         flatten({objects: false, arrays: true})
     ];
-    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms, delimiter: ';', quote: ''});
+    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms, delimiter: ';', escapeQuote: '""', quotes: '"'});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,
@@ -107,7 +107,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             // in case of an arraytoHtmlEntities
             if (typeof value[0] !== 'object') {
                 // if it's an string or number array =>
-                data[key] = value.map((v) => encodeURIComponent(v)).join(',');
+                data[key] = value.join(',');
                 if (!fields.includes(parentKey + key)) fields.push(parentKey + key);
             } else if (typeof value[0] === 'object') {
                 // if it's an object array =>
@@ -123,8 +123,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
         } else if (value && !fields.includes(parentKey + key)) {
-            // in case of a string / number, decode value first =>
-            data[key] = encodeURIComponent(value);
+            // in case of a string / number
             fields.push(parentKey + key);
         }
     }
