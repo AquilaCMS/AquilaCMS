@@ -10,6 +10,7 @@ const AdmZip           = require('adm-zip');
 const path             = require('path');
 const mongoose         = require('mongoose');
 const rimraf           = require('rimraf');
+const slash            = require('slash');
 const semver           = require('semver');
 const {isEqual}        = require('../utils/utils');
 const packageManager   = require('../utils/packageManager');
@@ -76,6 +77,7 @@ const initModule = async (files) => {
     const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);
     const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname);
     const extractZipFilePath  = zipFilePath.replace('.zip', '/');
+    const relativePath        = slash(path.join(moduleFolderName, originalname).replace('.zip', '/'));
 
     // move the file from the temporary location to the intended location
     await fs.mkdir(moduleFolderAbsPath, {recursive: true});
@@ -139,7 +141,7 @@ const initModule = async (files) => {
             name                     : info.name,
             description              : info.description,
             version                  : info.version,
-            path                     : extractZipFilePath,
+            path                     : relativePath,
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -677,7 +679,6 @@ const setFrontModules = async (theme) => {
 
     // Update file content (from modules)
     const listModules = await Modules.find({active: true/* , "et need front" */});
-
     for (let index = 0; index < listModules.length; index++) {
         const oneModule = listModules[index];
 
