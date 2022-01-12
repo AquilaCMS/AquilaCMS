@@ -14,6 +14,11 @@
                 "delAndAdd": "Delete/add",
                 "value": "Value",
                 "confirm":"You are going to activate a strict security policy that can lead to malfunctions on your site. To access external content, you must list all authorized domains"
+            },
+            "allowExtensions": {
+                "title": "Allowed extensions",
+                "delAndAdd": "Delete/add",
+                "value": "Value"
             }
         },
         "log":{

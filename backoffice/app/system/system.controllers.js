@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
+     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
+     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
         $scope.showModuleLoading = false;
         $scope.log = {
@@ -14,6 +14,11 @@ SystemControllers.controller("systemGeneralController", [
             // active: true,
             content: [],
             newPolicy: ""
+        };
+
+        $scope.allowExtensions = {
+            content: [],
+            newExtension: ""
         };
 
         $scope.switchCsp = function (value) {
@@ -41,7 +46,19 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.contentPolicy.newPolicy = "";
             }
         };
+        
+        $scope.removeExtension = function (extension) {
+            const index = $scope.system.environment.allowExtensions.indexOf(extension);
+            if (index > -1) {
+                $scope.system.environment.allowExtensions.splice(index, 1);
+            }
+        };
 
+        $scope.addExtension = function (extension) {
+            if (!$scope.system.environment.allowExtensions.includes(extension) && extension != "" && typeof extension !== "undefined") {
+                $scope.system.environment.allowExtensions.push(extension);
+            }
+        };
 
         ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
             $scope.system = config;

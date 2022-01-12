@@ -14,6 +14,11 @@
                 "delAndAdd": "Supprimer/ajouter",
                 "value": "Valeur",
                 "confirm":"Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés"
+            },
+            "allowExtensions": {
+                "title": "Extensions autorisées",
+                "delAndAdd": "Supprimer/ajouter",
+                "value": "Valeur"
             }
         },
         "log":{

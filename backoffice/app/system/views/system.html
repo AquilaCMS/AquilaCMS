@@ -80,7 +80,35 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div>
+                        <h3 translate>system.environment.security.allowExtensions.title</h3>
+                        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+                            <thead>
+                                <tr>
+                                    <th translate>system.environment.security.allowExtensions.value</th>
+                                    <th translate>system.environment.security.allowExtensions.delAndAdd</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="extension in system.environment.allowExtensions">
+                                    <td>{{extension}}</td>
+                                    <td><span ng-click="removeExtension(extension)"><i class="fa fa-minus-circle fa-2x"
+                                                aria-hidden="true"></i></span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input form="otherForm" type="text" class="form-control"
+                                            ng-keypress="($event.charCode==13) ? addExtension(allowExtensions.newExtension) : return"
+                                            ng-model="allowExtensions.newExtension">
+                                    </td>
+                                    <td>
+                                        <span ng-click="addExtension(allowExtensions.newExtension)"><i
+                                                class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 <div id="other" class="tab-pane fade">
                     <h3 translate>system.environment.other.database</h3>
                     <br />
