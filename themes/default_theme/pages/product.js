@@ -27,6 +27,24 @@ import Error from './_error';
  * @return {React.Component}
  */
 
+ const Video = ({ content }) => (
+    <iframe
+        width="560"
+        height="315"
+        src={`https://www.youtube.com/embed/${content}`}
+        style={{
+            maxWidth : '100%',
+            position : 'absolute',
+            left     : 0,
+            right    : 0,
+            margin   : 'auto',
+            top      : '50%',
+            transform: 'translateY(-50%)',
+        }}
+        title={content}
+    />
+);
+
 class PageProduct extends NSPageProduct {
     render = () => {
         const {
@@ -105,6 +123,11 @@ class PageProduct extends NSPageProduct {
                 }
             });
         }
+
+        const lightboxImages = product.images.sort((a, b) => a.position - b.position).map((item) => {
+            if (item.content) return { content: <Video content={item.content} />, alt: item.alt };
+            return { content: `/images/products/max/${item._id}/${item.title}${item.extension}`, alt: item.alt };
+        });
 
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -185,10 +208,10 @@ class PageProduct extends NSPageProduct {
                                         {typeof window !== 'undefined' && isOpen
                                             && (
                                                 <Lightbox
-                                                    mainSrc={`/images/products/max-80/${product.images[photoIndex]._id}/${product.slug[lang]}${product.images[photoIndex].extension}`}
-                                                    nextSrc={`/images/products/max-80/${product.images[(photoIndex + 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + 1) % product.images.length].extension}`}
-                                                    prevSrc={`/images/products/max-80/${product.images[(photoIndex + product.images.length - 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + product.images.length - 1) % product.images.length].extension}`}
-                                                    imageTitle={product.images[photoIndex].alt}
+                                                    mainSrc={lightboxImages[photoIndex].content}
+                                                    nextSrc={lightboxImages[(photoIndex + 1) % product.images.length].content}
+                                                    prevSrc={lightboxImages[(photoIndex + product.images.length - 1) % product.images.length].content}
+                                                    imageTitle={lightboxImages[photoIndex].alt}
                                                     onCloseRequest={() => this.setState({ isOpen: false })}
                                                     onMovePrevRequest={() => this.setState({ photoIndex: (photoIndex + product.images.length - 1) % product.images.length })}
                                                     onMoveNextRequest={() => this.setState({ photoIndex: (photoIndex + 1) % product.images.length })}
@@ -197,13 +220,12 @@ class PageProduct extends NSPageProduct {
                                         <ul className="list-images">
                                             {
                                                 product.images && product.images.filter((img) => !img.default) ? product.images.filter((img) => !img.default).map((img, index) => (
-                                                    <li key={img.url}>
+                                                    <li key={img.url} style={{ width: '82px', display: 'flex', alignItems: 'center' }}>
                                                         <a onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
-                                                            <img
-                                                                itemProp="image"
-                                                                src={`/images/products/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`}
-                                                                alt={img.alt}
-                                                            />
+                                                            {
+                                                                img.content ? <img src={`https://img.youtube.com/vi/${img.content}/0.jpg`} />
+                                                                : <img itemProp="image" src={`/images/products/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`} alt={img.alt} />
+                                                            }
                                                         </a>
                                                     </li>
                                                 )) : ''
