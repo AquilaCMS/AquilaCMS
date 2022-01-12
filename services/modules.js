@@ -360,9 +360,9 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy    = `backoffice/app/${myModule.name}`;
-        const copyF   = `modules/${myModule.name}/app/`;
-        const copyTab = [];
+        const copy  = `backoffice/app/${myModule.name}`;
+        const copyF = `modules/${myModule.name}/app/`;
+        let copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
                 await fs.copyRecursive(
@@ -394,10 +394,28 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
+        // All the actions concerning the module that will be performed in the theme
+        copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
+
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
+        console.log('Module activated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
+    }
+};
+
+const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
+    const {currentTheme}       = global.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No component installation is required by this theme (${currentTheme})`);
+    } else {
         if (myModule.loadTranslationFront) {
             console.log('Front translation for module : Loading ...');
             try {
-                const {currentTheme}      = global.envConfig.environment;
                 const pathToTranslateFile = path.join(global.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
                 const hasAccess           = await fs.hasAccess(pathToTranslateFile);
                 if (hasAccess) {
@@ -438,14 +456,8 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.types || myModule.type || ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true});
-        console.log('Module activated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
+    return copyTab;
 };
 
 const installModulesDependencies = async (myModule, toBeChanged) => {
@@ -509,15 +521,6 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
         await removeModuleAddon(_module);
-        try {
-            await addOrRemoveThemeFiles(
-                path.resolve(global.appRoot, _module.path, 'theme_components'),
-                true,
-                _module.types || _module.type || ''
-            );
-        } catch (error) {
-            console.error(error);
-        }
 
         // Deleting copied files
         for (let i = 0; i < _module.files.length; i++) {
@@ -537,6 +540,29 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
+        await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
+
+        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
+        console.log('Module deactivated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
+    }
+};
+
+const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => {
+    const {currentTheme}       = global.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No components were required by this theme (${currentTheme})`);
+    } else {
+        await addOrRemoveThemeFiles(
+            path.resolve(global.appRoot, _module.path, 'theme_components'),
+            true,
+            _module.types || _module.type || ''
+        );
         console.log('Removing dependencies of the module...');
         // Remove the dependencies of the module
         if (_module.packageDependencies) {
@@ -583,14 +609,6 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
                 await packageManager.execCmd('yarn upgrade', installPath);
             }
         }
-
-        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-        console.log('Module deactivated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
 };
 
@@ -625,6 +643,11 @@ const removeModule = async (idModule) => {
     return true;
 };
 
+const retrieveModuleComponentType = async (theme) => {
+    const infoTheme = await themesUtils.loadInfoTheme(theme);
+    return infoTheme.moduleComponentType;
+};
+
 /**
  * Checks the type of module component the theme expects
  * If a module path is not filled in, this means that all modules registered in the database must be installed (as in the case of a theme change)
@@ -632,8 +655,7 @@ const removeModule = async (idModule) => {
  * @param {*} pathModule : module path
  */
 const frontModuleComponentManagement = async (theme, modulePath) => {
-    const infoTheme            = await themesUtils.loadInfoTheme(theme);
-    const themeModuleComponent = infoTheme.moduleComponentType;
+    const themeModuleComponent = await retrieveModuleComponentType(theme);
     if (themeModuleComponent === 'no-installation') {
         console.log('No component installation is required by this theme');
     } else {
@@ -974,8 +996,8 @@ module.exports = {
     deactivateModule,
     removeModule,
     frontModuleComponentManagement,
-    setFrontModules,
-    setFrontModuleInTheme,
+    // setFrontModules, DEPRECATED : you have to go through the frontModuleComponentManagement function
+    // setFrontModuleInTheme, DEPRECATED : you have to go through the frontModuleComponentManagement function
     addOrRemoveThemeFiles,
     removeImport,
     removeFromListModule,
