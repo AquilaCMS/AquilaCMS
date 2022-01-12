@@ -104,10 +104,10 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             // in case of an ObjectId =>
             fields.push(parentKey + key);
         } else if (Array.isArray(value) && value.length > 0) {
-            // in case of an array
+            // in case of an arraytoHtmlEntities
             if (typeof value[0] !== 'object') {
                 // if it's an string or number array =>
-                data[key] = value.join(',');
+                data[key] = value.map((v) => encodeURIComponent(v)).join(',');
                 if (!fields.includes(parentKey + key)) fields.push(parentKey + key);
             } else if (typeof value[0] === 'object') {
                 // if it's an object array =>
@@ -123,7 +123,8 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
         } else if (value && !fields.includes(parentKey + key)) {
-            // in case of a string / number =>
+            // in case of a string / number, decode value first =>
+            data[key] = encodeURIComponent(value);
             fields.push(parentKey + key);
         }
     }
