@@ -614,7 +614,7 @@ class PageProduct extends NSPageProduct {
                                     <h3 className="modifier-popup__header">{t('product:composeMenu')}</h3>
                                     <form ref={(form) => this.formMenu = form}>
                                         <div className="form__body">
-                                            <NSBundleProduct product={product} />
+                                            <NSBundleProduct product={product} t={t} />
 
                                             <div className="product-price">
                                                 <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).aqlRound(2)} €</strong>
