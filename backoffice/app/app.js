@@ -24,8 +24,7 @@ Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
     return roundNum;
 };
 
-/* App Module */
-var adminCatagenApp = angular.module("adminCatagenApp", [
+var aqModules = [
     "ngRoute",
     "adminCatagenControllers",
     "adminCatagenFilters",
@@ -95,7 +94,18 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.system",
     "aq.invoices",
     "aq.adminList"
-]);
+]
+
+
+try {
+    angular.module('aq.dependencies')
+} catch(err) {
+    console.warn("[Aquila error]  /!\\ Error while loading modules dependencies =>", err.message)
+    aqModules = aqModules.filter((aqM) => (aqM !== 'aq.dependencies'))
+}
+
+/* App Module */
+var adminCatagenApp = angular.module("adminCatagenApp", aqModules);
 
 //================================================
 // Check if the user is connected
