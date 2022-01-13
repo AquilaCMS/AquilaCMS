@@ -220,7 +220,7 @@ class PageProduct extends NSPageProduct {
                                         <ul className="list-images">
                                             {
                                                 product.images && product.images.filter((img) => !img.default) ? product.images.filter((img) => !img.default).map((img, index) => (
-                                                    <li key={img.url} style={{ width: '82px', display: 'flex', alignItems: 'center' }}>
+                                                    <li key={img._id} style={{ width: '82px', display: 'flex', alignItems: 'center' }}>
                                                         <a onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
                                                             {
                                                                 img.content ? <img src={`https://img.youtube.com/vi/${img.content}/0.jpg`} />
