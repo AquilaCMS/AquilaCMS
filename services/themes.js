@@ -13,6 +13,7 @@ const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
+const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
 const packageManager               = require('../utils/packageManager');
@@ -40,7 +41,7 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
-            await require('./modules').setFrontModules(selectedTheme);
+            await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
         } if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
@@ -374,14 +375,27 @@ async function buildTheme(theme) {
     }
 }
 
-async function languageInitExec(theme) {
+async function languageManagement(theme = global.envConfig.environment.currentTheme) {
+    const pathToTheme = path.join(global.appRoot, 'themes', theme, '/');
+    if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
+        await languageInitExec(theme);
+    } else {
+        await ServiceLanguages.createDynamicLangFile(theme);
+    }
+    return 'OK';
+}
+
+async function languageInitExec(theme = global.envConfig.environment.currentTheme) {
     let returnValues;
     try {
         const pathToTheme        = path.join(global.appRoot, 'themes', theme);
         const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
         const isExist            = await fs.existsSync(pathToLanguageInit);
         if (isExist) {
-            returnValues = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage()"`, slash(path.join(pathToTheme, '/')));
+            const langs       = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
+            const tabLang     = langs.datas.map((_lang) => _lang.code);
+            const defaultLang = await ServiceLanguages.getDefaultLang();
+            returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
             if (returnValues.stderr === '') {
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {
@@ -407,8 +421,7 @@ async function generateDynamicLangFile(theme) {
         const isExist            = await fs.existsSync(pathToDynamicLangs);
         if (!isExist) {
             // Create the file if not exist
-            const {createDynamicLangFile} = require('./languages');
-            await createDynamicLangFile(theme);
+            await ServiceLanguages.createDynamicLangFile(theme);
         }
         return 'OK';
     } catch (err) {
@@ -476,5 +489,5 @@ module.exports = {
     listTheme,
     getDemoDatasFilesName,
     installTheme,
-    languageInitExec
+    languageManagement
 };

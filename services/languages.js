@@ -25,7 +25,8 @@ const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status = 'visible'; // The default language need to be visible
+        lang.status        = 'visible'; // The default language need to be visible
+        global.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
@@ -35,14 +36,14 @@ const saveLang = async (lang) => {
         result = await Languages.create(lang);
     }
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
     return result;
 };
 
 const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
     return deletedLang;
 };
 

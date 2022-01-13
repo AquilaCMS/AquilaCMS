@@ -280,12 +280,13 @@ adminCatagenServices.service("toastService", function ()
 adminCatagenServices.factory("ExportCollectionCSV", [
     "$http", "toastService", function ($http, toastService)
     {
-        const exportToCSV = function (collection)
+        const exportToCSV = function (collection, PostBody)
         {
             $http({
-                method: "GET",
+                method: "POST",
                 url: `v2/export/csv/${collection}`,
                 headers: {"Content-Type": "application/json"},
+                data: {PostBody}
                 // responseType: "blob"
             }).success(function (data, status, headers)
             {

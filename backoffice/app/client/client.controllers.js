@@ -1,8 +1,8 @@
 const ClientControllers = angular.module("aq.client.controllers", []);
 
 ClientControllers.controller("ClientCtrl", [
-    "$scope", "$location", "ClientSearch", "Client", "toastService", "ClientColumns", "User", "$http", "ExportCollectionCSV", "ClientV2",
-    function ($scope, $location, ClientSearch, Client, toastService, ClientColumns, User, $http, ExportCollectionCSV, ClientV2) {
+    "$scope", "$location", "ClientSearch", "Client", "toastService", "ClientColumns", "ClientV2", 'ExportCollectionCSV',
+    function ($scope, $location, ClientSearch, Client, toastService, ClientColumns, ClientV2, ExportCollectionCSV) {
         $scope.columns = ClientColumns;
         $scope.query = {search: ""};
         $scope.page = 1;
@@ -170,7 +170,9 @@ ClientControllers.controller("ClientCtrl", [
             $location.path(`/clients/${clientId}`);
         };
 
-        $scope.export = ExportCollectionCSV;
+        $scope.export = function () {
+            ExportCollectionCSV('users')
+        };
     }
 ]);
 

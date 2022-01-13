@@ -100,64 +100,64 @@ const initFrontFramework = async (themeName = null) => {
     if (themeName === null) {
         themeName =  global.envConfig.environment.currentTheme;
     }
-    const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
-    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
-    if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
-        await require('./services/themes').languageInitExec(themeName);
-    } else if (!(fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
-        await require('./services/languages').createDynamicLangFile();
-    }
-    themeInfo = utilsThemes.loadInfoTheme(themeName);
-    if (themeInfo === null) {
-        themeInfo = {};
-    }
-    if (themeInfo && themeInfo.type) {
-        type = themeInfo.type;
-    }
-    server.use('/', middlewareServer.maintenance);
-    const color = '\x1b[36m'; // https://stackoverflow.com/a/41407246
-    if (type === 'custom') {
-        console.log(`%s@@ ${themeName} is a custom theme (default type) %s`, color, '\x1b[0m');
-        let handler;
-        try {
-            if (fs.existsSync(pathToInit)) {
-                const process = require('process');
-                process.chdir(pathToTheme); // protect require of the frontFrameWork
-                console.log(`%s@@ Initializing the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
-                const initFileOfConfig = require(pathToInit);
-                if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
-                    console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js => start() %s`, color, '\x1b[0m');
-                    handler = await initFileOfConfig.start(server);
-                    console.log('%s@@ Theme started %s', color, '\x1b[0m');
-                } else {
-                    throw "The 'themeInit.js' of your theme needs to export a start() function";
-                }
-                process.chdir(global.appRoot);
-                if (typeof handler !== 'undefined' && handler !== null) {
-                    server.use('/', handler);
-                }
-            } else {
-                let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
-                msg    += "You can also change or create a 'infoTheme.json' file in your theme";
-                throw  msg;
-            }
-        } catch (errorInit) {
-            console.error(errorInit);
-            throw 'Error loading the theme';
+    const pathToTheme  = path.join(global.appRoot, 'themes', themeName, '/');
+    const pathToInit   = path.join(pathToTheme, 'themeInit.js');
+    const languageInit = await require('./services/themes').languageManagement(themeName);
+    if (languageInit === 'OK') {
+        themeInfo = utilsThemes.loadInfoTheme(themeName);
+        if (themeInfo === null) {
+            themeInfo = {};
         }
-    } else if (type === 'normal') {
-        console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
-        // normal type
-        const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
-        if (fs.existsSync(pathToTheme)) {
-            let pathToPages = pathToTheme;
-            if (typeof themeInfo.expose !== 'undefined') {
-                pathToPages = path.join(pathToTheme, themeInfo.expose);
+        if (themeInfo && themeInfo.type) {
+            type = themeInfo.type;
+        }
+        server.use('/', middlewareServer.maintenance);
+        const color = '\x1b[36m'; // https://stackoverflow.com/a/41407246
+        if (type === 'custom') {
+            console.log(`%s@@ ${themeName} is a custom theme (default type) %s`, color, '\x1b[0m');
+            let handler;
+            try {
+                if (fs.existsSync(pathToInit)) {
+                    const process = require('process');
+                    process.chdir(pathToTheme); // protect require of the frontFrameWork
+                    console.log(`%s@@ Initializing the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
+                    const initFileOfConfig = require(pathToInit);
+                    if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
+                        console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js => start() %s`, color, '\x1b[0m');
+                        handler = await initFileOfConfig.start(server);
+                        console.log('%s@@ Theme started %s', color, '\x1b[0m');
+                    } else {
+                        throw "The 'themeInit.js' of your theme needs to export a start() function";
+                    }
+                    process.chdir(global.appRoot);
+                    if (typeof handler !== 'undefined' && handler !== null) {
+                        server.use('/', handler);
+                    }
+                } else {
+                    let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
+                    msg    += "You can also change or create a 'infoTheme.json' file in your theme";
+                    throw  msg;
+                }
+            } catch (errorInit) {
+                console.error(errorInit);
+                throw 'Error loading the theme';
             }
-            server.use('/', express.static(pathToPages));
+        } else if (type === 'normal') {
+            console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
+            // normal type
+            const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
+            if (fs.existsSync(pathToTheme)) {
+                let pathToPages = pathToTheme;
+                if (typeof themeInfo.expose !== 'undefined') {
+                    pathToPages = path.join(pathToTheme, themeInfo.expose);
+                }
+                server.use('/', express.static(pathToPages));
+            }
+        } else {
+            throw 'Error with the theme, the type of your theme is not correct';
         }
     } else {
-        throw 'Error with the theme, the type of your theme is not correct';
+        throw 'Error with the theme, language management failed';
     }
 };
 

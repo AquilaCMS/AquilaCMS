@@ -20,6 +20,7 @@ module.exports = function (app) {
     app.get('/v2/product/download', authentication, downloadProduct);
     app.post('/v2/product/calculStock', calculStock);
     app.post('/v2/product/preview', adminAuthRight('products'), preview);
+    app.post('/v2/product/changeType', adminAuthRight('products'), changeProductType);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
     app.put('/v2/product', adminAuthRight('products'), setProduct);
@@ -227,5 +228,15 @@ async function preview(req, res, next) {
         return res.json({url});
     } catch (err) {
         next(err);
+    }
+}
+
+async function changeProductType(req, res, next) {
+    try {
+        const newProduct = await ServiceProduct.changeProductType(req.body.product, req.body.newType);
+        return res.json(newProduct);
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
 }
