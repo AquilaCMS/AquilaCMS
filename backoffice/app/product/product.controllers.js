@@ -1,22 +1,5 @@
 const ProductControllers = angular.module("aq.product.controllers", []);
 
-// ProductControllers.controller("ProductBeforeCreateCtrl", [
-//     "$scope", "NSConstants", "$location", function ($scope, NSConstants, $location) {
-//         $scope.productTypes = NSConstants.productTypes;
-//         $scope.settings = {
-//             productType : $scope.productTypes[0].code
-//         };
-
-//         $scope.validate = function (settings) {
-//             $location.path(`/products/${settings.productType}/new`);
-//         };
-
-//         $scope.cancel = function () {
-//             $location.path("/products");
-//         };
-//     }
-// ]);
-
 ProductControllers.controller("SelectProductsCtrl", [
     "$scope", "$modalInstance", "queryFilter", "toastService", "productSelected",
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {

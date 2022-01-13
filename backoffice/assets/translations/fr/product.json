@@ -44,7 +44,7 @@
         "coherenceTitle": "Cohérence du produit",
         "changeType": "Changer le type",
         "type": "Type",
-        "typeTooltip": "Changer le type de produit (necessite une sauvegarde du produit)"
+        "typeTooltip": "Changer le type de produit (nécessite une sauvegarde du produit)"
     },
     "modal": {
         "activeProduct": "Activer un produit",
