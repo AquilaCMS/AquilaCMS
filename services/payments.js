@@ -19,8 +19,6 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
 
-const NB_DAY_DELETE_FAILED_PAID_ORDERS = 1;
-
 const getOrdersPayments = async (postBody) => {
     postBody.limit = postBody.limit || 12;
     if (!postBody.page) {
@@ -352,12 +350,12 @@ async function immediateCashPayment(req, method) {
     }
 }
 
-// delete failed payment from orders older than NB_DAY_DELETE_FAILED_PAID_ORDERS days
+// delete failed payment from orders older than nbDaysToDeleteOlderFailedPayment days
 async function deleteFailedPayment() {
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - NB_DAY_DELETE_FAILED_PAID_ORDERS);
+        dateToDelete.setDate(dateToDelete.getDate() - (global.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
         const orders = await Orders.find({
             payment : {
                 $elemMatch : {

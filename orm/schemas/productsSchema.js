@@ -323,18 +323,20 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        for (let i = 0; i < oldPrd.images.length; i++) {
-            if (oldPrd.images[i]._id && this.getUpdate().$set.images) {
-                if (this.getUpdate().$set.images.findIndex((img) => `${oldPrd.images[i]._id}` === `${img._id}`) === -1) {
-                    try {
-                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    try {
-                        require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
-                    } catch (error) {
-                        console.log(error);
+        if (oldPrd) {
+            for (let i = 0; i < oldPrd.images.length; i++) {
+                if (oldPrd.images[i]._id && this.getUpdate().$set.images) {
+                    if (this.getUpdate().$set.images.findIndex((img) => `${oldPrd.images[i]._id}` === `${img._id}`) === -1) {
+                        try {
+                            await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        try {
+                            require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                 }
             }

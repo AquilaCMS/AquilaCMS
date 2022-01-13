@@ -10,11 +10,13 @@ const AdmZip           = require('adm-zip');
 const path             = require('path');
 const mongoose         = require('mongoose');
 const rimraf           = require('rimraf');
+const slash            = require('slash');
 const semver           = require('semver');
 const {isEqual}        = require('../utils/utils');
 const packageManager   = require('../utils/packageManager');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const modulesUtils     = require('../utils/modules');
+const themesUtils      = require('../utils/themes');
 const {isProd, getEnv} = require('../utils/server');
 const fs               = require('../utils/fsp');
 const NSErrors         = require('../utils/errors/NSErrors');
@@ -75,6 +77,7 @@ const initModule = async (files) => {
     const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);
     const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname);
     const extractZipFilePath  = zipFilePath.replace('.zip', '/');
+    const relativePath        = slash(path.join(moduleFolderName, originalname).replace('.zip', '/'));
 
     // move the file from the temporary location to the intended location
     await fs.mkdir(moduleFolderAbsPath, {recursive: true});
@@ -138,7 +141,7 @@ const initModule = async (files) => {
             name                     : info.name,
             description              : info.description,
             version                  : info.version,
-            path                     : extractZipFilePath,
+            path                     : relativePath,
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -359,9 +362,9 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy    = `backoffice/app/${myModule.name}`;
-        const copyF   = `modules/${myModule.name}/app/`;
-        const copyTab = [];
+        const copy  = `backoffice/app/${myModule.name}`;
+        const copyF = `modules/${myModule.name}/app/`;
+        let copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
                 await fs.copyRecursive(
@@ -393,10 +396,28 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
+        // All the actions concerning the module that will be performed in the theme
+        copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
+
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
+        console.log('Module activated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
+    }
+};
+
+const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
+    const {currentTheme}       = global.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No component installation is required by this theme (${currentTheme})`);
+    } else {
         if (myModule.loadTranslationFront) {
             console.log('Front translation for module : Loading ...');
             try {
-                const {currentTheme}      = global.envConfig.environment;
                 const pathToTranslateFile = path.join(global.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
                 const hasAccess           = await fs.hasAccess(pathToTranslateFile);
                 if (hasAccess) {
@@ -428,36 +449,7 @@ const activateModule = async (idModule, toBeChanged) => {
         // If the module contains dependencies usable in the front
         // then we run the install to install the dependencies in aquila
         if (myModule.packageDependencies) {
-            for (const apiOrTheme of Object.keys(toBeChanged)) {
-                let installPath = global.appRoot;
-                let position    = 'aquila';
-                let packagePath = path.resolve(installPath, 'package.json');
-                if (apiOrTheme === 'theme') {
-                    installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-                    position    = 'the theme';
-                    packagePath = path.resolve(installPath, 'package.json');
-                }
-                if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON  = JSON.parse(await fs.readFile(packagePath));
-                    const dependencies = {
-                        ...packageJSON.dependencies,
-                        ...myModule.packageDependencies[apiOrTheme],
-                        ...toBeChanged[apiOrTheme]
-                    };
-                    if (!isEqual(packageJSON.dependencies, dependencies)) {
-                        packageJSON.dependencies = {
-                            ...packageJSON.dependencies,
-                            ...myModule.packageDependencies[apiOrTheme],
-                            ...toBeChanged[apiOrTheme]
-                        };
-                        packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                        console.log(`Installing dependencies of the module in ${position}...`);
-                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                        await packageManager.execCmd('yarn upgrade', installPath);
-                    }
-                }
-            }
+            await installModulesDependencies(myModule, toBeChanged);
         }
 
         // If the module must import components into the front
@@ -466,14 +458,54 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.types || myModule.type || ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true});
-        console.log('Module activated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
+    return copyTab;
+};
+
+const installModulesDependencies = async (myModule, toBeChanged) => {
+    for (const apiOrTheme of Object.keys(toBeChanged)) {
+        if (apiOrTheme !== 'theme' && apiOrTheme !== 'api') continue;
+        let installPath = global.appRoot;
+        let position    = 'aquila';
+        let packagePath = path.resolve(installPath, 'package.json');
+        if (apiOrTheme === 'theme') {
+            installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+            position    = 'the theme';
+            packagePath = path.resolve(installPath, 'package.json');
+        }
+        if (myModule.packageDependencies && myModule.packageDependencies[apiOrTheme]) {
+            const packageJSON  = JSON.parse(await fs.readFile(packagePath));
+            const dependencies = {
+                ...packageJSON.dependencies,
+                ...myModule.packageDependencies[apiOrTheme],
+                ...toBeChanged[apiOrTheme]
+            };
+            if (!isEqual(packageJSON.dependencies, dependencies)) {
+                packageJSON.dependencies = {
+                    ...packageJSON.dependencies,
+                    ...myModule.packageDependencies[apiOrTheme],
+                    ...toBeChanged[apiOrTheme]
+                };
+                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                console.log(`Installing dependencies of the module in ${position}...`);
+                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await packageManager.execCmd('yarn upgrade', installPath);
+            }
+        }
+    }
+};
+
+const installDependencies = async () => {
+    // get active modules
+    console.log('Modules packageDependecies install start');
+    const modules = await getModules({filter: {active: true}, structure: '*', limit: 99, lean: true});
+    for (const module of modules.datas) {
+        const moduleDependencies = require(path.join((module.path.startsWith('module') ? (`../${module.path}`) :  module.path), 'info.json')).info.packageDependencies;
+        if (moduleDependencies) {await installModulesDependencies(module, moduleDependencies);}
+    }
+    console.log('Modules packageDependecies installed');
+    return true;
 };
 
 /**
@@ -491,15 +523,6 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
         await removeModuleAddon(_module);
-        try {
-            await addOrRemoveThemeFiles(
-                path.resolve(global.appRoot, _module.path, 'theme_components'),
-                true,
-                _module.types || _module.type || ''
-            );
-        } catch (error) {
-            console.error(error);
-        }
 
         // Deleting copied files
         for (let i = 0; i < _module.files.length; i++) {
@@ -519,6 +542,29 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
+        await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
+
+        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
+        console.log('Module deactivated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
+    }
+};
+
+const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => {
+    const {currentTheme}       = global.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No components were required by this theme (${currentTheme})`);
+    } else {
+        await addOrRemoveThemeFiles(
+            path.resolve(global.appRoot, _module.path, 'theme_components'),
+            true,
+            _module.types || _module.type || ''
+        );
         console.log('Removing dependencies of the module...');
         // Remove the dependencies of the module
         if (_module.packageDependencies) {
@@ -565,14 +611,6 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
                 await packageManager.execCmd('yarn upgrade', installPath);
             }
         }
-
-        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-        console.log('Module deactivated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
 };
 
@@ -607,6 +645,30 @@ const removeModule = async (idModule) => {
     return true;
 };
 
+const retrieveModuleComponentType = async (theme) => {
+    const infoTheme = await themesUtils.loadInfoTheme(theme);
+    return infoTheme.moduleComponentType;
+};
+
+/**
+ * Checks the type of module component the theme expects
+ * If a module path is not filled in, this means that all modules registered in the database must be installed (as in the case of a theme change)
+ * @param {*} theme : theme
+ * @param {*} pathModule : module path
+ */
+const frontModuleComponentManagement = async (theme, modulePath) => {
+    const themeModuleComponent = await retrieveModuleComponentType(theme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log('No component installation is required by this theme');
+    } else {
+        if (modulePath) {
+            await setFrontModuleInTheme(modulePath, theme);
+        } else {
+            await setFrontModules(theme);
+        }
+    }
+};
+
 /**
  * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
  */
@@ -617,7 +679,6 @@ const setFrontModules = async (theme) => {
 
     // Update file content (from modules)
     const listModules = await Modules.find({active: true/* , "et need front" */});
-
     for (let index = 0; index < listModules.length; index++) {
         const oneModule = listModules[index];
 
@@ -728,7 +789,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
                 }
             }
         } else {
-            await setFrontModuleInTheme(pathThemeComponents, currentTheme);
+            await frontModuleComponentManagement(currentTheme, pathThemeComponents);
         }
     }
     // Rebuild du theme
@@ -932,10 +993,12 @@ module.exports = {
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
     activateModule,
+    installDependencies,
     deactivateModule,
     removeModule,
-    setFrontModules,
-    setFrontModuleInTheme,
+    frontModuleComponentManagement,
+    // setFrontModules, DEPRECATED : you have to go through the frontModuleComponentManagement function
+    // setFrontModuleInTheme, DEPRECATED : you have to go through the frontModuleComponentManagement function
     addOrRemoveThemeFiles,
     removeImport,
     removeFromListModule,

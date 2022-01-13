@@ -159,7 +159,7 @@ const addItem = async (postBody, userInfo) => {
     }
     const _product = await Products.findOne({_id: postBody.item.id});
     await linkCustomerToCart(cart, userInfo);
-    if (!_product || (_product.type !== 'bundle' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
+    if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});

@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:14-alpine3.14
 WORKDIR /src
 EXPOSE 3010
 COPY . /src

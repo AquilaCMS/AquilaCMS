@@ -69,11 +69,12 @@ const ConfigurationSchema = new Schema({
         default : [{rate: 5.5}, {rate: 10}, {rate: 20}]
     },
     stockOrder : {
-        cartExpireTimeout         : {type: Number, required: true, default: 48},
-        pendingOrderCancelTimeout : {type: Number, required: true, default: 48},
-        requestMailPendingCarts   : {type: Number, required: true, default: 24},
-        bookingStock              : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
-        labels                    : {
+        cartExpireTimeout                : {type: Number, required: true, default: 48},
+        pendingOrderCancelTimeout        : {type: Number, required: true, default: 48},
+        nbDaysToDeleteOlderFailedPayment : {type: Number, default: 30},
+        requestMailPendingCarts          : {type: Number, required: true, default: 24},
+        bookingStock                     : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
+        labels                           : {
             type    : [{code: {type: String, required: true}, translation: {}}],
             default : [
                 {
