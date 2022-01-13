@@ -263,6 +263,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         $location.path("/products");
                     } else {
                         toastService.toast("success", $translate.instant("simple.productSaved"));
+                        if($scope.product.type !== $routeParams.type) {
+                            window.location.hash = `/products/${savedPrd.type}/${savedPrd.code}`
+                        }
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;

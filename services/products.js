@@ -9,6 +9,7 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
 const mongoose                = require('mongoose');
+const {lte}                   = require('lodash/fp');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
 const QueryBuilder            = require('../utils/QueryBuilder');
@@ -604,8 +605,9 @@ const calculateFilters = async (req, result) => {
 
 const setProduct = async (req) => {
     // We update the product
-    const product = await Products.findById(req.body._id);
+    let product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
+    if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
     const result = await product.updateData(req.body);
@@ -1113,6 +1115,15 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
+const changeProductType = async (product, newType) => {
+    const oldProduct = await Products.findOne({code: product.code});
+    if (!(['simple', 'bundle', 'virtual']).includes(newType)) throw NSErrors.ProductTypeInvalid;
+    if (oldProduct && newType && newType !== oldProduct.type) {
+        return Products.findOneAndUpdate({_id: oldProduct._id}, {$set: {type: newType}}, {new: true});
+    }
+    return oldProduct;
+};
+
 module.exports = {
     getProducts,
     getProduct,
@@ -1131,5 +1142,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    changeProductType
 };

@@ -25,9 +25,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     $scope.loadNewAttrs();
                 }
             }
-        });
-
-        
+        });       
 
         $scope.loadNewAttrs = function () {
             AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
@@ -369,6 +367,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     else
                     {
                         toastService.toast("success", $translate.instant("bundle.product.productSaved"));
+                        if($scope.product.type !== $routeParams.type) {
+                            window.location.hash = `/products/${savedPrd.type}/${savedPrd.code}`
+                        }
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
