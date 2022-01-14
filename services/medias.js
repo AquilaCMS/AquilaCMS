@@ -9,6 +9,7 @@
 const AdmZip   = require('adm-zip');
 const moment   = require('moment');
 const path     = require('path');
+const slash    = require('slash');
 const mongoose = require('mongoose');
 const ObjectID = mongoose.Types.ObjectId;
 
@@ -24,7 +25,7 @@ const {
     Slider,
     Mail,
     Trademarks
-}                      = require('../orm/models');
+}                  = require('../orm/models');
 const utils        = require('../utils/utils');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -173,7 +174,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
 
     let _path          = server.getUploadDirectory();
-    _path              = path.join(process.cwd(), _path);
+    _path              = path.join(global.appRoot, _path);
     const cacheFolder  = path.join(_path, '/cache/');
     let filePath       = '';
     let filePathCache  = '';
@@ -324,7 +325,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
 
 const uploadFiles = async (body, files) => {
     const pathFinal = `${server.getUploadDirectory()}/`;
-    const tmp_path  = files[0].path;
+    const tmp_path  = slash(files[0].path);
     const extension = body.extension;
     let target_path = `medias/${body.type}/`;
 
@@ -385,7 +386,8 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        await fsp.copyRecursive(tmp_path, target_path_full);
+        const absoluteTargetPath = slash(path.resolve(global.appRoot, target_path_full));
+        await fsp.copyRecursive(tmp_path, absoluteTargetPath);
         if ((await fsp.stat(tmp_path)).isDirectory()) {
             await fsp.deleteRecursive(tmp_path);
         } else {
@@ -401,7 +403,7 @@ const uploadFiles = async (body, files) => {
             position : body.position ? body.position : false,
             alt      : body.alt,
             name     : name + extension,
-            title    : name,
+            title    : utils.slugify(files[0].originalname),
             url      : target_path_full,
             extension
         };

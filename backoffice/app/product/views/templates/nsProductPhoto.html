@@ -3,16 +3,26 @@
     <br /><br />
     simple.beforeConfigImages
 </span>
-<div class="row col-sm-12" style="margin-top: 15px" ng-show="product.code && (product._id || isVariant)">
-    <ns-upload-files ng-if="variantId === undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="products" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
-    <ns-upload-files ng-if="variantId !== undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="productsVariant" code="product.code" id="product._id" images="product.images" showalt="true" is-variant="variantId !== undefined"></ns-upload-files>
+<div class="row col-sm-12" style="margin-top: 15px; display: flex;flex-wrap: wrap" ng-show="product.code && (product._id || isVariant)">
+    <ns-upload-files class="col-sm-9" ng-if="variantId === undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="products" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
+    <ns-upload-files class="col-sm-9" ng-if="variantId !== undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="productsVariant" code="product.code" id="product._id" images="product.images" showalt="true" is-variant="variantId !== undefined"></ns-upload-files>
+    <div class="col-md-3 align-self-center" style="display: flex;flex-wrap: wrap; align-items: center">
+        <div class="upload-area upload-area" style="width: 100%;text-align: center;" ng-click="addMovie()">
+            <br/>
+            <i ng-hide="type === 'option' || type === 'attribute'" class="fa fa-youtube" style="font-size: 40px;"></i>
+            <small>Ajout d'une vidéo</small>
+        </div>
+    </div>
 </div>
 <hr />
-<div class="row col-sm-12" style="margin-top: 10px">
-    <h3 translate>product.photo.picturessaved</h3>
-    <div ng-if="product.images.length == 0">
-        <br />
-        <p translate>product.photo.noPics</p>
+<div class="row row-image col-sm-12" style="margin-top: 10px; display: flex;flex-wrap: wrap">
+    <div class="col-md-12">
+        <h3 translate>product.photo.picturessaved</h3>
+        <div ng-if="product.images.length == 0">
+            <br />
+            <p translate>product.photo.noPics</p>
+        </div>
+        
     </div>
     <div ng-repeat="image in product.images | orderBy: ['position']" class="col-sm-6 image-frame">
         <div class="row">
@@ -23,28 +33,25 @@
             </div>
             <div class="col-sm-3 img-responsive" style="white-space: nowrap; text-align: center;">
                 <span class="helperImg"/>
-                <div ng-show="image.component_template" bind-html-compile="image.component_template"></div>
-                <div ng-hide="image.component_template">
+                <div ng-show="image.component_template && !image.isYoutube" bind-html-compile="image.component_template"></div>
+                <div ng-hide="image.component_template || image.isYoutube">
                     <img ng-src="/{{getImageUrl(image, variantId ? image._id : undefined)}}" />
+                </div>
+                <div class="youtube-preview" ng-hide="image.component_template || !image.isYoutube">
+                    <div style="background: url(https://img.youtube.com/vi/{{image.content}}/0.jpg) no-repeat center; background-size: cover; border-radius: 4px;width: 100%; height: 120px;"></div>
                 </div>
             </div>
             <div class="col-sm-7">
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="col-sm-4 control-label" translate>product.photo.nom</label>
                     <div class="col-sm-8">
                         <input type="text" name="name_{{$index}}" class="form-control" ng-model="image.name" ng-disabled="true" />
                     </div>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label class="col-sm-4 control-label" translate>product.photo.title</label>
                     <div class="col-sm-8">
                         <input type="text" name="title_{{$index}}" class="form-control" ng-model="image.title" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label" translate>product.photo.url</label>
-                    <div class="col-sm-8">
-                        <input disabled type="text" name="url_{{$index}}" class="form-control" ng-model="image.url" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -59,7 +66,19 @@
                         <input type="number" class="form-control" ng-model="image.position">
                     </div>
                 </div>
-                <div class="form-group" ng-hide="product.images.length === 1 && image.default">
+                <div ng-show="!image.isYoutube" class="form-group">
+                    <label class="col-sm-4 control-label" translate>product.photo.url</label>
+                    <div class="col-sm-8">
+                        <input disabled type="text" name="url_{{$index}}" class="form-control" ng-model="image.url" />
+                    </div>
+                </div>
+                <div ng-show="image.isYoutube" class="form-group">
+                    <label class="col-sm-4 control-label" translate>product.photo.youtubeId</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="content_{{$index}}" class="form-control" ng-model="image.content" />
+                    </div>
+                </div>
+                <div class="form-group" ng-hide="(product.images.length === 1 && image.default) || image.isYoutube">
                     <label class="control-label col-sm-4" translate>product.photo.img</label>
                     <div class="col-sm-8">
                         <ns-switch disable-switch="{{product.images.length === 1 && image.default}}" ng-model="image.default" name="default_{{$index}}_{{product._id}}" ng-change="switchDefaultImage(image, product)"></ns-switch>
@@ -67,5 +86,10 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11" hook-product-detail-photo>
     </div>
 </div>

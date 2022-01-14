@@ -1,5 +1,5 @@
 <ns-box data-title="trademark.detail.t1" title-icon="fa fa-creative-commons fa-lg" close-href="#/trademarks">
-    <form name="form" class="form-horizontal" novalidate ng-submit="save(trademark)" role="form">
+    <form name="form" class="form-horizontal" novalidate ng-submit="save(trademark)" role="form" hook-trademark-detail>
         <ns-buttons is-edit-mode="true" remove="removeTrademark(trademark)" save-and-quit="save(trademark,true)"
                     disable-save="disableSave" return-path="/trademarks" form="form">
                     <ns-translation ng-model="lang" class="pull-right"></ns-translation>

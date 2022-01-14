@@ -227,7 +227,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         orderable  : false,
         status     : 'liv'
     };
-    doc.code     = newCode;
+    doc.code     = utils.slugify(newCode);
     doc.active   = false;
     doc._visible = false;
     await doc.save();
@@ -604,10 +604,11 @@ const calculateFilters = async (req, result) => {
 
 const setProduct = async (req) => {
     // We update the product
-    const product = await Products.findById(req.body._id);
+    let product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
+    if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     if (result.code === 'SlugAlreadyExist' ) {
         throw NSErrors.SlugAlreadyExist;
@@ -621,11 +622,11 @@ const createProduct = async (req) => {
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     let body = req.body;
-    if (req.body.set_attributes === undefined) {
-        body = await serviceSetAttributs.addAttributesToProduct(req.body);
+    if (body.set_attributes === undefined) {
+        body = await serviceSetAttributs.addAttributesToProduct(body);
     }
-    req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(body);
+    body.code = utils.slugify(body.code);
+    const res = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
@@ -1153,6 +1154,15 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
+const changeProductType = async (product, newType) => {
+    const oldProduct = await Products.findOne({code: product.code});
+    if (!(['simple', 'bundle', 'virtual']).includes(newType)) throw NSErrors.ProductTypeInvalid;
+    if (oldProduct && newType && newType !== oldProduct.type) {
+        return Products.findOneAndUpdate({_id: oldProduct._id}, {$set: {type: newType}}, {new: true});
+    }
+    return oldProduct;
+};
+
 module.exports = {
     getProducts,
     getProduct,
@@ -1171,5 +1181,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    changeProductType
 };

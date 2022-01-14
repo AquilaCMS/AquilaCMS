@@ -51,7 +51,8 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
                     vat_rate: 1,
                     preparation: 1,
                     translation: 1,
-                    countries: 1
+                    countries: 1,
+                    freePriceLimit: 1
                 },
                 skip: 0,
                 limit: 100
@@ -243,14 +244,6 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
 
         $scope.data = {selectedPos: []};
 
-
-        /*** Spécifique aux points relais ****/
-        $scope.setCountryName = function () {
-            $scope.shipment.address.country = $scope.countries.find(function (country) {
-                return country.code === $scope.shipment.address.isoCodeCountry;
-            });
-        };
-        /***** Fin points relais *****/
 
         $scope.save = function (isQuit) {
             Shipment.save($scope.shipment, function (savedShipment) {

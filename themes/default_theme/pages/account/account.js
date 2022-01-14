@@ -128,6 +128,14 @@ class PageAccount extends NSPageAccount {
         }
     } */
 
+    handleAttributeValueEdit = (e) => {
+        const {value, name} = e.target;
+        const {user} = this.state;
+        const idx = user.attributes.findIndex(attr => attr.code === name)
+        user.attributes[idx].value = value
+        this.setState({user})
+    }
+
     handlerOptinNewsletter = async () => {
         const { optinNewsletter } = this.state;
         this.setState({ optinNewsletter: !optinNewsletter });
@@ -263,6 +271,16 @@ class PageAccount extends NSPageAccount {
                                                                     <input type="text" className="field" name="firstname" id="field-firstname" value={user.firstname} onChange={this.handleFormChange} required />
                                                                 </div>
                                                             </div>
+                                                            {
+                                                                user.attributes && user.attributes.filter(attr => attr.param === "Oui").map(attr => (
+                                                                    <div className="form__row form__row--flex align-right">
+                                                                        <label htmlFor="field-lastname" className="form__label">{attr.name}<span>*</span></label>
+                                                                        <div className="form__controls" style={{ textAlign: 'end' }}>
+                                                                            <input type="text" className="field" name={attr.code} id="field-lastname" value={attr.value} onChange={this.handleAttributeValueEdit} />
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            }
                                                             <div className="form__row form__row--flex align-right">
                                                                 <label htmlFor="field-birthDate" className="form__label">{t('account:account.page.label.birthDate')}</label>
                                                                 <div className="form__controls" style={{ textAlign: 'end' }}>

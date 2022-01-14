@@ -42,7 +42,10 @@
         "finished": "Finished",
         "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product",
-        "saveFirst": "Save the product before adding images"
+        "saveFirst": "Save the product before adding images",
+        "changeType": "Change product type",
+        "type": "Type",
+        "typeTooltip": "Change the type of product (requires save)"
     },
     "modal": {
         "activeProduct": "Activate a product",
@@ -87,14 +90,16 @@
     },
     "photo": {
         "add": "Add",
-        "nom": "Name",
-        "title": "Title tag",
+        "nom": "Original",
+        "title": "Name",
         "picturessaved": "Pictures saved :",
         "alt": "Alt tag",
         "pos": "Position",
-        "img": "Main Picture",
-        "url": "URL",
-        "noPics": "There are no images in this product, the default image will be displayed in the theme"
+        "img": "Main",
+        "url": "Image",
+        "noPics": "There are no images in this product, the default image will be displayed in the theme",
+        "youtubeId": "Youtube video ID" ,
+        "type": "Youtube video"
     },
     "list": {
         "ph1": "Name",
@@ -162,5 +167,6 @@
         "displayImage": "Display image",
         "displayRadio": "Radio buttons",
         "displayList": "Lists"
-    }
+    },
+    "beforeConfigCat": "Save product before adding it to categories"
 }

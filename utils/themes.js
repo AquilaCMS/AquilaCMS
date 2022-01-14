@@ -93,6 +93,7 @@ const yarnBuildCustom = async (themeName = '') => {
             stderr : e
         };
     }
+    if (!require('./server').dev) await require('../orm/models/configuration').findOneAndUpdate({}, {'environment.needRebuild': false});
     return returnValues;
 };
 

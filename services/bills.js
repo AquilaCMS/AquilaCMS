@@ -181,11 +181,7 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
 
         let taxString = '';
         Object.keys(bill.taxes).forEach(function (key) {
-            if (lang === 'fr') {
-                taxString += `Total des produits avec taxe à ${key}% : ${bill.taxes[key]} euros<br/>`;
-            } else {
-                taxString += `Total for products with a ${key}% tax: ${bill.taxes[key]} euros<br/>`;
-            }
+            taxString += `${key}% : ${bill.taxes[key]} &euro;<br/>`;
         });
         datas['{{totalByTaxRate}}'] = taxString;
     }

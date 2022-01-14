@@ -469,77 +469,41 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     return false
                                 }
 
-                            $scope.size = {};
-                            $scope.size.max = true;
-                            $scope.size.keepRatio = true;
-                            $scope.size.ratio = 1
-
-                            $scope.changeSwitch = function(){
-                                if ($scope.size.max === true){
-                                    $scope.size.max = false;
-                                }else{
-                                    $scope.size.max = true;
-                                }
-                            }
-
-                            $scope.selectImage = function(image){
+                            $scope.selectImage = function (image) {
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
-                                $scope.getMeta(image.link)
-                            };
-
-                            $scope.sizeChange = function (type, size) {
-                                if($scope.size.keepRatio) {
-                                    if(type === 'width') {
-                                        $scope.size.height = Math.round(size / $scope.size.ratio)
-                                    } else {
-                                        $scope.size.width = Math.round(size * $scope.size.ratio)
-                                    }
-                                }
-                            }
-
-                            $scope.getMeta = function (url) {
-                                const img = new Image();
-                                img.src = url;
-                                img.onload = function() { 
-                                    $scope.size.ratio = this.width / this.height;
-                                    $scope.size.width = this.width;
-                                    $scope.size.height = this.height;
-                                    $scope.$apply()
-                                }
-                            }
-
-                            $scope.generate = function () {
-                                let url = $scope.imageSelected.split('medias/')[1];
-                                if($scope.size.max){
-                                    url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
-                                }else{
-                                    url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
-                                }
-                                $modalInstance.close(url);
+                                $scope.media = image
                             };
 
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
                             };
-
-                            $scope.media = {
-                                link : "",
-                                name : 'new-' + Math.floor(Math.random() * 1024),
-                                group: "",
+                            
+                            $scope.generate = function (url) {
+                                $modalInstance.close(url);
                             };
+
+                            $scope.media = {};
 
                         }],
                         resolve: {
                         }
                     });
                     modalInstance.result.then(function (url) {
+                        let tag = '<img src="' + url + '"/>'
+                        const stringSizeQual = url.split('/')[url.split('/').length - 3]
+                        if(stringSizeQual) {
+                            const size = stringSizeQual.split('-')[0]
+                            if(size && size.toLowerCase() !== 'max') {
+                                tag = '<img src="' + url + '" width="' + size.split("x")[0] + '" height="' + size.split("x")[1] + '"/>'
+                            }
+                        }
                         if ($scope.tinymceId) {
-                        tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
-                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                    } else {
-                        tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
-                    }
+                            tinyMCE.get($scope.tinymceId).selection.setContent(tag);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent(tag);
+                        }
                     });
                 };
 
@@ -908,90 +872,94 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         restrict: "E",
         link: function (scope, element, attrs)
         {
-            var el = angular.element("<span/>");
-            scope.optionColor = {
-                format: "hexString",
-                required: false,
-                allowEmpty: true
-            }
-            switch(scope.att.type)
-            {
-                case "date":
-                    el.append("<div class='col-sm-10'><ns-datepicker name='value' ng-model='att.translation[lang].value'></ns-datepicker></div>");
-                    break;
-                case "textfield":
-                    el.append("<div class='col-sm-10'><input class='form-control' type='text' ng-model='att.translation[lang].value'/></div>");
-                    break;
-                case "number":
-                    if(scope.att.param == "Non") {
-                        el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/></div>");
-                    } else if (scope.att.param == "Oui") {
-                        el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/><span>La valeur entrée dans ce champ sera la valeur par défaut lors de la séléction par l'utilisateur</span></div>");
-                    }
-                    break;
-                case "textarea":
-                    el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce lang='lang' text='att.translation[lang].value'></ns-tinymce></div></div>");
-                    break;
-                case "bool":
-                    el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
-                    break;
-                case "list":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <select class='form-control' ng-model='att.translation[lang].value'>" +
-                        "        <option value='' disabled>Choix dans la liste déroulante</option>" +
-                        "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
-                        "    </select>" +
-                        "</div>");
-                    break;
-                case "multiselect":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <select class='form-control' ng-model='att.translation[lang].value' size='10' multiple>" +
-                        "        <option value='' disabled>Choix dans la liste</option>" +
-                        "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
-                        "    </select>" +
-                        "</div>");
-                    break;
-                case "interval":
-                    el.append("<div class='col-sm-10'>" +
-                        "    <span class='col-sm-offset-1 col-sm-2'>Minimum</span>" +
-                        "    <div class='col-sm-1'>" +
-                        "        <input name='min' class='form-control' numericbinding type='number' max='{{att.translation[lang].max}}' ng-model='att.translation[lang].min' />" +
-                        "    </div>" +
-                        "    <span class='col-sm-offset-1 col-sm-2'>Maximum</span>" +
-                        "    <div class='col-sm-1'>" +
-                        "        <input name='max' class='form-control' numericbinding type='number' min='{{att.translation[lang].min}}' ng-model='att.translation[lang].max' />" +
-                        "    </div>" +
-                        "</div>");
-                    break;
-                case "doc/pdf":
-                    el.append(
-                        "<div class='col-sm-2' style='margin-top: 3px;'><input readonly type='text' class='form-control' ng-model='att.translation[lang].value'></div><div class='col-sm-2'><a target='_blank' href='{{ att.translation[lang].value }}' class='btn btn-info' ng-show='att.translation[lang].value != null'>Afficher le PDF</a></div>" +
-                        "<div class=\"col-sm-5\"><ns-upload-files lang=\"lang\" style-prop=\"{height: '35px', margin: '0px 0px 12px 0px'}\" accepttype=\"application/pdf\" multiple=\"false\" code=\"att.id\" type=\"attribute\" id=\"product._id\" entity=\"att.translation[lang]\"></ns-upload-files></div>" +
-                        "<div class=\"col-sm-1\"><button type=\"button\" class=\"btn btn-danger\" ng-click=\"removeImage(att.translation[lang].value); att.translation[lang].value = null\" style=\"min-width: 10px; float: right;\"><i class=\"fa fa-trash\"/></div>");
-                    break;
-                case "image":
-                    el.append(
-                        '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2"><a title="Image" data-trigger="hover" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<img src=\'{{ att.translation[lang].value }}\' width=\'250\' height=\'200\'>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher l\'image</a></div>' +
-                        '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="image/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
-                        '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>'
-                    );
-                    break;
-                case "video":
-                    el.append(
-                        '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2 popVideo"><a title="Vidéo" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<video width=\'800\' controls><source src=\'{{ att.translation[lang].value }}\'>Votre navigateur ne supporte pas les vidéos HTML5.</video>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher la vidéo</a></div>' +
-                        '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="video/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
-                        '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>');
-                    break;
-                case "color":
-                    el.append("<div class=\"col-sm-10\" style=\"display: flex\">"+
-                            "<color-picker ng-model=\"att.translation[lang].value\" options=\"optionColor\"></color-picker>"+
-                            "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
-                        "</div>"
-                    );
-                    break;
-            }
-            $compile(el)(scope);
-            element.append(el);
+            var el;
+            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+                el = angular.element("<span/>");
+                scope.optionColor = {
+                    format: "hexString",
+                    required: false,
+                    allowEmpty: true
+                }
+                switch(scope.att.type)
+                {
+                    case "date":
+                        el.append("<div class='col-sm-10'><ns-datepicker name='value' ng-model='att.translation[lang].value'></ns-datepicker></div>");
+                        break;
+                    case "textfield":
+                        el.append("<div class='col-sm-10'><input class='form-control' type='text' ng-model='att.translation[lang].value'/></div>");
+                        break;
+                    case "number":
+                        if(scope.att.param == "Non") {
+                            el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/></div>");
+                        } else if (scope.att.param == "Oui") {
+                            el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/><span>La valeur entrée dans ce champ sera la valeur par défaut lors de la séléction par l'utilisateur</span></div>");
+                        }
+                        break;
+                    case "textarea":
+                        el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce lang='lang' text='att.translation[lang].value'></ns-tinymce></div></div>");
+                        break;
+                    case "bool":
+                        el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
+                        break;
+                    case "list":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <select class='form-control' ng-model='att.translation[lang].value'>" +
+                            "        <option value='' disabled>Choix dans la liste déroulante</option>" +
+                            "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
+                            "    </select>" +
+                            "</div>");
+                        break;
+                    case "multiselect":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <select class='form-control' ng-model='att.translation[lang].value' size='10' multiple>" +
+                            "        <option value='' disabled>Choix dans la liste</option>" +
+                            "        <option ng-repeat='value in att.translation[lang].values' value='{{value}}'>{{value}}</option>" +
+                            "    </select>" +
+                            "</div>");
+                        break;
+                    case "interval":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <span class='col-sm-offset-1 col-sm-2'>Minimum</span>" +
+                            "    <div class='col-sm-1'>" +
+                            "        <input name='min' class='form-control' numericbinding type='number' max='{{att.translation[lang].max}}' ng-model='att.translation[lang].min' />" +
+                            "    </div>" +
+                            "    <span class='col-sm-offset-1 col-sm-2'>Maximum</span>" +
+                            "    <div class='col-sm-1'>" +
+                            "        <input name='max' class='form-control' numericbinding type='number' min='{{att.translation[lang].min}}' ng-model='att.translation[lang].max' />" +
+                            "    </div>" +
+                            "</div>");
+                        break;
+                    case "doc/pdf":
+                        el.append(
+                            "<div class='col-sm-2' style='margin-top: 3px;'><input readonly type='text' class='form-control' ng-model='att.translation[lang].value'></div><div class='col-sm-2'><a target='_blank' href='{{ att.translation[lang].value }}' class='btn btn-info' ng-show='att.translation[lang].value != null'>Afficher le PDF</a></div>" +
+                            "<div class=\"col-sm-5\"><ns-upload-files lang=\"lang\" style-prop=\"{height: '35px', margin: '0px 0px 12px 0px'}\" accepttype=\"application/pdf\" multiple=\"false\" code=\"att.id\" type=\"attribute\" id=\"product._id\" entity=\"att.translation[lang]\"></ns-upload-files></div>" +
+                            "<div class=\"col-sm-1\"><button type=\"button\" class=\"btn btn-danger\" ng-click=\"removeImage(att.translation[lang].value); att.translation[lang].value = null\" style=\"min-width: 10px; float: right;\"><i class=\"fa fa-trash\"/></div>");
+                        break;
+                    case "image":
+                        el.append(
+                            '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2"><a title="Image" data-trigger="hover" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<img src=\'{{ att.translation[lang].value }}\' width=\'250\' height=\'200\'>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher l\'image</a></div>' +
+                            '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="image/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
+                            '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>'
+                        );
+                        break;
+                    case "video":
+                        el.append(
+                            '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2 popVideo"><a title="Vidéo" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<video width=\'800\' controls><source src=\'{{ att.translation[lang].value }}\'>Votre navigateur ne supporte pas les vidéos HTML5.</video>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher la vidéo</a></div>' +
+                            '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="video/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
+                            '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>');
+                        break;
+                    case "color":
+                        el.append("<div class=\"col-sm-10\" style=\"display: flex\">"+
+                                "<color-picker ng-model=\"att.translation[lang].value\" options=\"optionColor\"></color-picker>"+
+                                "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
+                            "</div>"
+                        );
+                        break;
+                }
+                $compile(el)(scope);
+                element.append(el);
+                
+            })
         }
     };
 });
@@ -1570,7 +1538,7 @@ adminCatagenDirectives.directive("nsRule", [
                 condType: "="
             },
             replace: true,
-            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2)
+            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2, PictoApi)
             {
                 var langs = [];
 
@@ -1613,6 +1581,19 @@ adminCatagenDirectives.directive("nsRule", [
                     })
                     TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
+                    })
+                    PictoApi.list({PostBody: {filter: {}, limit: 99}}, function (response) {
+                        $scope.attributesClassed.push(
+                        {
+                            value: "pictos.code",
+                            type: "select",
+                            params: {
+                                values: response.datas.map(data => data.code),
+                                type: 'pictos'
+                            },
+                            name: 'pictos_code'
+                        })
+
                     })
                     AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
                     {
@@ -2219,8 +2200,21 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*'}}, function ({datas})
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*', populate: {
+                                path : 'parent',
+                                populate : {
+                                    path : 'parent'
+                                }
+                            }}}, function ({datas})
                             {
+                                for(const data of datas) {
+                                    if(data.parent) {
+                                        data.name = data.parent.name + ' > ' + data.name
+                                        if(data.parent.parent) {
+                                            data.name = data.parent.parent.name + ' > ' + data.name
+                                        }
+                                    }
+                                }
                                 $scope.families[attr.value] = datas;
                             });
                         } else if(attr.type === "select" || attr.type === "multiselect")
@@ -2397,45 +2391,45 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             case 'productsVariant':
                                             case 'products': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'module': {
@@ -2444,16 +2438,16 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             default:
-                                                $scope.afterFunction(response.data);
+                                                $scope.afterFunction({data: response.data});
                                                 break;
                                         }
                                         $scope.disableUpload = false;
@@ -2494,5 +2488,147 @@ adminCatagenDirectives.directive('replaceComma', function () {
             })
 
         }
+    }
+});
+
+adminCatagenDirectives.directive('nsFormImageCache', function () {
+    return {
+        scope: false,
+        templateUrl: "views/templates/nsFormImageCache.html",
+        controller: ["$scope", "toastService", "$translate",
+            function ($scope, toastService, $translate) {
+            $scope.positions = [
+                {
+                    pos: "center",
+                    id: "center"
+                },
+                {
+                    pos: "top",
+                    id: "top"
+                },
+                {
+                    pos: "bottom",
+                    id: "bottom"
+                },
+                {
+                    pos: "left",
+                    id: "left"
+                },
+                {
+                    pos: "right",
+                    id: "right"
+                },
+                {
+                    pos: "top-left",
+                    id: "topLeft"
+                },
+                {
+                    pos: "top-right",
+                    id: "topRight"
+                },
+                {
+                    pos: "bottom-left",
+                    id: "bottomLeft"
+                },
+                {
+                    pos: "bottom-right",
+                    id: "bottomRight"
+                }
+            ];
+    
+            $scope.getTranslation = function(pos){
+                return `medias.modal.${pos}`;
+            }
+            $scope.info = {
+                max: true,
+                keepRatio: true,
+                ratio: 1,
+    
+                crop:false,
+                position:"center",
+                background:false,
+                height: "",
+                width: "",
+                quality: 80,
+                r:255,
+                g:255,
+                b:255,
+                alpha:1
+            };
+    
+            $scope.generer = function () {
+                let size = 'max'
+                if(!$scope.info.max) {
+                    size = $scope.info.width + "x" + $scope.info.height
+                }
+                
+                const quality = $scope.info.quality;
+                let filename = "";
+                if ($scope.info.name !== undefined) {
+                    filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
+                        + "." + $scope.media.link.replace(`medias/`, "")
+                            .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
+                } else {
+                    filename = $scope.media.link.replace(`medias/`, "");
+                }
+    
+                let background  = '';
+                let crop        = '';
+                if (
+                    (!$scope.info.height || !$scope.info.width || !quality)
+                    || (
+                        $scope.info.background
+                        && (
+                            ($scope.info.r === undefined || $scope.info.r < 0) || ($scope.info.g === undefined || $scope.info.g < 0) || ($scope.info.b === undefined || $scope.info.b < 0) ||
+                            !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
+                    )
+                ) {
+                    toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
+                } else {
+                    if ($scope.info.background) {
+                        if ($scope.info.alpha) {
+                            if ($scope.info.alpha > 1) {
+                                $scope.info.alpha = 1;
+                            }
+                        }
+                        background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
+                    }
+                    if ($scope.info.crop) {
+                        crop = `-crop-${$scope.info.position}`;
+                    }
+                    toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
+                    $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    return $scope.link
+                }
+            };
+    
+            $scope.sizeChange = function (type, size) {
+                if($scope.info.keepRatio) {
+                    if(type === 'width') {
+                        $scope.info.height = Math.round(size / $scope.info.ratio)
+                    } else {
+                        $scope.info.width = Math.round(size * $scope.info.ratio)
+                    }
+                }
+            }
+    
+            $scope.getMeta = function (url) {
+                const img = new Image();
+                $scope.info.name = $scope.media.name
+                img.src = url;
+                img.onload = function() { 
+                    $scope.info.ratio = this.width / this.height;
+                    $scope.info.width = this.width;
+                    $scope.info.height = this.height;
+                    $scope.$apply()
+                }
+            }
+
+            $scope.$watch('media', function(newValue, oldValue) {
+                if (newValue)
+                    $scope.getMeta(newValue.link)
+            }, true);
+
+        }]
     }
 });

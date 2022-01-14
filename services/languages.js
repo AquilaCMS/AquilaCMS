@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path         = require('path');
-const fs           = require('../utils/fsp');
-const {Languages}  = require('../orm/models');
-const NSErrors     = require('../utils/errors/NSErrors');
-const QueryBuilder = require('../utils/QueryBuilder');
+const path          = require('path');
+const fs            = require('../utils/fsp');
+const ServiceConfig = require('./config');
+const {Languages}   = require('../orm/models');
+const NSErrors      = require('../utils/errors/NSErrors');
+const QueryBuilder  = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
@@ -24,7 +25,8 @@ const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status = 'visible'; // The default language need to be visible
+        lang.status        = 'visible'; // The default language need to be visible
+        global.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
@@ -34,13 +36,14 @@ const saveLang = async (lang) => {
         result = await Languages.create(lang);
     }
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
     return result;
 };
 
 const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
-    await createDynamicLangFile();
+
+    await require('./themes').languageManagement();
     return deletedLang;
 };
 
@@ -115,13 +118,24 @@ async function getTranslatePath(lang) {
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
 const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
-    const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
-    const contentFile = `module.exports = [${_languages}];`;
-
-    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
     try {
+        const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
+        const contentFile = `module.exports = [${_languages}];`;
+        const linkToFile  = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        if (await fs.existsSync(linkToFile)) {
+            const originalContentFile = await fs.readFile(linkToFile);
+
+            if (originalContentFile.toString() !== contentFile) {
+                console.log('dynamic_lang file changes');
+                await ServiceConfig.needRebuildAndRestart(true, true);
+            }
+        } else {
+            await ServiceConfig.needRebuildAndRestart(true, true);
+        }
+
         await fs.writeFile(linkToFile, contentFile);
     } catch (e) {
+        console.log(e);
         throw 'Error writing file "dynamic_langs.js"';
     }
 };

@@ -13,7 +13,7 @@
                     >
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
             <div class="scrollmenu">
-                <ul class="nav nav-tabs" >
+                <ul class="nav nav-tabs" hook-product-detail-tab>
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
                     <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
                     <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
@@ -165,6 +165,7 @@
                         <div bind-html-compile="tab.content"></div>
                     </div>
                 </div>
+                <div class="tab-pane fade" hook-product-detail-othertab></div>
             </div>
             <!-- <ul class="nav nav-tabs">
                 <li ng-repeat="(key, value) in translation" ng-class="{active: (key == language)}"><a  ng-click="changelanguage(key)" data-toggle="tab">{{key}}</a></li>

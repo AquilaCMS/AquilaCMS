@@ -23,7 +23,13 @@ let loadedModules;
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
-        return global.moduleExtend[property].function(params);
+        try {
+            const fct = await global.moduleExtend[property].function(params);
+            return fct; // Be careful, we need to define 'fct' before return it ! (don't know why)
+        } catch (err) {
+            if (err.throwError) throw err; // Let's (module) decide if we throw the error or not, and if we continue with the native function or not
+            console.error(`Overide function ${property} from module rise an error. Use native function instead.`, err);
+        }
     }
     if (functionToExecute && typeof functionToExecute === 'function') {
         return functionToExecute();
@@ -35,9 +41,8 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
  * @param {string} theme
  */
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
-    let modules_folder = '';
     try {
-        modules_folder = path.join(global.appRoot, 'themes', theme, 'modules');
+        const modules_folder = path.join(global.appRoot, 'themes', theme, 'modules');
         await fs.ensureDir(modules_folder);
         const pathToListModules = path.join(modules_folder, 'list_modules.js');
         const isFileExists      = await fs.hasAccess(pathToListModules);
@@ -54,10 +59,9 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
  * @param {string} theme theme name
  */
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
-    let modules_folder = '';
     try {
-        modules_folder    = path.join(global.appRoot, `themes/${theme}/modules`);
-        const fileContent = await fs.readFile(`${modules_folder}/list_modules.js`);
+        const modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
+        const fileContent    = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
         console.error('Cannot read list_module !');

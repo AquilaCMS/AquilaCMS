@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "adm-zip": "0.5.5",
-        "agenda": "4.2.1",
+        "agenda": "4.2.0",
         "aql-utils": "^1.0.3",
         "axios": "0.21.1",
         "bcrypt": "5.0.1",

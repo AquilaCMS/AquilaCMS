@@ -90,7 +90,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile('default_theme');
+        await require('../services/themes').languageManagement('default_theme');
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -174,6 +174,7 @@ const createConfiguration = async (datas, bOverride) => {
             bookingStock              : 'none'
         },
         taxerate : [
+            {rate: 0},
             {rate: 2.1},
             {rate: 5.5},
             {rate: 10.0},

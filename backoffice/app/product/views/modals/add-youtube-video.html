@@ -1,0 +1,32 @@
+<div class="modal-header">
+    Videos
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="box-content form-group">
+                <div class="col-sm-4">
+                    <div class="boxShadow" style="padding-top: 100%; background: url(https://img.youtube.com/vi/{{item.content}}/0.jpg) no-repeat center; background-size: cover; border-radius:4px;"
+                        ng-style="{'background-image': 'url(https://img.youtube.com/vi/{{item.content}}/0.jpg)'}"></div>
+                </div>
+    
+                <div class="col-sm-8">
+                    <label for="video_content" class="col-sm-4 control-label" translate>gallery.item.ytID</label>
+                    <div class="col-sm-8" style="margin-bottom: 30px">
+                        <input id="video_content" class="form-control" ng-model="item.content" ng-disabled="isEditMode"
+                        />
+                    </div>
+    
+                    <label for="video_alt" class="col-sm-4 control-label" translate>gallery.item.ph2</label>
+                    <div class="col-sm-8">
+                        <input id="video_alt" class="form-control" ng-model="item.name" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button ng-click="close()" class="btn btn-default" translate>gallery.item.cancel</button>
+    <button ng-click="saveVideo()" class="btn btn-default" translate>gallery.item.save</button>
+</div>

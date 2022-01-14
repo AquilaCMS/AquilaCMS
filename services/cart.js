@@ -159,7 +159,7 @@ const addItem = async (postBody, userInfo) => {
     const _product = await Products.findOne({_id: postBody.item.id});
     let variant;
     await linkCustomerToCart(cart, userInfo);
-    if (!_product) {
+    if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
@@ -481,6 +481,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
+        aquilaEvents.emit('postCartToOrder', _cart);
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {

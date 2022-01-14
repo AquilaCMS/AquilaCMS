@@ -1,6 +1,6 @@
 <ns-box data-title="trademark.new.t1" title-icon="fa fa-creative-commons fa-lg" close-href="#/trademarks">
     <form novalidate class="form-horizontal" role="form" ng-submit="save(trademark)" name="form">
-        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/trademarks" form="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/trademarks" form="form" hook-trademark-new>
         </br>
             <input type="hidden" value="" name="id" id="template" ng-model="trademark._id">
             <div class="form-group" style="margin: 0px 0px 15px 0px;">
