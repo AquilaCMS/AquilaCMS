@@ -231,6 +231,10 @@ module.exports = {
         fr : 'Composant non autorisé, il doit être prefixé par ns-',
         en : 'Composant not allowed, it should be prefixed with ns-'
     },
+    ProductTypeInvalid : {
+        fr : 'Ce type n\'est pas valide',
+        en : 'Type not allowed'
+    },
     ComponentInvalidModel : {
         fr : 'Impossible de trouver le code de ce composant',
         en : 'Cannot find component code'
