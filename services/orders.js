@@ -619,7 +619,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
+                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity, undefined, orderItem.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
@@ -684,7 +684,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
     }
-    returnData.name          = paymentMethod.translation[lang].name;
+    returnData.name          = paymentMethod.translation[lang]?.name;
     returnData.operationDate = Date.now();
     if (returnData.type === 'CREDIT') {
         await setStatus(orderId, orderStatuses.PAID);
