@@ -285,12 +285,12 @@ const updateQty = async (postBody, userInfo) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, postBody.item.selected_variant)).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, item.selected_variant)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
             // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, postBody.item.selected_variant);
+            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variant);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
