@@ -381,7 +381,7 @@
             </ul>
         </li>
 
-        <li class="parent" ng-show="!(accessList.includes('environnement')) || !(accessList.includes('stock'))  || !(accessList.includes('jobs'))  || !(accessList.includes('system'))  || !(accessList.includes('update'))">
+        <li class="parent" ng-show="!(accessList.includes('config')) || !(accessList.includes('stock'))  || !(accessList.includes('jobs'))  || !(accessList.includes('system'))  || !(accessList.includes('update'))  || !(accessList.includes('admin'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-cog fa-2x i-style"></i>
@@ -431,7 +431,7 @@
                         <span translate>menu.update</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('list'))">
+                <li ng-if="!(accessList.includes('admin'))">
                     <a href="#/list" class="menuClick">
                         <span class="icon">
                             <i class="fa fa-shield fa-lg i-style"></i>
