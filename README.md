@@ -35,6 +35,8 @@ g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nas
   - `wkhtmltopdf` : [https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html) (it needs to be in the `PATH`)
   - `libvips` : [https://github.com/libvips/libvips/releases](https://github.com/libvips/libvips/releases) (beware of 32 or 64 bits versions and it also needs to be in the `PATH`)
 
+`wkhtmltopdf` and `libvips` are NOT necessary for the installation of AquilaCMS but are used in certain functions: `wkhtmltopdf` is used when generating pdf and `libvips` when processing cached images (resizing, changing the quality etc).
+
 ## Installation
 
 You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
