@@ -9,6 +9,11 @@ SystemControllers.controller("systemGeneralController", [
             log: "",
             error: ""
         };
+        $scope.pageNbr = 1;
+        $scope.pageNbrLog = 1;
+        $scope.pageNbrError = 1;
+        $scope.displayedLinesLogs = 300;
+        $scope.displayedLinesErrors = 300;
 
         $scope.contentPolicy = {
             // active: true,
@@ -65,6 +70,21 @@ SystemControllers.controller("systemGeneralController", [
             $scope.getFilesLogAndError('error');
         };
 
+        $scope.pageIncrease = function (logOrError) {
+            if(logOrError === 'logs') {
+                $scope.pageNbrLog ++;
+                $scope.displayedLinesLogs = 300 * $scope.pageNbrLog;
+                $scope.pageNbr = $scope.pageNbrLog;
+                $scope.getFilesLogAndError('log');
+            }
+            else if(logOrError === 'error') {
+                $scope.pageNbrError ++;
+                $scope.displayedLinesErrors = 300 * $scope.pageNbrError;
+                $scope.pageNbr = $scope.pageNbrError;
+                $scope.getFilesLogAndError('error');
+            }
+        };
+
         function buildAdminUrl(appUrl, adminPrefix) {
             let correctAppUrl;
             if (!appUrl) {
@@ -88,7 +108,7 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.environment[attribut] == ''; //if it's undefined
                 $scope.log[variable] = 'No file "' + variable + '"';
             } else {
-                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut] }, function (response) {
+                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut], pageNbr : $scope.pageNbr }, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
                 }, function (err) {
