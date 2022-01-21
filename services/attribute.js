@@ -64,7 +64,11 @@ const setAttribute = async (body) => {
 
     const attribute = await Attributes.findOne({code: body.code});
     if (updateF) {
-    // If the usedInFilters is changed from true to false
+        if (!attribute) {
+            console.error(`Attribute ${body.code} not found for update`);
+            return;
+        }
+        // If the usedInFilters is changed from true to false
         if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
         // Then we delete the categories.filters whose _id is the _id of the modified attribute
             await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
