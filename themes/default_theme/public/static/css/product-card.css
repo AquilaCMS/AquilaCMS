@@ -96,6 +96,33 @@
 .variants-values__list > *:hover {
     cursor: pointer;
 }
+.variants__container .tooltip-list li {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Tooltip text */
+  .variants__container .tooltip-list li .tooltiptext {
+    visibility: hidden;
+    background-color: #eee;
+    color: black;
+    text-align: center;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 6px;
+    width: 120px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    top: 100%;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .variants__container .tooltip-list li:hover .tooltiptext {
+    visibility: visible;
+    transition-delay:0.5s;
+  }
 /* === ProductCard-Modal === */
 
 .custom-modal .btn:hover {
