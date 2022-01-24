@@ -92,6 +92,10 @@
     width: fit-content;
 
 }
+
+.variants-values__list > *:hover {
+    cursor: pointer;
+}
 /* === ProductCard-Modal === */
 
 .custom-modal .btn:hover {
