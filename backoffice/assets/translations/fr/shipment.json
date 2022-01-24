@@ -38,6 +38,7 @@
         "replUrl": "Remplacer le numéro de colis dans l'URL par ",
         "logoUrl": "URL du logo",
         "trait": "Temps de livraison",
+        "traitement": "Temps de préparation",
         "days": "JOUR(S)",
         "weeks": "SEMAINE(S)",
         "hours": "HEURE(S)",

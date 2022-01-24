@@ -38,6 +38,7 @@
         "replUrl": "Replace package number in URL with ",
         "logoUrl": "Logo URL",
         "trait": "Transite time",
+        "traitement": "Processing time",
         "days": "DAY(S)",
         "weeks": "WEEK(S)",
         "hours": "HOUR(S)",
