@@ -1,12 +1,12 @@
 <ns-box data-title="territories.details.t1" title-icon="fa fa-globe fa-lg" close-href="#/territories">
     <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(false)">
         <ns-buttons is-edit-mode="isEditMode" remove="remove(territory._id)" save-and-quit="save(true)"
-            disable-save="disableSave" return-path="/territories" form="form" hook-territories-detail>
+            disable-save="disableSave" return-path="/territories" form="form">
 
                 <br/><br/>
 
-                <div id="detail" class="tab-pane fade in active">
-                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+                <div id="detail" class="tab-pane fade in active" hook-territories-detail data="territory">
+                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
 
                     <input type="hidden" value="" name="id" id="template" ng-model="territory._id">
 

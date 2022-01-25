@@ -647,7 +647,7 @@ const removeModule = async (idModule) => {
 
 const retrieveModuleComponentType = async (theme) => {
     const infoTheme = await themesUtils.loadInfoTheme(theme);
-    return infoTheme.moduleComponentType;
+    return infoTheme?.moduleComponentType;
 };
 
 /**
