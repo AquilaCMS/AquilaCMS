@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-md-12">
                 <label translate="">themes.newtheme</label>
-                <ns-upload-files accepttype=".zip" multiple="false" type="theme" before-function="beforeTheme()" after-function="uploadedTheme()" on-error="onErrorUploadTheme()"></ns-upload-files>
+                <ns-upload-files accepttype=".zip" multiple="false" type="theme" before-function="beforeTheme" after-function="uploadedTheme" on-error="onErrorUploadTheme"></ns-upload-files>
                 <div ng-show="showThemeLoading" id="overlayModule">
                     <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
                 </div>
