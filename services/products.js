@@ -37,7 +37,7 @@ const queryBuilder        = new QueryBuilder(Products, restrictedFields, default
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // if in the config, we ask not to return the stock fields, we add them to the restrictedFields
-if (global.envConfig.stockOrder.returnStockToFront !== true) {
+if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
