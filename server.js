@@ -70,7 +70,6 @@ const initDatabase = async () => {
         utilsDB.getMongdbVersion();
         await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
-        await utilsModules.modulesLoadInit(server);
         await utilsDB.initDBValues();
         await require('./services/shortcodes').initDBValues();
     }
@@ -164,6 +163,7 @@ const initFrontFramework = async (themeName = null) => {
 const initServer = async () => {
     if (global.envFile.db) {
         await setEnvConfig();
+        await utilsModules.modulesLoadInit(server);
         await utils.checkOrCreateAquilaRegistryKey();
 
         console.log(`%s@@ Admin : '/${global.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
