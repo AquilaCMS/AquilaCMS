@@ -17,7 +17,7 @@ module.exports = function (app) {
     app.post('/v2/order', getOrder);
     app.post('/v2/order/rma', adminAuthRight('orders'), rma);
     /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
+    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth2, infoPayment);
     /** ******************************************* */
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
     app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
