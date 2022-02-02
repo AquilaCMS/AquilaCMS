@@ -23,9 +23,10 @@
             "errorTitle": "Errors overview:",
             "logFileTitle": "File link to logs :",
             "errorFileTitle": "File link to Errors :",
-            "refreshLog" : "Refresh logs",
-            "seeMoreLogs" : "See more logs",
-            "seeMoreErrors" : "See more errors"
+            "refreshLog": "Refresh logs",
+            "seeMoreLogs": "See more logs",
+            "seeMoreErrors": "See more errors",
+            "linesDisplayed": " lines displayed"
         },
         "other":{
             "title" : "Others",

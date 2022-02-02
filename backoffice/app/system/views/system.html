@@ -132,7 +132,8 @@
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
                     <div class="pull-right">
-                        <span>({{displayedLinesLogs}})</span>
+                        <span>{{log.displayedLinesLogs}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
                         <button type="button" class="btn btn-success" ng-click="pageIncrease('logs')">
                             <p translate>system.environment.log.seeMoreLogs</p>
                         </button>
@@ -151,7 +152,8 @@
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
                     <div class="pull-right">
-                        <span>({{displayedLinesErrors}})</span>
+                        <span>{{log.displayedLinesErrors}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
                         <button type="button" class="btn btn-success" ng-click="pageIncrease('error')">
                             <p translate>system.environment.log.seeMoreErrors</p>
                         </button>
