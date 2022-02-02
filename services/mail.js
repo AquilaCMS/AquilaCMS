@@ -13,6 +13,7 @@ const path             = require('path');
 const ServiceLanguages = require('./languages');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
+const modulesUtils     = require('../utils/modules');
 const NSErrors         = require('../utils/errors/NSErrors');
 const aquilaEvents     = require('../utils/aquilaEvents');
 const utilsServer      = require('../utils/server');
@@ -830,32 +831,34 @@ const sendGeneric = async (type, to, datas, lang = '') => {
  * @param {Object} datas - Datas of the form sent
  */
 const sendContact = async (datas, lang = '') => {
-    lang              = determineLanguage(lang, datas.lang);
-    const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
-    const contactMail = await Mail.findOne(query).lean();
+    await modulesUtils.modulesLoadFunctions('sendContact', {datas, lang}, async function () {
+        lang              = determineLanguage(lang, datas.lang);
+        const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
+        const contactMail = await Mail.findOne(query).lean();
 
-    if (!contactMail) {
-        throw NSErrors.MailNotFound;
-    }
-    const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
-    const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
-    let attachments = null;
-    if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
-        attachments = contactMail.translation[lang].attachments;
-    }
-    let bodyString = '';
-    Object.keys(datas).forEach((key) => {
-        if (Array.isArray(datas[key])) {
-            for (let i = 0; i < datas[key].length; i++) {
-                bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
-            }
-        } else {
-            bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+        if (!contactMail) {
+            throw NSErrors.MailNotFound;
         }
-    });
+        const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+        const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
+        let attachments = null;
+        if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
+            attachments = contactMail.translation[lang].attachments;
+        }
+        let bodyString = '';
+        Object.keys(datas).forEach((key) => {
+            if (Array.isArray(datas[key])) {
+                for (let i = 0; i < datas[key].length; i++) {
+                    bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
+                }
+            } else {
+                bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+            }
+        });
 
-    const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
-    return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+        const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
+        return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+    });
 };
 
 /**
@@ -1030,6 +1033,7 @@ module.exports = {
     getMailByTypeAndLang,
     setMail,
     deleteMail,
+    determineLanguage,
     sendMailTestConfig,
     removePdf,
     sendMailTest,
