@@ -117,7 +117,8 @@ const ProductsSchema = new Schema({
         }]
     },
     stats : {
-        views : {type: Number, default: 0}
+        views : {type: Number, default: 0},
+        sells : {type: Number, default: 0}
     }
 }, {
     discriminatorKey : 'type',
