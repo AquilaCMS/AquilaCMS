@@ -53,19 +53,16 @@ const preview = async (body) => {
         switch (body.type) {
         case 'simple':
             newPreview           = new ProductSimplePreview(body);
-            newPreview.type      = 'simplePreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;
         case 'bundle':
             newPreview           = new ProductBundlePreview(body);
-            newPreview.type      = 'bundlePreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;
         case 'virtual':
             newPreview           = new ProductVirtualPreview(body);
-            newPreview.type      = 'virtualPreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;
