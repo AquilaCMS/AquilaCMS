@@ -637,6 +637,26 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
                 }
             }
         }
+
+        // increase sales number
+        for (const item of _order.items) {
+            if (item.type === 'simple') {
+                // we book the stock
+                console.log(item.id);
+                await Products.updateOne({_id: item.id}, {$inc: {'stats.sells': item.quantity}});
+            } else if (item.type === 'bundle') {
+                for (let j = 0; j < item.selections.length; j++) {
+                    const section = item.selections[j];
+                    for (let k = 0; k < section.products.length; k++) {
+                        const productId        = section.products[k];
+                        const _product_section = await Products.findOne({_id: productId.id});
+                        if (_product_section.type === 'simple') {
+                            await Products.updateOne({_id: _product_section._id}, {$inc: {'stats.sells': item.quantity}});
+                        }
+                    }
+                }
+            }
+        }
         // If the order has a discount of type "promo code"
         if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
             try {
