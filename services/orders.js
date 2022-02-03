@@ -642,7 +642,6 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
         for (const item of _order.items) {
             if (item.type === 'simple') {
                 // we book the stock
-                console.log(item.id);
                 await Products.updateOne({_id: item.id}, {$inc: {'stats.sells': item.quantity}});
             } else if (item.type === 'bundle') {
                 for (let j = 0; j < item.selections.length; j++) {
