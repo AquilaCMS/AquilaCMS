@@ -10,14 +10,14 @@ const {adminAuth}   = require('../middleware/authentication');
 const ServiceSystem = require('../services/system');
 
 module.exports = function (app) {
-    app
-        .post('/v2/system/log/file', adminAuth, getLogsContent);
+    app.post('/v2/system/log/file', adminAuth, getLogsContent);
 };
 
 const getLogsContent = async (req, res, next) => {
     try {
         const fileName = req.body.name;
-        return res.json(await ServiceSystem.getLogsContent(fileName));
+        const page     = req.body.pageNbr;
+        return res.json(await ServiceSystem.getLogsContent(fileName, page));
     } catch (err) {
         return next(err);
     }
