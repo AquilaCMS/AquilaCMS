@@ -9,4 +9,4 @@
 const ProductsPreview               = require('./productsPreview');
 const {ProductVirtualPreviewSchema} = require('../schemas');
 
-module.exports = ProductsPreview.discriminator('virtualPreview', ProductVirtualPreviewSchema);
+module.exports = ProductsPreview.discriminator('virtual', ProductVirtualPreviewSchema);
