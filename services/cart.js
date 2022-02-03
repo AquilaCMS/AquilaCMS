@@ -99,7 +99,7 @@ const setCartAddresses = async (cartId, addresses) => {
         await utilsDatabase.populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 };
