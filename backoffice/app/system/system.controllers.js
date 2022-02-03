@@ -11,7 +11,7 @@ SystemControllers.controller("systemGeneralController", [
             displayedLinesLogs: 300,
             displayedLinesErrors: 300
         };
-        let seeMore = {
+        let numberLogPage = {
             pageNbr: 1,
             pageNbrLog: 1,
             pageNbrError: 1
@@ -68,23 +68,23 @@ SystemControllers.controller("systemGeneralController", [
         });
 
         $scope.refreshLog = function () {
-            seeMore.pageNbr = seeMore.pageNbrLog;
+            numberLogPage.pageNbr = numberLogPage.pageNbrLog;
             $scope.getFilesLogAndError('log');
-            seeMore.pageNbr = seeMore.pageNbrError;
+            numberLogPage.pageNbr = numberLogPage.pageNbrError;
             $scope.getFilesLogAndError('error');
         };
 
         $scope.pageIncrease = function (logOrError) {
             if(logOrError === 'log') {
-                seeMore.pageNbrLog ++;
-                $scope.log.displayedLinesLogs = 300 * seeMore.pageNbrLog;
-                seeMore.pageNbr = seeMore.pageNbrLog;
+                numberLogPage.pageNbrLog ++;
+                $scope.log.displayedLinesLogs = 300 * numberLogPage.pageNbrLog;
+                numberLogPage.pageNbr = numberLogPage.pageNbrLog;
                 $scope.getFilesLogAndError('log');
             }
             else if(logOrError === 'error') {
-                seeMore.pageNbrError ++;
-                $scope.log.displayedLinesErrors = 300 * seeMore.pageNbrError;
-                seeMore.pageNbr = seeMore.pageNbrError;
+                numberLogPage.pageNbrError ++;
+                $scope.log.displayedLinesErrors = 300 * numberLogPage.pageNbrError;
+                numberLogPage.pageNbr = numberLogPage.pageNbrError;
                 $scope.getFilesLogAndError('error');
             }
         };
@@ -112,7 +112,7 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.environment[attribut] == ''; //if it's undefined
                 $scope.log[variable] = 'No file "' + variable + '"';
             } else {
-                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut], pageNbr : seeMore.pageNbr }, function (response) {
+                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut], pageNbr : numberLogPage.pageNbr }, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
                 }, function (err) {
