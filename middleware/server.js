@@ -264,7 +264,7 @@ const restrictProductFields = (element, url) => {
                 for (const restrictedProductField of productsRestrictedFields) {
                     deletePropertyPath(item, restrictedProductField);
                 }
-                if (item.associated_prds && item.associated_prds.length && typeof element.associated_prds[0] !== 'string') {
+                if (item.associated_prds && item.associated_prds.length && typeof item.associated_prds[0] !== 'string') {
                     for (const associated_prd of item.associated_prds) {
                         for (const restrictedProductField of productsRestrictedFields) {
                             deletePropertyPath(associated_prd, restrictedProductField);
