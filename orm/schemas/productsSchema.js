@@ -150,19 +150,35 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        item.price = {
-            vat  : {rate: this.price.tax},
-            unit : {
-                et  : this.price.et.normal,
-                ati : this.price.ati.normal
-            }
-        };
-
-        if (this.price.et.special !== undefined && this.price.et.special !== null) {
-            item.price.special = {
-                et  : this.price.et.special,
-                ati : this.price.ati.special
+        if (item.selected_variant) {
+            item.price = {
+                unit : {
+                    ati : item.selected_variant.price.ati.normal,
+                    et  : item.selected_variant.price.et.normal
+                },
+                vat : {rate: item.selected_variant.price.tax}
             };
+            if (item.selected_variant.price.et.special !== undefined && item.selected_variant.price.et.special !== null) {
+                item.price.special = {
+                    et  : item.selected_variant.price.et.special,
+                    ati : item.selected_variant.price.ati.special
+                };
+            }
+        } else {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal,
+                    ati : this.price.ati.normal
+                }
+            };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special,
+                    ati : this.price.ati.special
+                };
+            }
         }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
@@ -310,6 +326,10 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     }
     // }
     return errors;
+};
+
+ProductsSchema.methods.hasVariantsValue = function (that) {
+    return that ? (that.variants_values && that.variants_values.length > 0 && that.variants_values.find((vv) => vv.active)) : (this.variants_values && this.variants_values.length > 0 && this.variants_values.find((vv) => vv.active));
 };
 
 ProductsSchema.statics.checkCode = async function (that) {

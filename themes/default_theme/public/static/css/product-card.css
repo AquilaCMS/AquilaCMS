@@ -48,7 +48,81 @@
     color: #000;
 }
 
+.variants__container {
+    padding: 20px 0;
+    box-sizing: content-box;
+}
 
+.variants__container li {
+    list-style: none;
+}
+
+.variant-value {
+    padding: 5px;
+    display: inline-block;
+    margin: 5px;
+    border: 1px solid black;
+}
+
+.variant-value:hover {
+    background-color: #576fa1;
+}
+
+.variant-value img {
+    width: 40px;
+    height: 40px;
+}
+
+.variant-value.selected {
+    background-color: #576fa1;
+}
+
+.variants__container select {
+    width: 100%;
+    border-radius: 0;
+    padding: 5px;
+    margin-bottom: 5px;
+    max-width: 200px;
+}
+.variants__container .warn-message {
+    padding: 8px;
+    background-color: orange;
+    color: white;
+    border-radius: 5px;
+    width: fit-content;
+
+}
+
+.variants-values__list > *:hover {
+    cursor: pointer;
+}
+.variants__container .tooltip-list li {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Tooltip text */
+  .variants__container .tooltip-list li .tooltiptext {
+    visibility: hidden;
+    background-color: #eee;
+    color: black;
+    text-align: center;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 6px;
+    width: 120px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    top: 100%;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .variants__container .tooltip-list li:hover .tooltiptext {
+    visibility: visible;
+    transition-delay:0.5s;
+  }
 /* === ProductCard-Modal === */
 
 .custom-modal .btn:hover {

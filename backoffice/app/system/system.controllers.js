@@ -9,6 +9,7 @@ SystemControllers.controller("systemGeneralController", [
             log: "",
             error: ""
         };
+        $scope.isSelected = false
 
         $scope.contentPolicy = {
             // active: true,

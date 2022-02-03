@@ -1,10 +1,11 @@
 <h3 style="display: inline" translate>simple.pics</h3>
-<span ng-hide="product.code && product._id" style="color: red;" translate>
+<span ng-hide="product.code && (product._id || isVariant)" style="color: red;" translate>
     <br /><br />
     simple.beforeConfigImages
 </span>
-<div class="row col-sm-12" style="margin-top: 15px; display: flex;flex-wrap: wrap" ng-show="product.code && product._id">
-    <ns-upload-files class="col-sm-9" is-selected="isSelected" accepttype="image/*" multiple="true" type="product" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
+<div class="row col-sm-12" style="margin-top: 15px; display: flex;flex-wrap: wrap" ng-show="product.code && (product._id || isVariant)">
+    <ns-upload-files class="col-sm-9" ng-if="variantId === undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="products" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
+    <ns-upload-files class="col-sm-9" ng-if="variantId !== undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="productsVariant" code="product.code" id="product._id" images="product.images" showalt="true" is-variant="variantId !== undefined"></ns-upload-files>
     <div class="col-md-3 align-self-center" style="display: flex;flex-wrap: wrap; align-items: center">
         <div class="upload-area upload-area" style="width: 100%;text-align: center;" ng-click="addMovie()">
             <br/>
@@ -34,7 +35,7 @@
                 <span class="helperImg"/>
                 <div ng-show="image.component_template && !image.isYoutube" bind-html-compile="image.component_template"></div>
                 <div ng-hide="image.component_template || image.isYoutube">
-                    <img ng-src="/{{getImageUrl(image)}}" />
+                    <img ng-src="/{{getImageUrl(image, variantId ? image._id : undefined)}}" />
                 </div>
                 <div class="youtube-preview" ng-hide="image.component_template || !image.isYoutube">
                     <div style="background: url(https://img.youtube.com/vi/{{image.content}}/0.jpg) no-repeat center; background-size: cover; border-radius: 4px;width: 100%; height: 120px;"></div>
@@ -80,7 +81,7 @@
                 <div class="form-group" ng-hide="(product.images.length === 1 && image.default) || image.isYoutube">
                     <label class="control-label col-sm-4" translate>product.photo.img</label>
                     <div class="col-sm-8">
-                        <ns-switch disable-switch="{{product.images.length === 1 && image.default}}" ng-model="image.default" name="default_{{$index}}" ng-change="switchDefaultImage(image, product)"></ns-switch>
+                        <ns-switch disable-switch="{{product.images.length === 1 && image.default}}" ng-model="image.default" name="default_{{$index}}_{{product._id}}" ng-change="switchDefaultImage(image, product)"></ns-switch>
                     </div>
                 </div>
             </div>
