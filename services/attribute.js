@@ -63,55 +63,49 @@ const setAttribute = async (body) => {
     delete body.multiModifAdd;
     delete body.update;
 
-    if (body._id) {
-        // update
-        const attribute = await Attributes.findOne({code: body.code});
-        if (attribute) {
-            // edit variants
-
-            if (updateF) {
-            // If the usedInFilters is changed from true to false
-                if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
-                // Then we delete the categories.filters whose _id is the _id of the modified attribute
-                    await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
-                }
-                await updateProductsVariants(body, attribute);
-                const code = body.code;
-                delete body.code;
-                const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
-                await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
-                await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
-                for (let i = 0; i < body.set_attributes.length; i++) {
-                    const {code, param, position, _id: id, type, visible, translation} = att;
-                    const product_attributes                                           = {id, code, param, position, translation, type, visible};
-                    if (attribute.default_value !== undefined) {
-                        product_attributes.value    = att.default_value;
-                        product_attributes.position = position;
-                    }
-                    await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
-                    await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
-                    if (body._type === 'products') {
-                        // update of the name and values for the products already having this attribute
-                        const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                        updateObjectAttribute(prdList, product_attributes, 'attributes');
-                        const cats = await Categories.find({'filters.attributes.id_attribut': id});
-                        updateObjectAttribute(cats, product_attributes, 'filters.attributes');
-                    } else {
-                        // update name and values for users who already have this attribute
-                        const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                        updateObjectAttribute(usrList, product_attributes, 'attributes');
-                    }
-                }
-                await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-                await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-                if (body.type === 'multiselect') {
-                    await editValues(att);
-                }
-                return att;
-            }
-
-            return attribute;
+    const attribute = await Attributes.findOne({code: body.code});
+    if (updateF) {
+        if (!attribute) {
+            console.error(`Attribute ${body.code} not found for update`);
+            return;
         }
+        // If the usedInFilters is changed from true to false
+        if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
+        // Then we delete the categories.filters whose _id is the _id of the modified attribute
+            await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
+        }
+        const code = body.code;
+        delete body.code;
+        const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
+        await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
+        await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
+        for (let i = 0; i < body.set_attributes.length; i++) {
+            const {code, param, position, _id: id, type, visible, translation} = att;
+            const product_attributes                                           = {id, code, param, position, translation, type, visible};
+            if (attribute.default_value !== undefined) {
+                product_attributes.value    = att.default_value;
+                product_attributes.position = position;
+            }
+            await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+            await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+            if (body._type === 'products') {
+                // update of the name and values for the products already having this attribute
+                const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
+                updateObjectAttribute(prdList, product_attributes, 'attributes');
+                const cats = await Categories.find({'filters.attributes.id_attribut': id});
+                updateObjectAttribute(cats, product_attributes, 'filters.attributes');
+            } else {
+                // update name and values for users who already have this attribute
+                const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
+                updateObjectAttribute(usrList, product_attributes, 'attributes');
+            }
+        }
+        await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
+        await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
+        if (body.type === 'multiselect') {
+            await editValues(att);
+        }
+        return att;
     }
     // we create
     const att = await Attributes.create(body);
