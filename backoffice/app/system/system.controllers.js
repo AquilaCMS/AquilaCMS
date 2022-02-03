@@ -68,12 +68,14 @@ SystemControllers.controller("systemGeneralController", [
         });
 
         $scope.refreshLog = function () {
+            seeMore.pageNbr = seeMore.pageNbrLog;
             $scope.getFilesLogAndError('log');
+            seeMore.pageNbr = seeMore.pageNbrError;
             $scope.getFilesLogAndError('error');
         };
 
         $scope.pageIncrease = function (logOrError) {
-            if(logOrError === 'logs') {
+            if(logOrError === 'log') {
                 seeMore.pageNbrLog ++;
                 $scope.log.displayedLinesLogs = 300 * seeMore.pageNbrLog;
                 seeMore.pageNbr = seeMore.pageNbrLog;
