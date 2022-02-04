@@ -806,6 +806,7 @@ OrderControllers.controller("PackagesNewCtrl", [
                 let productToPush = {
                     product_id: $scope.order.items[i].id,
                     product_code: $scope.order.items[i].code,
+                    selected_variant: $scope.order.items[i].selected_variant,
                     qty_returned: qty_returned,
                     qty_shipped: qty_shipped,
                     qty_delivered: $scope.order.items[i].quantity < qty_shipped ? 0 : $scope.order.items[i].quantity - qty_shipped

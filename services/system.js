@@ -1,8 +1,9 @@
 const path = require('path');
 const fs   = require('../utils/fsp');
 
-const getLogsContent = async (fileName) => {
-    const filePath = path.resolve(global.appRoot, fileName);
+const getLogsContent = async (fileName, page = 1) => {
+    const linePerPage = 300;
+    const filePath    = path.resolve(global.appRoot, fileName);
     if (await fs.hasAccess(filePath)) {
         let fileContent  = '';
         let currentLines = '';
@@ -13,9 +14,9 @@ const getLogsContent = async (fileName) => {
                 const nbLinesFile = allLines.length;
                 let nbLinesStart  = 0;
                 let offset        = 0;
-                // Read only the last logs
-                if (nbLinesFile > 301) {
-                    offset       = 300;
+                // Read last 300 logs/errors + 300 more per click on 'see more'
+                if (nbLinesFile > linePerPage + 1) {
+                    offset       = linePerPage * page;
                     nbLinesStart = (nbLinesFile - offset);
                 }
                 for (let count = nbLinesStart; count < nbLinesFile; count++) {

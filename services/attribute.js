@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose                                                 = require('mongoose');
-const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
-const QueryBuilder                                             = require('../utils/QueryBuilder');
-const NSErrors                                                 = require('../utils/errors/NSErrors');
-const utils                                                    = require('../utils/utils');
-const utilsMedia                                               = require('../utils/medias');
+const mongoose                                                                = require('mongoose');
+const {Attributes, Categories, SetAttributes, Products, Users, ProductSimple} = require('../orm/models');
+const QueryBuilder                                                            = require('../utils/QueryBuilder');
+const NSErrors                                                                = require('../utils/errors/NSErrors');
+const utils                                                                   = require('../utils/utils');
+const utilsMedia                                                              = require('../utils/medias');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
@@ -64,11 +64,16 @@ const setAttribute = async (body) => {
 
     const attribute = await Attributes.findOne({code: body.code});
     if (updateF) {
-    // If the usedInFilters is changed from true to false
+        if (!attribute) {
+            console.error(`Attribute ${body.code} not found for update`);
+            return;
+        }
+        // If the usedInFilters is changed from true to false
         if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
         // Then we delete the categories.filters whose _id is the _id of the modified attribute
             await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
         }
+        await updateProductsVariants(body, attribute);
         const code = body.code;
         delete body.code;
         const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
@@ -116,6 +121,73 @@ const setAttribute = async (body) => {
         await Users.updateMany({set_attributes: body.set_attributes[i]}, {$push: {attributes: product_attributes}});
     }
     return att;
+};
+
+const updateProductsVariants = async (body, attribute) => {
+    if (body.isVariantable && attribute.isVariantable) {
+        // edit variant from product
+        await ProductSimple.updateMany(
+            {'variants.code': attribute.code},
+            {'variants.$[element].translation': body.translation},
+            {arrayFilters: [{'element.code': attribute.code}]}
+        );
+        await regenerateProductsVariants(body, attribute);
+    } else if (!body.isVariantable && attribute.isVariantable) {
+        // remove variant from product
+        await ProductSimple.updateMany(
+            {'variants.code': attribute.code},
+            {$pull: {variants: {code: attribute.code}}}
+        );
+        await regenerateProductsVariants(body, attribute);
+    }
+};
+
+const regenerateProductsVariants = async (body) => {
+    const prdsWithVariant = await ProductSimple.find({'variants.code': body.code});
+    for (let prdWithVariantIndex = 0; prdWithVariantIndex < prdsWithVariant.length; prdWithVariantIndex++) {
+        prdsWithVariant[prdWithVariantIndex].old_variants_values = prdsWithVariant[prdWithVariantIndex].variants_values;
+        prdsWithVariant[prdWithVariantIndex].variants_values     = [];
+        prdsWithVariant[prdWithVariantIndex].new_variants_values = [];
+        const variantNames                                       = [];
+        for (const variant of prdsWithVariant[prdWithVariantIndex].variants) {
+            variantNames.push(variant.translation[Object.keys(variant.translation)[0]].values);
+        }
+        const f         = (a, b) => [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
+        const cartesian = (a, b, ...c) => (b ? cartesian(f(a, b), ...c) : a);
+        const result    = cartesian(...variantNames);
+        for (const [index, variantName] of result.entries()) {
+            const variant = {
+                code          : `${prdsWithVariant[prdWithVariantIndex].code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
+                active        : false,
+                weight        : prdsWithVariant[prdWithVariantIndex].weight,
+                default       : index === 0,
+                price         : prdsWithVariant[prdWithVariantIndex].price,
+                stock         : prdsWithVariant[prdWithVariantIndex].stock,
+                images        : prdsWithVariant[prdWithVariantIndex].images,
+                variant_codes : (typeof variantName === 'string' ? variantName : variantName.join('--')).toLowerCase(),
+                translation   : {}
+            };
+            for (const translationKey of Object.keys(prdsWithVariant[prdWithVariantIndex].translation)) {
+                variant.translation[translationKey] = {name: `${prdsWithVariant[prdWithVariantIndex].translation[translationKey].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};
+            }
+            prdsWithVariant[prdWithVariantIndex].new_variants_values.push(variant);
+        }
+
+        // we now compare "new_variants_values" to "new_variants_values" to add or remove element but keep already existing ones
+        prdsWithVariant[prdWithVariantIndex].variants_values = [];
+        for (let newVariantIndex = 0; newVariantIndex < prdsWithVariant[prdWithVariantIndex].new_variants_values.length; newVariantIndex++) {
+            const newVariant = prdsWithVariant[prdWithVariantIndex].new_variants_values[newVariantIndex];
+            const founded    = prdsWithVariant[prdWithVariantIndex].old_variants_values.find((ovv) => ovv.code.toLowerCase() === newVariant.code.toLowerCase());
+            if (founded) {
+                prdsWithVariant[prdWithVariantIndex].variants_values.push(founded);
+            } else {
+                prdsWithVariant[prdWithVariantIndex].variants_values.push(newVariant);
+            }
+        }
+        delete prdsWithVariant[prdWithVariantIndex].old_variants_values;
+        delete prdsWithVariant[prdWithVariantIndex].new_variants_values;
+        await prdsWithVariant[prdWithVariantIndex].save();
+    }
 };
 
 const updateObjectAttribute = async (list, attr, path) => {

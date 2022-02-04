@@ -106,8 +106,8 @@
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.other.uploadAllDocument</label>
-                        <ns-upload-files accepttype=".zip" multiple="false" type="document"
-                            before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
+                        <ns-upload-files accepttype=".zip" multiple="false" type="document" is-selected="isSelected"
+                            before-function="beforeDocument" after-function="uploadedDocument"></ns-upload-files>
                         <div translate>system.environment.other.uploadAllDocumentInfo</div>
                     </div>
                 </div>
@@ -131,6 +131,16 @@
                         <textarea rows="20" class="form-control" ng-model="log.log" readonly
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
+                    <div class="pull-right">
+                        <span>{{log.displayedLinesLogs}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
+                        <button type="button" class="btn btn-success" ng-click="pageIncrease('log')">
+                            <p translate>system.environment.log.seeMoreLogs</p>
+                        </button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
                     <div class="form-group">
                         <label translate>system.environment.log.errorFileTitle</label>
                         <input type="text" class="form-control" ng-model="system.environment.errorPath"
@@ -141,8 +151,17 @@
                         <textarea rows="20" class="form-control" ng-change="zaer" ng-model="log.error" readonly
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
+                    <div class="pull-right">
+                        <span>{{log.displayedLinesErrors}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
+                        <button type="button" class="btn btn-success" ng-click="pageIncrease('error')">
+                            <p translate>system.environment.log.seeMoreErrors</p>
+                        </button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
                 </div>
-                <!--other div here-->
             </div>
         </ns-buttons>
     </form>
