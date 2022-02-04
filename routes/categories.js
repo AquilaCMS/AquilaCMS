@@ -123,7 +123,7 @@ async function importCategoryProducts(req, res, next) {
         const {data, category} = req.body;
         res.json(await ServiceCategory.importCategoryProducts(data, category));
     } catch (err) {
-        console.log(err);
+        console.error(err);
         next(err);
     }
 }
@@ -132,7 +132,7 @@ async function exportCategoryProducts(req, res, next) {
     try {
         res.json(await ServiceCategory.exportCategoryProducts(req.params.catId));
     } catch (err) {
-        console.log(err);
+        console.error(err);
         next(err);
     }
 }

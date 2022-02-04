@@ -53,7 +53,6 @@ const getAttribute = async (PostBody, lean) => {
 };
 
 const setAttribute = async (body) => {
-    console.log(body);
     body.code         = utils.slugify(body.code);
     const updateF     = body.update;
     const setToAdd    = body.multiModifAdd;
