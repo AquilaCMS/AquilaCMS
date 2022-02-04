@@ -9,4 +9,4 @@
 const ProductsPreview              = require('./productsPreview');
 const {ProductBundlePreviewSchema} = require('../schemas');
 
-module.exports = ProductsPreview.discriminator('bundle', ProductBundlePreviewSchema);
+module.exports = ProductsPreview.discriminator('bundlePreview', ProductBundlePreviewSchema);
