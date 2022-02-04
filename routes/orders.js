@@ -6,33 +6,37 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceOrder                = require('../services/orders');
-const ServiceAuth                 = require('../services/auth');
-const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {isAdmin}                   = require('../utils/utils');
+const ServiceOrder                                = require('../services/orders');
+const ServiceAuth                                 = require('../services/auth');
+const {middlewareServer}                          = require('../middleware');
+const {authentication, adminAuth, adminAuthRight} = require('../middleware/authentication');
+const {isAdmin}                                   = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', adminAuth, rma);
+    app.post('/v2/order/rma', adminAuthRight('orders'), rma);
     /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
     app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
     /** ******************************************* */
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', adminAuth, addPackage);
-    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
+    app.post('/v2/order/delpkg', adminAuthRight('orders'), delPackage);
     app.put('/v2/order/updateStatus', adminAuth, updateStatus);
     /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
     app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
     app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, updatePayment);
     /** ******************************************* */
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuthRight('orders'), cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', adminAuth, setOrder);
+    app.put('/v2/order', adminAuthRight('orders'), setOrder);
 
-    /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
+    /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
+    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuthRight('orders'), infoPayment);
+    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
+    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuthRight('orders'), updatePayment);
+
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
 };
 

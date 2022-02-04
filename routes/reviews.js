@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}    = require('../middleware/authentication');
-const ServiceReviews = require('../services/reviews');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceReviews   = require('../services/reviews');
 
 module.exports = function (app) {
-    app.post('/v2/product/reviews/aggregate', getAggregateReviews);
+    app.post('/v2/product/reviews/aggregate', adminAuthRight('reviews'), getAggregateReviews);
     app.put('/v2/product/:id/review', setProductReview);
-    app.delete('/v2/product/:id/review/:idreview', adminAuth, deleteProductReview);
+    app.delete('/v2/product/:id/review/:idreview', adminAuthRight('reviews'), deleteProductReview);
 };
 
 /**

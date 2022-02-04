@@ -6,19 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                 = require('path');
-const url                  = require('url');
-const ServiceContacts      = require('../services/contacts');
-const {getUploadDirectory} = require('../utils/server');
-const {adminAuth}          = require('../middleware/authentication');
-const {
-    fsp,
-    modules: modulesUtils
-}                          = require('../utils');
+const path                         = require('path');
+const url                          = require('url');
+const ServiceContacts              = require('../services/contacts');
+const {getUploadDirectory}         = require('../utils/server');
+const {adminAuthRight}             = require('../middleware/authentication');
+const {fsp, modules: modulesUtils} = require('../utils');
 
 module.exports = function (app) {
-    app.post('/v2/contacts', adminAuth, getContacts);
-    app.delete('/v2/contact/:id', adminAuth, deleteContact);
+    app.post('/v2/contacts', adminAuthRight('contacts'), getContacts);
+    app.delete('/v2/contact/:id', adminAuthRight('contacts'), deleteContact);
     app.post('/v2/contact/:mode', setContact);
 };
 

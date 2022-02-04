@@ -7,14 +7,14 @@
  */
 
 const ServiceSuppliers = require('../services/suppliers');
-const {adminAuth}      = require('../middleware/authentication');
+const {adminAuthRight} = require('../middleware/authentication');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/suppliers', adminAuth, listSuppliers);
-    app.post('/v2/supplier', adminAuth, getSupplier);
-    app.put('/v2/supplier', adminAuth, saveSupplier);
-    app.delete('/v2/supplier/:id', adminAuth, deleteSupplier);
+    app.post('/v2/suppliers', adminAuthRight('suppliers'), listSuppliers);
+    app.post('/v2/supplier', adminAuthRight('suppliers'), getSupplier);
+    app.put('/v2/supplier', adminAuthRight('suppliers'), saveSupplier);
+    app.delete('/v2/supplier/:id', adminAuthRight('suppliers'), deleteSupplier);
 };
 /* eslint-enable no-use-before-define */
 

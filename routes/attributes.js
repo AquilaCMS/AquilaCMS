@@ -7,13 +7,13 @@
  */
 
 const servicesAttributes = require('../services/attribute');
-const {adminAuth}        = require('../middleware/authentication');
+const {adminAuthRight}   = require('../middleware/authentication');
 
 module.exports = function (app) {
     app.post('/v2/attributes', getAllAttributes);
     app.post('/v2/attribute', getAttribute);
-    app.put('/v2/attribute', adminAuth, saveAttribute);
-    app.delete('/v2/attribute/:_id', adminAuth, deleteAttribute);
+    app.put('/v2/attribute', adminAuthRight('attributes'), saveAttribute);
+    app.delete('/v2/attribute/:_id', adminAuthRight('attributes'), deleteAttribute);
 };
 
 async function getAllAttributes(req, res, next) {
