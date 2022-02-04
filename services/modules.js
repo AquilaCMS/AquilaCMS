@@ -74,16 +74,14 @@ const initModule = async (files) => {
     }
     console.log('Upload module...');
     const moduleFolderName    = 'modules/';
-    const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);
-    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname);
-    const extractZipFilePath  = zipFilePath.replace('.zip', '/');
-    const relativePath        = slash(path.join(moduleFolderName, originalname).replace('.zip', '/'));
+    const moduleFolderAbsPath = path.resolve(global.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
+    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
+    const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
 
     // move the file from the temporary location to the intended location
     await fs.mkdir(moduleFolderAbsPath, {recursive: true});
     await fs.copyFile(
-        path.resolve(global.appRoot, filepath),
-        path.resolve(global.appRoot, zipFilePath)
+        path.resolve(global.appRoot, filepath), zipFilePath
     );
     await fs.unlink(path.resolve(global.appRoot, filepath));
 
@@ -141,7 +139,7 @@ const initModule = async (files) => {
             name                     : info.name,
             description              : info.description,
             version                  : info.version,
-            path                     : relativePath,
+            path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -159,22 +157,22 @@ const initModule = async (files) => {
         }, {upsert: true, new: true});
 
         // Check if the functions init, initAfter, uninit and rgpd are present
-        const pathUninit = path.join(global.appRoot, extractZipFilePath, 'uninit.js');
+        const pathUninit = path.join(extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
             console.error(`Uninit file is missing for : ${info.name}`);
         }
 
-        const pathInit = path.join(global.appRoot, extractZipFilePath, 'init.js');
+        const pathInit = path.join(extractZipFilePath, 'init.js');
         if (!fs.existsSync(pathInit)) {
             console.error(`Init file is missing for : ${info.name}`);
         }
 
-        const pathInitAfter = path.join(global.appRoot, extractZipFilePath, 'initAfter.js');
+        const pathInitAfter = path.join(extractZipFilePath, 'initAfter.js');
         if (!fs.existsSync(pathInitAfter)) {
             console.error(`InitAfter file is missing for : ${info.name}`);
         }
 
-        const pathRgpd = path.join(global.appRoot, extractZipFilePath, 'rgpd.js');
+        const pathRgpd = path.join(extractZipFilePath, 'rgpd.js');
         if (!fs.existsSync(pathRgpd)) {
             console.error(`RGPD file is missing for : ${info.name}`);
         }
@@ -647,7 +645,7 @@ const removeModule = async (idModule) => {
 
 const retrieveModuleComponentType = async (theme) => {
     const infoTheme = await themesUtils.loadInfoTheme(theme);
-    return infoTheme.moduleComponentType;
+    return infoTheme?.moduleComponentType;
 };
 
 /**

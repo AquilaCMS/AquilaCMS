@@ -225,6 +225,7 @@ const modulesLoadInit = async (server, runInit = true) => {
             } catch (err) {
                 loadedModules[i].init = false;
                 process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
+                console.error(err);
                 return false;
             }
         }

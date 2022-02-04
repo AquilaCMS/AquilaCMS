@@ -1,5 +1,5 @@
 <ns-box data-title="admin-list.t2" title-icon="fa fa-shield fa-lg" close-href="#/list">
-    <form novalidate class="form-horizontal" role="form" hook-adminlist-new>
+    <form novalidate class="form-horizontal" role="form">
         <div class="form-group">
             <label for="firstname" class="col-sm-2 control-label" translate>admin-list.prenom</label>
             <div class="col-sm-9">
@@ -55,6 +55,8 @@
                 </div>
             </div>
         </div>
+        
+        <div hook-adminlist-new data="user"></div>
 
         <div class="form-group">
             <div class="col-sm-6 col-md-offset-1">

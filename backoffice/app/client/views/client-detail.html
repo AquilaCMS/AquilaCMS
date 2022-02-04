@@ -17,7 +17,7 @@
 
             <div class="tab-content">
 
-                <div id="general" class="tab-pane fade in active" hook-client-detail-general>
+                <div id="general" class="tab-pane fade in active" hook-client-detail-general data="client">
                     <!-- ------------- General & other --------------- -->
                     <div class="row">
                         <!-- ------------- General --------------- -->
@@ -383,7 +383,7 @@
                 </div>
 
                 <!-- ------------- Orders --------------- -->
-                <div id="orders" class="tab-pane fade" hook-client-detail-orders>
+                <div id="orders" class="tab-pane fade" hook-client-detail-orders data="cart">
                     <div class="row">
                         <div class="col-md-12" ng-if="isEditMode">
                             <div class="box subbox">

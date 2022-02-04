@@ -251,9 +251,9 @@ class PageProduct extends NSPageProduct {
                                             )
                                         }
 
-                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : (product.type === 'simple' ? this.addToCart : ''))} aria-label={t('product:ajoutPanier')}>
                                             <i className="ico-shopping-cart-white" />
-                                            <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
+                                            <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : (product.type === 'simple' ? t('product:ajoutPanier') : ''))}</span>
                                         </button>
                                     </div>{/* <!-- /.product__actions-mobile --> */}
 
@@ -332,9 +332,9 @@ class PageProduct extends NSPageProduct {
                                             {
                                                 (!product.stock || (product.stock && product.stock.status !== 'epu'))
                                                 && (
-                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : (product.type === 'simple' ? this.addToCart : ''))} aria-label={t('product:ajoutPanier')}>
                                                         <i className="ico-shopping-cart-white" />
-                                                        <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
+                                                        <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : (product.type === 'simple' ? t('product:ajoutPanier') : ''))}</span>
                                                     </button>
                                                 )
                                             }
