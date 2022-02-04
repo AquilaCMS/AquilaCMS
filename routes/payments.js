@@ -17,7 +17,7 @@ module.exports = function (app) {
     app.post('/v2/payments/order', adminAuthRight('payments'), getOrdersPayments);
     app.post('/v2/payment/info', adminAuthRight('payments'), infoPayment);
     app.put('/v2/payment/update', adminAuthRight('payments'), updatePayment);
-    app.post('/v2/payment/order/:orderNumber/:lang?', adminAuthRight('payments'), orderPayment);
+    app.post('/v2/payment/order/:orderNumber/:lang?', orderPayment); // middleware adminAuthRight removed
 };
 
 async function getOrdersPayments(req, res, next) {

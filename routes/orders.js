@@ -6,18 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceOrder                     = require('../services/orders');
-const ServiceAuth                      = require('../services/auth');
-const {middlewareServer}               = require('../middleware');
-const {authentication, adminAuthRight} = require('../middleware/authentication');
-const {isAdmin}                        = require('../utils/utils');
+const ServiceOrder                                = require('../services/orders');
+const ServiceAuth                                 = require('../services/auth');
+const {middlewareServer}                          = require('../middleware');
+const {authentication, adminAuth, adminAuthRight} = require('../middleware/authentication');
+const {isAdmin}                                   = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
     app.post('/v2/order/rma', adminAuthRight('orders'), rma);
     /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth2, infoPayment);
+    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
     /** ******************************************* */
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
     app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
