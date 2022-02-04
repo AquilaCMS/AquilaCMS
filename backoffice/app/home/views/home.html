@@ -8,7 +8,7 @@
     <div class="row">
 
         
-        <div class="col-md-12" hook-home-info>
+        <div class="col-md-12" hook-home-info data="oneInfo">
             <div ng-repeat="oneInfo in adminInformation">
                 <div ng-show="oneInfo.translation[adminLang]" class="alert alert-{{oneInfo.type}}">
                     <i class="fa fa-close" style="float:right;cursor: pointer;" ng-click="closeInfo(oneInfo.code)"></i>
@@ -22,54 +22,49 @@
             <ul>
                 <li ng-show="!(accessList.includes('orders'))">
                     <a href="#/orders">
-                                    <span class="icon">
-                                        <i class="fa fa-shopping-cart fa-lg i-main-page-style" style="font-size: 105px"></i>
-                                    </span>
-
+                        <span class="icon">
+                            <i class="fa fa-shopping-cart fa-lg i-main-page-style" style="font-size: 105px"></i>
+                        </span>
                         <small translate="home.orders"></small>
                     </a>
                 </li>
                 <li ng-show="!(accessList.includes('payments'))">
                     <a href="#/payments">
-                                    <span class="icon">
-                                        <i class="fa fa-credit-card i-main-page-style" style="font-size: 87px"></i>
-                                    </span>
+                        <span class="icon">
+                            <i class="fa fa-credit-card i-main-page-style" style="font-size: 87px"></i>
+                        </span>
                         <small translate="home.payments"></small>
                     </a>
                 </li>
                 <li ng-show="!(accessList.includes('products'))">
                     <a href="#/products">
-                                    <span class="icon">
-                                        <i class="fa fa-cubes i-main-page-style" style="font-size: 83px"></i>
-                                    </span>
-
+                        <span class="icon">
+                            <i class="fa fa-cubes i-main-page-style" style="font-size: 83px"></i>
+                        </span>
                         <small translate="home.pdts"></small>
                     </a>
                 </li>
                 <li ng-show="!(accessList.includes('clients'))">
                     <a href="#/clients">
-                                    <span class="icon">
-                                        <i class="fa fa-users i-main-page-style" style="font-size: 82px"></i>
-                                    </span>
-
+                        <span class="icon">
+                            <i class="fa fa-users i-main-page-style" style="font-size: 82px"></i>
+                        </span>
                         <small translate="home.client"></small>
                     </a>
                 </li>
                 <li ng-show="!(accessList.includes('staticPage'))">
                     <a href="#/staticPage">
-                                    <span class="icon">
-                                        <i class="fa fa-folder i-main-page-style" style="font-size: 95px"></i>
-                                    </span>
-
+                        <span class="icon">
+                            <i class="fa fa-folder i-main-page-style" style="font-size: 95px"></i>
+                        </span>
                         <small translate="home.pages"></small>
                     </a>
                 </li>
                 <li ng-show="!(accessList.includes('modules'))">
                     <a href="#/modules">
-                                    <span class="icon">
-                                        <i class="fa fa-plug i-main-page-style" style="font-size: 83px"></i>
-                                    </span>
-
+                        <span class="icon">
+                            <i class="fa fa-plug i-main-page-style" style="font-size: 83px"></i>
+                        </span>
                         <small translate="home.modules"></small>
                     </a>
                 </li>
