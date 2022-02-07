@@ -63,18 +63,6 @@ const init = async () => {
     await serverUtils.logVersion();
 };
 
-const initDatabase = async () => {
-    if (global.envFile.db) {
-        const utilsDB = require('./utils/database');
-        await utilsDB.connect();
-        utilsDB.getMongdbVersion();
-        await utilsDB.applyMigrationIfNeeded();
-        await require('./services/job').initAgendaDB();
-        await utilsDB.initDBValues();
-        await require('./services/shortcodes').initDBValues();
-    }
-};
-
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
     const configuration   = await Configuration.findOne();
@@ -90,6 +78,20 @@ const setEnvConfig = async () => {
 
     if ((await Configuration.countDocuments()) > 1) {
         console.error(`More than 1 configuration found ! _id '${global.envConfig._id}' is use`);
+    }
+};
+
+const initDatabase = async () => {
+    if (global.envFile.db) {
+        const utilsDB = require('./utils/database');
+        await utilsDB.connect();
+        utilsDB.getMongdbVersion();
+        await utilsDB.applyMigrationIfNeeded();
+        await require('./services/job').initAgendaDB();
+        await setEnvConfig();
+        await utilsModules.modulesLoadInit(server);
+        await utilsDB.initDBValues();
+        await require('./services/shortcodes').initDBValues();
     }
 };
 
@@ -162,8 +164,6 @@ const initFrontFramework = async (themeName = null) => {
 
 const initServer = async () => {
     if (global.envFile.db) {
-        await setEnvConfig();
-        await utilsModules.modulesLoadInit(server);
         await utils.checkOrCreateAquilaRegistryKey();
 
         console.log(`%s@@ Admin : '/${global.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
