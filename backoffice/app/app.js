@@ -56,7 +56,6 @@ var aqModules = [
     "aq.medias",
     "aq.modules",
     "aq.translation",
-    "aq.dependencies",
     "aq.cmsBlocks",
     "aq.design",
     "aq.translate",
@@ -93,19 +92,12 @@ var aqModules = [
     "aq.newsletter",
     "aq.system",
     "aq.invoices",
-    "aq.adminList"
+    "aq.adminList",
+    'aq.dependencies'
 ]
 
-
-try {
-    angular.module('aq.dependencies')
-} catch(err) {
-    console.warn("[Aquila error]  /!\\ Error while loading modules dependencies =>", err.message)
-    aqModules = aqModules.filter((aqM) => (aqM !== 'aq.dependencies'))
-}
-
 /* App Module */
-var adminCatagenApp = angular.module("adminCatagenApp", aqModules);
+var    adminCatagenApp = angular.module("adminCatagenApp", aqModules);
 
 //================================================
 // Check if the user is connected
