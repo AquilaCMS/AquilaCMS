@@ -201,6 +201,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
     // discount is the value of the discount and the discountType is the way
     // in which the discount will be applied (in percentage for "P" or by subtracting for "M")
     for (let i = 0; i < products.length; i++) {
+        if (!products[i]) continue; // If a product is null or undefined
         if (products[i]._doc) products[i] = products[i].toObject();
         if (products[i].type && products[i].type === 'bundle') continue;
         products[i].relevantDiscount = [];
