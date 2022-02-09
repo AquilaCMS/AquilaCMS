@@ -55,8 +55,12 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.addExtension = function (extension) {
-            if (!$scope.system.environment.allowExtensions.includes(extension) && extension != "" && typeof extension !== "undefined") {
-                $scope.system.environment.allowExtensions.push(extension);
+            if (!$scope.allowExtensions.content.includes(extension) && extension != "" && typeof extension !== "undefined") {
+                $scope.allowExtensions.content.push(extension);
+                $scope.allowExtensions.newExtension = "";
+            }
+            else if ($scope.allowExtensions.content.includes(extension)) {
+                toastService.toast("info", $translate.instant("system.environment.security.allowExtensions.addedExtension"));
             }
         };
 
@@ -68,6 +72,9 @@ SystemControllers.controller("systemGeneralController", [
             $scope.getFilesLogAndError('error');
             if ($scope.system.environment.contentSecurityPolicy.values) {
                 $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicy.values;
+            }
+            if ($scope.system.environment.allowExtensions) {
+                $scope.allowExtensions.content = $scope.system.environment.allowExtensions;
             }
             $scope.ssl = {
                 cert: $scope.system.environment.ssl.cert || '',
@@ -207,7 +214,7 @@ SystemControllers.controller("systemGeneralController", [
                         $scope.system.environment.ssl.cert = $scope.system.environment.ssl.cert.name;
                     }
                     if ($scope.system.environment.ssl.key instanceof File) {
-                        file.key = $scope.system.environment.ssl.key;
+                        file.key = $scope.system.environment.ssl.key;   
                         $scope.system.environment.ssl.key = $scope.system.environment.ssl.key.name;
                     }
                 }
@@ -216,10 +223,15 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
                 $scope.contentPolicy.newPolicy = "";
             }
+            if ($scope.allowExtensions.newExtension != "" && typeof $scope.allowExtensions.newExtension !== "undefined" && !$scope.allowExtensions.content.includes($scope.allowExtensions.newExtension)) {
+                $scope.allowExtensions.content.push($scope.allowExtensions.newExtension);
+                $scope.allowExtensions.newExtension = "";
+            }
             ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
                 $scope.system.environment.cacheTTL = $scope.system.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
+                $scope.system.environment.allowExtensions = $scope.allowExtensions.content;
 
                 Upload.upload({
                     url: 'v2/config',

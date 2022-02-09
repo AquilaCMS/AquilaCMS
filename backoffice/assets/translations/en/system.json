@@ -18,7 +18,8 @@
             "allowExtensions": {
                 "title": "Allowed extensions",
                 "delAndAdd": "Delete/add",
-                "value": "Value"
+                "value": "Value",
+                "addedExtension": "extension already added"
             }
         },
         "log":{

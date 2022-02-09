@@ -55,8 +55,7 @@ const ConfigurationSchema = new Schema({
             active : {type: Boolean, default: false}
         },
         allowExtensions : {
-            type    : [String],
-            default : ['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', '.mp4']
+            type : [String]
         },
         needRestart : {type: Boolean, default: false},
         needRebuild : {type: Boolean, default: false}
