@@ -7,19 +7,22 @@
                 "ssl": "SSL",
                 "active": "Activate",
                 "cert": "certificate",
-                "key": "private key"
+                "key": "private key",
+                "description": "Allows you to switch your website to HTTPS"
             },
             "contentPolicy": {
                 "title": "ContentPolicy",
                 "delAndAdd": "Delete/add",
                 "value": "Value",
-                "confirm":"You are going to activate a strict security policy that can lead to malfunctions on your site. To access external content, you must list all authorized domains"
+                "confirm":"You are going to activate a strict security policy that can lead to malfunctions on your site. To access external content, you must list all authorized domains",
+                "description": "List of resources allowed to load from subdomains or external site. Ex: example-trusted.source.net"
             },
             "allowExtensions": {
                 "title": "Allowed extensions",
                 "delAndAdd": "Delete/add",
                 "value": "Value",
-                "addedExtension": "extension already added"
+                "addedExtension": "extension already added",
+                "description": "List of allowed’s file extensions to be hit on the website (product images, banners, etc ..). Ex: .pdf"
             }
         },
         "log":{

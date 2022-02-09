@@ -7,19 +7,22 @@
                 "ssl": "SSL",
                 "active": "Activé",
                 "cert": "certificat",
-                "key": "Clé privée"
+                "key": "Clé privée",
+                "description": "Permet de passer votre site en HTTPS"
             },
             "contentPolicy": {
                 "title": "Politique de contenu",
                 "delAndAdd": "Supprimer/ajouter",
                 "value": "Valeur",
-                "confirm":"Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés"
+                "confirm":"Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés",
+                "description": "Liste des ressources autorisées à charger depuis des sous domaines ou site externe. Ex : source-sure.example.net"
             },
             "allowExtensions": {
                 "title": "Extensions autorisées",
                 "delAndAdd": "Supprimer/ajouter",
                 "value": "Valeur",
-                "addedExtension": "extension deja ajoutée"
+                "addedExtension": "extension deja ajoutée",
+                "description": "Liste des extensions de fichiers autorisées à être utilisé sur le site (images de produits, bannières, etc .. ). Ex: .pdf"
             }
         },
         "log":{
