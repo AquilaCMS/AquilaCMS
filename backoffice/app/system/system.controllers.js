@@ -17,7 +17,7 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.allowExtensions = {
-            content: [],
+            content: [".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"],
             newExtension: ""
         };
 
@@ -62,6 +62,11 @@ SystemControllers.controller("systemGeneralController", [
             else if ($scope.allowExtensions.content.includes(extension)) {
                 toastService.toast("info", $translate.instant("system.environment.security.allowExtensions.addedExtension"));
             }
+        };
+
+        $scope.resetAllowExtensionsList = function () {
+            $scope.allowExtensions.content = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"];
+            $scope.allowExtensions.newExtension = "";
         };
 
         ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {

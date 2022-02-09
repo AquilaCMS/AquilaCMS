@@ -22,7 +22,8 @@
                 "delAndAdd": "Supprimer/ajouter",
                 "value": "Valeur",
                 "addedExtension": "extension deja ajoutée",
-                "description": "Liste des extensions de fichiers autorisées à être utilisé sur le site (images de produits, bannières, etc .. ). Ex: .pdf"
+                "description": "Liste des extensions de fichiers autorisées à être utilisé sur le site (images de produits, bannières, etc .. ). Ex: .pdf",
+                "resetList": "Réinitialiser la liste d'extensions"
             }
         },
         "log":{

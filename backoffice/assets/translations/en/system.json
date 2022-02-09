@@ -22,7 +22,8 @@
                 "delAndAdd": "Delete/add",
                 "value": "Value",
                 "addedExtension": "extension already added",
-                "description": "List of allowed’s file extensions to be hit on the website (product images, banners, etc ..). Ex: .pdf"
+                "description": "List of allowed’s file extensions to be hit on the website (product images, banners, etc ..). Ex: .pdf",
+                "resetList": "Reset the list of extensions"
             }
         },
         "log":{
