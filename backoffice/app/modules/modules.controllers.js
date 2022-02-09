@@ -140,7 +140,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                             $scope.modules.find((elem) => elem._id === id).active = false;
                             let messageToast = "";
                             if(err.data.message){
-                                messageToast += `${err.message}<br/>`;
+                                messageToast += `${err.data.message}<br/>`;
                             }
                             if(err.data.datas.missingDependencies.length > 0){
                                 const missingDependencies = err.data.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>');
@@ -148,8 +148,8 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                                 if(err.data.datas.needActivation.length > 0){
                                     const needActivation = err.data.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br/>');
                                     messageToast += `need activation : <br/><b>${needActivation}</b><br/>`;
-                                    toastService.toast('danger', messageToast);
                                 }
+                                toastService.toast('danger', messageToast);
                             }
                         } else if (err.data.datas.needDeactivation) {
                             $scope.modules.find((elem) => elem._id === id).active = false;
