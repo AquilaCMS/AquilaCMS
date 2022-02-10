@@ -142,7 +142,7 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
+                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity, undefined, orderItem.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
@@ -155,6 +155,24 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
                                 }
                                 await ServicesProducts.updateStock(_product_section._id, -orderItem.quantity);
                             }
+                        }
+                    }
+                }
+            }
+        }
+        // increase sales number
+        for (const item of _order.items) {
+            if (item.type === 'simple') {
+                // we book the stock
+                await Products.updateOne({_id: item.id}, {$inc: {'stats.sells': item.quantity}});
+            } else if (item.type === 'bundle') {
+                for (let j = 0; j < item.selections.length; j++) {
+                    const section = item.selections[j];
+                    for (let k = 0; k < section.products.length; k++) {
+                        const productId        = section.products[k];
+                        const _product_section = await Products.findOne({_id: productId.id});
+                        if (_product_section.type === 'simple') {
+                            await Products.updateOne({_id: _product_section._id}, {$inc: {'stats.sells': item.quantity}});
                         }
                     }
                 }
@@ -203,7 +221,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
     }
-    returnData.name          = paymentMethod.translation[lang].name;
+    returnData.name          = paymentMethod.translation[lang]?.name;
     returnData.operationDate = Date.now();
     if (returnData.type === 'CREDIT') {
         await ServiceOrders.setStatus(orderId, ServiceOrders.orderStatuses.PAID);

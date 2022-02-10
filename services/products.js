@@ -31,13 +31,13 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // if in the config, we ask not to return the stock fields, we add them to the restrictedFields
-if (global.envConfig.stockOrder.returnStockToFront !== true) {
+if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
@@ -664,10 +664,15 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantity to order
  * @returns {object}  Return Information
  */
-const checkProductOrderable = async (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0, selected_variant  = undefined) => {
     let prdStock = {};
     // if objstock is an id, we get the product
-    if (typeof objstock === 'string') {
+    if (selected_variant) {
+        prdStock = {
+            ...selected_variant.stock,
+            qty_real : Number(selected_variant.stock.qty) - Number(selected_variant.stock.qty_booked)
+        };
+    } else if (typeof objstock === 'string') {
         prdStock = (await Products.findById(objstock)).stock;
     } else {
         prdStock = objstock;
@@ -721,7 +726,6 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
             datas.ordering.orderable = true;
         }
     }
-
     return datas;
 };
 
@@ -1027,29 +1031,65 @@ const getProductsListing = async (req, res) => {
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
-    if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
-        throw NSErrors.ProductNotSalable;
-    }
-    // if qty2 exists, it is either a product return or a shipment
-    if (qty2 !== undefined) {
-        // if qty2 === 0, it is a product return, sino, it is a shipment
-        if (qty2 === 0) {
-            // qty1 = the quantity to return
-            const qtyToReturn = qty1;
-            prd.stock.qty    += qtyToReturn;
-        } else if (qty1 === 0) {
-            const qtyToSend       = qty2;
-            prd.stock.qty        += qtyToSend;
-            prd.stock.qty_booked += qtyToSend;
-        }
+
+    if (selected_variant) {
+        await updateVariantsStock(prd, qty1, qty2, selected_variant);
     } else {
-        // in the case of an addition to the cart, qty change or deletion of an item in a cart
-        const qtyToAddOrRemove = qty1;
-        prd.stock.qty_booked  -= qtyToAddOrRemove;
+        if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
+        } else if (!prd.stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
+        }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn = qty1;
+                prd.stock.qty    += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend       = qty2;
+                prd.stock.qty        += qtyToSend;
+                prd.stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove = qty1;
+            prd.stock.qty_booked  -= qtyToAddOrRemove;
+        }
+        await prd.save();
     }
-    await prd.save();
+};
+
+const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
+    const selectedVariantIndex = prd.variants_values.findIndex((prdVariant) => prdVariant._id.toString() === selected_variant.id);
+    if (selectedVariantIndex > -1) {
+        if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
+        } else if (!prd.variants_values[selectedVariantIndex].stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
+        }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn                                    = qty1;
+                prd.variants_values[selectedVariantIndex].stock.qty += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend                                             = qty2;
+                prd.variants_values[selectedVariantIndex].stock.qty        += qtyToSend;
+                prd.variants_values[selectedVariantIndex].stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove                                      = qty1;
+            prd.variants_values[selectedVariantIndex].stock.qty_booked -= qtyToAddOrRemove;
+        }
+        await prd.updateData(prd);
+    }
 };
 
 const handleStock = async (item, _product, inStockQty) => {
@@ -1063,7 +1103,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded, item.selected_variant)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {

@@ -84,6 +84,21 @@
         <!--</div>-->
     </div>
 </div>
+<div class="form-group" ng-if="product.stats">
+    <h3 translate>product.general.stats</h3>
+    <div class="col-sm-6">
+        <label for="views" class="col-sm-2 control-label" translate>product.general.views</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="views" name="views" ng-model="product.stats.views">
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <label for="sells" class="col-sm-2 control-label" translate>product.general.sells</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="sells" name="sells" ng-model="product.stats.sells">
+        </div>
+    </div>
+</div>
 
 <div class="form-group">
     <div class="col-sm-11" hook-product-detail-marketing data="product">

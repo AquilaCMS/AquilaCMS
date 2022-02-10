@@ -236,9 +236,8 @@ class CartSuccess extends React.Component {
                                                                                         );
                                                                                     }
                                                                                 }
-                                                                                let imgDefault = `/images/products/82x82/${item.image}/${item.slug}.jpg`;
+                                                                                let imgDefault = `/images/${item.selected_variant ? 'productsVariant' : 'products'}/82x82/${item.image}/${item.slug}.jpg`;
                                                                                 let imgAlt = 'illustration produit';
-                                                                                
                                                                                 return (
                                                                                     <tr key={item._id} className="cart-item cart-item--small">
                                                                                         <td>
@@ -246,9 +245,8 @@ class CartSuccess extends React.Component {
                                                                                                 <figure className="cart__image" style={{ width: '82px' }}>
                                                                                                     <img src={imgDefault} alt={imgAlt} />
                                                                                                 </figure>
-
                                                                                                 <h5 className="cart__title">
-                                                                                                    {item.id.name}
+                                                                                                    {(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id.name)}
                                                                                                     {
                                                                                                         item.selections && <ul style={{ fontSize: '13px' }}>
                                                                                                             {
@@ -291,11 +289,9 @@ class CartSuccess extends React.Component {
                                                                                                 </h5>
                                                                                             </div>
                                                                                         </td>
-
                                                                                         <td>
                                                                                             <span className="cart__qty">{item.quantity}</span>
                                                                                         </td>
-
                                                                                         <td className="hidden-sm">
                                                                                             <span className="price cart__price-single">
                                                                                                 {

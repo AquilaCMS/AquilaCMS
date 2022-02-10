@@ -42,5 +42,6 @@
     "reviewTitle": "Review title",
     "feedback": "Your feedback",
     "reviewNickname": "Your nickname",
-    "review_successfully_sent": "Your comment has been successfully sent and will be displayed after validation"
+    "review_successfully_sent": "Your comment has been successfully sent and will be displayed after validation",
+    "variantUnavailable": "This variant is not available"
 }

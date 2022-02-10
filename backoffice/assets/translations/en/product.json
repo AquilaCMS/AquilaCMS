@@ -42,9 +42,13 @@
         "finished": "Finished",
         "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product",
+        "saveFirst": "Save the product before adding images",
         "changeType": "Change product type",
         "type": "Type",
-        "typeTooltip": "Change the type of product (requires save)"
+        "typeTooltip": "Change the type of product (requires save)",
+        "views": "Views",
+        "sells": "Sells",
+        "stats": "Stats"
     },
     "modal": {
         "activeProduct": "Activate a product",
@@ -146,8 +150,27 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Can't generate URL because canonical is empty",
-        "notValid": "Informations entered are not valid"
+        "notValid": "Informations entered are not valid",
+        "URLcanonical": "Can't generate URL because canonical is empty"
     },
-    "beforeConfigCat": "Save product before adding it to catgories"
+    "declinaisons": {
+        "title1": "Used variant",
+        "title2": "List variant",
+        "code": "Code",
+        "name": "Name",
+        "typeDisplay": "Display",
+        "available": "Available",
+        "picture": "Image",
+        "variant": "Variant",
+        "variants": "Variants",
+        "price": "Base ATI price",
+        "quantity": "Qty",
+        "default": "Default",
+        "createAttribs": "You need to create at least one attribut flagged as product variant <a style='text-decoration: underline;' href='#/products/attributes'>here</a>",
+        "displayImage": "Display image",
+        "displayRadio": "Radio buttons",
+        "displayList": "Values lists",
+        "displayList2": "Variants list"
+    },
+    "beforeConfigCat": "Save product before adding it to categories"
 }

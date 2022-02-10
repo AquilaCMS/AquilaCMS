@@ -6,26 +6,26 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const aquilaEvents                = require('../utils/aquilaEvents');
-const ServiceProduct              = require('../services/products');
-const ProductPreview              = require('../services/preview');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {securityForceActif}        = require('../middleware/security');
+const aquilaEvents                     = require('../utils/aquilaEvents');
+const ServiceProduct                   = require('../services/products');
+const ProductPreview                   = require('../services/preview');
+const {authentication, adminAuthRight} = require('../middleware/authentication');
+const {securityForceActif}             = require('../middleware/security');
 
 module.exports = function (app) {
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
-    app.post('/v2/product/duplicate', adminAuth, duplicateProduct);
+    app.post('/v2/product/duplicate', adminAuthRight('products'), duplicateProduct);
     app.get('/v2/product/download', authentication, downloadProduct);
     app.post('/v2/product/calculStock', calculStock);
-    app.post('/v2/product/preview', adminAuth, preview);
-    app.post('/v2/product/changeType', adminAuth, changeProductType);
+    app.post('/v2/product/preview', adminAuthRight('products'), preview);
+    app.post('/v2/product/changeType', adminAuthRight('products'), changeProductType);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
-    app.put('/v2/product', adminAuth, setProduct);
-    app.delete('/v2/product/:id', adminAuth, deleteProduct);
-    app.get('/v2/product/getCoherence/:id', adminAuth, getCoherence);
+    app.put('/v2/product', adminAuthRight('products'), setProduct);
+    app.delete('/v2/product/:id', adminAuthRight('products'), deleteProduct);
+    app.get('/v2/product/getCoherence/:id', adminAuthRight('products'), getCoherence);
 };
 
 async function getCoherence(req, res, next) {
