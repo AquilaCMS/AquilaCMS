@@ -7,8 +7,8 @@
  */
 
 const mongoose         = require('mongoose');
+const {aquilaEvents}   = require('aql-utils');
 const {FamiliesSchema} = require('../schemas');
-const aquilaEvents     = require('../../utils/aquilaEvents');
 
 aquilaEvents.emit('familiesSchemaInit', FamiliesSchema);
 
