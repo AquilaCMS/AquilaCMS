@@ -135,6 +135,7 @@ const createUser = async (body, isAdmin = false) => {
             for (let i = 0; i < body.attributes.length; i++) {
                 const attribute                = await Attributes.findOne({code: body.attributes[i].code});
                 body.attributes[i].translation = attribute.translation;
+                if (attribute.type) body.attributes[i].type = attribute.type;
                 if (attribute.type === 'multiselect') {
                     body.attributes[i].translation[body.lang].values = body.attributes[i].values;
                 } else {
