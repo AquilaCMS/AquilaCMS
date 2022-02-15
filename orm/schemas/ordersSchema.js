@@ -7,7 +7,7 @@
  */
 
 const mongoose          = require('mongoose');
-const aquilaEvents      = require('../../utils/aquilaEvents');
+const {aquilaEvents}    = require('aql-utils');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');

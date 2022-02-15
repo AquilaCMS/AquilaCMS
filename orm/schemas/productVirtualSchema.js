@@ -8,7 +8,7 @@
 
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
-const aquilaEvents         = require('../../utils/aquilaEvents');
+const {aquilaEvents}       = require('aql-utils');
 const Schema               = mongoose.Schema;
 
 const ProductVirtualSchema = new Schema({
