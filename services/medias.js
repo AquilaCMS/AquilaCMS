@@ -6,14 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip       = require('adm-zip');
-const moment       = require('moment');
-const path         = require('path');
-const slash        = require('slash');
-const mongoose     = require('mongoose');
+const AdmZip   = require('adm-zip');
+const moment   = require('moment');
+const path     = require('path');
+const slash    = require('slash');
+const mongoose = require('mongoose');
+const ObjectID = mongoose.Types.ObjectId;
+
 const {
     Medias,
     Products,
+    ProductSimple,
     Categories,
     Pictos,
     Languages,
@@ -22,7 +25,7 @@ const {
     Slider,
     Mail,
     Trademarks
-}                      = require('../orm/models');
+}                  = require('../orm/models');
 const utils        = require('../utils/utils');
 const utilsModules = require('../utils/modules');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -186,8 +189,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     } else {
         fileNameOption = '';
     }
-    try {
-        // if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
+    if (ObjectID.isValid(_id)) {
         switch (type) {
         // if a product image is requested
         case 'products':
@@ -200,7 +202,24 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
             await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
             break;
-            // if a media is requested
+        // if a media is requested
+        case 'productsVariant':
+            const prd = await ProductSimple.findOne({'variants_values.images._id': _id});
+            let variant;
+            for (let i = 0; i < prd.variants_values.length; i++) {
+                if (prd.variants_values[i].images.findIndex((img) => img._id.toString() === _id) > -1) {
+                    imageObj = prd.variants_values[i].images.find((img) => img._id.toString() === _id);
+                    variant  = prd.variants_values[i];
+                }
+            }
+            // we get the name of the file
+            fileName      = path.basename(imageObj.url);
+            filePath      = path.join(_path, imageObj.url);
+            fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
+            filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
+            break;
+        // if a media is requested
         case 'medias':
             imageObj      = await Medias.findOne({_id});
             fileName      = path.basename(imageObj.link, `${path.extname(imageObj.link)}`);
@@ -254,15 +273,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         default:
             return null;
         }
-
-        // global aux sections
-        // ./global aux sections
-        // if the cache folder does not exist, we create it
-        await fsp.mkdir(cacheFolder, {recursive: true});
-    } catch (err) {
-        fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
-        filePath      = path.join(_path, global.envConfig.environment.defaultImage); // global.envConfig.environment.defaultImage;
-        filePathCache = path.join(cacheFolder, fileName);
     }
 
     // if the requested image is already cached, it is returned direct
@@ -320,7 +330,12 @@ const uploadFiles = async (body, files) => {
     let target_path = `medias/${body.type}/`;
 
     switch (body.type) {
-    case 'product': {
+    case 'products': {
+        const code  = body.code.substring(0, 2);
+        target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
+        break;
+    }
+    case 'productsVariant': {
         const code  = body.code.substring(0, 2);
         target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
         break;
@@ -382,7 +397,7 @@ const uploadFiles = async (body, files) => {
         return target_path_full.replace(pathFinal, '');
     });
     switch (body.type) {
-    case 'product': {
+    case 'products': {
         const image = {
             default  : body.default,
             position : body.position ? body.position : false,
@@ -395,6 +410,21 @@ const uploadFiles = async (body, files) => {
         await Products.updateOne({_id: body._id}, {$push: {images: image}});
         const product = await Products.findOne({_id: body._id});
         image._id     = product.images.find((img) => img.name === name + extension)._id;
+        return image;
+    }
+    case 'productsVariant': {
+        const image = {
+            default  : body.default,
+            position : body.position ? body.position : false,
+            alt      : body.alt,
+            name     : name + extension,
+            title    : name,
+            url      : target_path_full,
+            extension
+        };
+        await ProductSimple.updateMany({variants_values: {$exists: true}}, {$push: {'variants_values.$[vv].images': image}}, {arrayFilters: [{'vv._id': body._id}]});
+        const product = await ProductSimple.findOne({variants_values: {$exists: true}, 'variants_values._id': body._id});
+        image._id     = product.variants_values.find((vv) => vv._id.toString() === body._id).images.find((img) => img.name === name + extension)._id;
         return image;
     }
     case 'mail': {
@@ -659,7 +689,7 @@ const getImageStream = async (url, res) => {
 
     const size      = url.split('/')[3].split('-')[0];
     const _id       = url.split('/')[4];
-    const extension = path.extname(url).replace('.', '');
+    const extension = path.extname(url).replace('.', '') || 'png';
     if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';

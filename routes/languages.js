@@ -5,18 +5,18 @@
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
-const {adminAuth}           = require('../middleware/authentication');
+const {adminAuthRight}      = require('../middleware/authentication');
 const {securityForceFilter} = require('../middleware/security');
 const servicesLanguages     = require('../services/languages');
 
 module.exports = function (app) {
     app.post('/v2/languages', securityForceFilter([{status: 'visible'}]), listLangs);
     app.post('/v2/language', getLang);
-    app.put('/v2/language', adminAuth, saveLang);
-    app.delete('/v2/language/:id', adminAuth, removeLang);
+    app.put('/v2/language', adminAuthRight('languages'), saveLang);
+    app.delete('/v2/language/:id', adminAuthRight('languages'), removeLang);
     app.get('/V2/translate', translateList);
     app.get('/V2/translate/:lang/:currentTranslate', translateGet);
-    app.post('/V2/translate/:lang/:currentTranslate', adminAuth, translateSet);
+    app.post('/V2/translate/:lang/:currentTranslate', adminAuthRight('translate'), translateSet);
 };
 
 /**

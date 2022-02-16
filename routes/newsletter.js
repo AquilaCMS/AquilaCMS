@@ -6,14 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceNewsletter           = require('../services/newsletter');
-const {adminAuth, authentication} = require('../middleware/authentication');
-const NSErrors                    = require('../utils/errors/NSErrors');
+const ServiceNewsletter                = require('../services/newsletter');
+const {adminAuthRight, authentication} = require('../middleware/authentication');
+const NSErrors                         = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/newsletters', adminAuth, getNewsletters);
-    app.post('/v2/newsletter', adminAuth, getNewsletter);
-    app.post('/v2/newsletters/distinct', adminAuth, getDistinctNewsletters);
+    app.post('/v2/newsletters', adminAuthRight('newsletters'), getNewsletters);
+    app.post('/v2/newsletter', adminAuthRight('newsletters'), getNewsletter);
+    app.post('/v2/newsletters/distinct', adminAuthRight('newsletters'), getDistinctNewsletters);
     app.get('/v2/newsletter/:email', authentication, getNewsletterByEmail);
     app.post('/v2/newsletter/:email', setStatusNewsletterByEmail);
 };
