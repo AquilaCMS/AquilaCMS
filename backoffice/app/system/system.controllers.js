@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
-     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
+     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate", "$modal",
+     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate, $modal) {
         $scope.blocks = EnvBlocks;
         $scope.showModuleLoading = false;
         $scope.log = {
@@ -65,8 +65,29 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.resetAllowExtensionsList = function () {
-            $scope.allowExtensions.content = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"];
-            $scope.allowExtensions.newExtension = "";
+            var modalInstance = $modal.open({
+                templateUrl: "views/modals/reset-extensionsList.html", 
+                windowClass: 'modal',
+                controller: function($scope, $modalInstance) {
+                    $scope.ok = function () {
+                        $modalInstance.close();
+                    };
+                    
+                    $scope.cancel = function () {
+                        $modalInstance.dismiss("cancel");
+                    };
+                },
+                resolve: {
+                    allowExtensions: function() {
+                        return $scope.allowExtensions;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function(){
+                $scope.allowExtensions.content = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"];
+                $scope.allowExtensions.newExtension = "";
+            });
         };
 
         ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
