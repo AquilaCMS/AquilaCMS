@@ -8,10 +8,10 @@
 
 const crypto                     = require('crypto');
 const moment                     = require('moment');
+const {aquilaEvents}             = require('aql-utils');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
-const aquilaEvents               = require('../utils/aquilaEvents');
 const {useWkHTMLtoPDF}           = require('../utils/generatePDF');
 const utilsModules               = require('../utils/modules');
 const ServiceOrder               = require('./orders');

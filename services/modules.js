@@ -12,6 +12,7 @@ const mongoose         = require('mongoose');
 const rimraf           = require('rimraf');
 const slash            = require('slash');
 const semver           = require('semver');
+const {aquilaEvents}   = require('aql-utils');
 const {isEqual}        = require('../utils/utils');
 const packageManager   = require('../utils/packageManager');
 const QueryBuilder     = require('../utils/QueryBuilder');
@@ -22,7 +23,6 @@ const fs               = require('../utils/fsp');
 const NSErrors         = require('../utils/errors/NSErrors');
 const {Modules}        = require('../orm/models');
 const themesService    = require('./themes');
-const aquilaEvents     = require('../utils/aquilaEvents');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];

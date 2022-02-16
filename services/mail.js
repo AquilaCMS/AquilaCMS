@@ -10,12 +10,12 @@ const nodemailer       = require('nodemailer');
 const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const path             = require('path');
+const {aquilaEvents}   = require('aql-utils');
 const ServiceLanguages = require('./languages');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
 const modulesUtils     = require('../utils/modules');
 const NSErrors         = require('../utils/errors/NSErrors');
-const aquilaEvents     = require('../utils/aquilaEvents');
 const utilsServer      = require('../utils/server');
 const fs               = require('../utils/fsp');
 const {

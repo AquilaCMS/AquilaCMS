@@ -7,6 +7,7 @@
  */
 
 const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
 const fs                = require('../../utils/fsp');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
@@ -14,7 +15,6 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 const utils             = require('../../utils/utils');
-const aquilaEvents      = require('../../utils/aquilaEvents');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;

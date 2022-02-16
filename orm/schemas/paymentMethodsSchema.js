@@ -7,7 +7,7 @@
  */
 
 const mongoose            = require('mongoose');
-const aquilaEvents        = require('../../utils/aquilaEvents');
+const {aquilaEvents}      = require('aql-utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
