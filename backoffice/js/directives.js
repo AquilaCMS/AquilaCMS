@@ -362,8 +362,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                                 $scope.sortShortCodes = function(string){
                                     for (const i in $scope.shortcodes) {
-                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase()))) {
-                                            $scope.shortcodes[i].sort = true;
+                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase())) || ($scope.shortcodes[i].translation && $scope.shortcodes[i].tag.toLowerCase().includes(string.toLowerCase())) ) {                                            $scope.shortcodes[i].sort = true;
                                         }else{
                                             $scope.shortcodes[i].sort = false;
                                         }
