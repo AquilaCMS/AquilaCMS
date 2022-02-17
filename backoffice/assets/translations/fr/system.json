@@ -22,10 +22,9 @@
                 "delAndAdd": "Supprimer/ajouter",
                 "value": "Valeur",
                 "addedExtension": "extension deja ajoutée",
-                "description": "Liste des extensions de fichiers autorisées à être utilisé sur le site (images de produits, bannières, etc .. ). Ex: .pdf",
+                "description": "Liste des extensions de fichiers autorisées à être utilisé sur le site (Autre type de vidéo, document Office, ou autre fichiers particuliers). Ex: .pdf",
                 "resetList": "Réinitialiser la liste d'extensions",
-                "resetList": "Réinitialiser la liste d'extensions"
-
+                "pointStart": "the extension must begin with a dot"
             }
         },
         "log":{

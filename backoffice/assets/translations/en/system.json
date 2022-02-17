@@ -22,8 +22,9 @@
                 "delAndAdd": "Delete/add",
                 "value": "Value",
                 "addedExtension": "extension already added",
-                "description": "List of allowed’s file extensions to be hit on the website (product images, banners, etc ..). Ex: .pdf",
-                "resetList": "Reset the list of extensions"
+                "description": "List of file extensions authorized to be used on the website (Other type of video, Office document, or other particular files). Ex: .pdf",
+                "resetList": "Reset the list of extensions",
+                "pointStart": "the extension must begin with a point"
             }
         },
         "log":{

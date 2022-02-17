@@ -63,12 +63,20 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.addExtension = function (extension) {
-            if (!$scope.allowExtensions.content.includes(extension) && extension != "" && typeof extension !== "undefined") {
+            let inputSplited = extension.split('');
+            $scope.checkExtension(inputSplited);
+            if (!$scope.allowExtensions.content.includes(extension) && extension != "" && typeof extension !== "undefined" && inputSplited[0] === '.') {
                 $scope.allowExtensions.content.push(extension);
                 $scope.allowExtensions.newExtension = "";
             }
             else if ($scope.allowExtensions.content.includes(extension)) {
                 toastService.toast("info", $translate.instant("system.environment.security.allowExtensions.addedExtension"));
+            }
+        };
+
+        $scope.checkExtension = function (inputSplited) {
+            if (inputSplited[0] !== '.') {
+                toastService.toast("danger", $translate.instant("system.environment.security.allowExtensions.pointStart"));
             }
         };
 
@@ -274,7 +282,8 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
                 $scope.contentPolicy.newPolicy = "";
             }
-            if ($scope.allowExtensions.newExtension != "" && typeof $scope.allowExtensions.newExtension !== "undefined" && !$scope.allowExtensions.content.includes($scope.allowExtensions.newExtension)) {
+            let inputSplited = $scope.allowExtensions.newExtension.split(''); // split per char
+            if ($scope.allowExtensions.newExtension != "" && typeof $scope.allowExtensions.newExtension !== "undefined" && !$scope.allowExtensions.content.includes($scope.allowExtensions.newExtension) && inputSplited[0] === '.') {
                 $scope.allowExtensions.content.push($scope.allowExtensions.newExtension);
                 $scope.allowExtensions.newExtension = "";
             }
