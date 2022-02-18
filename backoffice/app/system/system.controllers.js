@@ -56,9 +56,9 @@ SystemControllers.controller("systemGeneralController", [
         };
         
         $scope.removeExtension = function (extension) {
-            const index = $scope.system.environment.allowExtensions.indexOf(extension);
+            const index = $scope.allowExtensions.content.indexOf(extension);
             if (index > -1) {
-                $scope.system.environment.allowExtensions.splice(index, 1);
+                $scope.allowExtensions.content.splice(index, 1);
             }
         };
 
