@@ -12,6 +12,7 @@ const {aquilaEvents}                     = require('aql-utils');
 const {Users, SetAttributes, Attributes} = require('../orm/models');
 const servicesMail                       = require('./mail');
 const QueryBuilder                       = require('../utils/QueryBuilder');
+const utilsModules                       = require('../utils/modules');
 const NSErrors                           = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['password'];
@@ -99,7 +100,7 @@ const setUserAddresses = async (body) => {
     return userUpdated;
 };
 
-const createUser = async (body, isAdmin = false) => {
+const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunctions('createUser', {body, isAdmin}, async () => {
     // Control password
     body.activateAccountToken = crypto.randomBytes(26).toString('hex');
     body.isActiveAccount      = false;
@@ -161,7 +162,7 @@ const createUser = async (body, isAdmin = false) => {
     });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
-};
+});
 
 const deleteUser = async (id) => {
     const query = {_id: id};
