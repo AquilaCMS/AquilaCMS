@@ -18,6 +18,7 @@ const {
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
 const utilsDatabase     = require('../utils/database');
+const utilsModules      = require('../utils/modules');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
@@ -56,8 +57,11 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, userIn
         const products        = cart.items.map((product) => product.id);
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
-            for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle' && !cart.items[i].selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            for (let i = 0; i < cart.items.length; i++) {
+                let item = cart.items[i];
+                if (item.type !== 'bundle' && !item.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                item          = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item, cart}, async () => item);
+                cart.items[i] = item;
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -157,6 +161,7 @@ const addItem = async (postBody, userInfo) => {
     }
 
     const _product = await Products.findOne({_id: postBody.item.id});
+
     let variant;
     await linkCustomerToCart(cart, userInfo);
     if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
@@ -235,7 +240,7 @@ const addItem = async (postBody, userInfo) => {
         postBody.item._id = idGift;
     }
 
-    const item = {
+    let item = {
         ...postBody.item,
         weight       : _product.weight,
         price        : _product.price,
@@ -248,6 +253,9 @@ const addItem = async (postBody, userInfo) => {
     if (_product.type !== 'virtual') item.stock = _product.stock;
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
+
+    // Here you can change any information of a product before adding it to the user's cart
+    item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, userInfo}, async () => item);
 
     const data = await _product.addToCart(cart, item, userInfo, _lang.code);
     if (data && data.code) {
