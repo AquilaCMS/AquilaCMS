@@ -60,7 +60,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, userIn
             for (let i = 0; i < cart.items.length; i++) {
                 let item = cart.items[i];
                 if (item.type !== 'bundle' && !item.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-                item          = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item, cart}, async () => item);
+                item          = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item, PostBody, cart}, async () => item);
                 cart.items[i] = item;
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
@@ -255,7 +255,7 @@ const addItem = async (postBody, userInfo) => {
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
     // Here you can change any information of a product before adding it to the user's cart
-    item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, userInfo}, async () => item);
+    item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
     const data = await _product.addToCart(cart, item, userInfo, _lang.code);
     if (data && data.code) {
