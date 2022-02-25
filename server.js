@@ -8,21 +8,21 @@
 
 require('dotenv').config();
 require('aql-utils');
-const express       = require('express');
-const passport      = require('passport');
-const path          = require('path');
-global.envPath      = null;
-global.envFile      = null;
-global.appRoot      = path.resolve(__dirname);
-global.port         = Number(process.env.PORT || 3010);
-global.defaultLang  = '';
-global.moduleExtend = {};
-global.translate    = require('./utils/translate');
-const utils         = require('./utils/utils');
-const fs            = require('./utils/fsp');
-const serverUtils   = require('./utils/server');
-const utilsModules  = require('./utils/modules');
-const utilsThemes   = require('./utils/themes');
+const express         = require('express');
+const passport        = require('passport');
+const path            = require('path');
+global.envPath        = null;
+global.envFile        = null;
+global.appRoot        = path.resolve(__dirname);
+global.port           = Number(process.env.PORT || 3010);
+global.defaultLang    = '';
+global.moduleExtend   = {};
+global.translate      = require('./utils/translate');
+const utils           = require('./utils/utils');
+const fs              = require('./utils/fsp');
+const serverUtils     = require('./utils/server');
+const utilsModuleInit = require('./utils/moduleInit');
+const utilsThemes     = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -65,14 +65,21 @@ const init = async () => {
 
 const initDatabase = async () => {
     if (global.envFile.db) {
+        // DB Layer
+        await utilsModuleInit.moduleInitSteps(0, {server}); // [step 0] : Before everything
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
         utilsDB.getMongdbVersion();
         await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
-        await utilsModules.modulesLoadInit(server);
-        await utilsDB.initDBValues();
+
+        // Schema Layer
+        await utilsModuleInit.moduleInitSteps(1, {server}); // [step 1] : Module Init Pre Schemas
+        await utilsDB.initDBValues(); // Schema are loaded here so the schema events are emitted here
         await require('./services/shortcodes').initDBValues();
+
+        // DB Layer (thanks to the schema layer)
+        await utilsModuleInit.moduleInitSteps(2, {server}); // [step 2] : Module Init DB Values
     }
 };
 
@@ -163,24 +170,26 @@ const initFrontFramework = async (themeName = null) => {
 
 const initServer = async () => {
     if (global.envFile.db) {
+        // Config Layer
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-
         console.log(`%s@@ Admin : '/${global.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
+        await utilsModuleInit.moduleInitSteps(3, {server}); // [step 3] Module Init Post Env Config
 
-        // we check if we compile (default: true)
-        const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
-
+        // Routes Layer
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
-        await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport}); // [step 4] Module Init Post Routes
+
         if (dev) {
             const {hotReloadAPI} = require('./services/devFunctions');
             await hotReloadAPI(express, server, passport);
         }
 
+        // Theme Layer
+        const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
         if (compile) {
             const {currentTheme} = global.envConfig.environment;
             const themeFolder    = path.join(global.appRoot, 'themes', currentTheme, '/');
@@ -206,7 +215,9 @@ const initServer = async () => {
 
 const startServer = async () => {
     server.use(expressErrorHandler);
+    await utilsModuleInit.moduleInitSteps(5, {server}); // [step 5] Module Init Pre Start
     await serverUtils.startListening(server);
+    await utilsModuleInit.moduleInitSteps(6, {server}); // [step 6] Module Init Post Start
     serverUtils.showAquilaLogo();
 };
 
