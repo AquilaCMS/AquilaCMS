@@ -23,15 +23,21 @@ let loadedModules;
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
+        // here we run the function with error throwing (no try/catch)
+        if (global.moduleExtend[property].throwError) {
+            const fct = await global.moduleExtend[property].function(params);
+            return fct;
+        }
+        // else, we run the function AND we catch the error to run the native function instead
         try {
             const fct = await global.moduleExtend[property].function(params);
             return fct; // Be careful, we need to define 'fct' before return it ! (don't know why)
         } catch (err) {
-            if (err.throwError) throw err; // Let's (module) decide if we throw the error or not, and if we continue with the native function or not
-            console.error(`Overide function ${property} from module rise an error. Use native function instead.`, err);
+            console.error(`Overide function ${property} from module rise an error.`, err);
         }
     }
     if (functionToExecute && typeof functionToExecute === 'function') {
+        console.log(`Use native function instead for ${property}.`);
         return functionToExecute();
     }
 };
