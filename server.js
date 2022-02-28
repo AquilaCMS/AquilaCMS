@@ -66,7 +66,6 @@ const init = async () => {
 const initDatabase = async () => {
     if (global.envFile.db) {
         // DB Layer
-        await utilsModuleInit.moduleInitSteps(0, {server}); // [step 0] : Before everything
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
         utilsDB.getMongdbVersion();
