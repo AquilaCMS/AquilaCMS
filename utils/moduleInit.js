@@ -47,7 +47,8 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                     const filePath = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init/${loadedModules[i].info.init.steps[moduleStep]}`);
                     await runStepFile(loadedModules[i], filePath, params);
                 }
-            } else { // The old way with init.js and initAfter.js
+            } else {
+                // ------- The old way with init.js and initAfter.js
                 if (step === 1) { // init.js
                     const filePath = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
                     await runStepFile(loadedModules[i], filePath, params);
@@ -66,6 +67,7 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                         }
                     });
                 }
+                // ------- Delete the above code when all modules are up to date
             }
         }
     } else {
