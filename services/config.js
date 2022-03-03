@@ -194,7 +194,8 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, {$set: body});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    global.envConfig = cfg;
 };
 
 /**
