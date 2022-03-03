@@ -42,7 +42,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            await fsp.rename(pathIn, filePathOut);
+            if (pathIn !== filePathOut) await fsp.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
