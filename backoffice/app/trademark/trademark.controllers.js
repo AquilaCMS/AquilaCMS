@@ -98,7 +98,7 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     };
     
     $scope.getImage = function(trademark) {
-        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo}`;
+        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo.split('\\').pop().split('/').pop()}`;
     }
 
     $scope.goToProductDetails = function (productType, productCode) {
