@@ -321,7 +321,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         };
 
         $scope.getImage = function (img) {
-            const filename = img.split('/')[img.split('/').length -1]
+            const filename = img.split('\\').pop().split('/').pop();
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
 
