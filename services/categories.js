@@ -147,6 +147,14 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
 };
 
 const setCategory = async (postBody) => {
+    if (postBody.productsList) {
+        for (let i = postBody.productsList.length - 1; i >= 0; i--) {
+            if (postBody.productsList[i].id == null) {
+                postBody.productsList.splice(i, 1);
+            }
+        }
+    }
+
     const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
     // remove image properly
     if (oldCat.img && !postBody.img) {
