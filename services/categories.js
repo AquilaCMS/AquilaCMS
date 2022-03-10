@@ -263,7 +263,7 @@ const execRules = async () => ServiceRules.execRules('category');
 const execCanonical = async () => {
     try {
         // All active categories
-        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
@@ -275,10 +275,13 @@ const execCanonical = async () => {
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
             const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
+            // Don't do populate here, heap of memory on big categories
+            // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
+
             // For each product in this category
-            const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
-            for (let iProduct = 0; iProduct < cat_with_products.productsList.length; iProduct++) {
-                const product = cat_with_products.productsList[iProduct].id;
+            for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
+                const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
+                if (!product) continue;
 
                 // Construction of the slug
                 let bForceForOtherLang = false;
@@ -323,19 +326,22 @@ const execCanonical = async () => {
     }
 };
 
-const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang = '') => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
     const current_category       = await Categories.findOne({_id: categorie_id}).lean();
-    const defaultLang            = ServiceLanguages.getDefaultLang();
+
+    if (!defaultLang) {
+        defaultLang = ServiceLanguages.getDefaultLang();
+    }
 
     if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
         let ancestorsSlug = [];
         if (current_category.ancestors.length > 0) {
             if (current_category.ancestors.length > 1) {
-                console.log('To many ancestors. Please fix it');
+                console.log(`To many ancestors in ${current_category.code}`);
             }
-            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang, defaultLang);
         }
 
         for (let iLang = 0; iLang < tabLang.length; iLang++) {
