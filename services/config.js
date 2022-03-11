@@ -159,7 +159,10 @@ const saveEnvConfig = async (body) => {
         ) {
             body.needRestart = true;
         }
-        if (environment.defaultImage !== oldConfig.defaultImage) await ServiceCache.flush();
+        if (environment.defaultImage !== oldConfig.defaultImage) {
+            await ServiceCache.flush();
+            await ServiceCache.cleanCache();
+        }
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
@@ -194,7 +197,8 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, {$set: body});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    global.envConfig = cfg;
 };
 
 /**

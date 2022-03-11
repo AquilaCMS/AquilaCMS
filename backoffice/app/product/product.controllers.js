@@ -47,7 +47,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
-                const link = `/images/products/196x173/${image._id}/${image.url.split('/')[image.url.split('/').length - 1]}`;
+                const link = `/images/products/196x173/${image._id}/${image.url.split('\\').pop().split('/').pop()}`;
                 return link;
             } catch (e) {
                 return '';
