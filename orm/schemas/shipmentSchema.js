@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
-const utilsDatabase = require('../../utils/database');
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
+const utilsDatabase  = require('../../utils/database');
 
 const ShipmentSchema = new Schema({
     code        : {type: String, unique: true, sparse: true},

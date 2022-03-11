@@ -66,7 +66,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.getImage = function (category) {
             if(category && category.img) {
-                const nameImg = category.img.replace('medias/category/', '');
+                const nameImg = category.img.split('\\').pop().split('/').pop();
                 return window.location.origin + "/images/category/max-80/" + category._id + "/" + nameImg;
             }
             return ;

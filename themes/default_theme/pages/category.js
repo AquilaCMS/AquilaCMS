@@ -119,6 +119,7 @@ class PageCategory extends NSPageCategory {
                                                         <option value={JSON.stringify({ field: 'is_new', sortValue: '-1' })}>{t('category:new')}</option>
                                                         <option value={JSON.stringify({ field: 'reviews.average', sortValue: '-1' })}>{t('category:grade')}</option>
                                                         <option value={JSON.stringify({ field: 'stats.views', sortValue: '-1' })}>{t('category:mostViewed')}</option>
+                                                        <option value={JSON.stringify({ field: 'stats.sells', sortValue: '-1' })}>{t('category:sells')}</option>
                                                     </select>
                                                 </div>{/* <!-- /.select --> */}
                                             </div>{/* <!-- /.form__controls --> */}

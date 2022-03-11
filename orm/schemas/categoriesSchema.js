@@ -7,11 +7,11 @@
  */
 
 const mongoose         = require('mongoose');
+const {aquilaEvents}   = require('aql-utils');
 const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const aquilaEvents     = require('../../utils/aquilaEvents');
 const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({

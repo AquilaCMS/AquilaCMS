@@ -8,7 +8,7 @@
 
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
-const aquilaEvents         = require('../../utils/aquilaEvents');
+const {aquilaEvents}       = require('aql-utils');
 const VariantValueSchema   = require('./variantValueSchema');
 const Schema               = mongoose.Schema;
 const {ObjectId}           = Schema.Types;
@@ -27,7 +27,7 @@ const ProductSimpleSchema = new Schema({
     },
     variants : [{
         code        : {type: String},
-        type        : {type: String, enum: ['list', 'radio', 'images', 'list2']},
+        type        : {type: String, enum: ['list', 'radio', 'image', 'list2']},
         sort        : {type: Number},
         id          : {type: ObjectId, ref: 'attributes', index: true},
         translation : {
