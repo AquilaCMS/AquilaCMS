@@ -8,7 +8,6 @@
 
 const mongoose       = require('./database').connect;
 const logger         = require('./logger');
-const aquilaEvents   = require('./aquilaEvents');
 const encryption     = require('./encryption');
 const fsp            = require('./fsp');
 const modules        = require('./modules');
@@ -24,7 +23,6 @@ const NSErrors       = require('./errors/NSErrors');
 module.exports = {
     mongoose,
     logger,
-    aquilaEvents,
     encryption,
     fsp,
     modules,

@@ -452,7 +452,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
     let logValue = '';
     // Is categorization in progress?
     if (inSegment[owner_type] === undefined || inSegment[owner_type] === false) {
-        logValue = `${new Date()}) Début de la catégorisation(${owner_type}) automatique`;
+        logValue = `${new Date()}) Start automatic categorization(${owner_type})`;
         console.log('\x1b[1m\x1b[33m', logValue, '\x1b[0m');
         result.push(logValue);
         inSegment[owner_type]   = true;
@@ -487,7 +487,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             const _products = await Promise.all(productsPromise);
             if (_products.length <= 0) {
                 inSegment[owner_type] = false;
-                logValue              = `\x1b[1m\x1b[32m${new Date()}) Aucune catégorisation(${owner_type}) automatique à faire\x1b[0m`;
+                logValue              = `\x1b[1m\x1b[32m${new Date()}) No automatic categorization(${owner_type}) to do\x1b[0m`;
                 console.log(logValue);
                 result.push(logValue);
             }
@@ -535,7 +535,6 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                     // Segementation picto
                     } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;
-                        // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
                         if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {
                             picto = await Pictos.findOne({
                                 _id     : splittedRules[splittedRulesKeys[i]][j].owner_id,
@@ -552,7 +551,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             await Products.updateMany({_id: {$in: productsIds}, pictos: {$ne: pictoData}}, {$push: {pictos: pictoData}});
                         }
                     } else {
-                        logValue = `=== owner_type(${splittedRulesKeys[i]}) inconnu ===`;
+                        logValue = `=== owner_type(${splittedRulesKeys[i]}) unknown ===`;
                         console.warn(logValue);
                         result.push(logValue);
                     }
@@ -576,19 +575,19 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             }
 
             inSegment[owner_type] = false;
-            logValue              = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
+            logValue              = `${new Date()}) End of automatic categorization(${owner_type})`;
             console.log('\x1b[1m\x1b[32m', logValue, '\x1b[0m');
             result.push(logValue);
         } catch (err) {
             inSegment[owner_type] = false;
-            logValue              = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
+            logValue              = `${new Date()}) End of automatic categorization(${owner_type})`;
             console.log('\x1b[1m\x1b[31m', logValue, '\x1b[0m');
             result.push(logValue);
             console.error(err);
             result.push(err);
         }
     } else {
-        logValue = `${new Date()}) Catégorisation automatique(${owner_type}) déjà en cours`;
+        logValue = `${new Date()}) Automatic categorization(${owner_type}) already in progress`;
         console.log('\x1b[1m\x1b[33m', logValue, '\x1b[0m');
         result.push(logValue);
     }

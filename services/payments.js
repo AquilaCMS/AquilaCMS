@@ -7,9 +7,9 @@
  */
 
 const path                                            = require('path');
+const {aquilaEvents}                                  = require('aql-utils');
 const {Cart, Orders, PaymentMethods, Promo, Products} = require('../orm/models');
 const NSErrors                                        = require('../utils/errors/NSErrors');
-const aquilaEvents                                    = require('../utils/aquilaEvents');
 const QueryBuilder                                    = require('../utils/QueryBuilder');
 const ServiceOrders                                   = require('./orders');
 const ServiceMail                                     = require('./mail');
