@@ -275,7 +275,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 return null;
             }
         } catch (err) {
-            console.error(err.message);
+            console.warn('No image (or item) found. Default image used.');
         }
     }
 
