@@ -202,7 +202,7 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, user = null) => {
+const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
     const queryCondition = {
         // ancestors : {$size: 0},
         code
@@ -220,38 +220,33 @@ const getCategoryChild = async (code, childConds, user = null) => {
             {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
         ];
 
-        projectionOptions = {
-            canonical_weight : 0,
-            active           : 0,
-            createdAt        : 0,
-            openDate         : 0,
-            ancestors        : 0
-        };
+        projectionOptions = '_id clickable isDisplayed action children displayOrder code openDate closeDate translation';
     }
 
-    // TODO P5 Manage populate recursion (currently only 3 levels)
+    const populatPatern = {
+        path    : 'children',
+        match   : childConds,
+        options : {sort: {displayOrder: 'asc'}},
+        select  : projectionOptions
+    };
+
+    const populateObj = populatPatern;
+    for (let i = 1; i < levels; i++) { // Start at 1 because we already have the first level
+        const lastLevel = i === levels;
+        if (lastLevel) {
+            populateObj.populate = {
+                path   : 'children',
+                select : projectionOptions
+            };
+        } else {
+            populateObj.populate = {...populatPatern};
+        }
+    }
+
     // the populate in the pre does not work
     return Categories.findOne(queryCondition)
         .select({productsList: 0, ...projectionOptions})
-        .populate({
-            path     : 'children',
-            match    : childConds,
-            options  : {sort: {displayOrder: 'asc'}},
-            select   : projectionOptions,
-            populate : {
-                path     : 'children',
-                match    : childConds,
-                options  : {sort: {displayOrder: 'asc'}},
-                select   : projectionOptions,
-                populate : {
-                    path     : 'children',
-                    match    : childConds,
-                    options  : {sort: {displayOrder: 'asc'}},
-                    populate : {path: 'children'},
-                    select   : projectionOptions
-                }
-            }
-        })
+        .populate(populateObj)
         .lean();
 };
 
