@@ -208,8 +208,16 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
         code
     };
 
-    let projectionOptions = {};
-    if (user && !user.isAdmin) {
+    const projectionObj     = {
+        clickable    : 1,
+        action       : 1,
+        children     : 1,
+        displayOrder : 1,
+        code         : 1,
+        translation  : 1
+    };
+    const projectionOptions = '_id clickable action children displayOrder code translation';
+    if (!user || !user.isAdmin) {
         const date          = new Date();
         queryCondition.$and = [
             {openDate: {$lte: date}},
@@ -219,8 +227,6 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
             {openDate: {$lte: date}},
             {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
         ];
-
-        projectionOptions = '_id clickable isDisplayed action children displayOrder code openDate closeDate translation';
     }
 
     const populatPatern = {
@@ -230,23 +236,25 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
         select  : projectionOptions
     };
 
-    const populateObj = populatPatern;
-    for (let i = 1; i < levels; i++) { // Start at 1 because we already have the first level
-        const lastLevel = i === levels;
-        if (lastLevel) {
-            populateObj.populate = {
-                path   : 'children',
-                select : projectionOptions
-            };
-        } else {
-            populateObj.populate = {...populatPatern};
+    let finalObj = {
+        ...populatPatern,
+        populate : {
+            path   : 'children',
+            select : projectionOptions.replace('children', '')
+        }
+    };
+
+    for (let i = levels - 1; i >= 1; i--) { // Start at 1 because we already have the first level, and we already defined the last
+        const lastLevel = i === levels - 1;
+        if (!lastLevel) {
+            finalObj = {...populatPatern, populate: {...finalObj}};
         }
     }
 
     // the populate in the pre does not work
     return Categories.findOne(queryCondition)
-        .select({productsList: 0, ...projectionOptions})
-        .populate(populateObj)
+        .select(projectionObj)
+        .populate(finalObj)
         .lean();
 };
 
