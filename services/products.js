@@ -457,12 +457,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     let products = prds.slice(skip, limit + skip);
 
-    // TODO P5 (hot) the code below allows to return the structure that we send in the PostBody because currently it returns all the fields
-    // this code does not work because _doc does not exist in products and removeFromStructure needs it
-    // if (Object.keys(PostBody.structure).length > 0) {
-    //     queryBuilder.removeFromStructure(PostBody.structure, tProducts);
-    // }
-
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
@@ -497,6 +491,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         } else if (PostBody.sort['price.priceSort.ati']) {
             products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
+    }
+
+    // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
+    if (Object.keys(PostBody.structure).length > 0) {
+        queryBuilder.removeFromStructure(PostBody.structure, products);
     }
 
     return {
