@@ -229,6 +229,7 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
         ];
     }
 
+    // Construct query
     const populatPatern = {
         path    : 'children',
         match   : childConds,
@@ -236,7 +237,7 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
         select  : projectionOptions
     };
 
-    let finalObj = {
+    let queryPopulate = {
         ...populatPatern,
         populate : {
             path   : 'children',
@@ -244,17 +245,18 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
         }
     };
 
+    // Recurcive populate
     for (let i = levels - 1; i >= 1; i--) { // Start at 1 because we already have the first level, and we already defined the last
         const lastLevel = i === levels - 1;
         if (!lastLevel) {
-            finalObj = {...populatPatern, populate: {...finalObj}};
+            queryPopulate = {...populatPatern, populate: {...queryPopulate}};
         }
     }
 
     // the populate in the pre does not work
     return Categories.findOne(queryCondition)
         .select(projectionObj)
-        .populate(finalObj)
+        .populate(queryPopulate)
         .lean();
 };
 
