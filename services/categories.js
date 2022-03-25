@@ -202,46 +202,47 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
-    const queryCondition = {
-        // ancestors : {$size: 0},
-        code
-    };
-
+const getCategoryTreeForMenu = async (code, user = null, levels = 3) => {
     const projectionObj     = {
+        _id          : 1,
         clickable    : 1,
         action       : 1,
         children     : 1,
         displayOrder : 1,
         code         : 1,
-        translation  : 1
+        translation  : 1,
+        img          : 1,
+        colorName    : 1
     };
-    const projectionOptions = '_id clickable action children displayOrder code translation';
+    const projectionOptions = Object.keys(projectionObj).map((key) => `${key}`).join(' ');
+
+    let match = {};
     if (!user || !user.isAdmin) {
-        const date          = new Date();
-        queryCondition.$and = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-        childConds.$and     = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
+        const date = new Date();
+        match      = {
+            isDisplayed : true,
+            active      : true,
+            $and        : [
+                {$or: [{openDate: {$lte: date}}, {openDate: {$eq: undefined}}]},
+                {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
+            ]
+        };
     }
 
     // Construct query
     const populatPatern = {
         path    : 'children',
-        match   : childConds,
+        match,
         options : {sort: {displayOrder: 'asc'}},
         select  : projectionOptions
     };
 
-    let queryPopulate = {
+    let queryPopulate = { // Start with the last level
         ...populatPatern,
         populate : {
             path   : 'children',
-            select : projectionOptions.replace('children', '')
+            match,
+            select : projectionOptions.replace('children', '') // don't take children in the last level
         }
     };
 
@@ -254,7 +255,7 @@ const getCategoryChild = async (code, childConds, user = null, levels = 3) => {
     }
 
     // the populate in the pre does not work
-    return Categories.findOne(queryCondition)
+    return Categories.findOne({code})
         .select(projectionObj)
         .populate(queryPopulate)
         .lean();
@@ -450,7 +451,7 @@ module.exports = {
     getCategory,
     setCategory,
     createCategory,
-    getCategoryChild,
+    getCategoryTreeForMenu,
     execRules,
     execCanonical,
     applyTranslatedAttribs,
