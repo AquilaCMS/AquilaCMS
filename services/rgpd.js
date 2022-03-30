@@ -472,6 +472,44 @@ const dumpAnonymizedDatabase = async (res) => {
     }
 };
 
+// Verifie l'ancienneté de la fatcture
+const checkDateBills = async () =>  {
+    console.log('checkDateBills function start');
+    // 1.récupérer les factures de la BDD
+    // 2.parcours tableau des factures
+    for (let i = 0; i <= Bills.length; i++) {
+        const creationDate = Bills.createdAt;
+        console.log(`facture n ${i}`);
+        console.log(Date.now());
+
+        // if ( dateCreation < [dateActuelle - 10ans] )
+        if ( creationDate < 2 ) {
+            // lance la fonction anonymize pour la facture id [i]
+            anonymizeBillsById(Bills[i]._id);
+            console.log('anonymizeBillsById');
+        }
+    }
+    // console.log(tmp);
+    // console.log(creationDate);
+    // const actualDate      = new Date().toISOString().slice(0, 10);
+    // const tenYears        = 10;
+    // const resultSubstraction = actualDate - tenYears;
+    // }
+};
+
+const anonymizeBillsById = async (id) => Bills.updateMany({Bills: id}, {
+    $set : {
+        nom         : faker.name.lastName(),
+        prenom      : faker.name.firstName(),
+        societe     : faker.random.word(),
+        coordonnees : faker.phone.phoneNumber(),
+        email       : faker.internet.email()
+    }
+});
+
+// checkDateBills,
+// anonymizeBillsById DONT NEED TO BE EXPORT used only here
+
 module.exports = {
     getOrdersByUser,
     anonymizeOrdersByUser,
@@ -489,5 +527,6 @@ module.exports = {
     anonymizeDatabase,
     dropDatabase,
     deleteUserDatas,
-    anonymizeUserDatas
+    anonymizeUserDatas,
+    checkDateBills
 };
