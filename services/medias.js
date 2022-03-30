@@ -595,7 +595,7 @@ const uploadFiles = async (body, files) => {
     // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
-        await deleteFileAndCacheFile(result.img, 'category');
+        if (result.img) await deleteFileAndCacheFile(result.img, 'category');
         await Categories.updateOne({_id: body._id}, {$set: {img: target_path_full, extension: path.extname(target_path_full), alt: body.alt}});
         return {name: name + extension, path: target_path_full};
     }

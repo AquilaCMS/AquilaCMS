@@ -270,6 +270,7 @@ MediasControllers.controller("MediasDetailsCtrl",
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
     function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
+        if(!$scope.media.type) $scope.media.type = 'medias'
 
         $scope.generate = function (url) {
             $scope.link = url

@@ -2565,10 +2565,10 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 let filename = "";
                 if ($scope.info.name !== undefined) {
                     filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
-                        + "." + $scope.media.link.replace(`medias/`, "")
-                            .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
+                        + "." + $scope.media.link.replace(`${$scope.media.type}/`, "")
+                            .substr($scope.media.link.replace(`${$scope.media.type}/`, "").lastIndexOf('.') + 1);
                 } else {
-                    filename = $scope.media.link.replace(`medias/`, "");
+                    filename = $scope.media.link.replace(`${$scope.media.type}/`, "");
                 }
     
                 let background  = '';
@@ -2596,7 +2596,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    $scope.link = `${window.location.origin}/images/${$scope.media.type}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                     return $scope.link
                 }
             };
@@ -2613,7 +2613,6 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
     
             $scope.getMeta = function (url) {
                 const img = new Image();
-                $scope.info.name = $scope.media.name
                 img.src = url;
                 img.onload = function() { 
                     $scope.info.ratio = this.width / this.height;

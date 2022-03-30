@@ -745,6 +745,18 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
         ];
+        $scope.copyLink = function (event) {
+            event.stopPropagation();
+            $modal.open({
+                templateUrl: 'app/medias/views/modals/copy_link.html',
+                controller: 'MediasModalCtrl',
+                resolve: {
+                    media: function () {
+                        return {_id: $scope.category._id, link: $scope.category.img, type: 'category'};
+                    }
+                }
+            });
+        };
 
         $scope.getCategory()
 
