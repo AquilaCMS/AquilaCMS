@@ -2564,11 +2564,9 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 const quality = $scope.info.quality;
                 let filename = "";
                 if ($scope.info.name !== undefined) {
-                    filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
-                        + "." + $scope.media.link.replace(`${$scope.media.type}/`, "")
-                            .substr($scope.media.link.replace(`${$scope.media.type}/`, "").lastIndexOf('.') + 1);
+                    filename = $scope.info.name
                 } else {
-                    filename = $scope.media.link.replace(`${$scope.media.type}/`, "");
+                    filename = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
                 }
     
                 let background  = '';
@@ -2618,11 +2616,12 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                     $scope.info.ratio = this.width / this.height;
                     $scope.info.width = this.width;
                     $scope.info.height = this.height;
+                    $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
                     $scope.$apply()
                 }
             }
 
-            $scope.$watch('media', function(newValue, oldValue) {
+            $scope.$watch(function (scp) {return scp.media}, function(oldValue, newValue) {
                 if (newValue)
                     $scope.getMeta(newValue.link)
             }, true);

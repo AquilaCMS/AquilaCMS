@@ -27,7 +27,7 @@
     <div ng-repeat="image in product.images | orderBy: ['position']" class="col-sm-6 image-frame">
         <div class="row">
             <div class="col-sm-12">
-                <button type="button" class="btn btn-danger" ng-click="removeImage($index, product)" style="min-width: 10px; float: right;">
+                <button type="button" class="btn btn-danger" ng-click="removeImage(image.url)" style="min-width: 10px; float: right;">
                     <i class="fa fa-trash" style="display: block; visibility: visible;"/>
                 </button>
             </div>
