@@ -88,7 +88,7 @@ const initAgendaDB = async () => {
                                 en : 'Remove failed payments from old orders'
                             }, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'check RGPD') {
-                            await setJob(undefined, tJobsSystem[15], '10 * * * * *', '/services/rgpd/checkDateBills', {fr: 'Vérifications de la date des factures', en: 'date verification of bills'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[15], '* * * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true);
                         }
                     } catch (error) {
                         console.error(error);

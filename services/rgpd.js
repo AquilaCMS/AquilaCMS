@@ -472,43 +472,49 @@ const dumpAnonymizedDatabase = async (res) => {
     }
 };
 
-// Verifie l'ancienneté de la fatcture
-const checkDateBills = async () =>  {
-    console.log('checkDateBills function start');
-    // 1.récupérer les factures de la BDD
-    // 2.parcours tableau des factures
-    for (let i = 0; i <= Bills.length; i++) {
-        const creationDate = Bills.createdAt;
-        console.log(`facture n ${i}`);
-        console.log(Date.now());
-
-        // if ( dateCreation < [dateActuelle - 10ans] )
-        if ( creationDate < 2 ) {
-            // lance la fonction anonymize pour la facture id [i]
-            anonymizeBillsById(Bills[i]._id);
-            console.log('anonymizeBillsById');
-        }
-    }
-    // console.log(tmp);
-    // console.log(creationDate);
-    // const actualDate      = new Date().toISOString().slice(0, 10);
-    // const tenYears        = 10;
-    // const resultSubstraction = actualDate - tenYears;
-    // }
-};
-
-const anonymizeBillsById = async (id) => Bills.updateMany({Bills: id}, {
+const anonymizeBillsById = async (id) => Bills.updateOne({_id: id}, {
     $set : {
+        client      : new ObjectID(),
         nom         : faker.name.lastName(),
         prenom      : faker.name.firstName(),
         societe     : faker.random.word(),
         coordonnees : faker.phone.phoneNumber(),
-        email       : faker.internet.email()
+        email       : faker.internet.email(),
+        address     : {
+            firstname      : faker.name.firstName(),
+            lastname       : faker.name.lastName(),
+            phone_mobile   : faker.phone.phoneNumber(),
+            line1          : faker.address.streetAddress(),
+            zipcode        : faker.address.zipCode(),
+            city           : faker.address.city(),
+            isoCountryCode : faker.address.countryCode()
+        }
     }
 });
 
-// checkDateBills,
-// anonymizeBillsById DONT NEED TO BE EXPORT used only here
+// Check the age of the bills for RGPD restrictions
+const checkDateBills = async () =>  {
+    console.log('checkDateBills function start');
+    // 1.get all the bills from the database
+    const bills = await Bills.find({});
+    // 2.browse the array of bills
+    for (let i = 0; i < bills.length; i++) {
+        console.log(`facture n ${i}`);
+        // 3.get the date of the bill
+        const creationDate = bills[i].createdAt;
+        console.log(`créé le  ${creationDate}`);
+        // 4.calculate the difference between the current date and the date of the bill
+        const diff = Math.abs(new Date() - creationDate);
+        // 5.convert the difference in months
+        const diffMonths = Math.floor((diff / (1000 * 60 * 60 * 24 * 30)));
+        // 6.if the difference is superior to 120 months, the bill is deleted
+        if (diffMonths > 120) {
+            anonymizeBillsById(bills[i]._id);
+            console.log(`Bill ${bills[i]._id} anonymized`);
+        }
+    }
+    console.log('checkDateBills function end');
+};
 
 module.exports = {
     getOrdersByUser,
@@ -528,5 +534,6 @@ module.exports = {
     dropDatabase,
     deleteUserDatas,
     anonymizeUserDatas,
-    checkDateBills
+    checkDateBills,
+    anonymizeBillsById
 };
