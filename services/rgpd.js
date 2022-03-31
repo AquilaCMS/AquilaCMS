@@ -505,8 +505,9 @@ const checkDateBills = async () =>  {
         // 4.calculate the difference between the current date and the date of the bill
         const diff = now.diff(creationDate, 'months');
         // 5.if the difference is superior to 120 months, the bill is deleted
-        if (diff > 120) {
+        if (diff > 120 && bills[i].anonymized === false) {
             anonymizeBillsById(bills[i]._id);
+            await Bills.updateOne({_id: bills[i]._id}, {$set: {anonymized: true}});
         }
     }
 };
@@ -523,8 +524,9 @@ const checkLastConnexion = async () => {
         // 4.calculate the difference between the current date and the date of the last connexion
         const diff = now.diff(lastConnexion, 'months');
         // 5.if the difference is superior to 36 months, the user is anonymized
-        if (diff > 36) {
+        if (diff > 36 && users[i].anonymized === false) {
             anonymizeUser(users[i]._id);
+            await Users.updateOne({_id: users[i]._id}, {$set: {anonymized: true}});
         }
     }
 };
