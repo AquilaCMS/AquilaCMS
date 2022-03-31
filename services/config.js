@@ -71,13 +71,14 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
 };
 
 const updateEnvFile = async () => {
-    const aquila_env = serverUtils.getEnv('AQUILA_ENV');
-    let oldEnvFile   = await fs.readFile(global.envPath);
-    oldEnvFile       = JSON.parse(oldEnvFile);
+    const aquila_env      = serverUtils.getEnv('AQUILA_ENV');
+    const absoluteEnvPath = path.join(global.appRoot, global.envPath);
+    let oldEnvFile        = await fs.readFile(absoluteEnvPath);
+    oldEnvFile            = JSON.parse(oldEnvFile);
     if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
         oldEnvFile[aquila_env] = global.envFile;
         global.envFile         = oldEnvFile[aquila_env];
-        await fs.writeFile(global.envPath, JSON.stringify(oldEnvFile, null, 4));
+        await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
     }
 };
 
@@ -159,7 +160,10 @@ const saveEnvConfig = async (body) => {
         ) {
             body.needRestart = true;
         }
-        if (environment.defaultImage !== oldConfig.defaultImage) await ServiceCache.flush();
+        if (environment.defaultImage !== oldConfig.defaultImage) {
+            await ServiceCache.flush();
+            await ServiceCache.cleanCache();
+        }
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
@@ -194,7 +198,8 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, {$set: body});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    global.envConfig = cfg;
 };
 
 /**

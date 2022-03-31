@@ -193,7 +193,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         };
 
         $scope.getImage = function(item) {
-            const fileName = item.src.split('/')[item.src.split('/').length -1];
+            const fileName = item.src.split('\\').pop().split('/').pop();
             return `/images/slider/200x200/${item._id}/${fileName}`;
         }
     }

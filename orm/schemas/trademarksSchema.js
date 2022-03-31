@@ -27,7 +27,7 @@ TrademarksSchema.statics.checkCode = async function (that) {
 };
 
 TrademarksSchema.pre('save', async function (next) {
-    this.code = slugify(this.name);
+    if (!this.code) this.code = slugify(this.name);
     await utilsDatabase.preUpdates(this, next, TrademarksSchema);
 });
 

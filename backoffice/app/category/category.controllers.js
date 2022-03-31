@@ -66,7 +66,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.getImage = function (category) {
             if(category && category.img) {
-                const nameImg = category.img.replace('medias/category/', '');
+                const nameImg = category.img.split('\\').pop().split('/').pop();
                 return window.location.origin + "/images/category/max-80/" + category._id + "/" + nameImg;
             }
             return ;
@@ -745,6 +745,18 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
         ];
+        $scope.copyLink = function (event) {
+            event.stopPropagation();
+            $modal.open({
+                templateUrl: 'app/medias/views/modals/copy_link.html',
+                controller: 'MediasModalCtrl',
+                resolve: {
+                    media: function () {
+                        return {_id: $scope.category._id, link: $scope.category.img, type: 'category'};
+                    }
+                }
+            });
+        };
 
         $scope.getCategory()
 

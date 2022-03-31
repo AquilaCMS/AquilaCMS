@@ -14,6 +14,7 @@ const QueryBuilder                                    = require('../utils/QueryB
 const ServiceOrders                                   = require('./orders');
 const ServiceMail                                     = require('./mail');
 const ServicesProducts                                = require('./products');
+const modulesUtils                                    = require('../utils/modules');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
@@ -287,6 +288,7 @@ const updatePayment = async (body) => {
 };
 
 async function orderPayment(req) {
+    await modulesUtils.modulesLoadFunctions('orderPayment', {orderNumber: req.params.orderNumber}, async () => {});
     try {
         const query  = {...req.body.filterPayment};
         query.active = true;

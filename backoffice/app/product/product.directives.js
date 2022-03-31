@@ -503,9 +503,10 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     }
                 };
 
-                $scope.removeImage = function (index) {
+                $scope.removeImage = function (imgUrl) {
+                    const index = $scope.product.images.findIndex(img => img.url === imgUrl)
                     let defaultImage = $scope.product.images[index].default;
-                    $scope.product.images.sort((a, b) => a.position - b.position).splice(index, 1);
+                    $scope.product.images.splice(index, 1);
                     if ($scope.product.images.length > 0 && defaultImage) {
                         $scope.product.images[0].default = true;
                     }

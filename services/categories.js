@@ -147,6 +147,14 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
 };
 
 const setCategory = async (postBody) => {
+    if (postBody.productsList) {
+        for (let i = postBody.productsList.length - 1; i >= 0; i--) {
+            if (postBody.productsList[i].id == null) {
+                postBody.productsList.splice(i, 1);
+            }
+        }
+    }
+
     const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
     // remove image properly
     if (oldCat.img && !postBody.img) {
@@ -194,56 +202,62 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, user = null) => {
-    const queryCondition = {
-        // ancestors : {$size: 0},
-        code
+const getCategoryTreeForMenu = async (code, user = null, levels = 3) => {
+    const projectionObj     = {
+        _id          : 1,
+        clickable    : 1,
+        action       : 1,
+        children     : 1,
+        displayOrder : 1,
+        code         : 1,
+        translation  : 1,
+        img          : 1,
+        colorName    : 1
     };
+    const projectionOptions = Object.keys(projectionObj).map((key) => `${key}`).join(' ');
 
-    let projectionOptions = {};
-    if (user && !user.isAdmin) {
-        const date          = new Date();
-        queryCondition.$and = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-        childConds.$and     = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-
-        projectionOptions = {
-            canonical_weight : 0,
-            active           : 0,
-            createdAt        : 0,
-            openDate         : 0,
-            ancestors        : 0
+    let match = {};
+    if (!user || !user.isAdmin) {
+        const date = new Date();
+        match      = {
+            isDisplayed : true,
+            active      : true,
+            $and        : [
+                {$or: [{openDate: {$lte: date}}, {openDate: {$eq: undefined}}]},
+                {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
+            ]
         };
     }
 
-    // TODO P5 Manage populate recursion (currently only 3 levels)
+    // Construct query
+    const populatPatern = {
+        path    : 'children',
+        match,
+        options : {sort: {displayOrder: 'asc'}},
+        select  : projectionOptions
+    };
+
+    let queryPopulate = { // Start with the last level
+        ...populatPatern,
+        populate : {
+            path   : 'children',
+            match,
+            select : projectionOptions.replace('children', '') // don't take children in the last level
+        }
+    };
+
+    // Recurcive populate
+    for (let i = levels - 1; i >= 1; i--) { // Start at 1 because we already have the first level, and we already defined the last
+        const lastLevel = i === levels - 1;
+        if (!lastLevel) {
+            queryPopulate = {...populatPatern, populate: {...queryPopulate}};
+        }
+    }
+
     // the populate in the pre does not work
-    return Categories.findOne(queryCondition)
-        .select({productsList: 0, ...projectionOptions})
-        .populate({
-            path     : 'children',
-            match    : childConds,
-            options  : {sort: {displayOrder: 'asc'}},
-            select   : projectionOptions,
-            populate : {
-                path     : 'children',
-                match    : childConds,
-                options  : {sort: {displayOrder: 'asc'}},
-                select   : projectionOptions,
-                populate : {
-                    path     : 'children',
-                    match    : childConds,
-                    options  : {sort: {displayOrder: 'asc'}},
-                    populate : {path: 'children'},
-                    select   : projectionOptions
-                }
-            }
-        })
+    return Categories.findOne({code})
+        .select(projectionObj)
+        .populate(queryPopulate)
         .lean();
 };
 
@@ -255,7 +269,7 @@ const execRules = async () => ServiceRules.execRules('category');
 const execCanonical = async () => {
     try {
         // All active categories
-        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
@@ -267,10 +281,13 @@ const execCanonical = async () => {
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
             const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
+            // Don't do populate here, heap of memory on big categories
+            // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
+
             // For each product in this category
-            const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
-            for (let iProduct = 0; iProduct < cat_with_products.productsList.length; iProduct++) {
-                const product = cat_with_products.productsList[iProduct].id;
+            for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
+                const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
+                if (!product) continue;
 
                 // Construction of the slug
                 let bForceForOtherLang = false;
@@ -315,19 +332,22 @@ const execCanonical = async () => {
     }
 };
 
-const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang = '') => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
     const current_category       = await Categories.findOne({_id: categorie_id}).lean();
-    const defaultLang            = ServiceLanguages.getDefaultLang();
+
+    if (!defaultLang) {
+        defaultLang = ServiceLanguages.getDefaultLang();
+    }
 
     if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
         let ancestorsSlug = [];
         if (current_category.ancestors.length > 0) {
             if (current_category.ancestors.length > 1) {
-                console.log('To many ancestors. Please fix it');
+                console.log(`To many ancestors in ${current_category.code}`);
             }
-            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang, defaultLang);
         }
 
         for (let iLang = 0; iLang < tabLang.length; iLang++) {
@@ -431,7 +451,7 @@ module.exports = {
     getCategory,
     setCategory,
     createCategory,
-    getCategoryChild,
+    getCategoryTreeForMenu,
     execRules,
     execCanonical,
     applyTranslatedAttribs,
