@@ -16,6 +16,7 @@ const bcrypt         = require('bcrypt');
 const rimraf         = require('rimraf');
 const path           = require('path');
 const faker          = require('faker');
+const moment         = require('moment');
 const {aquilaEvents} = require('aql-utils');
 const fs             = require('../utils/fsp');
 const {execCmd}      = require('../utils/packageManager');
@@ -494,26 +495,38 @@ const anonymizeBillsById = async (id) => Bills.updateOne({_id: id}, {
 
 // Check the age of the bills for RGPD restrictions
 const checkDateBills = async () =>  {
-    console.log('checkDateBills function start');
     // 1.get all the bills from the database
     const bills = await Bills.find({});
     // 2.browse the array of bills
     for (let i = 0; i < bills.length; i++) {
-        console.log(`facture n ${i}`);
         // 3.get the date of the bill
-        const creationDate = bills[i].createdAt;
-        console.log(`créé le  ${creationDate}`);
+        const creationDate = moment(bills[i].createdAt);
+        const now          = moment();
         // 4.calculate the difference between the current date and the date of the bill
-        const diff = Math.abs(new Date() - creationDate);
-        // 5.convert the difference in months
-        const diffMonths = Math.floor((diff / (1000 * 60 * 60 * 24 * 30)));
-        // 6.if the difference is superior to 120 months, the bill is deleted
-        if (diffMonths > 120) {
+        const diff = now.diff(creationDate, 'months');
+        // 5.if the difference is superior to 120 months, the bill is deleted
+        if (diff > 120) {
             anonymizeBillsById(bills[i]._id);
-            console.log(`Bill ${bills[i]._id} anonymized`);
         }
     }
-    console.log('checkDateBills function end');
+};
+
+// Check the last connexion of the user for RGPD restrictions
+const checkLastConnexion = async () => {
+    // 1.get all the users from the database
+    const users = await Users.find({});
+    // 2.browse the array of users
+    for (let i = 0; i < users.length; i++) {
+        // 3.get the last connexion of the user
+        const lastConnexion = moment(users[i].lastConnexion);
+        const now           = moment();
+        // 4.calculate the difference between the current date and the date of the last connexion
+        const diff = now.diff(lastConnexion, 'months');
+        // 5.if the difference is superior to 36 months, the user is anonymized
+        if (diff > 36) {
+            anonymizeUser(users[i]._id);
+        }
+    }
 };
 
 module.exports = {
@@ -535,5 +548,6 @@ module.exports = {
     deleteUserDatas,
     anonymizeUserDatas,
     checkDateBills,
-    anonymizeBillsById
+    anonymizeBillsById,
+    checkLastConnexion
 };
