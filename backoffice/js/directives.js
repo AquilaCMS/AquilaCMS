@@ -515,7 +515,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.lang = lang;
                                 $scope.selected = {};
 
-                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
                                     $scope.pages = {};
                                     $scope.pages = staticsList.datas;
                                     if ($scope.pages[0]) {
@@ -525,7 +525,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         $scope.group = staticsList.datas.getAndSortGroups()[0];
                                     }
                                 });
-                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 0 } }, function (response) {
                                     $scope.categories = {};
                                     $scope.categories = response.datas;
                                     if ($scope.categories[0]) {
@@ -2199,7 +2199,7 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*', populate: {
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 0, structure: '*', populate: {
                                 path : 'parent',
                                 populate : {
                                     path : 'parent'
