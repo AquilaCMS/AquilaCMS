@@ -84,27 +84,27 @@ const getProducts = async (PostBody, reqRes, lang) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds              = await Products.find(PostBody.filter).lean();
-    const arrayPrice        = {et: [], ati: []};
-    const arraySpecialPrice = {et: [], ati: []};
-    for (const prd of prds) {
-        arrayPrice.et.push(prd.price.et.normal);
-        arrayPrice.ati.push(prd.price.ati.normal);
-    }
-    if (arrayPrice.et.length === 0) {
-        arrayPrice.et.push(0);
-    }
-    if (arrayPrice.ati.length === 0) {
-        arrayPrice.ati.push(0);
-    }
-    result.min = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    result.max = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
 
+    // Get the maximum and minimum price in the Produc's query
+    const normalET  = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.et.normal'}, max: {$max: '$price.et.normal'}}}
+    ]);
+    const normalATI = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
+    ]);
+    if (normalET.length > 0 & normalATI.length > 0) {
+        result.min = {et: normalET[0].min, ati: normalATI[0].min};
+        result.max = {et: normalET[0].max, ati: normalATI[0].max};
+    }
+
+    // Specials prices
+    const arraySpecialPrice = {et: [], ati: []};
     for (const prd of result.datas) {
         if (prd.price.et.special) {
             arraySpecialPrice.et.push(prd.price.et.special);
@@ -113,6 +113,20 @@ const getProducts = async (PostBody, reqRes, lang) => {
             arraySpecialPrice.ati.push(prd.price.ati.special);
         }
     }
+
+    // Need result.datas to get the specials prices (not from DB query)
+    // const specialNormalET  = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.et.special'}, max: {$max: '$price.et.special'}}}
+    // ]);
+    // const specialNormalATI = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.ati.special'}, max: {$max: '$price.ati.special'}}}
+    // ]);
+    // if (specialNormalET.length > 0 & specialNormalATI.length > 0) {
+    //     result.specialPriceMin = {et: specialNormalET[0].min, ati: specialNormalATI[0].min};
+    //     result.specialPriceMax = {et: specialNormalET[0].max, ati: specialNormalATI[0].max};
+    // }
 
     result.specialPriceMin = {
         et  : Math.min(...arraySpecialPrice.et),
@@ -986,6 +1000,7 @@ const downloadProduct = async (req, res) => {
 };
 
 const getProductsListing = async (req, res) => {
+    const structure = req.body.PostBody.structure;
     // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
@@ -1027,6 +1042,11 @@ const getProductsListing = async (req, res) => {
             });
         }
     }
+
+    if (Object.keys(structure).length > 0) {
+        queryBuilder.removeFromStructure(structure, result.datas);
+    }
+
     return result;
 };
 
