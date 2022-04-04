@@ -1575,13 +1575,13 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     // on recup les univers
                     $scope.attributesClassed = [];
-                    SuppliersV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    SuppliersV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values.supplier_ref = response.datas;
                     })
-                    TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    TrademarksV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
                     })
-                    PictoApi.list({PostBody: {filter: {}, limit: 99}}, function (response) {
+                    PictoApi.list({PostBody: {filter: {}, limit: 0}}, function (response) {
                         $scope.attributesClassed.push(
                         {
                             value: "pictos.code",
@@ -1594,7 +1594,7 @@ adminCatagenDirectives.directive("nsRule", [
                         })
 
                     })
-                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 0}}, function (response)
                     {
                         response.datas.map(function (element)
                         {
@@ -1808,7 +1808,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             )
                         }
-                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 0}}, function (response)
                         {
                             response.datas.map(function (element) {
                                 var type = (function (type)
