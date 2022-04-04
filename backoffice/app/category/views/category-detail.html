@@ -161,10 +161,15 @@
                         <tr>
                             <td translate>category.detail.headerImg</td>
                             <td style="text-align: center;">
-                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin-bottom: 10px;" />
-                                <button ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
-                                    category.detail.delete
-                                </button>
+                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin: 10px  auto;display: block;" />
+                                <div style="padding: 0 20px;display: flex; flex-wrap: wrap;justify-content: space-between; font-size: 0">
+                                    <button type="button" style="width: 49%;" ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
+                                        category.detail.delete
+                                    </button>
+                                    <button type="button" style="width: 49%;margin: 0" ng-show="category.img" class="btn btn-default btn-block" ng-click="copyLink($event)" translate>
+                                        medias.medias.cpLien
+                                    </button>
+                                </div>
 
                                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close"></ns-upload-files>
