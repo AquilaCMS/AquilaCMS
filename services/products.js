@@ -263,6 +263,8 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  * @param reqRes
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false) => {
+    const start = Date.now();
+    console.log('getProductsByCategoryId');
     moment.locale(global.defaultLang);
     lang = servicesLanguages.getDefaultLang(lang);
     // If admin then we populate all documents without visibility or asset restriction
@@ -517,6 +519,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false)
     const priceMax        = {et: 0, ati: 0};
     const specialPriceMin = {et: 0, ati: 0};
     const specialPriceMax = {et: 0, ati: 0};
+
+    const millis = Date.now() - start;
+    console.log(Math.floor(millis / 1000));
 
     return {
         count : prds.length,
