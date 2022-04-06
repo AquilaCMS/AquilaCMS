@@ -2259,7 +2259,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 showalt: '@',
                 accepttype: '@',
                 beforeFunction: '&',
-                afterFunction: '=',
+                afterFunction: '&',
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
