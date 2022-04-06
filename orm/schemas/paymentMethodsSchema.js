@@ -22,12 +22,8 @@ const PaymentMethodsSchema = new Schema({
     sort                     : {type: Number, default: 0},
     translation              : {},
     component_template_front : {type: String, default: null},
-    moduleFolderName         : {type: String, default: null}
-
-    /* name        : {type: String}, // obselete
-    urlLogo     : {type: String}, // obselete
-    description : String, // obselete
-    instruction : {type: String, default: ""} // obselete */
+    moduleFolderName         : {type: String, default: null},
+    paymentServiceName       : {type: String, default: null}
 }, {
     id : false
 });
