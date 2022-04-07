@@ -170,7 +170,9 @@
         "displayImage": "Afficher en image",
         "displayRadio": "Radio boutons",
         "displayList": "Listes des valeurs",
-        "displayList2": "Liste des déclinaisons"
+        "displayList2": "Liste des déclinaisons",
+        "activateAllVariants": "Activer toutes les déclinaisons",
+        "disableAllVariants": "Désactiver toutes les déclinaisons"
     },
     "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories"
 }
