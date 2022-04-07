@@ -8,6 +8,7 @@
 
 const mongoose       = require('mongoose');
 const {aquilaEvents} = require('aql-utils');
+const path           = require('path');
 const fs             = require('../../utils/fsp');
 const NSErrors       = require('../../utils/errors/NSErrors');
 const utils          = require('../../utils/utils');
@@ -191,32 +192,23 @@ ProductsSchema.methods.updateData = async function (data) {
         ati : data.price.ati.special || data.price.ati.normal
     };
 
-    // TODO : delete at least two weeks after the merge
-    // if (data.attributes) {
-    //     for (const attribute of data.attributes) {
-    //         for (const lang of Object.keys(attribute.translation)) {
-    //             const translationValues     = attribute.translation[lang];
-    //             attribute.translation[lang] = {
-    //                 value : translationValues.value,
-    //                 name  : translationValues.name
-    //             };
-    //         }
-    //     }
-    // }
-
     // Slugify images name
     if (data.images) {
         for (const image of data.images) {
             image.title = helper.slugify(image.title);
         }
+        for (const prdImage of this.images) {
+            if (!data.images.find((img) => img._id.toString() === prdImage._id.toString()) && prdImage.url) {
+                // on delete les images cache generées depuis cette image
+                await require('../../services/cache').deleteCacheImage('products', this);
+                // puis on delete l'image original
+                const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
+                await fs.unlinkSync(joindPath);
+            }
+        }
     }
 
     reviewService.computeAverageRateAndCountReviews(data);
-
-    // TODO : delete at least two weeks after the merge
-    // if (!data._id) {
-    //     data._id = this._id;
-    // }
 
     const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
     return updPrd;
@@ -341,28 +333,6 @@ ProductsSchema.statics.checkSlugExist = async function (that) {
 };
 
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
-    // suppression des images en cache si la principale est supprimée
-    if (this.getUpdate().$set && this.getUpdate().$set._id) {
-        const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        if (oldPrd) {
-            for (let i = 0; i < oldPrd.images.length; i++) {
-                if (oldPrd.images[i]._id && this.getUpdate().$set.images) {
-                    if (this.getUpdate().$set.images.findIndex((img) => `${oldPrd.images[i]._id}` === `${img._id}`) === -1) {
-                        try {
-                            await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
-                        } catch (error) {
-                            console.log(error);
-                        }
-                        try {
-                            require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
-                        } catch (error) {
-                            console.log(error);
-                        }
-                    }
-                }
-            }
-        }
-    }
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
