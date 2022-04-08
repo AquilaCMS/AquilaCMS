@@ -470,6 +470,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
     }
 
+    const millis2 = Date.now() - start;
+    console.log(Math.floor(millis2));
+
     // Get only the image having for default = true if no image found we take the first image of the product
     // for (let i = 0; i < result.datas.length; i++) {
     //     if (result.datas[i].images) {
