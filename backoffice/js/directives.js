@@ -872,6 +872,10 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         link: function (scope, element, attrs)
         {
             var el;
+            scope.selectColor = function (colorString) {
+                scope.att.translation[scope.lang].value = colorString
+            }
+
             scope.$watch('att.type', function(newValue, oldValue, elScope) {
                 el = angular.element("<span/>");
                 scope.optionColor = {
@@ -953,6 +957,15 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                                 "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
                             "</div>"
                         );
+                        break;
+                    case "listcolor":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <ul style='list-style: none;padding: 5px;'>" +
+                            "    <li style='width: 90px; display: inline-block; margin-right: 10px;padding: 2px; border-radius: 5px;{{value === att.translation[lang].value ? \"border: 2px solid #576fa1;\": \"\"}}' ng-click='selectColor(value)' ng-repeat='value in att.translation[lang].values'>"+
+                            "       <p style='box-sizing: border-box; text-align: center; cursor: pointer; border-radius: 5px; padding: 5px; background-color: {{value}};'>{{value}}</p>"+
+                            "    </li>" +
+                            "    </ul>" +
+                            "</div>");
                         break;
                 }
                 $compile(el)(scope);
