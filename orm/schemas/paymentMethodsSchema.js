@@ -23,7 +23,7 @@ const PaymentMethodsSchema = new Schema({
     translation              : {},
     component_template_front : {type: String, default: null},
     moduleFolderName         : {type: String, default: null},
-    paymentServiceName       : {type: String, default: null}
+    paymentServiceFileName   : {type: String, default: null}
 }, {
     id : false
 });
