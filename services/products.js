@@ -312,10 +312,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         PostBody.structure.stock = 1;
     }
 
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
-
     // We check that the PostBody information is correct
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
+
+    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
     // Get products from productList
     // const result = await queryBuilder.find(PostBody, true);
@@ -473,17 +473,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const millis2 = Date.now() - start;
     console.log(Math.floor(millis2));
 
-    // Get only the image having for default = true if no image found we take the first image of the product
-    // for (let i = 0; i < result.datas.length; i++) {
-    //     if (result.datas[i].images) {
-    //         if (!result.datas[i].images.length) continue;
-    //         const image = utilsMedias.getProductImageUrl(result.datas[i]);
-    //         if (!image) result.datas[i].images = [result.datas[i].images[0]];
-    //         else result.datas[i].images = [image];
-    //     }
-    // }
-
-    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
+    if (PostBody.sort?.sortWeight || !PostBody.sort) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
             // add sortWeight to result.datas[i] (modification of an object by reference)
@@ -500,16 +490,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     let products = prds.slice(skip, limit + skip);
 
-    if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas  = products;
-        reqRes.req.body.PostBody = PostBody;
-        const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        products                 = productsDiscount.datas;
-        // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
-        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
-    }
-
     if (PostBody.structure.price !== 0) {
+        if (reqRes !== undefined && PostBody.withPromos !== false) {
+            reqRes.res.locals.datas  = products;
+            reqRes.req.body.PostBody = PostBody;
+            const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+            products                 = productsDiscount.datas;
+            // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+            // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
+        }
         if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
             products = products.filter((prd) =>  {
                 const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
