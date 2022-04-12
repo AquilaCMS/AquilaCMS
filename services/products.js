@@ -42,12 +42,13 @@ if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
-const getProductsByOrderedSearch = async (pattern, resultsLimit = 16, lang = global.defaultLang) => {
-    const selectedFields                = `translation.${lang}.name translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
+const getProductsByOrderedSearch = async (pattern, lang = global.defaultLang) => {
+    const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find({}).select(selectedFields).lean();
 
     const selectedFieldsArray = [
         {name: `translation.${lang}.name`, weight: 100},
+        {name: 'code', weight: 5},
         {name: `translation.${lang}.description1.title`, weight: 3},
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
@@ -62,7 +63,7 @@ const getProductsByOrderedSearch = async (pattern, resultsLimit = 16, lang = glo
     };
 
     const fuse = new Fuse(allProductsWithSearchCriteria, options);
-    return fuse.search(pattern, {limit: resultsLimit});
+    return fuse.search(pattern);
 };
 
 /**
@@ -87,17 +88,18 @@ const getProducts = async (PostBody, reqRes, lang) => {
         queryBuilder.defaultFields = ['*'];
     }
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
-        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, PostBody.limit, lang);
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
-        PostBody.filter._id = {$in: searchedProducts.map((res) => res.item._id.toString())};
+        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, lang);
+        PostBody.filter._id    = {$in: searchedProducts.map((res) => res.item._id.toString())};
         delete PostBody.filter.$text;
     }
 
     let result = await queryBuilder.find(PostBody);
 
     if (PostBody.filter._id) {
+        // We order the products according to the order given by the fuzzy search just before
         result.datas.sort((a, b) => {
             const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
             const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
