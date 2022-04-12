@@ -8,11 +8,12 @@
 
 const servicesAttributes = require('../services/attribute');
 const {adminAuthRight}   = require('../middleware/authentication');
+const {autoFillCode}     = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/attributes', getAllAttributes);
     app.post('/v2/attribute', getAttribute);
-    app.put('/v2/attribute', adminAuthRight('attributes'), saveAttribute);
+    app.put('/v2/attribute', adminAuthRight('attributes'), autoFillCode,  saveAttribute);
     app.delete('/v2/attribute/:_id', adminAuthRight('attributes'), deleteAttribute);
 };
 

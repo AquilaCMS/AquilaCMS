@@ -8,12 +8,13 @@
 
 const ServiceSuppliers = require('../services/suppliers');
 const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
     app.post('/v2/suppliers', adminAuthRight('suppliers'), listSuppliers);
     app.post('/v2/supplier', adminAuthRight('suppliers'), getSupplier);
-    app.put('/v2/supplier', adminAuthRight('suppliers'), saveSupplier);
+    app.put('/v2/supplier', adminAuthRight('suppliers'), autoFillCode, saveSupplier);
     app.delete('/v2/supplier/:id', adminAuthRight('suppliers'), deleteSupplier);
 };
 /* eslint-enable no-use-before-define */
