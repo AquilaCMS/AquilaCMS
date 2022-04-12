@@ -178,6 +178,10 @@ const initModule = async (files) => {
         }
 
         console.log('Module installed');
+        if (myModule && myModule.active) {
+            console.log(`Updating active module ${myModule.name}`);
+            await activateModule(myModule._id, {});
+        }
         return newModule;
     } catch (err) {
         try {
