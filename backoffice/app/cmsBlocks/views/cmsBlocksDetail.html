@@ -17,7 +17,7 @@
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.code</label>
                     <div class="col-sm-10">
-                        <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" ng-disabled="cmsBlock.code === 'invoice'" />
+                        <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" ng-disabled="cmsBlock.code === 'invoice'" required />
                         <div ng-messages="form.id.$error" role="alert">
                             <div ng-message="required" ng-show="form.id.$dirty" translate>cmsBlocks.detail.champRequis</div>
                         </div>

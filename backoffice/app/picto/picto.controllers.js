@@ -189,7 +189,7 @@ PictoControllers.controller('PictoNewCtrl', [
         };
 
         $scope.save = function (back) {
-            if ($scope.picto === undefined || $scope.picto.code === "" || $scope.picto.title === "") {
+            if ($scope.picto === undefined || $scope.picto.title === "") {
                 toastService.toast("danger", $translate.instant("picto.details.formPictoIncomplete"));
                 return;
             }
