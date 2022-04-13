@@ -68,6 +68,7 @@
                                 <!-- <ns-datepicker name="lastConnexion" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.lastConnexion" ng-change="sortSearch(null, 1)">
                                 </ns-datepicker> -->
                             </th>
+                            <th ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
                         </tr>
 
                         </thead>
