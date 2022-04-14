@@ -61,8 +61,9 @@ const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = globa
         includeScore       : true,
         ignoreLocation     : true,
         ignoreFieldNorm    : true,
+        useExtendedSearch  : true,
         minMatchCharLength : 2,
-        threshold          : 0.3,
+        threshold          : 0.3, // 0.2 and 0.3 are the recommended values
         keys               : selectedFieldsArray
     };
 
