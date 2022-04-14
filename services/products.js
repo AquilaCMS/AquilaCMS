@@ -42,7 +42,7 @@ if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
-const getProductsByOrderedSearch = async (pattern, lang = global.defaultLang) => {
+const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find({}).select(selectedFields).lean();
 
@@ -53,17 +53,33 @@ const getProductsByOrderedSearch = async (pattern, lang = global.defaultLang) =>
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
         {name: `translation.${lang}.description2.text`, weight: 1.5}];
-    const options             = {
+
+    // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
+    const options = {
         shouldSort         : true,
         findAllMatches     : true,
         includeScore       : true,
+        ignoreLocation     : true,
+        ignoreFieldNorm    : true,
         minMatchCharLength : 2,
         threshold          : 0.3,
         keys               : selectedFieldsArray
     };
 
-    const fuse = new Fuse(allProductsWithSearchCriteria, options);
-    return fuse.search(pattern);
+    const fuse    = new Fuse(allProductsWithSearchCriteria, options);
+    const fuseRes = fuse.search(pattern);
+    if (limit === 1) return {data: fuseRes.slice(0, 1), count: fuseRes.length};
+    const res = [];
+
+    let i = 0;
+    if (page !== 1) {
+        i = (page - 1) * limit;
+    }
+    while (i < limit + (page - 1) * limit && i < fuseRes.length) {
+        res.push(fuseRes[i]);
+        i++;
+    }
+    return {data: res, count: fuseRes.length};
 };
 
 /**
@@ -87,18 +103,25 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
+
+    let count;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
-        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, lang);
-        PostBody.filter._id    = {$in: searchedProducts.map((res) => res.item._id.toString())};
+        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, PostBody.limit, PostBody.page, lang);
+        const data             = searchedProducts.data;
+        count                  = searchedProducts.count;
+        PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
+        PostBody.limit         = 0;
         delete PostBody.filter.$text;
+        delete PostBody.structure;
     }
 
     let result = await queryBuilder.find(PostBody);
 
     if (PostBody.filter._id) {
+        result.count = count;
         // We order the products according to the order given by the fuzzy search just before
         result.datas.sort((a, b) => {
             const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
