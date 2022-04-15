@@ -112,14 +112,14 @@ ProductServices.service('HookProductInfo', function ()
 ProductServices.service("ProductColumns", function () {
     return [
         {
-            filter : {
+            header : {
                 component_template :  "<span translate>product.list2.picture</span>"
             },
             inter : {component_template: ""},
             cell  : {label : "IMG :",component_template: "<img ng-src='{{getImage(product.images)}}' class='no-product-image' style='min-width: 120px;width:120px;height:90px' />"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.name</span><span>({{filterLang}})</span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
@@ -130,7 +130,7 @@ ProductServices.service("ProductColumns", function () {
             cell  : {label : "Name :",component_template: "{{product.translation[filterLang].name}}"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.price</span>"
                     + "<span ng-show=\"local.sortType == 'price.ati.normal' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
@@ -141,7 +141,7 @@ ProductServices.service("ProductColumns", function () {
             cell  : {label : "Price :",class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'stock.qty'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.quantity</span>"
                     + "<span ng-show=\"local.sortType == 'stock.qty' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
