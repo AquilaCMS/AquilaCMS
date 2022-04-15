@@ -49,8 +49,8 @@ const deleteCacheImage = (type, datas) => {
         deleteFileCache(filePathCache);
         break;
     case 'category':
-        const extension = path.extname(datas.img);
-        fileName        = path.basename(datas.img, extension);
+        const extension = path.extname(datas.filename);
+        fileName        = path.basename(datas.filename, extension);
         filePathCache   = `${cacheFolder}category/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
