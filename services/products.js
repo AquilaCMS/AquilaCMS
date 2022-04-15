@@ -318,8 +318,6 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  * @param reqRes
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
-    console.log('getProductsByCategoryId');
-    const start = Date.now();
     moment.locale(global.defaultLang);
     lang = servicesLanguages.getDefaultLang(lang);
 
@@ -525,9 +523,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
     }
 
-    const millis2 = Date.now() - start;
-    console.log(Math.floor(millis2));
-
     if (PostBody.sort?.sortWeight || !PostBody.sort) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
@@ -587,8 +582,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     if (Object.keys(PostBody.structure).length > 0) {
         queryBuilder.removeFromStructure(PostBody.structure, products);
     }
-    const millis = Date.now() - start;
-    console.log(Math.floor(millis));
 
     return {
         count : prds.length,

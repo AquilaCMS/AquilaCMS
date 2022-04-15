@@ -40,8 +40,9 @@ const generateFilters = async (res, lang = '') => {
         // productsList[i].id is an id or a Products : if it's not a Products we populate it
         if (!productsList || (productsList.length && typeof productsList[0] !== 'object')) {
             const category = await Categories.findById(res._id).populate({
-                path  : 'productsList.id',
-                match : {_visible: true, active: true}
+                path   : 'productsList.id',
+                match  : {_visible: true, active: true},
+                select : 'id attributes pictos' // Select minimum properties to improve performance
             }).lean();
             productsList   = category.productsList;
         }
