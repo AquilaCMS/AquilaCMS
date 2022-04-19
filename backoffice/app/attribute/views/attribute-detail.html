@@ -41,6 +41,7 @@
                             <option value="doc/pdf" ng-show="!attribute.isVariantable" translate>attribute.detail.fichierPDF</option>
                             <option value="number" ng-show="!attribute.isVariantable" translate>attribute.detail.nombre</option>
                             <option ng-show="_type === 'products'" value="color" ng-hide="attribute.isVariantable" translate>attribute.detail.color</option>
+                            <option ng-show="_type === 'products'" value="listcolor" translate>attribute.detail.listcolor</option>
                         </select>
                     </div>
                 </div>
@@ -102,20 +103,23 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group" ng-if="_type === 'products' && (['list', 'multiselect']).includes(attribute.type)">
+            <div class="form-group" ng-if="_type === 'products' && (['list', 'multiselect', 'listcolor']).includes(attribute.type)">
                 <label class="col-sm-3 control-label" translate>attribute.detail.allowDeclinaison</label>
                 <div class="col-sm-6">
                     <ns-switch name="isVariantable" ng-model="attribute.isVariantable"></ns-switch>
                 </div>
             </div>
             <div ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
-            <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
+            <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect' || attribute.type === 'listcolor'" class="form-group">
                 <label for="type" class="col-sm-3 control-label" translate>attribute.detail.valeurs</label>
                 <div class="col-sm-6">
                     <div class="row form-group" ng-repeat="value in attribute.translation[lang].values track by $index">
-                        <div class="col-sm-6">
+                        <div class="col-sm-6" ng-show="attribute.type !== 'listcolor'">
                             <input class="form-control" type="text"
                                 ng-model="attribute.translation[lang].values[$index]">
+                        </div>
+                        <div class="col-sm-6" ng-if="attribute.type === 'listcolor'">
+                            <color-picker name="value-color-{{$index}}" ng-model="attribute.translation[lang].values[$index]" options="{'format': 'hexString'}"></color-picker>
                         </div>
 
                         <div class="col-sm-2">

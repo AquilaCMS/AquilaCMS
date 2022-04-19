@@ -326,9 +326,9 @@ ModulesControllers.controller("PluginsNewCtrl", [
                     page      : null
                 }
             }, function (response) {
-                if (module.active) {
+                if (module.module.active) {
                     toastService.toast('success', $translate.instant("modules.addModule"));
-                    toggleActive(module._id, module.name, true);
+                    window.location.reload();
                 } else {
                     $scope.showModuleLoading = false;
                     toastService.toast('success', $translate.instant("modules.activateModule"));

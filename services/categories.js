@@ -7,6 +7,7 @@
  */
 
 const mongoose         = require('mongoose');
+const path             = require('path');
 const {
     Categories,
     Products,
@@ -157,10 +158,11 @@ const setCategory = async (postBody) => {
 
     const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
     // remove image properly
-    if (oldCat.img && !postBody.img) {
-        ServiceCache.deleteCacheImage('category', oldCat);
-        if (await fsp.existsSync(`${global.envConfig.environment.photoPath}/${oldCat.img}`)) {
-            await fsp.unlinkSync(`${global.envConfig.environment.photoPath}/${oldCat.img}`);
+    if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
+        const imgPath = path.join(global.envConfig.environment.photoPath, oldCat.img);
+        ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
+        if (await fsp.existsSync(imgPath)) {
+            await fsp.unlinkSync(imgPath);
         }
     }
     return Categories.findOne({_id: postBody._id}).lean();

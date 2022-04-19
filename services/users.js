@@ -40,7 +40,11 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     return queryBuilder.findOne(PostBody, true);
 };
 
-const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+const getUserByAccountToken = async (activateAccountToken) => {
+    if (!activateAccountToken) throw NSErrors.Unauthorized;
+    const user = await Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+    return {isActiveAccount: user?.isActiveAccount};
+};
 
 const setUser = async (id, info, isAdmin = false, lang) => {
     try {

@@ -357,7 +357,7 @@ function createDeferredPayment(order, method, lang) {
 async function immediateCashPayment(req, method) {
     try {
         const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
-        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        const paymentService = require(`${modulePath}/services/${method.paymentServiceFileName ? method.paymentServiceFileName : req.body.paymentMethod}`);
         // We set the same value in several places to fit all modules
         req.query.orderId      = req.params.orderNumber;
         req.params.paymentCode = req.body.paymentMethod;

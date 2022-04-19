@@ -296,6 +296,14 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 if(!defaultImage) defaultImage = variant.images[0] || {}
                 return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.title || 'img'}${defaultImage.extension || '.jpg'}`;
             };
+
+            $scope.activateAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = true; return vv})
+            }
+
+            $scope.disableAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = false; return vv})
+            }
         }]
     };
 });

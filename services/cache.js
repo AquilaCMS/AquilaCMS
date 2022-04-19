@@ -31,8 +31,7 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const _path       = require('../utils/server').getUploadDirectory();
-    const cacheFolder = `${_path}/cache/`;
+    const cacheFolder = path.join(global.envConfig.environment.photoPath, 'cache');
     let fileName      = '';
     let filePathCache = '';
 
@@ -50,7 +49,7 @@ const deleteCacheImage = (type, datas) => {
         deleteFileCache(filePathCache);
         break;
     case 'category':
-        const extension = path.extname(datas.filename);
+        const extension = datas.extension || path.extname(datas.filename);
         fileName        = path.basename(datas.filename, extension);
         filePathCache   = `${cacheFolder}category/${fileName}*`;
         deleteFileCache(filePathCache);
