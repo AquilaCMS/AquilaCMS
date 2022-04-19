@@ -862,7 +862,7 @@ const removeModuleAddon = async (_module) => {
     if (_module.mailTypeCode && _module.mailTypeCode.length > 0) {
         for (const mailCode of _module.mailTypeCode) {
             try {
-                await require('./mailType').deleteMailType(mailCode);
+                await require('./mailType').deleteMailType(mailCode, false);
             } catch (err) {
                 console.error(err);
             }
