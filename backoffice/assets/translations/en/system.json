@@ -42,6 +42,10 @@
             "takeTime": "It may take a while, please wait ...",
             "errorOccurred": "An error has occurred",
             "uploadAllDocumentInfo": "* Only .zip is accepted, and must contain good folders (available in download). No entry in the database."
+        },
+        "searchSettings": {
+            "title": "Search settings",
+            "findDoc": "You can find the documentation here "
         }
     }
 }
