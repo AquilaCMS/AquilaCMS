@@ -57,14 +57,14 @@ const ConfigurationSchema = new Schema({
         needRestart    : {type: Boolean, default: false},
         needRebuild    : {type: Boolean, default: false},
         searchSettings : {
-            shouldSort         : {type: Boolean, default: false},
-            ignoreLocation     : {type: Boolean, default: false},
-            findAllMatches     : {type: Boolean, default: false},
-            ignoreFieldNorm    : {type: Boolean, default: false},
-            includeScore       : {type: Boolean, default: false},
-            useExtendedSearch  : {type: Boolean, default: false},
-            minMatchCharLength : {type: Number, default: 0},
-            threshold          : {type: Number, default: 0},
+            shouldSort         : {type: Boolean, default: true},
+            ignoreLocation     : {type: Boolean, default: true},
+            findAllMatches     : {type: Boolean, default: true},
+            ignoreFieldNorm    : {type: Boolean, default: true},
+            includeScore       : {type: Boolean, default: true},
+            useExtendedSearch  : {type: Boolean, default: true},
+            minMatchCharLength : {type: Number, default: 2},
+            threshold          : {type: Number, default: 0.3},
             keys               : [
                 {
                     key    : String,
