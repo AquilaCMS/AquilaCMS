@@ -45,7 +45,8 @@
         },
         "searchSettings": {
             "title": "Paramètres de recherche",
-            "findDoc": "Retrouvez la documentation sur "
+            "findDoc": "Retrouvez la documentation sur ",
+            "keysWeight": "Poids des clés"
         }
     }
 }

@@ -45,7 +45,8 @@
         },
         "searchSettings": {
             "title": "Search settings",
-            "findDoc": "You can find the documentation here "
+            "findDoc": "You can find the documentation here ",
+            "keysWeight": "Keys weight"
         }
     }
 }

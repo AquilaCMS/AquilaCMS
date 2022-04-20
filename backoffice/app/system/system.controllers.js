@@ -65,6 +65,28 @@ SystemControllers.controller("systemGeneralController", [
                 key: $scope.system.environment.ssl.key || '',
                 active: $scope.system.environment.ssl.active || false
             }
+            if(!$scope.system.environment.searchSettings) {
+                $scope.system.environment.searchSettings = {
+                    shouldSort         : false,
+                    ignoreLocation     : false,
+                    findAllMatches     : false,
+                    ignoreFieldNorm    : false,
+                    includeScore       : false,
+                    useExtendedSearch  : false,
+                    minMatchCharLength : 0,
+                    threshold          : 0
+                }
+            }
+            if(!$scope.system.environment.searchSettings.keys) {
+                $scope.system.environment.searchSettings.keys = [
+                    {key: 'code', label: 'Code', weight: 1},
+                    {key: 'name', label: 'Nom', weight: 1},
+                    {key: 'description1.title', label: 'Titre description 1', weight: 1},
+                    {key: 'description1.text', label: 'Texte description 1', weight: 1},
+                    {key: 'description2.title', label: 'Titre description 2', weight: 1},
+                    {key: 'description2.text', label: 'Texte description 2', weight: 1}
+                ]
+            }
             delete $scope.system.$promise;
         });
 
