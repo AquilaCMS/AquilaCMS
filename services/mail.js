@@ -297,7 +297,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
  * @param {string} [lang="fr"] lang
  */
 const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
-    const _user        = await Users.findOne({email: {$regex: to, $options: 'i'}});
+    const _user        = await Users.findOne({email: to});
     lang               = determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
