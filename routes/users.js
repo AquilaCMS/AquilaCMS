@@ -152,9 +152,10 @@ async function getUserTypes(req, res, next) {
 async function resetpassword(req, res, next) {
     try {
         const {email, change, token, password, sendMail} = req.body;
+        const emailRegex                                 = new RegExp(`^${email}$`, 'i');
         let result;
         if (email && !change) {
-            result = await usersServices.generateTokenSendMail(email, req.params.lang || req.body.lang, sendMail);
+            result = await usersServices.generateTokenSendMail(emailRegex, req.params.lang || req.body.lang, sendMail);
         /* } else if (email && change) {
             result = await usersServices.changePassword(email, password); */
         } else if (token) {

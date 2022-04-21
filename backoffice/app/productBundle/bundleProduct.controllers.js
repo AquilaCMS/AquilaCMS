@@ -313,7 +313,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     });
                 }
             }else{
-                strInvalidFields = checkForm(["code", "name"]);
+                strInvalidFields = checkForm(["name"]);
             }
             //we remove ", "
             if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){

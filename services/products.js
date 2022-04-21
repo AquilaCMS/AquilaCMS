@@ -44,7 +44,7 @@ if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
 
 const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
-    const allProductsWithSearchCriteria = await Products.find({}).select(selectedFields).lean();
+    const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
 
     const selectedFieldsArray = [
         {name: `translation.${lang}.name`, weight: 100},
