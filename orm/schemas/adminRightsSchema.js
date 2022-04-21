@@ -42,4 +42,6 @@ AdminRightsSchema.post('save', async function (doc) {
     aquilaEvents.emit('aqNewAdminRights', doc);
 });
 
+aquilaEvents.emit('adminRightsSchemaInit', AdminRightsSchema);
+
 module.exports = AdminRightsSchema;

@@ -11,6 +11,7 @@ const {securityForceActif} = require('../middleware/security');
 const {filterCategories}   = require('../middleware/categories');
 const ServiceCategory      = require('../services/categories');
 const ServiceRules         = require('../services/rules');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
@@ -20,7 +21,7 @@ module.exports = function (app) {
     app.post('/v2/category/execRules', adminAuthRight('categories'), execRules);
     app.post('/v2/category/canonical', adminAuthRight('categories'), execCanonical);
     app.post('/v2/category/applyTranslatedAttribs', adminAuthRight('categories'), applyTranslatedAttribs);
-    app.put('/v2/category', adminAuthRight('categories'), setCategory);
+    app.put('/v2/category', adminAuthRight('categories'), autoFillCode, setCategory);
     app.delete('/v2/category/:id', adminAuthRight('categories'), deleteCategory);
 };
 

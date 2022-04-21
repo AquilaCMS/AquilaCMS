@@ -8,10 +8,11 @@
 
 // Refactoring promoSchema not finished
 
-const mongoose   = require('mongoose');
-const ItemSchema = require('./itemSchema');
-const Schema     = mongoose.Schema;
-const ObjectId   = mongoose.Types.ObjectId;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const ItemSchema     = require('./itemSchema');
+const Schema         = mongoose.Schema;
+const ObjectId       = mongoose.Types.ObjectId;
 
 const PromoSchema = new Schema({
     promoId     : {type: ObjectId, ref: 'promo'},
@@ -32,5 +33,7 @@ const PromoSchema = new Schema({
 }, {
     id : false
 });
+
+aquilaEvents.emit('promoSchemaInit', PromoSchema);
 
 module.exports = PromoSchema;

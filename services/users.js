@@ -195,7 +195,7 @@ const getUserTypes = async (query) => {
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
-    const user           = await Users.findOneAndUpdate({email: {$regex: email, $options: 'i'}}, {resetPassToken}, {new: true});
+    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
