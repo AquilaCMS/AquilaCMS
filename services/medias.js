@@ -74,7 +74,7 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB, group = '') => {
+const uploadAllMedias = async (reqFile, insertDB) => {
     console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
@@ -111,14 +111,15 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
         // Insert it in the database
         if (insertDB) {
             await Medias.updateOne({name: name_file}, {
-                link : `medias/${filename}`,
-                name : name_file,
-                group
+                link  : `medias/${filename}`,
+                name  : name_file,
+                group : path.parse(reqFile.originalname).name
             }, {upsert: true});
         }
     }
 
     console.log('Upload medias done !');
+    // return true;
 };
 
 /* **************** Documents **************** *
