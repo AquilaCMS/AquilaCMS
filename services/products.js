@@ -370,46 +370,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
-    // Get products from productList
-    // const result = await queryBuilder.find(PostBody, true);
-    // if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-    //     // We add the sortWeight corresponding to the product in the product doc
-    //     menu.productsList.forEach((product) => {
-    //         const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
-    //         // add sortWeight to result.datas[i] (modification of an object by reference)
-    //         if (ProdFound) {
-    //             ProdFound.sortWeight = product.sortWeight;
-    //         }
-    //     });
-    //     // Products are sorted by weight
-    //     result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-    // }
-    // if (global.envConfig.stockOrder.bookingStock !== 'none') {
-    //     for (let i = 0; i < result.datas.length; i++) {
-    //         const product   = result.datas[i];
-    //         const stockData = await calculStock({lang}, product);
-    //         if (product.type === 'simple') {
-    //             // TODO P2 "shipping : business day" : doesn't work anymore, we put the same day in hard
-    //             // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
-    //             result.datas[i].stock.label       = stockData.label;
-    //             result.datas[i].stock.dateShipped = stockData.dateShipped;
-    //             result.datas[i].stock.status      = stockData.product.stock.status;
-    //             result.datas[i].stock.qty         = stockData.product.stock.qty;
-    //             result.datas[i].stock.orderable   = stockData.product.stock.orderable;
-    //             result.datas[i].stock.qty_real    = stockData.product.stock.qty_real;
-    //         }
-    //     }
-    // }
-
-    // if (PostBody.structure && PostBody.structure.sortWeight) {
-    //     for (let i = 0; i < result.datas.length; i++) {
-    //         const sortedPrd = menu.productsList.find((sortedPrd) => sortedPrd.id.toString() === result.datas[i]._id.toString());
-    //         if (sortedPrd) {
-    //             result.datas[i].sortWeight = sortedPrd.sortWeight;
-    //         }
-    //     }
-    // }
-
     let prds;
 
     let priceMin        = {et: 0, ati: 0};
@@ -417,6 +377,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     let specialPriceMin = {et: 0, ati: 0};
     let specialPriceMax = {et: 0, ati: 0};
 
+    // If we don't need the price information, we can bypass a lot of processes
     if (PostBody.structure.price === 0) {
         let querySelect = '';
         for (const [key, value] of Object.entries(PostBody.structure)) {
@@ -435,7 +396,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             .find(PostBody.filter)
             .populate(PostBody.populate)
             .sort(PostBody.sort)
-            .lean({virtuals: true}); // {virtuals: true} allows to get virtual fields (stock.qty_real)
+            .lean({virtuals: true}) // {virtuals: true} allows to get virtual fields (stock.qty_real)
+            .sort(PostBody.sort);
 
         let prdsPrices = JSON.parse(JSON.stringify(prds));
 
