@@ -515,7 +515,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.lang = lang;
                                 $scope.selected = {};
 
-                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
                                     $scope.pages = {};
                                     $scope.pages = staticsList.datas;
                                     if ($scope.pages[0]) {
@@ -525,7 +525,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         $scope.group = staticsList.datas.getAndSortGroups()[0];
                                     }
                                 });
-                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 0 } }, function (response) {
                                     $scope.categories = {};
                                     $scope.categories = response.datas;
                                     if ($scope.categories[0]) {
@@ -872,6 +872,10 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         link: function (scope, element, attrs)
         {
             var el;
+            scope.selectColor = function (colorString) {
+                scope.att.translation[scope.lang].value = colorString
+            }
+
             scope.$watch('att.type', function(newValue, oldValue, elScope) {
                 el = angular.element("<span/>");
                 scope.optionColor = {
@@ -953,6 +957,15 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                                 "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
                             "</div>"
                         );
+                        break;
+                    case "listcolor":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <ul style='list-style: none;padding: 5px;'>" +
+                            "    <li style='width: 90px; display: inline-block; margin-right: 10px;padding: 2px; border-radius: 5px;{{value === att.translation[lang].value ? \"border: 2px solid #576fa1;\": \"\"}}' ng-click='selectColor(value)' ng-repeat='value in att.translation[lang].values'>"+
+                            "       <p style='box-sizing: border-box; text-align: center; cursor: pointer; border-radius: 5px; padding: 5px; background-color: {{value}};'>{{value}}</p>"+
+                            "    </li>" +
+                            "    </ul>" +
+                            "</div>");
                         break;
                 }
                 $compile(el)(scope);
@@ -1575,13 +1588,13 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     // on recup les univers
                     $scope.attributesClassed = [];
-                    SuppliersV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    SuppliersV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values.supplier_ref = response.datas;
                     })
-                    TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    TrademarksV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
                     })
-                    PictoApi.list({PostBody: {filter: {}, limit: 99}}, function (response) {
+                    PictoApi.list({PostBody: {filter: {}, limit: 0}}, function (response) {
                         $scope.attributesClassed.push(
                         {
                             value: "pictos.code",
@@ -1594,7 +1607,7 @@ adminCatagenDirectives.directive("nsRule", [
                         })
 
                     })
-                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 0}}, function (response)
                     {
                         response.datas.map(function (element)
                         {
@@ -1808,7 +1821,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             )
                         }
-                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 0}}, function (response)
                         {
                             response.datas.map(function (element) {
                                 var type = (function (type)
@@ -2199,7 +2212,7 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*', populate: {
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 0, structure: '*', populate: {
                                 path : 'parent',
                                 populate : {
                                     path : 'parent'

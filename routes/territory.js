@@ -7,6 +7,7 @@
  */
 
 const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 const {Territory}      = require('../orm/models');
 const ServiceTerritory = require('../services/territory');
 
@@ -14,7 +15,7 @@ module.exports = function (app) {
     app.post('/v2/territories', getTerritories);
     app.post('/v2/territory', getTerritory);
     app.delete('/v2/territory/:id', adminAuthRight('territories'), deleteTerritory);
-    app.put('/v2/territory', adminAuthRight('territories'), setTerritory);
+    app.put('/v2/territory', adminAuthRight('territories'), autoFillCode, setTerritory);
     app.post('/v2/territory/:id', getTerritoryById);
     app.get('/territory/countries', listCountries);
 };

@@ -134,7 +134,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
+            if (pathToCheck && await fsp.existsSync(pathToCheck) && !(await fsp.lstatSync(pathToCheck)).isDirectory()) {
                 return true;
             }
             return false;

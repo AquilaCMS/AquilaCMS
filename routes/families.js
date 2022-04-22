@@ -7,12 +7,13 @@
  */
 
 const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 const ServicesFamilies = require('../services/families');
 
 module.exports = function (app) {
     app.post('/v2/families', getFamilies);
     app.post('/v2/family', getFamily);
-    app.put('/v2/family', adminAuthRight('families'), saveFamily);
+    app.put('/v2/family', adminAuthRight('families'), autoFillCode, saveFamily);
     app.delete('/v2/family/:_id', adminAuthRight('families'), deleteFamily);
 };
 

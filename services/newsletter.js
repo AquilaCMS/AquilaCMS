@@ -39,7 +39,6 @@ exports.getNewsletterByEmail = async function (email) {
 
 /**
  * params :
- * "isNew": true, // If it is a new registration to a new segment
  * "name": "test", // Segment name
  * "optin": true // true for subscription, false for unsubscription
  */

@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const helper        = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const helper         = require('../../utils/utils');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},
@@ -101,5 +102,7 @@ FamiliesSchema.pre('updateOne', async function (next) {
 FamiliesSchema.pre('findOneAndUpdate', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
+
+aquilaEvents.emit('familiesSchemaInit', FamiliesSchema);
 
 module.exports = FamiliesSchema;

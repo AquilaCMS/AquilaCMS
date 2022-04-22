@@ -8,6 +8,7 @@
 
 // const isEmail  = require('validator').isEmail;
 const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
@@ -63,5 +64,7 @@ MailSchema.pre('save', async function (next) {
     const errors = await MailSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
+
+aquilaEvents.emit('mailSchemaInit', MailSchema);
 
 module.exports = MailSchema;

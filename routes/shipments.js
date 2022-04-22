@@ -10,12 +10,13 @@ const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const ServiceShipment      = require('../services/shipment');
 const {middlewareServer}   = require('../middleware');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.put('/v2/shipment', adminAuthRight('shipments'), setShipment);
+    app.put('/v2/shipment', adminAuthRight('shipments'), autoFillCode, setShipment);
     app.delete('/v2/shipment/:id', adminAuthRight('shipments'), deleteShipment);
 
     // Deprecated

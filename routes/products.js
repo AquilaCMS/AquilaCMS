@@ -11,6 +11,7 @@ const ServiceProduct                   = require('../services/products');
 const ProductPreview                   = require('../services/preview');
 const {authentication, adminAuthRight} = require('../middleware/authentication');
 const {securityForceActif}             = require('../middleware/security');
+const {autoFillCode}                   = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
@@ -23,7 +24,7 @@ module.exports = function (app) {
     app.post('/v2/product/changeType', adminAuthRight('products'), changeProductType);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
-    app.put('/v2/product', adminAuthRight('products'), setProduct);
+    app.put('/v2/product', adminAuthRight('products'), autoFillCode, setProduct);
     app.delete('/v2/product/:id', adminAuthRight('products'), deleteProduct);
     app.get('/v2/product/getCoherence/:id', adminAuthRight('products'), getCoherence);
 };

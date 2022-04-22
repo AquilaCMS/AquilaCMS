@@ -8,6 +8,7 @@
 
 const moment                  = require('moment-business-days');
 const path                    = require('path');
+const Fuse                    = require('fuse.js');
 const mongoose                = require('mongoose');
 const {aquilaEvents}          = require('aql-utils');
 const fs                      = require('../utils/fsp');
@@ -41,6 +42,47 @@ if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
+const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
+    const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
+    const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
+
+    const selectedFieldsArray = [
+        {name: `translation.${lang}.name`, weight: 100},
+        {name: 'code', weight: 5},
+        {name: `translation.${lang}.description1.title`, weight: 3},
+        {name: `translation.${lang}.description1.text`, weight: 2.5},
+        {name: `translation.${lang}.description2.title`, weight: 2},
+        {name: `translation.${lang}.description2.text`, weight: 1.5}];
+
+    // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
+    const options = {
+        shouldSort         : true,
+        findAllMatches     : true,
+        includeScore       : true,
+        ignoreLocation     : true,
+        ignoreFieldNorm    : true,
+        useExtendedSearch  : true,
+        minMatchCharLength : 2,
+        threshold          : 0.3, // 0.2 and 0.3 are the recommended values
+        keys               : selectedFieldsArray
+    };
+
+    const fuse    = new Fuse(allProductsWithSearchCriteria, options);
+    const fuseRes = fuse.search(pattern);
+    if (limit === 1) return {data: fuseRes.slice(0, 1), count: fuseRes.length};
+    const res = [];
+
+    let i = 0;
+    if (page !== 1) {
+        i = (page - 1) * limit;
+    }
+    while (i < limit + (page - 1) * limit && i < fuseRes.length) {
+        res.push(fuseRes[i]);
+        i++;
+    }
+    return {data: res, count: fuseRes.length};
+};
+
 /**
  * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
  * @param {PostBody} PostBody
@@ -62,21 +104,34 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    // The fulltext search does not allow to cut words (search "TO" in "TOTO")
+
+    let count;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
-
-        PostBody.filter.$or = [];
-        PostBody.filter.$or.push({[`translation.${lang}.name`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, PostBody.limit, PostBody.page, lang);
+        const data             = searchedProducts.data;
+        count                  = searchedProducts.count;
+        PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
+        PostBody.limit         = 0;
         delete PostBody.filter.$text;
+        delete PostBody.structure;
     }
-    let result                 = await queryBuilder.find(PostBody);
+
+    let result = await queryBuilder.find(PostBody);
+
+    if (PostBody.filter._id) {
+        result.count = count;
+        // We order the products according to the order given by the fuzzy search just before
+        result.datas.sort((a, b) => {
+            const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
+            const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
+            return aIndex - bIndex;
+        });
+        delete PostBody.filter._id;
+    }
+
     queryBuilder.defaultFields = defaultFields;
 
     // We delete the reviews that are not visible and verify
@@ -84,27 +139,27 @@ const getProducts = async (PostBody, reqRes, lang) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds              = await Products.find(PostBody.filter).lean();
-    const arrayPrice        = {et: [], ati: []};
-    const arraySpecialPrice = {et: [], ati: []};
-    for (const prd of prds) {
-        arrayPrice.et.push(prd.price.et.normal);
-        arrayPrice.ati.push(prd.price.ati.normal);
-    }
-    if (arrayPrice.et.length === 0) {
-        arrayPrice.et.push(0);
-    }
-    if (arrayPrice.ati.length === 0) {
-        arrayPrice.ati.push(0);
-    }
-    result.min = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    result.max = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
 
+    // Get the maximum and minimum price in the Produc's query
+    const normalET  = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.et.normal'}, max: {$max: '$price.et.normal'}}}
+    ]);
+    const normalATI = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
+    ]);
+    if (normalET.length > 0 & normalATI.length > 0) {
+        result.min = {et: normalET[0].min, ati: normalATI[0].min};
+        result.max = {et: normalET[0].max, ati: normalATI[0].max};
+    }
+
+    // Specials prices
+    const arraySpecialPrice = {et: [], ati: []};
     for (const prd of result.datas) {
         if (prd.price.et.special) {
             arraySpecialPrice.et.push(prd.price.et.special);
@@ -113,6 +168,20 @@ const getProducts = async (PostBody, reqRes, lang) => {
             arraySpecialPrice.ati.push(prd.price.ati.special);
         }
     }
+
+    // Need result.datas to get the specials prices (not from DB query)
+    // const specialNormalET  = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.et.special'}, max: {$max: '$price.et.special'}}}
+    // ]);
+    // const specialNormalATI = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.ati.special'}, max: {$max: '$price.ati.special'}}}
+    // ]);
+    // if (specialNormalET.length > 0 & specialNormalATI.length > 0) {
+    //     result.specialPriceMin = {et: specialNormalET[0].min, ati: specialNormalATI[0].min};
+    //     result.specialPriceMax = {et: specialNormalET[0].max, ati: specialNormalATI[0].max};
+    // }
 
     result.specialPriceMin = {
         et  : Math.min(...arraySpecialPrice.et),
@@ -986,6 +1055,7 @@ const downloadProduct = async (req, res) => {
 };
 
 const getProductsListing = async (req, res) => {
+    const structure = req.body.PostBody.structure;
     // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
@@ -1027,6 +1097,11 @@ const getProductsListing = async (req, res) => {
             });
         }
     }
+
+    if (Object.keys(structure).length > 0) {
+        queryBuilder.removeFromStructure(structure, result.datas);
+    }
+
     return result;
 };
 
