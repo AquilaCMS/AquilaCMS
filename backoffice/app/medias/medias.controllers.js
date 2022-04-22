@@ -299,8 +299,8 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
 ]);
 
 
-MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate",
-    function ($scope, toastService, $modalInstance, $translate) {
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate", "$location",
+    function ($scope, toastService, $modalInstance, $translate, $location) {
         $scope.local = {
             insertDBMediaUpload: true
         };
@@ -311,6 +311,7 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
         $scope.uploadedMediaMass = function () {
             toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
+            $location.path('/medias');
         };
         $scope.cancel = function () {
             $modalInstance.close('cancel')
