@@ -61,8 +61,9 @@ const yarnBuildCustom = async (themeName = '') => {
             process.chdir(linkToTheme); // protect require of the frontFrameWork
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                const appRoot = slash(global.appRoot);
-                returnValues  = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
+                const appRoot         = slash(global.appRoot);
+                const globalEnvConfig = global.envConfig || {};
+                returnValues          = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; global.envConfig = '${globalEnvConfig}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
