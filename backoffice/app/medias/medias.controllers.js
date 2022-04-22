@@ -309,12 +309,6 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
         };
 
         $scope.uploadedMediaMass = function () {
-            // console.log("res.data", typeof res.data, res.data);
-            // if (res.data == true) {
-            //     toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
-            // } else {
-            //     toastService.toast("danger", "pas biiiien");
-            // }
             toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
         };

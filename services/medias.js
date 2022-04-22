@@ -86,8 +86,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
     const zip = new AdmZip(path_init);
     zip.extractAllTo(path_unzip);
     // Browse all the files to add them to the medias table
-    const filenames = fsp.readdirSync(path_unzip);
-
+    const filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
+    if (filenames.length === 0) throw NSErrors.MediaNotInRoot;
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
         const filename    = filenames[index];

@@ -132,11 +132,8 @@ async function getMediasGroupsImg(req, res, next) {
 async function uploadAllMedias(req, res, next) {
     if (path.extname(req.files[0].originalname) === '.zip') {
         try {
-            mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === 'true');
+            await mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === 'true');
             res.json({name: req.files[0].originalname});
-            // const result = await mediasServices.uploadAllMedias(req.files, req.body.insertDB === 'true');
-            // res.json(result);
-            // return res.json('true');
         } catch (exc) {
             next(exc);
         }
