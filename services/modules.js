@@ -648,8 +648,9 @@ const removeModule = async (idModule) => {
 };
 
 const retrieveModuleComponentType = async (theme) => {
-    const infoTheme = await themesUtils.loadInfoTheme(theme);
-    return infoTheme?.moduleComponentType;
+    const themeInfo = await themesUtils.loadThemeInfo(theme);
+    if (themeInfo?.moduleComponentType) return themeInfo.moduleComponentType;
+    return '';
 };
 
 /**
@@ -710,7 +711,10 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         pathModule = path.join(pathModule, '/');
     }
 
-    // Check if the theme_components folder exists in the module, if so, then it's a front module
+    const moduleComponentType = await retrieveModuleComponentType(theme);
+    if (moduleComponentType !== '') pathModule = path.join(pathModule, moduleComponentType, '/');
+
+    // Check if the module component type exists in the theme_components folder
     const hasAccess = await fs.hasAccess(pathModule);
     if (!hasAccess) {
         return;

@@ -61,8 +61,9 @@ const yarnBuildCustom = async (themeName = '') => {
             process.chdir(linkToTheme); // protect require of the frontFrameWork
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                const appRoot = slash(global.appRoot);
-                returnValues  = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
+                const appRoot         = slash(global.appRoot);
+                const globalEnvConfig = JSON.stringify(global.envFile).replace(/"/g, '#') || '{}';
+                returnValues          = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; global.envConfig = '${globalEnvConfig}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
@@ -147,8 +148,8 @@ const yarnDeleteNodeModulesContent = async (themeName = '') => {
  * @description loadThemeConfig
  * @param theme : String Theme selectionné
  */
-const loadInfoTheme = (theme) => {
-    const nameOfFile = 'infoTheme.json';
+const loadThemeInfo = (theme) => {
+    const nameOfFile = 'themeInfo.json';
     const linkToFile = path.join(global.appRoot, 'themes', theme, nameOfFile);
     try {
         if (fs.existsSync(linkToFile)) {
@@ -166,5 +167,5 @@ module.exports = {
     yarnInstall,
     yarnBuild,
     yarnDeleteNodeModulesContent,
-    loadInfoTheme
+    loadThemeInfo
 };
