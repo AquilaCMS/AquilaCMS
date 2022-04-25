@@ -89,10 +89,22 @@
         "post": {
             "deprecated": false,
             "security": [],
+            "description" : "Get your cart with all your information needed for the delivery",
             "responses": {
                 "200": {
                     "description": "",
-                    "content": {}
+                    "content": {
+                        "schema": {
+                            "$ref" : "#components/schemas/cart"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {"delivery":{"value":{"ati":2,"et":1.6666666666666667,"vat":20},"dateDelivery":{"delayDelivery":1,"unitDelivery":"day","delayPreparation":1,"unitPreparation":"day"},"method":"","code":"std","name":"MonTransporteur","url":null,"date":"2022-04-27T10:14:18.585Z","price":{"ati":2,"et":1.67}},"orderReceipt":{"method":"delivery"},"status":"IN_PROGRESS","_id":null,"promos":[],"items":[{"description1":{"title":"Collection summer 2020","text":"Some description text "},"description2":{"title":"Coupe tubulaire","text":"Unisexe"},"price":{"vat":{"rate":20},"unit":{"et":14.17,"ati":17},"special":{"et":10.83,"ati":13},"total":{"ati":13}},"status":"PROCESSING","children":[],"weight":404,"noRecalculatePrice":true,"type":"simple","_id":null,"id":{"stock":{"orderable":true,"status":"liv","label":"available","value":"Produit disponible"},"price":{"et":{"normal":14.17,"special":10.83},"ati":{"normal":17,"special":13},"priceSort":{"et":10.83,"ati":13},"tax":20},"reviews":{"average":4.5,"reviews_nb":3,"questions":[],"datas":[{"visible":true,"verify":true,"_id":"5d3964804aa9c1692db06481","review_date":"2020-05-25T08:12:48.785Z","questions":[],"title":"Bon produit","review":"Produit conforme, rapport/qualité prix OK","rate":4,"lang":"fr","name":"Anonymous","id_client":null,"ip_client":"100.100.100.100, 101.101.101.101"},{"visible":true,"verify":true,"_id":"5d3964a44aa9c1692db06482","review_date":"2020-05-25T08:13:24.652Z","questions":[],"title":"Basique","review":"Un t-shirt simple, basique, correspond aux attentes","rate":5,"lang":"fr","name":"Anonymous","id_client":null,"ip_client":"100.100.100.100, 101.101.101.101"},{"visible":true,"verify":true,"_id":"5d3964804aa9c1692db06481","review_date":"2020-05-25T08:12:48.785Z","questions":[],"title":"Good product","review":"Compliant product, price / quality ratio OK","rate":4,"lang":"en","name":"Anonymous","id_client":null,"ip_client":"100.100.100.100, 101.101.101.101"}]},"stats":{"views":49,"sells":8},"type":"simple","active":true,"_visible":true,"weight":404,"associated_prds":["5c667ff128a49c049c5863c9","5d24a3e94aa9c1692db04ac7","5d24a43a4aa9c1692db04ad8","5d24a4844aa9c1692db04ae4"],"is_new":true,"variants":[],"variants_values":[],"attributes":[{"type":"color","position":1,"visible":true,"_id":"5da5765ede6bed65e1d2a6f9","id":"5da5765ede6bed65e1d2a6f8","code":"color","param":"Non","name":"Couleurs","value":"#FFFFFF"},{"type":"bool","position":1,"visible":true,"_id":"5da0a39bde6bed65e1d2a1ed","id":"5da0a39bde6bed65e1d2a1ec","code":"loveit","param":"Non","name":"Coup de coeur","value":true},{"type":"multiselect","position":1,"visible":true,"_id":"5d3967aa4aa9c1692db068cf","id":"5d3967aa4aa9c1692db068ce","code":"material","param":"Non","name":"Matières","values":["Coton","Synthétique","Polyester"],"value":["Coton"]}],"images":[{"default":true,"extension":".jpg","_id":"5d444221ede1945f660286ff","position":0,"alt":"","name":"produit_1.jpg","title":"produit_1","url":"photos/product/p/0/produit_1.jpg"}],"pictos":[{"_id":"5f6c6d8a53464f269885a52b","code":"LoveIt","image":"loveit.png","pictoId":"5da09f77db0b3834cf91a506","title":"Love It","location":"TOP_LEFT"}],"_id":"5c667f8a28a49c049c5863c8","set_attributes":"5c5abe92c1f87b5f46c451fa","code":"p000001","createdAt":"2020-05-13T09:07:33.753Z","updatedAt":"2022-04-21T15:20:15.989Z","universe":"tshirts-tshirts","__v":0,"slug":{"en":"first-product","fr":"premier-produit"},"name":"T-shirt basique blanc","description1":{"title":"Collection summer 2020","text":"<span style=\"font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify; background-color: rgb(255, 255, 255);\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</span><br>"},"description2":{"title":"Coupe tubulaire","text":"Unisexe"},"canonical":"/mes-produits/t-shirt/premier-produit","metaDesc":"T-shirt basique blanc"},"quantity":1,"name":"T-shirt basique blanc","slug":"premier-produit","code":"p000001","image":"5d444221ede1945f660286ff","canonical":"/mes-produits/t-shirt/premier-produit","attributes":[{"type":"color","position":1,"visible":true,"_id":"5da5765ede6bed65e1d2a6f9","id":"5da5765ede6bed65e1d2a6f8","code":"color","param":"Non","name":"Couleurs","value":"#FFFFFF"},{"type":"bool","position":1,"visible":true,"_id":"5da0a39bde6bed65e1d2a1ed","id":"5da0a39bde6bed65e1d2a1ec","code":"loveit","param":"Non","name":"Coup de coeur","value":true},{"type":"multiselect","position":1,"visible":true,"_id":"5d3967aa4aa9c1692db068cf","id":"5d3967aa4aa9c1692db068ce","code":"material","param":"Non","name":"Matières","values":["Coton","Synthétique","Polyester"],"value":["Coton"]}],"stock":{"qty":20,"qty_booked":0,"orderable":true,"status":"liv","label":"available","qty_real":20,"value":"Produit disponible"}}],"paidTax":true,"customer":{"id":"000000000000000000000007","email":"james.bond@007.com"},"additionnalFees":{"ati":0,"et":0,"tax":0},"priceTotal":{"et":12.5,"ati":15},"priceSubTotal":{"et":10.83,"ati":13}}
+                            }
+                        }
+                    }        
                 }
             },
             "parameters": [
@@ -110,7 +122,7 @@
                 "Cart"
             ],
             "requestBody": {
-                "description": "test description",
+                "description": "Put in the Postbody what you want to get.",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -121,10 +133,11 @@
                                 "summary": "",
                                 "description": "",
                                 "value": {
-                                    "PostBody": {
-                                        "structure": {
-                                            "_id": 1
-                                        }
+                                    "lang":"fr",
+                                    "PostBody":{
+                                        "populate":[
+                                            "items.id"
+                                        ]
                                     }
                                 }
                             }
@@ -136,7 +149,7 @@
     },
     "/api/v2/cart/to/order": {
         "post": {
-            "deprecated": false,
+            "deprecated": true,
             "security": [{"user_authorization": []}],
             "responses": {},
             "parameters": [],
@@ -159,6 +172,7 @@
         "delete": {
             "deprecated": false,
             "security": [],
+            "description": "Delete the item with itemID as id from the cart with cartID as id",
             "responses": {},
             "parameters": [
                 {
@@ -189,6 +203,7 @@
         "delete": {
             "deprecated": false,
             "security": [],
+            "description": "Delete a discount from the card with cardID as id",
             "responses": {},
             "parameters": [
                 {
@@ -210,6 +225,7 @@
         "put": {
             "deprecated": false,
             "security": [],
+            "description" : "Add \"quantity\" items to your cart",
             "responses": {},
             "parameters": [],
             "tags": [
@@ -222,8 +238,8 @@
                         "schema": {
                             "description": "",
                             "properties": {
-                                "cartId" : {"type": "string"},
-                                "items": {
+                                "cartId" : "ObjectID",
+                                "item": {
                                     "type": "object",
                                     "properties": {
                                         "id" : {"type": "string"},
@@ -248,7 +264,88 @@
         "put": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "description": "Modify the number of \"items\" in your cart",
+            "responses": {"200":{
+                "content":{
+                    "application/json":{
+                        "schema":{
+                            "customer":{
+                                "id":"ObjectID",
+                                "email":{"type":"string"},
+                                "phone":{"type":"number"}
+                            },
+                            "addresses":{
+                                "billing":{
+                                    "_id":"ObjectID",
+                                    "line1":{"type":"string"},
+                                    "zipcode":{"type":"number"},
+                                    "city":{"type":"string"},
+                                    "phone_mobile":{"type":"number"},
+                                    "isoCountryCode":{"type":"string"},
+                                    "firstname":{"type":"string"},
+                                    "lastname":{"type":"string"},
+                                    "civility":{"type":"number"}
+                                },
+                                "delivery":{
+                                    "_id":"ObjectID",
+                                    "line1":{"type":"string"},
+                                    "zipcode":{"type":"number"},
+                                    "city":{"type":"string"},
+                                    "phone_mobile":{"type":"number"},
+                                    "isoCountryCode":{"type":"string"},
+                                    "firstname":{"type":"string"},
+                                    "lastname":{"type":"string"},
+                                    "civility":{"type":"number"}
+                                }
+                            },
+                            "delivery":{
+                                "value":{
+                                    "ati":{"type":"number"},
+                                    "et":{"type":"number"},
+                                    "vat":{"type":"number"}
+                                },
+                                "price":{
+                                    "ati":{"type":"number"},
+                                    "et":{"type":"number"}
+                                }
+                            },
+                            "orderReceipt":{
+                                "method":"delivery"
+                            },
+                            "paidTax":{"type":"boolean"},
+                            "status":{"type":"string"},
+                            "_id":"ObjectID",
+                            "updated":{"type":"date"},
+                            "promos":{"type":"array"},
+                            "items":{"type":"array"},
+                            "createdAt":{"type":"date"},
+                            "updatedAt":{"type":"date"},
+                            "__v":{"type":"number"},
+                            "additionnalFees":{
+                                "ati":{"type":"number"},
+                                "et":{"type":"number"},
+                                "tax":{"type":"number"}
+                            },
+                            "priceTotal":{
+                                "et":{"type":"number"},
+                                "ati":{"type":"number"}
+                            },
+                            "priceSubTotal":{
+                                "et":{"type":"number"},
+                                "ati":{"type":"number"}
+                            }
+                        },
+                        "examples":{
+                            "example1":{
+                                "description":"",
+                                "summary":"",
+                                "value":{"customer":{"id":null,"email":"james.bond@007.com","phone":null},"addresses":{"billing":{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0},"delivery":{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0}},"delivery":{"value":{"ati":0,"et":0,"vat":0},"price":{"ati":0,"et":0}},"orderReceipt":{"method":"delivery"},"paidTax":true,"status":"IN_PROGRESS","_id":null,"updated":"2022-04-25T13:07:37.490Z","promos":[],"items":[],"pictos":[{"_id":null,"code":"LoveIt","image":"loveit.png","pictoId":"5da09f77db0b3834cf91a506","title":"Love It","location":"TOP_LEFT"}]}
+                            }
+                        }
+                    }
+                }
+            }
+        },
             "parameters": [],
             "tags": [
                 "Cart"
@@ -258,7 +355,24 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#components/schemas/PostBody"
+                            "description": "",
+                            "properties": {
+                                "cartId" : "ObjectID",
+                                "item": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id" : {"type": "string"},
+                                        "quantity" : {"type": "number"}
+                                    }
+                                }
+                            }
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Add product to new cart",
+                                "description": "Add product to new cart",
+                                "value": {"cartId":null,"item":{"id":"5f2aae034168fe0b983ca913","quantity":1}}
+                            }
                         }
                     }
                 }
@@ -290,7 +404,89 @@
         "put": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "description": "",
+            "responses": {
+                "200":{
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "customer":{
+                                    "id":"ObjectID",
+                                    "email":{"type":"string"},
+                                    "phone":{"type":"number"}
+                                },
+                                "addresses":{
+                                    "billing":{
+                                        "_id":"ObjectID",
+                                        "line1":{"type":"string"},
+                                        "zipcode":{"type":"number"},
+                                        "city":{"type":"string"},
+                                        "phone_mobile":{"type":"number"},
+                                        "isoCountryCode":{"type":"string"},
+                                        "firstname":{"type":"string"},
+                                        "lastname":{"type":"string"},
+                                        "civility":{"type":"number"}
+                                    },
+                                    "delivery":{
+                                        "_id":"ObjectID",
+                                        "line1":{"type":"string"},
+                                        "zipcode":{"type":"number"},
+                                        "city":{"type":"string"},
+                                        "phone_mobile":{"type":"number"},
+                                        "isoCountryCode":{"type":"string"},
+                                        "firstname":{"type":"string"},
+                                        "lastname":{"type":"string"},
+                                        "civility":{"type":"number"}
+                                    }
+                                },
+                                "delivery":{
+                                    "value":{
+                                        "ati":{"type":"number"},
+                                        "et":{"type":"number"},
+                                        "vat":{"type":"number"}
+                                    },
+                                    "price":{
+                                        "ati":{"type":"number"},
+                                        "et":{"type":"number"}
+                                    }
+                                },
+                                "orderReceipt":{
+                                    "method":"delivery"
+                                },
+                                "paidTax":{"type":"boolean"},
+                                "status":{"type":"string"},
+                                "_id":"ObjectID",
+                                "updated":{"type":"date"},
+                                "promos":{"type":"array"},
+                                "items":{"type":"array"},
+                                "createdAt":{"type":"date"},
+                                "updatedAt":{"type":"date"},
+                                "__v":{"type":"number"},
+                                "additionnalFees":{
+                                    "ati":{"type":"number"},
+                                    "et":{"type":"number"},
+                                    "tax":{"type":"number"}
+                                },
+                                "priceTotal":{
+                                    "et":{"type":"number"},
+                                    "ati":{"type":"number"}
+                                },
+                                "priceSubTotal":{
+                                    "et":{"type":"number"},
+                                    "ati":{"type":"number"}
+                                }
+                            },
+                            "examples":{
+                                "example1":{
+                                    "description":"",
+                                    "summary":"",
+                                    "value":{"customer":{"id":null,"email":"james.bond@007.com","phone":null},"addresses":{"billing":{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0},"delivery":{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0}},"delivery":{"value":{"ati":0,"et":0,"vat":0},"price":{"ati":0,"et":0}},"orderReceipt":{"method":"delivery"},"paidTax":true,"status":"IN_PROGRESS","_id":null,"updated":"2022-04-25T13:07:37.490Z","promos":[],"items":[],"pictos":[{"_id":null,"code":"LoveIt","image":"loveit.png","pictoId":"5da09f77db0b3834cf91a506","title":"Love It","location":"TOP_LEFT"}]}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Cart"
@@ -300,7 +496,45 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#components/schemas/PostBody"
+                            "cartId":"ObjectID",
+                            "addresses":{
+                                "billing":{
+                                    "_id":"ObjectID",
+                                    "civility":{"type": "number"},
+                                    "lastname":{"type": "string"},
+                                    "firstname":{"type": "string"},
+                                    "companyName":{"type": "string"},
+                                    "line1":{"type": "string"},
+                                    "line2":{"type": "string"},
+                                    "zipcode":{"type": "string"},
+                                    "city":{"type": "string"},
+                                    "isoCountryCode":{"type": "string"},
+                                    "phone":{"type": "number"},
+                                    "phone_mobile":{"type": "number"},
+                                    "idx_delivery_address":{"type": "number"},
+                                    "idx_billing_address":{"type": "number"}
+                                },
+                                "delivery":{
+                                    "_id":"ObjectID",
+                                    "line1":{"type": "string"},
+                                    "zipcode":{"type": "string"},
+                                    "city":{"type": "string"},
+                                    "isoCountryCode":{"type": "string"},
+                                    "phone_mobile":{"type": "number"},
+                                    "firstname":{"type": "string"},
+                                    "lastname":{"type": "string"},
+                                    "civility":{"type": "number"},
+                                    "idx_delivery_address":{"type": "number"},
+                                    "idx_billing_address":{"type": "number"}
+                                }
+                            }        
+                        }
+                    },
+                    "examples": {
+                        "example1": {
+                            "summary": "Add a new adress",
+                            "description": "Add a new adress",
+                            "value": {"cartId":null,"addresses":{"billing":{"_id":"null","civility":0,"lastname":"Bond","firstname":"James","companyName":"CIA","line1":"12 road street","line2":"aze","zipcode":"","city":"London","isoCountryCode":"GB","phone":"0102030405","phone_mobile":"0102030405","idx_delivery_address":"","idx_billing_address":2},"delivery":{"_id":"null","line1":"12 road street","zipcode":"012345","city":"London","isoCountryCode":"GB","phone_mobile":"0102030405","firstname":"James","lastname":"Bond","civility":0,"idx_delivery_address":0,"idx_billing_address":""}}}
                         }
                     }
                 }
@@ -309,19 +543,115 @@
     },
     "/api/v2/cart/delivery": {
         "put": {
-            "responses": {},
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "customer":{
+                                    "id":{
+                                        "delivery_address":{"type":"number"},
+                                        "billing_address":{"type":"number"},
+                                        "isAdmin":{"type":"boolean"},
+                                        "taxDisplay":{"type":"boolean"},
+                                        "isActive":{"type":"boolean"},
+                                        "isActiveAccount":{"type":"boolean"},
+                                        "accessList":{"type":"array"},
+                                        "_id":"ObjectID",
+                                        "attributes":{"type":"array"},
+                                        "set_attributes":{"type":"string"},
+                                        "civility":{"type":"number"},
+                                        "lastname":{"type":"string"},
+                                        "firstname":{"type":"string"},
+                                        "email":{"type":"string"},
+                                        "password":{"type":"string"},
+                                        "addresses":{"type":"array"},
+                                        "preferredLanguage":{"type":"string"},
+                                        "activateAccountToken":"ObjectID",
+                                        "createdAt":{"type":"date"},
+                                        "updatedAt":{"type":"date"},
+                                        "__v":{"type":"number"},
+                                        "lastConnexion":{"type":"number"},
+                                        "resetPassToken":{"type":"string"},
+                                        "birthDate":{"type":"date"},
+                                        "fullname":{"type":"string"}
+                                    },
+                                    "email":{"type":"string"},
+                                    "phone":{"type":"number"}
+                                },
+                                "addresses":{
+                                    "billing":{
+                                        "_id":"ObjectID",
+                                        "civility":{"type":"number"},
+                                        "lastname":{"type":"string"},
+                                        "firstname":{"type":"string"},
+                                        "companyName":{"type":"string"},
+                                        "line1":{"type":"string"},
+                                        "line2":{"type":"string"},
+                                        "zipcode":{"type":"string"},
+                                        "city":{"type":"string"},
+                                        "isoCountryCode":{"type":"string"},
+                                        "phone":{"type":"string"},
+                                        "phone_mobile":{"type":"string"}
+                                    },
+                                    "delivery":{
+                                        "_id":"ObjectID",
+                                        "line1":{"type":"string"},
+                                        "zipcode":{"type":"number"},
+                                        "city":{"type":"string"},
+                                        "isoCountryCode":{"type":"string"},
+                                        "phone_mobile":{"type":"number"},
+                                        "firstname":{"type":"string"},
+                                        "lastname":{"type":"string"},
+                                        "civility":{"type":"number"}
+                                    }
+                                }
+                                
+                            },
+                            "examples":{
+                                "example1":{
+                                    "summary": "",
+                                    "description": "",
+                                    "value":{"customer":{"id":{"delivery_address":1,"billing_address":0,"isAdmin":false,"taxDisplay":true,"isActive":true,"isActiveAccount":false,"accessList":[],"_id":null,"attributes":[],"set_attributes":null,"civility":0,"lastname":"BOND","firstname":"James","email":"james.bond@007.com","password":"RandomCryptedPassword","addresses":[{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0},{"_id":null,"line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0}],"preferredLanguage":"fr","activateAccountToken":null,"createdAt":"2022-04-25T13:05:45.992Z","updatedAt":"2022-04-25T13:07:34.279Z","__v":0,"lastConnexion":"2022-04-25T13:07:34.279Z","fullname":"James BOND"},"email":"james.bond@007.com","phone":null},"addresses":{"billing":{"_id":"62669ca9c9c68f4547f1ebed","line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0},"delivery":{"_id":"62669ca9c9c68f4547f1ebee","line1":"12 road street","zipcode":"012345","city":"London","phone_mobile":"0102030405","isoCountryCode":"GB","firstname":"James","lastname":"BOND","civility":0}}}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "tags": [
                 "Cart"
             ],
             "security": [{"user_authorization": []}],
+            "description": "Add a new carrier",
             "requestBody": {
                 "description": "",
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#components/schemas/PostBody"
+                            "cartId":"ObjectID",
+                            "shipment":{
+                                "type":{"type":"string"},
+                                "_id":"ObjectID",
+                                "code":{"type":"string"},
+                                "freePriceLimit":{"type":"number"},
+                                "url_logo":{"type":"string"},
+                                "price":{"type":"number"},
+                                "dateDelivery":{"type":"date"},
+                                "name":{"type":"string"}
+                            },
+                            "isoCountryCode":{"type":"string"},
+                            "lang":{"type":"string"}
+                        },
+                        "examples":{
+                            "example1":{
+                                "summary": "Add a new carrier",
+                                "description": "Add a new carrier",
+                                "value":{"cartId":null,"shipment":{"type":"DELIVERY","_id":null,"code":"std","freePriceLimit":100,"url_logo":"/medias/shipper.png","price":2,"dateDelivery":"2022-04-27T12:47:51.085Z","name":"MyCarrier"},"isoCountryCode":"FR","lang":"fr"}
+                            }
                         }
-                    }
+                    }        
                 }
             }
         }
