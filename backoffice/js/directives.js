@@ -2271,7 +2271,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 entity: "=",
                 showalt: '@',
                 accepttype: '@',
-                beforeFunction: '&',
+                beforeFunction: '=',
                 afterFunction: '=',
                 onError: '&',
                 styleProp: '=',
@@ -2321,7 +2321,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                             for (var i = 0; i < files.length; i++) {
                                 var file = files[i];
                                 if (!file.$error) {
-                                    $scope.beforeFunction();
+                                    if(typeof $scope.beforeFunction === 'function') $scope.beforeFunction();
                                     if ($scope.type === "module"){
                                         $scope.up = Upload.upload({
                                             url: 'v2/modules/upload',
@@ -2403,63 +2403,63 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             case 'productsVariant':
                                             case 'products': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'module': {
-                                                $scope.afterFunction({module: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({module: response.data});
                                                 break;
                                             }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             default:
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                         }
                                         $scope.disableUpload = false;
