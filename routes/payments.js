@@ -9,11 +9,12 @@
 const {securityForceActif} = require('../middleware/security');
 const {adminAuthRight}     = require('../middleware/authentication');
 const ServicePayment       = require('../services/payments');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
     app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
-    app.put('/v2/paymentMethod', adminAuthRight('paymentMethods'), savePaymentMethod);
+    app.put('/v2/paymentMethod', adminAuthRight('paymentMethods'), autoFillCode, savePaymentMethod);
     app.post('/v2/payments/order', adminAuthRight('payments'), getOrdersPayments);
     app.post('/v2/payment/info', adminAuthRight('payments'), infoPayment);
     app.put('/v2/payment/update', adminAuthRight('payments'), updatePayment);
