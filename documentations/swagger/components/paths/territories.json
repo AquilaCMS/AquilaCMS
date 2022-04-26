@@ -99,7 +99,7 @@
                                     "datas": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/territoriesSchema"
+                                            "$ref": "#/components/schemas/territorySchema"
                                         }
                                     },
                                     "count": {
@@ -146,7 +146,7 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#/components/schemas/TerritorySchema"
+                            "$ref": "#/components/schemas/territorySchema"
                         }
                     }
                 },

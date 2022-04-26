@@ -9,7 +9,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/cart"
+                                "$ref": "#/components/schemas/cartSchema"
                             }
                         }
                     }

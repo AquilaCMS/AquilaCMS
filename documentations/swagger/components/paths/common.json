@@ -10,7 +10,7 @@
                         "schema": {
                             "url": {"type":"array"}
                         },
-                        "example":{
+                        "examples":{
                             "example1":{
                                 "description":"Put the path of what you want",
                                 "value":{"url":["",""]}
@@ -27,7 +27,7 @@
                         "schema": {
                             "" : {"type":"array"}
                         },
-                        "example":{
+                        "examples":{
                             "example1":{
                                 "description":"Put the path of what you want",
                                 "value":[{"text":"Accueil","link":"/","isHome":true}]
