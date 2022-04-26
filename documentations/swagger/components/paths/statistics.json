@@ -14,7 +14,55 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "yesterday":{
+                                    "nbOrder":{"type":"number"},
+                                    "averageCart":{"type":"number"},
+                                    "ca":{"type":"number"},
+                                    "transfo":{"type":"number"},
+                                    "newClient":{"type":"number"},
+                                    "attendance":{"type":"number"},
+                                    "nbOrderPaid":{"type":"number"},
+                                    "nbOrderNotPaid":{"type":"number"}
+                                },
+                                "today":{
+                                    "nbOrder":{"type":"number"},
+                                    "averageCart":{"type":"number"},
+                                    "ca":{"type":"number"},
+                                    "transfo":{"type":"number"},
+                                    "newClient":{"type":"number"},
+                                    "attendance":{"type":"number"},
+                                    "nbOrderPaid":{"type":"number"},
+                                    "nbOrderNotPaid":{"type":"number"}
+                                },
+                                "month":{
+                                    "nbOrder":{"type":"number"},
+                                    "averageCart":{"type":"number"},
+                                    "ca":{"type":"number"},
+                                    "transfo":{"type":"number"},
+                                    "newClient":{"type":"number"},
+                                    "attendance":{"type":"number"},
+                                    "nbOrderPaid":{"type":"number"},
+                                    "nbOrderNotPaid":{"type":"number"}
+                                }
+                            },
+                            "examples":{
+                                "example1":{
+                                    "summary": "",
+                                    "description": "Get the satistics from today, yesterday and the month",
+                                    "value":{"yesterday":{"nbOrder":0,"averageCart":0,"ca":0,"transfo":0,"newClient":1,"attendance":0,"nbOrderPaid":0,"nbOrderNotPaid":0},"today":{"nbOrder":0,"averageCart":0,"ca":0,"transfo":0,"newClient":0,"attendance":4,"nbOrderPaid":0,"nbOrderNotPaid":0},"month":{"nbOrder":0,"averageCart":0,"ca":0,"transfo":0,"newClient":1,"attendance":0,"nbOrderPaid":0,"nbOrderNotPaid":0}}
+                                }
+                            }
+                        }
+                    }
+                }
+
+            },
             "parameters": [],
             "tags": [
                 "Statistics"
@@ -47,7 +95,44 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description":"sucess",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "datas":[{
+                                    "c":[
+                                        {"v":{"type":"string"}},
+                                        {"v":{"type":"string"}},
+                                        {"v":{"type":"string"}},
+                                        {"v":{"type":"number"}},
+                                        {"v":{"type":"number"},"f":{"type":"string"}},
+                                        {"v":{"type":"number"}},
+                                        {"v":{"type":"number"}},
+                                        {"v":{"type":"number"}}
+                                    ]
+                                }],
+                                "datasObject":[{
+                                    "_id":"ObjectID",
+                                    "items":{"type":"array"},
+                                    "priceTotal":{
+                                        "et":{"type":"number"},
+                                        "ati":{"type":"number"},
+                                        "paidTax":{"type":"boolean"}
+                                    }
+                                }]
+                            },
+                            "examples":{
+                                "example1":{
+                                    "description":"Get the statistics from how much you earn with each product",
+                                    "value":{"datas":[{"c":[{"v":"p000002"},{"v":"T-shirt blanc/vert"},{"v":"<img src=\"/images/products/100x100-50/5d443fb5ede1945f660284e8/produit_2.jpg\" class='stat-tableImg no-product-image' style='height:100px' />"},{"v":18.33},{"v":22,"f":"22 €"},{"v":1},{"v":18.33},{"v":22}]}],"datasObject":[{"_id":null,"items":[],"priceTotal":{"et":12.5,"ati":15,"paidTax":true}}]}                                
+                                }
+                            }
+                        }       
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Statistics"
@@ -58,7 +143,19 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description":"Get the number of order you got",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "datas":{"type":"array"},
+                                "datasObject":{"type":"array"}
+                            }
+                        }
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Statistics"
@@ -69,7 +166,33 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description":"Get the top customers",
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "datas":[{
+                                    "c":[
+                                        {"v":{"type":"string"}},
+                                        {"v":{"type":"number"}}
+                                    ]
+                                }],
+                                "datasObject":[{
+                                    "_id":{"type":"string"},
+                                    "value":{"type":"number"}
+                                }]
+                            },
+                            "examples":{
+                                "example1":{
+                                    "value":{"datas":[{"c":[{"v":"abcde@gmail.com"},{"v":62}]}],"datasObject":[{"_id":"abcde@gmail.com","value":62}]}
+                                }
+                            }
+                            
+                         }
+                   }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Statistics"

@@ -3,7 +3,17 @@
         "post": {
             "deprecated": false,
             "security": [{"admin_authorization": []}],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref": "#components/schemas/cartSchema"
+                            }
+                        }
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Cart"
@@ -61,7 +71,7 @@
                 "Cart"
             ],
             "requestBody": {
-                "description": "test description",
+                "description": "Get the cart of the id client",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -89,13 +99,12 @@
         "post": {
             "deprecated": false,
             "security": [],
-            "description" : "Get your cart with all your information needed for the delivery",
             "responses": {
                 "200": {
-                    "description": "",
+                    "description": "Get your cart with all the needed information for the delivery",
                     "content": {
                         "schema": {
-                            "$ref" : "#components/schemas/cart"
+                            "$ref" : "#components/schemas/cartSchema"
                         },
                         "examples": {
                             "example1": {
@@ -172,8 +181,11 @@
         "delete": {
             "deprecated": false,
             "security": [],
-            "description": "Delete the item with itemID as id from the cart with cartID as id",
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description":"Delete the itemId item from the cartId cart"
+                }
+            },
             "parameters": [
                 {
                     "name": "cartId",
@@ -203,8 +215,11 @@
         "delete": {
             "deprecated": false,
             "security": [],
-            "description": "Delete a discount from the card with cardID as id",
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description": "Delete a discount from the card with cardID as id"
+                }
+            },
             "parameters": [
                 {
                     "name": "cartId",
@@ -225,14 +240,13 @@
         "put": {
             "deprecated": false,
             "security": [],
-            "description" : "Add \"quantity\" items to your cart",
             "responses": {},
             "parameters": [],
             "tags": [
                 "Cart"
             ],
             "requestBody": {
-                "description": "",
+                "description" : "Add \"quantity\" items to your cart",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -264,8 +278,10 @@
         "put": {
             "deprecated": false,
             "security": [],
-            "description": "Modify the number of \"items\" in your cart",
-            "responses": {"200":{
+            
+            "responses": {
+                "200":{
+                    "description":"Modify the number of \"items\" in your cart",
                 "content":{
                     "application/json":{
                         "schema":{
@@ -404,9 +420,9 @@
         "put": {
             "deprecated": false,
             "security": [],
-            "description": "",
             "responses": {
                 "200":{
+                    "description":"An adress has bee add to your cart",
                     "content":{
                         "application/json":{
                             "schema":{
@@ -545,7 +561,7 @@
         "put": {
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "A delivery has been had to your cart",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -624,9 +640,8 @@
                 "Cart"
             ],
             "security": [{"user_authorization": []}],
-            "description": "Add a new carrier",
             "requestBody": {
-                "description": "",
+                "description": "A new carrier has been had",
                 "content": {
                     "application/json": {
                         "schema": {
