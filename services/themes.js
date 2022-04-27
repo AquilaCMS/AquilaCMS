@@ -9,14 +9,13 @@
 const mongoose                     = require('mongoose');
 const path                         = require('path');
 const slash                        = require('slash');
-const {fs}                         = require('aql-utils');
+const {fs, execCmd}                = require('aql-utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
 const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
-const packageManager               = require('../utils/packageManager');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -395,7 +394,7 @@ async function languageInitExec(theme = global.envConfig.environment.currentThem
             const langs       = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
             const tabLang     = langs.datas.map((_lang) => _lang.code);
             const defaultLang = await ServiceLanguages.getDefaultLang();
-            returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
+            returnValues      = await execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
             if (returnValues.stderr === '') {
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {

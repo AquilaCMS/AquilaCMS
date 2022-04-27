@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const {slugify}     = require('aql-utils');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose                = require('mongoose');
+const {slugify, aquilaEvents} = require('aql-utils');
+const utilsDatabase           = require('../../utils/database');
+const Schema                  = mongoose.Schema;
 
 const LanguagesSchema = new Schema({
     code            : {type: String, required: true, unique: true},
