@@ -74,7 +74,7 @@
                 <div style="width: 50%;float: right;margin-top:10px" ng-if="isEditMode">
                     <div class="col-md-10">
                         <label translate>mail.detail.attachment</label>
-                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
+                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before"
                             after-function="after" lang="lang" on-error="uploadError()"></ns-upload-files>
                         <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">
                             <tr ng-repeat-start="file in mail.translation[lang].attachments">

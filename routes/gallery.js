@@ -8,12 +8,13 @@
 
 const ServiceGallery   = require('../services/gallery');
 const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/galleries', adminAuthRight('gallery'), getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
-    app.put('/v2/gallery', adminAuthRight('gallery'), setGallery);
+    app.put('/v2/gallery', adminAuthRight('gallery'), autoFillCode, setGallery);
     app.put('/v2/gallery/:_id/item', adminAuthRight('gallery'), setItemGallery);
     app.put('/v2/gallery/:_id/items', adminAuthRight('gallery'), setItemsGallery);
     app.delete('/v2/gallery/:_id', adminAuthRight('gallery'), deleteGallery);

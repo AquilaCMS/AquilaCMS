@@ -8,7 +8,6 @@
 
 const ServiceOrder                                = require('../services/orders');
 const ServiceAuth                                 = require('../services/auth');
-const {middlewareServer}                          = require('../middleware');
 const {authentication, adminAuth, adminAuthRight} = require('../middleware/authentication');
 const {isAdmin}                                   = require('../utils/utils');
 
@@ -16,28 +15,14 @@ module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
     app.post('/v2/order/rma', adminAuthRight('orders'), rma);
-    /* THIS ROUTE HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuth, infoPayment);
-    /** ******************************************* */
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
     app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
     app.post('/v2/order/delpkg', adminAuthRight('orders'), delPackage);
     app.put('/v2/order/updateStatus', adminAuth, updateStatus);
-    /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
-    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuth, updatePayment);
-    /** ******************************************* */
     app.post('/v2/order/:id', getOrderById);
     app.put('/v2/order/cancel/:id', adminAuthRight('orders'), cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
     app.put('/v2/order', adminAuthRight('orders'), setOrder);
-
-    /* THESE ROUTES HAVE BEEN MOVED TO payments.js */
-    app.post('/v2/order/infoPayment', middlewareServer.deprecatedRoute, adminAuthRight('orders'), infoPayment);
-    app.post('/v2/order/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
-    app.put('/v2/order/updatePayment', middlewareServer.deprecatedRoute, adminAuthRight('orders'), updatePayment);
-
-    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, orderPayment);
 };
 
 /**
@@ -198,52 +183,5 @@ async function cancelOrderRequest(req, res, next) {
         res.end();
     } catch (err) {
         return next(err);
-    }
-}
-
-/* THESE ROUTES HAVE BEEN MOVED TO payments.js */
-/* THIS ROUTE HAS BEEN MOVED TO payments.js */
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function infoPayment(req, res, next) {
-    try {
-        const order = await ServiceOrder.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
-        res.json(order);
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/* THIS ROUTE HAS BEEN MOVED TO payments.js */
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function updatePayment(req, res, next) {
-    try {
-        return res.json(await ServiceOrder.updatePayment(req.body));
-    } catch (e) {
-        next(e);
-    }
-}
-
-/* THIS ROUTE HAS BEEN MOVED TO payments.js */
-/**
- * Create a payment and return a form for front-end redirection
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function orderPayment(req, res, next) {
-    try {
-        return res.send(await ServiceOrder.payOrder(req));
-    } catch (e) {
-        next(e);
     }
 }

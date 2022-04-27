@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
 
 const MailTypeSchema = new Schema({
     code        : {type: String, unique: true, sparse: true},
@@ -24,5 +25,7 @@ MailTypeSchema.pre('validate', function (next) {
     }
     next();
 });
+
+aquilaEvents.emit('mailTypeSchemaInit', MailTypeSchema);
 
 module.exports = MailTypeSchema;

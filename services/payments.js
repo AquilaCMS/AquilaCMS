@@ -92,8 +92,6 @@ const savePaymentMethod = async (pm) => {
 
 const deletePaymentMethod = async (_id) => PaymentMethods.findOneAndDelete({_id});
 
-// --------------------------------------------------- POST REFACTOR
-
 const successfulPayment = async (query, updateObject, paymentCode = '') => {
     console.log('service order successfulPayment()');
 

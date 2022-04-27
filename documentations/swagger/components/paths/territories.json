@@ -9,7 +9,28 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PostBody"
+                                "datas":[{
+                                    "_id":"ObjectID",
+                                    "children":{"type":"array"},
+                                    "code":{"type":"string"},
+                                    "type":{"type":"string"},
+                                    "__v":{"type":"number"},
+                                    "name":{"type":"string"}
+                                },{
+                                    "_id":"ObjectID",
+                                    "children":[],
+                                    "code":{"type":"string"},
+                                    "type":{"type":"string"},
+                                    "__v":{"type":"number"},
+                                    "name":{"type":"string"}
+                                }],
+                                "count":{"type":"number"}
+                            },
+                            "examples":{
+                                "example1":{
+                                    "description":"",
+                                    "value":{"datas":[{"_id":null,"children":[],"code":"FR","type":"country","__v":0,"name":"France"},{"_id":null,"children":[],"code":"GB","type":"country","__v":0,"name":"Royaume-uni"}],"count":2}
+                                }
                             }
                         }
                     }
@@ -78,7 +99,7 @@
                                     "datas": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/territoriesSchema"
+                                            "$ref": "#/components/schemas/territorySchema"
                                         }
                                     },
                                     "count": {
@@ -125,7 +146,7 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#/components/schemas/TerritorySchema"
+                            "$ref": "#/components/schemas/territorySchema"
                         }
                     }
                 },
@@ -162,7 +183,7 @@
                         }
                     }
                 },
-                "description": "PostBody",
+                "description": "Get a specific territory having {id} for id",
                 "required": false
             }
         },
@@ -198,7 +219,56 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "0":[
+                                    {
+                                        "children": [],
+                                        "_id": "ObjectID",
+                                        "code": {"type":"string"},
+                                        "type": {"type":"string"},
+                                        "__v": {"type":"number"},
+                                        "name": {"type":"string"}
+                                    },
+                                    {
+                                        "children": [],
+                                        "_id": "ObjectID",
+                                        "code": {"type":"string"},
+                                        "type": {"type":"string"},
+                                        "__v": {"type":"number"},
+                                        "name": {"type":"string"}
+                                    }
+                                ]
+                            },
+                            "examples":{
+                                "example1":{
+                                    "value":[
+                                        {
+                                            "children": [],
+                                            "_id": "5ce662d540976ecd7f468543",
+                                            "code": "FR",
+                                            "type": "country",
+                                            "__v": 0,
+                                            "name": "France"
+                                        },
+                                        {
+                                            "children": [],
+                                            "_id": "5ce662d540976ecd7f46854e",
+                                            "code": "GB",
+                                            "type": "country",
+                                            "__v": 0,
+                                            "name": "Royaume-uni"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
                 "Territory"
