@@ -362,8 +362,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                                 $scope.sortShortCodes = function(string){
                                     for (const i in $scope.shortcodes) {
-                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase()))) {
-                                            $scope.shortcodes[i].sort = true;
+                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase())) || ($scope.shortcodes[i].translation && $scope.shortcodes[i].tag.toLowerCase().includes(string.toLowerCase())) ) {                                            $scope.shortcodes[i].sort = true;
                                         }else{
                                             $scope.shortcodes[i].sort = false;
                                         }
@@ -469,77 +468,41 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     return false
                                 }
 
-                            $scope.size = {};
-                            $scope.size.max = true;
-                            $scope.size.keepRatio = true;
-                            $scope.size.ratio = 1
-
-                            $scope.changeSwitch = function(){
-                                if ($scope.size.max === true){
-                                    $scope.size.max = false;
-                                }else{
-                                    $scope.size.max = true;
-                                }
-                            }
-
-                            $scope.selectImage = function(image){
+                            $scope.selectImage = function (image) {
                                 $scope.imageId = image._id;
                                 $scope.imageSelected = image.link;
-                                $scope.getMeta(image.link)
-                            };
-
-                            $scope.sizeChange = function (type, size) {
-                                if($scope.size.keepRatio) {
-                                    if(type === 'width') {
-                                        $scope.size.height = Math.round(size / $scope.size.ratio)
-                                    } else {
-                                        $scope.size.width = Math.round(size * $scope.size.ratio)
-                                    }
-                                }
-                            }
-
-                            $scope.getMeta = function (url) {
-                                const img = new Image();
-                                img.src = url;
-                                img.onload = function() { 
-                                    $scope.size.ratio = this.width / this.height;
-                                    $scope.size.width = this.width;
-                                    $scope.size.height = this.height;
-                                    $scope.$apply()
-                                }
-                            }
-
-                            $scope.generate = function () {
-                                let url = $scope.imageSelected.split('medias/')[1];
-                                if($scope.size.max){
-                                    url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
-                                }else{
-                                    url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
-                                }
-                                $modalInstance.close(url);
+                                $scope.media = image
                             };
 
                             $scope.cancel = function () {
                                 $modalInstance.dismiss('cancel');
                             };
-
-                            $scope.media = {
-                                link : "",
-                                name : 'new-' + Math.floor(Math.random() * 1024),
-                                group: "",
+                            
+                            $scope.generate = function (url) {
+                                $modalInstance.close(url);
                             };
+
+                            $scope.media = {};
 
                         }],
                         resolve: {
                         }
                     });
                     modalInstance.result.then(function (url) {
+                        let tag = '<img src="' + url + '"/>'
+                        const stringSizeQual = url.split('/')[url.split('/').length - 3]
+                        if(stringSizeQual) {
+                            const size = stringSizeQual.split('-')[0]
+                            if(size && size.toLowerCase() !== 'max') {
+                                tag = '<img src="' + url + '" width="' + size.split("x")[0] + '" height="' + size.split("x")[1] + '"/>'
+                            }
+                        }
                         if ($scope.tinymceId) {
-                        tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
-                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                    } else {
-                        tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
-                    }
+                            tinyMCE.get($scope.tinymceId).selection.setContent(tag);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent(tag);
+                        }
                     });
                 };
 
@@ -552,7 +515,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.lang = lang;
                                 $scope.selected = {};
 
-                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
                                     $scope.pages = {};
                                     $scope.pages = staticsList.datas;
                                     if ($scope.pages[0]) {
@@ -562,7 +525,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         $scope.group = staticsList.datas.getAndSortGroups()[0];
                                     }
                                 });
-                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 0 } }, function (response) {
                                     $scope.categories = {};
                                     $scope.categories = response.datas;
                                     if ($scope.categories[0]) {
@@ -909,6 +872,10 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         link: function (scope, element, attrs)
         {
             var el;
+            scope.selectColor = function (colorString) {
+                scope.att.translation[scope.lang].value = colorString
+            }
+
             scope.$watch('att.type', function(newValue, oldValue, elScope) {
                 el = angular.element("<span/>");
                 scope.optionColor = {
@@ -990,6 +957,15 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                                 "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
                             "</div>"
                         );
+                        break;
+                    case "listcolor":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <ul style='list-style: none;padding: 5px;'>" +
+                            "    <li style='width: 90px; display: inline-block; margin-right: 10px;padding: 2px; border-radius: 5px;{{value === att.translation[lang].value ? \"border: 2px solid #576fa1;\": \"\"}}' ng-click='selectColor(value)' ng-repeat='value in att.translation[lang].values'>"+
+                            "       <p style='box-sizing: border-box; text-align: center; cursor: pointer; border-radius: 5px; padding: 5px; background-color: {{value}};'>{{value}}</p>"+
+                            "    </li>" +
+                            "    </ul>" +
+                            "</div>");
                         break;
                 }
                 $compile(el)(scope);
@@ -1574,7 +1550,7 @@ adminCatagenDirectives.directive("nsRule", [
                 condType: "="
             },
             replace: true,
-            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2)
+            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2, PictoApi)
             {
                 var langs = [];
 
@@ -1612,13 +1588,26 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     // on recup les univers
                     $scope.attributesClassed = [];
-                    SuppliersV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    SuppliersV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values.supplier_ref = response.datas;
                     })
-                    TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    TrademarksV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
                     })
-                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                    PictoApi.list({PostBody: {filter: {}, limit: 0}}, function (response) {
+                        $scope.attributesClassed.push(
+                        {
+                            value: "pictos.code",
+                            type: "select",
+                            params: {
+                                values: response.datas.map(data => data.code),
+                                type: 'pictos'
+                            },
+                            name: 'pictos_code'
+                        })
+
+                    })
+                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 0}}, function (response)
                     {
                         response.datas.map(function (element)
                         {
@@ -1832,7 +1821,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             )
                         }
-                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 0}}, function (response)
                         {
                             response.datas.map(function (element) {
                                 var type = (function (type)
@@ -2223,8 +2212,21 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*'}}, function ({datas})
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 0, structure: '*', populate: {
+                                path : 'parent',
+                                populate : {
+                                    path : 'parent'
+                                }
+                            }}}, function ({datas})
                             {
+                                for(const data of datas) {
+                                    if(data.parent) {
+                                        data.name = data.parent.name + ' > ' + data.name
+                                        if(data.parent.parent) {
+                                            data.name = data.parent.parent.name + ' > ' + data.name
+                                        }
+                                    }
+                                }
                                 $scope.families[attr.value] = datas;
                             });
                         } else if(attr.type === "select" || attr.type === "multiselect")
@@ -2269,13 +2271,14 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 entity: "=",
                 showalt: '@',
                 accepttype: '@',
-                beforeFunction: '&',
-                afterFunction: '&',
+                beforeFunction: '=',
+                afterFunction: '=',
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
                 isSelected: '=',
                 uploadUrl: '=',
+                isVariant: '=',
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
@@ -2311,13 +2314,14 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                     });
 
                     $scope.upload = function (files) {
+                        if($scope.isVariant) $scope.type = 'productsVariant'
                         $scope.disableUpload = true;
                         $scope.progress = [];
                         if (files && files.length) {
                             for (var i = 0; i < files.length; i++) {
                                 var file = files[i];
                                 if (!file.$error) {
-                                    $scope.beforeFunction();
+                                    if(typeof $scope.beforeFunction === 'function') $scope.beforeFunction();
                                     if ($scope.type === "module"){
                                         $scope.up = Upload.upload({
                                             url: 'v2/modules/upload',
@@ -2397,65 +2401,65 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         $scope.files.splice(index, 1);
                                         switch ($scope.type) {
                                             case 'productsVariant':
-                                            case 'product': {
+                                            case 'products': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'module': {
-                                                $scope.afterFunction({module: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({module: response.data});
                                                 break;
                                             }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             default:
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                         }
                                         $scope.disableUpload = false;
@@ -2496,5 +2500,145 @@ adminCatagenDirectives.directive('replaceComma', function () {
             })
 
         }
+    }
+});
+
+adminCatagenDirectives.directive('nsFormImageCache', function () {
+    return {
+        scope: false,
+        templateUrl: "views/templates/nsFormImageCache.html",
+        controller: ["$scope", "toastService", "$translate",
+            function ($scope, toastService, $translate) {
+            $scope.positions = [
+                {
+                    pos: "center",
+                    id: "center"
+                },
+                {
+                    pos: "top",
+                    id: "top"
+                },
+                {
+                    pos: "bottom",
+                    id: "bottom"
+                },
+                {
+                    pos: "left",
+                    id: "left"
+                },
+                {
+                    pos: "right",
+                    id: "right"
+                },
+                {
+                    pos: "top-left",
+                    id: "topLeft"
+                },
+                {
+                    pos: "top-right",
+                    id: "topRight"
+                },
+                {
+                    pos: "bottom-left",
+                    id: "bottomLeft"
+                },
+                {
+                    pos: "bottom-right",
+                    id: "bottomRight"
+                }
+            ];
+    
+            $scope.getTranslation = function(pos){
+                return `medias.modal.${pos}`;
+            }
+            $scope.info = {
+                max: true,
+                keepRatio: true,
+                ratio: 1,
+    
+                crop:false,
+                position:"center",
+                background:false,
+                height: "",
+                width: "",
+                quality: 80,
+                r:255,
+                g:255,
+                b:255,
+                alpha:1
+            };
+    
+            $scope.generer = function () {
+                let size = 'max'
+                if(!$scope.info.max) {
+                    size = $scope.info.width + "x" + $scope.info.height
+                }
+                
+                const quality = $scope.info.quality;
+                let filename = "";
+                if ($scope.info.name !== undefined) {
+                    filename = $scope.info.name
+                } else {
+                    filename = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
+                }
+    
+                let background  = '';
+                let crop        = '';
+                if (
+                    (!$scope.info.height || !$scope.info.width || !quality)
+                    || (
+                        $scope.info.background
+                        && (
+                            ($scope.info.r === undefined || $scope.info.r < 0) || ($scope.info.g === undefined || $scope.info.g < 0) || ($scope.info.b === undefined || $scope.info.b < 0) ||
+                            !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
+                    )
+                ) {
+                    toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
+                } else {
+                    if ($scope.info.background) {
+                        if ($scope.info.alpha) {
+                            if ($scope.info.alpha > 1) {
+                                $scope.info.alpha = 1;
+                            }
+                        }
+                        background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
+                    }
+                    if ($scope.info.crop) {
+                        crop = `-crop-${$scope.info.position}`;
+                    }
+                    toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
+                    $scope.link = `${window.location.origin}/images/${$scope.media.type}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    return $scope.link
+                }
+            };
+    
+            $scope.sizeChange = function (type, size) {
+                if($scope.info.keepRatio) {
+                    if(type === 'width') {
+                        $scope.info.height = Math.round(size / $scope.info.ratio)
+                    } else {
+                        $scope.info.width = Math.round(size * $scope.info.ratio)
+                    }
+                }
+            }
+    
+            $scope.getMeta = function (url) {
+                const img = new Image();
+                img.src = url;
+                img.onload = function() { 
+                    $scope.info.ratio = this.width / this.height;
+                    $scope.info.width = this.width;
+                    $scope.info.height = this.height;
+                    $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
+                    $scope.$apply()
+                }
+            }
+
+            $scope.$watch(function (scp) {return scp.media}, function(oldValue, newValue) {
+                if (newValue)
+                    $scope.getMeta(newValue.link)
+            }, true);
+
+        }]
     }
 });

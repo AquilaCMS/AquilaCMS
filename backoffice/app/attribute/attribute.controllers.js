@@ -139,6 +139,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.generateInputs();
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
+                $scope.attribute.update = true;
             });
         };
 
@@ -204,7 +205,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 let count = 0;
                 let j     = 0;
                 while ($scope.valuesError == '' && j < $scope.attribute.translation[$scope.lang].values.length) {
-                    if ($scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
+                    if (i !== j && $scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
                         count++;
                     }
 
@@ -245,7 +246,6 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                     }
                 }
 
-                data.update = true;
                 data._type  = $scope._type;
                 AttributesV2.save(data, function (res) {
                     if (res._id) {

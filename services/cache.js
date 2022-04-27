@@ -7,6 +7,7 @@
  */
 
 const glob           = require('glob');
+const path           = require('path');
 const {fs}           = require('aql-utils');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
@@ -30,8 +31,7 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const _path       = require('../utils/server').getUploadDirectory();
-    const cacheFolder = `${_path}/cache/`;
+    const cacheFolder = path.join(global.envConfig.environment.photoPath, 'cache');
     let fileName      = '';
     let filePathCache = '';
 
@@ -48,11 +48,16 @@ const deleteCacheImage = (type, datas) => {
         filePathCache = `${cacheFolder}medias/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
+    case 'category':
+        const extension = datas.extension || path.extname(datas.filename);
+        fileName        = path.basename(datas.filename, extension);
+        filePathCache   = `${cacheFolder}category/${fileName}*`;
+        deleteFileCache(filePathCache);
+        break;
     case 'slider':
     case 'gallery':
     case 'blog':
     case 'picto':
-    case 'category':
         fileName      = datas.filename;
         filePathCache = `${cacheFolder}${type}/${fileName}*`;
         deleteFileCache(filePathCache);

@@ -38,7 +38,9 @@
         "errorList": "Il y a des valeurs en double dans la liste !",
         "error": "Erreur",
         "deleteAttribute": "Attribut supprimé",
-        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
+        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres",
+        "allowDeclinaison": "Utiliser comme declinaisons de produit",
+        "listcolor": "Liste de couleur"
     },
     "list": {
         "t1": "Attributs",

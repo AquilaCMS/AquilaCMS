@@ -7,20 +7,21 @@
  */
 
 const URL                  = require('url');
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const {StaticsPreview}     = require('../orm/models');
 const ServiceStatic        = require('../services/statics');
 const ServiceStaticPreview = require('../services/preview');
 const {isAdmin}            = require('../utils/utils');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
     app.post('/v2/static', securityForceActif(['active']), getStatic);
-    app.post('/v2/static/preview', adminAuth, previewStatic);
+    app.post('/v2/static/preview', adminAuthRight('staticPage'), previewStatic);
     app.post('/v2/static/:id', getStaticById);
-    app.put('/v2/static', adminAuth, setStatic);
-    app.delete('/v2/static/:id', adminAuth, deleteStatic);
+    app.put('/v2/static', adminAuthRight('staticPage'), autoFillCode, setStatic);
+    app.delete('/v2/static/:id', adminAuthRight('staticPage'), deleteStatic);
 };
 
 /**

@@ -1,20 +1,27 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
     <ns-box data-title="mail.detail.t1" title-icon="fa fa-envelope fa-lg" close-href="#/mails">
-        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form" additionnal-buttons="additionnalButtons">
+        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)"
+            save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form"
+            additionnal-buttons="additionnalButtons">
             <ns-translation lang-change="langChange(lang)" ng-model="lang" class="pull-right"></ns-translation>
+            
+            <div hook-mail-detail data="mail">
+            
                 <div style="width: 50%;float:left;margin-top:10px">
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="type" class="col-sm-3 control-label" translate>mail.detail.type</label>
                             <div class="col-sm-9">
                                 <select name="type" class="form-control" id="type" ng-model="mail.type">
-                                    <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.translation[adminLang].name}}</option>
+                                    <option ng-repeat="option in mailTypes" value="{{option.code}}">
+                                        {{option.translation[adminLang].name}}
+                                    </option>
                                 </select>
                             </div>
-                    
+
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="code" class="col-sm-3 control-label" translate>mail.detail.code</label>
@@ -26,12 +33,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="from" class="col-sm-3 control-label" translate>mail.detail.senderMail</label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" id="from" name="from" ng-model="mail.from" required>
+                                <input type="email" class="form-control" id="from" name="from" ng-model="mail.from"
+                                    required>
                                 <div class="ns-error-message" ng-show="form.from.$touched || form.nsSubmitted">
                                     <div ng-show="form.from.$error.required" translate>mail.detail.champRequis</div>
                                     <span ng-show="form.from.$error.email" translate>mail.detail.validMailPls</span>
@@ -39,16 +47,17 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="from" class="col-sm-3 control-label" translate>mail.detail.senderName</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="fromName" name="fromName" ng-model="mail.fromName">
+                                <input type="text" class="form-control" id="fromName" name="fromName"
+                                    ng-model="mail.fromName">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="subject" class="col-sm-3 control-label" translate>mail.detail.sujet</label>
@@ -65,33 +74,37 @@
                 <div style="width: 50%;float: right;margin-top:10px" ng-if="isEditMode">
                     <div class="col-md-10">
                         <label translate>mail.detail.attachment</label>
-                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
-                            after-function="after()" lang="lang" on-error="uploadError()"></ns-upload-files>
-                        <!-- <ns-upload-files is-selected="nsUploadFiles.isSelected" ng-if="!mail.translation[lang].attachments || mail.translation[lang].attachments.length < 1" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
-                            after-function="after()" lang="lang" on-error="uploadError()"></ns-upload-files> -->
-                        
-                            <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">
-                                <tr ng-repeat-start="file in mail.translation[lang].attachments">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr ng-repeat-end>
-                                    <td style="padding-left:10px; overflow: hidden;font-size:12px"><a target="_blank" href="{{file.path}}">{{getNameAttachment(file)}}</a></td>
-                                    <td style="text-align:right;padding:4px;"><button class="btn btn-red btn-with-icon" style="font-size:12px" ng-click="deletePdf($index, lang)" translate>mail.detail.delete</button></td>
-                                </tr>
-                            </table>
+                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before"
+                            after-function="after" lang="lang" on-error="uploadError()"></ns-upload-files>
+                        <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">
+                            <tr ng-repeat-start="file in mail.translation[lang].attachments">
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr ng-repeat-end>
+                                <td style="padding-left:10px; overflow: hidden;font-size:12px"><a target="_blank"
+                                        href="{{file.path}}">{{getNameAttachment(file)}}</a></td>
+                                <td style="text-align:right;padding:4px;"><button class="btn btn-red btn-with-icon"
+                                        style="font-size:12px" ng-click="deletePdf($index, lang)"
+                                        translate>mail.detail.delete</button></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
 
-            <div class="form-group">
-                <div class="col-sm-11">
-                    <label class="col-sm-2 control-label" translate>mail.detail.html</label>
-                    <div class="col-sm-12 tinyeditor-big" ng-if='mail.type === "" || mail.type'>
-                        <ns-tinymce lang="'lang'" mail="mail.type === '' ? 'none' : mail.type" text="mail.translation[lang].content"></ns-tinymce>
-                        <br />
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label class="col-sm-2 control-label" translate>mail.detail.html</label>
+                        <div class="col-sm-12 tinyeditor-big" ng-if='mail.type === "" || mail.type'>
+                            <ns-tinymce lang="'lang'" mail="mail.type === '' ? 'none' : mail.type"
+                                text="mail.translation[lang].content"></ns-tinymce>
+                            <br />
+                        </div>
                     </div>
                 </div>
+
             </div>
+
         </ns-buttons>
     </ns-box>
 </form>

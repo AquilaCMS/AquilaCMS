@@ -30,15 +30,56 @@ const {
 }                                 = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // if in the config, we ask not to return the stock fields, we add them to the restrictedFields
-if (global.envConfig.stockOrder.returnStockToFront !== true) {
+if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
+
+const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
+    const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
+    const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
+
+    const selectedFieldsArray = [
+        {name: `translation.${lang}.name`, weight: 100},
+        {name: 'code', weight: 5},
+        {name: `translation.${lang}.description1.title`, weight: 3},
+        {name: `translation.${lang}.description1.text`, weight: 2.5},
+        {name: `translation.${lang}.description2.title`, weight: 2},
+        {name: `translation.${lang}.description2.text`, weight: 1.5}];
+
+    // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
+    const options = {
+        shouldSort         : true,
+        findAllMatches     : true,
+        includeScore       : true,
+        ignoreLocation     : true,
+        ignoreFieldNorm    : true,
+        useExtendedSearch  : true,
+        minMatchCharLength : 2,
+        threshold          : 0.3, // 0.2 and 0.3 are the recommended values
+        keys               : selectedFieldsArray
+    };
+
+    const fuse    = new Fuse(allProductsWithSearchCriteria, options);
+    const fuseRes = fuse.search(pattern);
+    if (limit === 1) return {data: fuseRes.slice(0, 1), count: fuseRes.length};
+    const res = [];
+
+    let i = 0;
+    if (page !== 1) {
+        i = (page - 1) * limit;
+    }
+    while (i < limit + (page - 1) * limit && i < fuseRes.length) {
+        res.push(fuseRes[i]);
+        i++;
+    }
+    return {data: res, count: fuseRes.length};
+};
 
 /**
  * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
@@ -61,21 +102,34 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    // The fulltext search does not allow to cut words (search "TO" in "TOTO")
+
+    let count;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
-
-        PostBody.filter.$or = [];
-        PostBody.filter.$or.push({[`translation.${lang}.name`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, PostBody.limit, PostBody.page, lang);
+        const data             = searchedProducts.data;
+        count                  = searchedProducts.count;
+        PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
+        PostBody.limit         = 0;
         delete PostBody.filter.$text;
+        delete PostBody.structure;
     }
-    let result                 = await queryBuilder.find(PostBody);
+
+    let result = await queryBuilder.find(PostBody);
+
+    if (PostBody.filter._id) {
+        result.count = count;
+        // We order the products according to the order given by the fuzzy search just before
+        result.datas.sort((a, b) => {
+            const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
+            const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
+            return aIndex - bIndex;
+        });
+        delete PostBody.filter._id;
+    }
+
     queryBuilder.defaultFields = defaultFields;
 
     // We delete the reviews that are not visible and verify
@@ -83,27 +137,27 @@ const getProducts = async (PostBody, reqRes, lang) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds              = await Products.find(PostBody.filter).lean();
-    const arrayPrice        = {et: [], ati: []};
-    const arraySpecialPrice = {et: [], ati: []};
-    for (const prd of prds) {
-        arrayPrice.et.push(prd.price.et.normal);
-        arrayPrice.ati.push(prd.price.ati.normal);
-    }
-    if (arrayPrice.et.length === 0) {
-        arrayPrice.et.push(0);
-    }
-    if (arrayPrice.ati.length === 0) {
-        arrayPrice.ati.push(0);
-    }
-    result.min = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    result.max = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
 
+    // Get the maximum and minimum price in the Produc's query
+    const normalET  = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.et.normal'}, max: {$max: '$price.et.normal'}}}
+    ]);
+    const normalATI = await Products.aggregate([
+        {$match: PostBody.filter},
+        {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
+    ]);
+    if (normalET.length > 0 & normalATI.length > 0) {
+        result.min = {et: normalET[0].min, ati: normalATI[0].min};
+        result.max = {et: normalET[0].max, ati: normalATI[0].max};
+    }
+
+    // Specials prices
+    const arraySpecialPrice = {et: [], ati: []};
     for (const prd of result.datas) {
         if (prd.price.et.special) {
             arraySpecialPrice.et.push(prd.price.et.special);
@@ -112,6 +166,20 @@ const getProducts = async (PostBody, reqRes, lang) => {
             arraySpecialPrice.ati.push(prd.price.ati.special);
         }
     }
+
+    // Need result.datas to get the specials prices (not from DB query)
+    // const specialNormalET  = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.et.special'}, max: {$max: '$price.et.special'}}}
+    // ]);
+    // const specialNormalATI = await Products.aggregate([
+    //     {$match: PostBody.filter},
+    //     {$group: {_id: null, min: {$min: '$price.ati.special'}, max: {$max: '$price.ati.special'}}}
+    // ]);
+    // if (specialNormalET.length > 0 & specialNormalATI.length > 0) {
+    //     result.specialPriceMin = {et: specialNormalET[0].min, ati: specialNormalATI[0].min};
+    //     result.specialPriceMax = {et: specialNormalET[0].max, ati: specialNormalATI[0].max};
+    // }
 
     result.specialPriceMin = {
         et  : Math.min(...arraySpecialPrice.et),
@@ -226,7 +294,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         orderable  : false,
         status     : 'liv'
     };
-    doc.code     = newCode;
+    doc.code     = utils.slugify(newCode);
     doc.active   = false;
     doc._visible = false;
     await doc.save();
@@ -456,12 +524,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     let products = prds.slice(skip, limit + skip);
 
-    // TODO P5 (hot) the code below allows to return the structure that we send in the PostBody because currently it returns all the fields
-    // this code does not work because _doc does not exist in products and removeFromStructure needs it
-    // if (Object.keys(PostBody.structure).length > 0) {
-    //     queryBuilder.removeFromStructure(PostBody.structure, tProducts);
-    // }
-
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
@@ -496,6 +558,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         } else if (PostBody.sort['price.priceSort.ati']) {
             products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
+    }
+
+    // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
+    if (Object.keys(PostBody.structure).length > 0) {
+        queryBuilder.removeFromStructure(PostBody.structure, products);
     }
 
     return {
@@ -603,8 +670,9 @@ const calculateFilters = async (req, result) => {
 
 const setProduct = async (req) => {
     // We update the product
-    const product = await Products.findById(req.body._id);
+    let product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
+    if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
@@ -620,8 +688,8 @@ const createProduct = async (req) => {
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     let body = req.body;
-    if (req.body.set_attributes === undefined) {
-        body = await serviceSetAttributs.addAttributesToProduct(req.body);
+    if (body.set_attributes === undefined) {
+        body = await serviceSetAttributs.addAttributesToProduct(body);
     }
     req.body.code = slugify(req.body.code);
     const res     = await Products.create(body);
@@ -662,10 +730,15 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantity to order
  * @returns {object}  Return Information
  */
-const checkProductOrderable = async (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0, selected_variant  = undefined) => {
     let prdStock = {};
     // if objstock is an id, we get the product
-    if (typeof objstock === 'string') {
+    if (selected_variant) {
+        prdStock = {
+            ...selected_variant.stock,
+            qty_real : Number(selected_variant.stock.qty) - Number(selected_variant.stock.qty_booked)
+        };
+    } else if (typeof objstock === 'string') {
         prdStock = (await Products.findById(objstock)).stock;
     } else {
         prdStock = objstock;
@@ -719,7 +792,6 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
             datas.ordering.orderable = true;
         }
     }
-
     return datas;
 };
 
@@ -981,6 +1053,7 @@ const downloadProduct = async (req, res) => {
 };
 
 const getProductsListing = async (req, res) => {
+    const structure = req.body.PostBody.structure;
     // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
@@ -1022,32 +1095,73 @@ const getProductsListing = async (req, res) => {
             });
         }
     }
+
+    if (Object.keys(structure).length > 0) {
+        queryBuilder.removeFromStructure(structure, result.datas);
+    }
+
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
-    if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
-        throw NSErrors.ProductNotSalable;
-    }
-    // if qty2 exists, it is either a product return or a shipment
-    if (qty2 !== undefined) {
-        // if qty2 === 0, it is a product return, sino, it is a shipment
-        if (qty2 === 0) {
-            // qty1 = the quantity to return
-            const qtyToReturn = qty1;
-            prd.stock.qty    += qtyToReturn;
-        } else if (qty1 === 0) {
-            const qtyToSend       = qty2;
-            prd.stock.qty        += qtyToSend;
-            prd.stock.qty_booked += qtyToSend;
-        }
+
+    if (selected_variant) {
+        await updateVariantsStock(prd, qty1, qty2, selected_variant);
     } else {
-        // in the case of an addition to the cart, qty change or deletion of an item in a cart
-        const qtyToAddOrRemove = qty1;
-        prd.stock.qty_booked  -= qtyToAddOrRemove;
+        if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
+        } else if (!prd.stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
+        }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn = qty1;
+                prd.stock.qty    += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend       = qty2;
+                prd.stock.qty        += qtyToSend;
+                prd.stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove = qty1;
+            prd.stock.qty_booked  -= qtyToAddOrRemove;
+        }
+        await prd.save();
     }
-    await prd.save();
+};
+
+const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
+    const selectedVariantIndex = prd.variants_values.findIndex((prdVariant) => prdVariant._id.toString() === selected_variant.id);
+    if (selectedVariantIndex > -1) {
+        if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
+        } else if (!prd.variants_values[selectedVariantIndex].stock.orderable) {
+            throw NSErrors.ProductNotOrderable;
+        }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn                                    = qty1;
+                prd.variants_values[selectedVariantIndex].stock.qty += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend                                             = qty2;
+                prd.variants_values[selectedVariantIndex].stock.qty        += qtyToSend;
+                prd.variants_values[selectedVariantIndex].stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove                                      = qty1;
+            prd.variants_values[selectedVariantIndex].stock.qty_booked -= qtyToAddOrRemove;
+        }
+        await prd.updateData(prd);
+    }
 };
 
 const handleStock = async (item, _product, inStockQty) => {
@@ -1061,7 +1175,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded, item.selected_variant)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {
@@ -1112,6 +1226,15 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
+const changeProductType = async (product, newType) => {
+    const oldProduct = await Products.findOne({code: product.code});
+    if (!(['simple', 'bundle', 'virtual']).includes(newType)) throw NSErrors.ProductTypeInvalid;
+    if (oldProduct && newType && newType !== oldProduct.type) {
+        return Products.findOneAndUpdate({_id: oldProduct._id}, {$set: {type: newType}}, {new: true});
+    }
+    return oldProduct;
+};
+
 module.exports = {
     getProducts,
     getProduct,
@@ -1130,5 +1253,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    changeProductType
 };

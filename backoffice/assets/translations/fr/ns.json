@@ -98,7 +98,8 @@
         "client_attr_translation": "Client : Attribut '{{attr}}' ({{lang}})",
         "translation_name": "Produit : Nom ({{lang}})",
         "translation_slug": "Produit : Slug ({{lang}})",
-        "attr.translation": "Produit : Attribut '{{attr}}' ({{lang}})"
+        "attr.translation": "Produit : Attribut '{{attr}}' ({{lang}})",
+        "pictos_code": "Pictogramme"
     },
     "help": {
         "products": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Produits.</a>",

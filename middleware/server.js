@@ -260,14 +260,35 @@ const restrictProductFields = (element, url) => {
             }
         }
     } else if (url.includes('v2/product')) {
-        for (const restrictedProductField of productsRestrictedFields) {
-            deletePropertyPath(element, restrictedProductField);
-        }
-        if (element.associated_prds && element.associated_prds.length && typeof element.associated_prds[0] !== 'string') {
-            for (const associated_prd of element.associated_prds) {
+        if (element.datas) {
+            for (const item of element.datas) {
                 for (const restrictedProductField of productsRestrictedFields) {
-                    deletePropertyPath(associated_prd, restrictedProductField);
+                    deletePropertyPath(item, restrictedProductField);
                 }
+                if (item.associated_prds && item.associated_prds.length && typeof item.associated_prds[0] !== 'string') {
+                    for (const associated_prd of item.associated_prds) {
+                        for (const restrictedProductField of productsRestrictedFields) {
+                            deletePropertyPath(associated_prd, restrictedProductField);
+                        }
+                    }
+                }
+                if (item.stats) {
+                    delete item.stats;
+                }
+            }
+        } else {
+            for (const restrictedProductField of productsRestrictedFields) {
+                deletePropertyPath(element, restrictedProductField);
+            }
+            if (element.associated_prds && element.associated_prds.length && typeof element.associated_prds[0] !== 'string') {
+                for (const associated_prd of element.associated_prds) {
+                    for (const restrictedProductField of productsRestrictedFields) {
+                        deletePropertyPath(associated_prd, restrictedProductField);
+                    }
+                }
+            }
+            if (element.stats) {
+                delete element.stats;
             }
         }
     }

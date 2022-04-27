@@ -12,8 +12,8 @@
  */
 
 const mongoose       = require('mongoose');
-const Schema         = mongoose.Schema;
 const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
 
 const ShortcodesSchema = new Schema({
     tag         : {type: String, required: true, unique: true},

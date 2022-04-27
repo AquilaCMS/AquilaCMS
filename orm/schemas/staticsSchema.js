@@ -8,6 +8,7 @@
 
 const mongoose            = require('mongoose');
 const {slugify}           = require('aql-utils');
+const {aquilaEvents}      = require('aql-utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
@@ -111,5 +112,7 @@ StaticsSchema.pre('findOneAndUpdate', async function (next) {
 StaticsSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
+
+aquilaEvents.emit('staticsSchemaInit', StaticsSchema);
 
 module.exports = StaticsSchema;

@@ -6,18 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}   = require('../middleware/authentication');
-const ServiceSystem = require('../services/system');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceSystem    = require('../services/system');
 
 module.exports = function (app) {
-    app
-        .post('/v2/system/log/file', adminAuth, getLogsContent);
+    app.post('/v2/system/log/file', adminAuthRight('system'), getLogsContent);
 };
 
 const getLogsContent = async (req, res, next) => {
     try {
         const fileName = req.body.name;
-        return res.json(await ServiceSystem.getLogsContent(fileName));
+        const page     = req.body.pageNbr;
+        return res.json(await ServiceSystem.getLogsContent(fileName, page));
     } catch (err) {
         return next(err);
     }

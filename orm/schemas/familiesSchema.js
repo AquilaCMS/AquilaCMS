@@ -102,4 +102,6 @@ FamiliesSchema.pre('findOneAndUpdate', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
+aquilaEvents.emit('familiesSchemaInit', FamiliesSchema);
+
 module.exports = FamiliesSchema;

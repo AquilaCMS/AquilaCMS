@@ -6,16 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}   = require('../middleware/authentication');
-const ServiceSlider = require('../services/slider');
+const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
+const ServiceSlider    = require('../services/slider');
 
 module.exports = function (app) {
     app.post('/v2/sliders', getSliders);
     app.post('/v2/slider', getSlider);
     app.post('/v2/slider/:id', getSliderById);
-    app.put('/v2/slider/:id?', adminAuth, setSlider);
-    app.delete('/v2/slider/:id', adminAuth, deleteSlider);
-    app.delete('/v2/slider/:_id/:_id_item', adminAuth, deleteItemSlider);
+    app.put('/v2/slider/:id?', adminAuthRight('slider'), autoFillCode, setSlider);
+    app.delete('/v2/slider/:id', adminAuthRight('slider'), deleteSlider);
+    app.delete('/v2/slider/:_id/:_id_item', adminAuthRight('slider'), deleteItemSlider);
 };
 
 /**

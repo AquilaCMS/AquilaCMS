@@ -58,7 +58,7 @@ const loadDynamicRoutes = (app) => {
  * Route exceptions
  */
 const manageExceptionsRoutes = async (req, res, next) => {
-    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico'].includes(path.extname(req.url).toLowerCase())) {
+    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', '.mp4'].includes(path.extname(req.url).toLowerCase())) {
         res.setHeader('Cache-Control', 'public, max-age=2592000');
 
         const dt = new Date(Date.now());

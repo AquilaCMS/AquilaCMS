@@ -44,5 +44,6 @@
     "reviewTitle": "Titre",
     "feedback": "Votre avis",
     "reviewNickname": "Votre surnom",
-    "review_successfully_sent": "Votre commentaire a bien été enregistré et sera affiché après validation"
+    "review_successfully_sent": "Votre commentaire a bien été enregistré et sera affiché après validation",
+    "variantUnavailable": "Cette déclinaison n'est pas disponible"
 }

@@ -6,22 +6,23 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const {filterCategories}   = require('../middleware/categories');
 const ServiceCategory      = require('../services/categories');
 const ServiceRules         = require('../services/rules');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
-    app.get('/v2/category/export/:catId', adminAuth, exportCategoryProducts);
-    app.post('/v2/category/import', adminAuth, importCategoryProducts);
-    app.post('/v2/category/execRules', adminAuth, execRules);
-    app.post('/v2/category/canonical', adminAuth, execCanonical);
-    app.post('/v2/category/applyTranslatedAttribs', adminAuth, applyTranslatedAttribs);
-    app.put('/v2/category', adminAuth, setCategory);
-    app.delete('/v2/category/:id', adminAuth, deleteCategory);
+    app.get('/v2/category/export/:catId', adminAuthRight('categories'), exportCategoryProducts);
+    app.post('/v2/category/import', adminAuthRight('categories'), importCategoryProducts);
+    app.post('/v2/category/execRules', adminAuthRight('categories'), execRules);
+    app.post('/v2/category/canonical', adminAuthRight('categories'), execCanonical);
+    app.post('/v2/category/applyTranslatedAttribs', adminAuthRight('categories'), applyTranslatedAttribs);
+    app.put('/v2/category', adminAuthRight('categories'), autoFillCode, setCategory);
+    app.delete('/v2/category/:id', adminAuthRight('categories'), deleteCategory);
 };
 
 /**
@@ -123,7 +124,7 @@ async function importCategoryProducts(req, res, next) {
         const {data, category} = req.body;
         res.json(await ServiceCategory.importCategoryProducts(data, category));
     } catch (err) {
-        console.log(err);
+        console.error(err);
         next(err);
     }
 }
@@ -132,7 +133,7 @@ async function exportCategoryProducts(req, res, next) {
     try {
         res.json(await ServiceCategory.exportCategoryProducts(req.params.catId));
     } catch (err) {
-        console.log(err);
+        console.error(err);
         next(err);
     }
 }

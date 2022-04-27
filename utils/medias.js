@@ -42,7 +42,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            await fs.rename(pathIn, filePathOut);
+            if (pathIn !== filePathOut) await fsp.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
@@ -53,9 +53,19 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     }
 };
 
-const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
+const getProductImageUrl = (product) => {
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default).url : '';
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
+};
 
-const getProductImageId = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : 'no-image');
+const getProductImageId = (product) => {
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : 'no-image';
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : 'no-image';
+};
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {
@@ -124,7 +134,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fs.existsSync(pathToCheck)) {
+            if (pathToCheck && await fsp.existsSync(pathToCheck) && !(await fsp.lstatSync(pathToCheck)).isDirectory()) {
                 return true;
             }
             return false;

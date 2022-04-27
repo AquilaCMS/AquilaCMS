@@ -2,7 +2,7 @@
     "cartSchema": {
         "description": "",
         "properties": {
-            "updated" : {"type": "string", "format": "date", "default": "Date.now"},
+            "updated" : {"type": "string", "format": "date"},
             "paidTax" : {"type": "boolean", "default": true},
             "status"  : {"type": "string", "enum": ["IN_PROGRESS", "EXPIRING", "EXPIRED"], "default": "IN_PROGRESS", "index": true},
             "createdAt" : {

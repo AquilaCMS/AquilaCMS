@@ -99,4 +99,6 @@ NewsSchema.post('save', async function (doc) {
     aquilaEvents.emit('aqNewArticle', doc);
 });
 
+aquilaEvents.emit('newsSchemaInit', NewsSchema);
+
 module.exports = NewsSchema;

@@ -12,7 +12,9 @@ const {aquilaEvents}                     = require('aql-utils');
 const {Users, SetAttributes, Attributes} = require('../orm/models');
 const servicesMail                       = require('./mail');
 const QueryBuilder                       = require('../utils/QueryBuilder');
+const utilsModules                       = require('../utils/modules');
 const NSErrors                           = require('../utils/errors/NSErrors');
+const modulesUtils                       = require('../utils/modules');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -36,10 +38,18 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody, true);
+    const user = await queryBuilder.findOne(PostBody, true);
+
+    return modulesUtils.modulesLoadFunctions('postGetUserById', {user}, async function () {
+        return user;
+    });
 };
 
-const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+const getUserByAccountToken = async (activateAccountToken) => {
+    if (!activateAccountToken) throw NSErrors.Unauthorized;
+    const user = await Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+    return {isActiveAccount: user?.isActiveAccount};
+};
 
 const setUser = async (id, info, isAdmin = false, lang) => {
     try {
@@ -99,7 +109,7 @@ const setUserAddresses = async (body) => {
     return userUpdated;
 };
 
-const createUser = async (body, isAdmin = false) => {
+const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunctions('createUser', {body, isAdmin}, async () => {
     // Control password
     body.activateAccountToken = crypto.randomBytes(26).toString('hex');
     body.isActiveAccount      = false;
@@ -135,6 +145,7 @@ const createUser = async (body, isAdmin = false) => {
             for (let i = 0; i < body.attributes.length; i++) {
                 const attribute                = await Attributes.findOne({code: body.attributes[i].code});
                 body.attributes[i].translation = attribute.translation;
+                if (attribute.type) body.attributes[i].type = attribute.type;
                 if (attribute.type === 'multiselect') {
                     body.attributes[i].translation[body.lang].values = body.attributes[i].values;
                 } else {
@@ -160,7 +171,7 @@ const createUser = async (body, isAdmin = false) => {
     });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
-};
+});
 
 const deleteUser = async (id) => {
     const query = {_id: id};

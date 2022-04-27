@@ -14,12 +14,12 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/component/{componentName}/{code}
- * @summary TODO
+ * @summary Get component's values
  */
 async function getComponent(req, res, next) {
     try {
         const {componentName, code} = req.params;
-        const result                = await ServiceComponent.getComponent(componentName, code, req.info);
+        const result                = await ServiceComponent.getComponent(componentName, code, req.info, req.body);
         return res.json(result);
     } catch (error) {
         return next(error);

@@ -6,20 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const authService                 = require('../services/auth');
-const usersServices               = require('../services/users');
+const {authentication, adminAuthRight, adminAuth} = require('../middleware/authentication');
+const authService                                 = require('../services/auth');
+const usersServices                               = require('../services/users');
 
 module.exports = function (app) {
-    app.post('/v2/users', adminAuth, getUsers);
+    app.post('/v2/users', adminAuth, getUsers); // not using adminAuthRight('clients') to let the "admin" also have access. Having both 'client' & 'admin' would be perfect
     app.post('/v2/user', authentication, getUser);
     app.post('/v2/user/resetpassword/:lang?', resetpassword);
     app.post('/v2/user/:id', authentication, getUserById);
     app.post('/v2/user/active/account', getUserByAccountToken);
     app.put('/v2/user/addresses', authentication, setUserAddresses);
     app.put('/v2/user', setUser);
-    app.delete('/v2/user/:id', adminAuth, deleteUser);
-    app.post('/v2/getUserTypes', adminAuth, getUserTypes);
+    app.delete('/v2/user/:id', adminAuthRight('clients'), deleteUser);
+    app.post('/v2/getUserTypes', adminAuthRight('clients'), getUserTypes);
 };
 
 /* POST /api/v2/users
@@ -152,9 +152,10 @@ async function getUserTypes(req, res, next) {
 async function resetpassword(req, res, next) {
     try {
         const {email, change, token, password, sendMail} = req.body;
+        const emailRegex                                 = new RegExp(`^${email}$`, 'i');
         let result;
         if (email && !change) {
-            result = await usersServices.generateTokenSendMail(email, req.params.lang || req.body.lang, sendMail);
+            result = await usersServices.generateTokenSendMail(emailRegex, req.params.lang || req.body.lang, sendMail);
         /* } else if (email && change) {
             result = await usersServices.changePassword(email, password); */
         } else if (token) {

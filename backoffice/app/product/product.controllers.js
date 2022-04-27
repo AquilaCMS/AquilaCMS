@@ -1,22 +1,5 @@
 const ProductControllers = angular.module("aq.product.controllers", []);
 
-ProductControllers.controller("ProductBeforeCreateCtrl", [
-    "$scope", "NSConstants", "$location", function ($scope, NSConstants, $location) {
-        $scope.productTypes = NSConstants.productTypes;
-        $scope.settings = {
-            productType : $scope.productTypes[0].code
-        };
-
-        $scope.validate = function (settings) {
-            $location.path(`/products/${settings.productType}/new`);
-        };
-
-        $scope.cancel = function () {
-            $location.path("/products");
-        };
-    }
-]);
-
 ProductControllers.controller("SelectProductsCtrl", [
     "$scope", "$modalInstance", "queryFilter", "toastService", "productSelected",
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
@@ -64,7 +47,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
-                const link = `/images/products/196x173/${image._id}/${image.url.split('/')[image.url.split('/').length - 1]}`;
+                const link = `/images/products/196x173/${image._id}/${image.url.split('\\').pop().split('/').pop()}`;
                 return link;
             } catch (e) {
                 return '';
@@ -213,12 +196,12 @@ ProductControllers.controller("ProductListCtrl", [
                 code: 1,
                 active: 1,
                 _visible: 1,
-                stock: 1
+                stock: 1,
+                images: 1,
+                stock: 1,
+                type: 1,
+                attributes: 1
             };
-            $scope.columns.map((col) => {
-                let field = col.cell.component_template
-                structure[field.replace(/{{|}}|product\./ig, '')] = 1
-            })
 
             const paramsV2 = {
                 lang: "fr",

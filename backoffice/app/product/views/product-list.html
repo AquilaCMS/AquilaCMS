@@ -1,6 +1,6 @@
-<ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/new/settings">
+<ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/simple/new">
     <div class="pull-right" style="display:flex">
-        <label for="filterLang" class="control-label">
+        <label ng-if="langs.length > 1" for="filterLang" class="control-label">
             <span translate>product.list2.searchLang</span>
             <span>:</span>
         </label>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" hook-product-list>
         <div class="row">
             <div class="col-lg-12" style="height: 45px;">
                 <br>
@@ -58,7 +58,7 @@
                                 <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
-                        <th ng-repeat="column in columns" bind-html-compile="column.filter.component_template"></th>
+                        <th ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
                         <th role="columnheader" style="width: 10%;">
                             <a ng-click="local.sortType = 'type'; local.sortReverse = !local.sortReverse; getProducts();">
                                 <span id="2" translate>product.list2.typePdt</span>

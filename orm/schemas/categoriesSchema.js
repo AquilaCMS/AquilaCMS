@@ -55,6 +55,7 @@ const CategoriesSchema = new Schema({
 });
 
 CategoriesSchema.index({displayOrder: 1});
+CategoriesSchema.index({'productsList.sortWeight': -1});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues

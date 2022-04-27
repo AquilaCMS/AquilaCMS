@@ -26,7 +26,8 @@ const DeliveryPackageSchema = new Schema({
         selections   : [{
             bundle_section_ref : {type: String},
             products           : [{type: ObjectId, ref: 'products'}]
-        }]
+        }],
+        selected_variant : {}
     }]
 });
 

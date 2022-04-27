@@ -15,6 +15,7 @@ const ServiceLanguages            = require('./languages');
 const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const utilsServer                 = require('../utils/server');
+const modulesUtils     = require('../utils/modules');
 const {
     Users,
     Mail,
@@ -361,7 +362,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
             const prdData = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
                 '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
@@ -380,7 +381,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
             } */
 
             if (item.parent && translation[lang]) {
-                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).name;
             }
             let basePrice  = null;
             let descPromo  = '';
@@ -561,7 +562,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
             const {translation} = item.id;
             const prdData       = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
                 '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
@@ -828,32 +829,34 @@ const sendGeneric = async (type, to, datas, lang = '') => {
  * @param {Object} datas - Datas of the form sent
  */
 const sendContact = async (datas, lang = '') => {
-    lang              = determineLanguage(lang, datas.lang);
-    const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
-    const contactMail = await Mail.findOne(query).lean();
+    await modulesUtils.modulesLoadFunctions('sendContact', {datas, lang}, async function () {
+        lang              = determineLanguage(lang, datas.lang);
+        const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
+        const contactMail = await Mail.findOne(query).lean();
 
-    if (!contactMail) {
-        throw NSErrors.MailNotFound;
-    }
-    const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
-    const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
-    let attachments = null;
-    if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
-        attachments = contactMail.translation[lang].attachments;
-    }
-    let bodyString = '';
-    Object.keys(datas).forEach((key) => {
-        if (Array.isArray(datas[key])) {
-            for (let i = 0; i < datas[key].length; i++) {
-                bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
-            }
-        } else {
-            bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+        if (!contactMail) {
+            throw NSErrors.MailNotFound;
         }
-    });
+        const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+        const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
+        let attachments = null;
+        if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
+            attachments = contactMail.translation[lang].attachments;
+        }
+        let bodyString = '';
+        Object.keys(datas).forEach((key) => {
+            if (Array.isArray(datas[key])) {
+                for (let i = 0; i < datas[key].length; i++) {
+                    bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
+                }
+            } else {
+                bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+            }
+        });
 
-    const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
-    return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+        const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
+        return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+    });
 };
 
 /**
@@ -1007,7 +1010,7 @@ async function sendMailPendingCarts(cart) {
     // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 
-const sendError = async (error) => {
+const sendErrorMail = async (error) => {
     const errorMail = await Mail.findOne({type: 'error'}).lean();
     if (!errorMail) {
         return; // We don't want to generate an error
@@ -1028,6 +1031,7 @@ module.exports = {
     getMailByTypeAndLang,
     setMail,
     deleteMail,
+    determineLanguage,
     sendMailTestConfig,
     removePdf,
     sendMailTest,
@@ -1043,5 +1047,5 @@ module.exports = {
     sendContact,
     sendMailOrderRequestCancel,
     sendMailPendingCarts,
-    sendError
+    sendErrorMail
 };

@@ -24,8 +24,7 @@ Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
     return roundNum;
 };
 
-/* App Module */
-var adminCatagenApp = angular.module("adminCatagenApp", [
+var aqModules = [
     "ngRoute",
     "adminCatagenControllers",
     "adminCatagenFilters",
@@ -57,7 +56,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.medias",
     "aq.modules",
     "aq.translation",
-    "aq.dependencies",
     "aq.cmsBlocks",
     "aq.design",
     "aq.translate",
@@ -94,8 +92,12 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.newsletter",
     "aq.system",
     "aq.invoices",
-    "aq.adminList"
-]);
+    "aq.adminList",
+    'aq.dependencies'
+]
+
+/* App Module */
+var    adminCatagenApp = angular.module("adminCatagenApp", aqModules);
 
 //================================================
 // Check if the user is connected
@@ -154,7 +156,7 @@ var checkAccess = function (route) {
                         deferred.reject();
                         toastService.toast("danger", $translate.instant("global.accessForbidden"));
                         $location.path("/");
-                    }, 0);
+                    }, 500);
                 }
             });
             return deferred.promise;

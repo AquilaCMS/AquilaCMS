@@ -2,7 +2,7 @@
     "dependencies": {
         "adm-zip": "0.5.5",
         "agenda": "4.2.1",
-        "aql-utils": "^1.0.3",
+        "aql-utils": "latest",
         "axios": "0.21.1",
         "bcrypt": "5.0.1",
         "cookie-parser": "1.4.5",
@@ -12,6 +12,7 @@
         "express": "4.17.1",
         "express-ejs-extend": "0.0.1",
         "faker": "5.5.3",
+        "fuse.js": "6.5.3",
         "glob": "7.1.7",
         "helmet": "4.6.0",
         "imagemin": "7.0.1",

@@ -7,17 +7,18 @@
  */
 
 const ServiceCmsBlock             = require('../services/cmsBlocks');
-const {adminAuth}                 = require('../middleware/authentication');
+const {adminAuthRight}            = require('../middleware/authentication');
 const {setupTranslationIfMissing} = require('../middleware/server');
 const {securityForceActif}        = require('../middleware/security');
 const {isAdmin}                   = require('../utils/utils');
+const {autoFillCode}              = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/cmsBlocks', securityForceActif(['active']), setupTranslationIfMissing, getCMSBlocks);
     app.post('/v2/cmsBlock', securityForceActif(['active']), setupTranslationIfMissing, getCMSBlock);
     app.post('/v2/cmsBlock/:id', securityForceActif(['active']), setupTranslationIfMissing, getCMSBlockById);
-    app.put('/v2/cmsBlock', adminAuth, setCMSBlock);
-    app.delete('/v2/cmsBlock/:code', adminAuth, deleteCMSBlock);
+    app.put('/v2/cmsBlock', adminAuthRight('cmsblocks'), autoFillCode, setCMSBlock);
+    app.delete('/v2/cmsBlock/:code', adminAuthRight('cmsblocks'), deleteCMSBlock);
 };
 
 /**

@@ -9,7 +9,7 @@
       "active": false,
       "clickable": false,
       "isDisplayed": false,
-      "action": "catalog",
+      "action": "container",
       "ancestors": [],
       "children": [
         "5c6676a1583a67281c09f77c",

@@ -3,7 +3,42 @@
         "get": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "_id": "ObjectID",
+                                "email": {"type":"string"},
+                                "__v": {"type":"number"},
+                                "segment": [
+                                    {
+                                        "_id": "ObjectID",
+                                        "name": {"type":"string"},
+                                        "optin": {"type":"boolean"},
+                                        "date_subscribe": {"type":"date"},
+                                        "date_unsubscribe": {"type":"date"}
+                                    },
+                                    {
+                                        "_id": "ObjectID",
+                                        "optin": {"type":"boolean"},
+                                        "date_subscribe": {"type":"date"}
+                                    }
+                                ]
+                            },
+                            "examples":{
+                                "example1":{
+                                    "summary": "",
+                                    "description": "",
+                                    "value":{"_id":null,"email":"james.bond@007.com","__v":0,"segment":[{"_id":null,"name":"DefaultNewsletter","optin":true,"date_subscribe":"2022-04-19T08:59:21.079Z","date_unsubscribe":null},{"_id":null,"optin":true,"date_subscribe":"2022-04-25T14:54:11.948Z"}]}
+                                }
+                            }
+                        }
+                    }
+
+                }
+            },
             "parameters": [
                 {
                     "name": "email",
@@ -23,7 +58,42 @@
         "post": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "_id": "ObjectID",
+                                "email": {"type":"string"},
+                                "__v": {"type":"number"},
+                                "segment": [
+                                    {
+                                        "_id": "ObjectID",
+                                        "name": {"type":"string"},
+                                        "optin": {"type":"boolean"},
+                                        "date_subscribe": {"type":"date"},
+                                        "date_unsubscribe": {"type":"date"}
+                                    },
+                                    {
+                                        "_id": "ObjectID",
+                                        "optin": {"type":"boolean"},
+                                        "date_subscribe": {"type":"date"}
+                                    }
+                                ]
+                            },
+                            "examples":{
+                                "example1":{
+                                    "summary": "",
+                                    "description": "",
+                                    "value":{"_id":null,"email":"james.bond@007.com","__v":0,"segment":[{"_id":null,"name":"DefaultNewsletter","optin":true,"date_subscribe":"2022-04-19T08:59:21.079Z","date_unsubscribe":null},{"_id":null,"optin":true,"date_subscribe":"2022-04-25T14:54:11.948Z"}]}
+                                }
+                            }
+                        }
+                    }
+
+                }
+            },
             "parameters": [
                 {
                     "name": "email",

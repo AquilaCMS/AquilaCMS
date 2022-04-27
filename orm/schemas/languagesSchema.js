@@ -40,4 +40,6 @@ LanguagesSchema.pre('save', async function (next) {
     next();
 });
 
+aquilaEvents.emit('languagesSchemaInit', LanguagesSchema);
+
 module.exports = LanguagesSchema;

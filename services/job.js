@@ -45,7 +45,8 @@ const initAgendaDB = async () => {
                 'Clean cache',
                 'Remove temp file',
                 'Remove previews',
-                'Mail to pending carts'
+                'Mail to pending carts',
+                'Delete orders\' failed payments'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
             // If a "system" job does not exist in the database then it is created
@@ -80,6 +81,11 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
+                        } else if (tJobsSystem[i] === 'Delete orders\' failed payments') {
+                            await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/payments/deleteFailedPayment', {
+                                fr : 'Supprime les anciens paiements echoués des anciennes commandes',
+                                en : 'Remove failed payments from old orders'
+                            }, 'service', 'system', '', true, '');
                         }
                     } catch (error) {
                         console.error(error);

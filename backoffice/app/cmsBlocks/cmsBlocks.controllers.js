@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate", "$q",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate, $q) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$q", "$translate", "$rootScope",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $q, $translate, $rootScope) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
@@ -194,6 +194,14 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     $scope.$digest();
                     $scope.selectedTab.active = 'html';
                 }, 10);
+            }
+        }
+
+        $scope.userIsAllowedTo = function (route) {
+            if($rootScope.userInfo.accessList.indexOf(route) === -1 || $rootScope.userInfo.accessList === undefined) {
+                return true
+            } else {
+                return false
             }
         }
 

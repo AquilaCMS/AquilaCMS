@@ -92,7 +92,15 @@ itemsSchema.virtual('price.total').get(function () {
 itemsSchema.virtual('stock').get(function () {
     const self = this;
     if (self.id._id) {
-        return self.id.stock;
+        const originalPrd = self.id;
+        if (self.selected_variant) {
+            const variantValue = originalPrd.variants_values.find((vv) => vv._id.toString() === self.selected_variant.id.toString());
+            if (variantValue) {
+                return variantValue.stock;
+            }
+            return {};
+        }
+        return originalPrd.stock;
     }
     return {};
 });

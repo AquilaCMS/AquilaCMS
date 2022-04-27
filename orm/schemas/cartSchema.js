@@ -99,7 +99,7 @@ CartSchema.methods.calculateBasicTotal = function () {
     for (let i = 0, l = cart.items.length; i < l; i++) {
         const item = cart.items[i];
 
-        if (item.get('price.special.ati') !== undefined) {
+        if ((item.get && item.get('price.special.ati') !== undefined) || (item.price.special && item.price.special.ati)) {
             if (item.price.special === undefined || item.price.special.ati === undefined) {
                 item.price.special = {
                     et  : item.id.price.et.special,

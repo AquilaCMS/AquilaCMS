@@ -66,7 +66,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.getImage = function (category) {
             if(category && category.img) {
-                const nameImg = category.img.replace('medias/category/', '');
+                const nameImg = category.img.split('\\').pop().split('/').pop();
                 return window.location.origin + "/images/category/max-80/" + category._id + "/" + nameImg;
             }
             return ;
@@ -745,6 +745,18 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
         ];
+        $scope.copyLink = function (event) {
+            event.stopPropagation();
+            $modal.open({
+                templateUrl: 'app/medias/views/modals/copy_link.html',
+                controller: 'MediasModalCtrl',
+                resolve: {
+                    media: function () {
+                        return {_id: $scope.category._id, link: $scope.category.img, type: 'category'};
+                    }
+                }
+            });
+        };
 
         $scope.getCategory()
 
@@ -802,7 +814,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     },
                     populate: ["children"],
                     sort: {displayOrder: 1},
-                    structure : structure,
+                    structure : '*',
                     limit: 0
                 }
             }, function (response) {
@@ -846,7 +858,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                 cat.collapsed = false;
             }
             if(cat.collapsed){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0}}, function (response) {
+                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 0, structure: '*'}}, function (response) {
                     cat.nodes = response.datas;
                     cat.collapsed = false;
                     for(let oneNode of cat.nodes){

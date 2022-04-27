@@ -10,13 +10,13 @@ const path                    = require('path');
 const url                     = require('url');
 const ServiceContacts         = require('../services/contacts');
 const {getUploadDirectory}    = require('../utils/server');
-const {adminAuth}             = require('../middleware/authentication');
 const {fs}                    = require('aql-utils');
 const {modules: modulesUtils} = require('../utils');
+const {adminAuthRight}             = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/contacts', adminAuth, getContacts);
-    app.delete('/v2/contact/:id', adminAuth, deleteContact);
+    app.post('/v2/contacts', adminAuthRight('contacts'), getContacts);
+    app.delete('/v2/contact/:id', adminAuthRight('contacts'), deleteContact);
     app.post('/v2/contact/:mode', setContact);
 };
 

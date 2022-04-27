@@ -6,7 +6,7 @@
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
         <br/>
         <div class = "scrollmenu">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" hook-category-detail-tab>
                 <li class="active">
                     <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
                 </li>
@@ -23,7 +23,7 @@
         </div>
         <div class="tab-content">
             <input style="display: none;" type="file" id="importCsv" onchange="angular.element(this).scope().readCsv(event)" ng-model="fileCsv">
-            <div id="general" class="tab-pane fade in active">
+            <div id="general" class="tab-pane fade in active" hook-category-detail-general>
                 <table style="clear: both" id="switch">
                     <tbody>
                         <tr>
@@ -161,13 +161,18 @@
                         <tr>
                             <td translate>category.detail.headerImg</td>
                             <td style="text-align: center;">
-                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin-bottom: 10px;" />
-                                <button ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
-                                    category.detail.delete
-                                </button>
+                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin: 10px  auto;display: block;" />
+                                <div style="padding: 0 20px;display: flex; flex-wrap: wrap;justify-content: space-between; font-size: 0">
+                                    <button type="button" style="width: 49%;" ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
+                                        category.detail.delete
+                                    </button>
+                                    <button type="button" style="width: 49%;margin: 0" ng-show="category.img" class="btn btn-default btn-block" ng-click="copyLink($event)" translate>
+                                        medias.medias.cpLien
+                                    </button>
+                                </div>
 
                                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
-                                   images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
+                                   images="category.image" showalt="true" after-function="close"></ns-upload-files>
                             </td>
                         </tr>
                     </tbody>
@@ -203,7 +208,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'">
+            <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'" hook-category-detail-productList>
                 <div class="tableWrapperOverflow">
                     <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
                     aria-describedby="DataTables_Table_0_info">
@@ -365,7 +370,7 @@
                 <pagination total-items="totalItems" page="currentPage" on-select-page="pageChanged(page)"
                     items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
             </div>
-            <div id="filters" class="tab-pane fade">
+            <div id="filters" class="tab-pane fade" hook-category-detail-filters>
                 <div class="row col-sm-12">
                     <ng-form novalidate name="filtersForm">
                         <!--<div class="col-sm-12 text-right">
@@ -420,7 +425,7 @@
                     </ng-form>
                 </div>
             </div>
-            <div id="rules" class="tab-pane fade">
+            <div id="rules" class="tab-pane fade" hook-category-detail-rules>
                 <div class="row">
                     <div class="col-sm-12">
                         <ng-form novalidate name="ruleForm" ng-submit="">

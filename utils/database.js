@@ -101,10 +101,10 @@ const checkSlugExist = async (doc, modelName) => {
     }
 };
 
-const checkCode = async (modelName, id, code) => {
+const checkCode = async (modelName, id, code, moreFilters = {}) => {
     if (!code) return;
 
-    const query = {code};
+    const query = {code, ...moreFilters};
     if (id) {
         query._id = {$ne: id};
     }
@@ -1302,8 +1302,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'URL du site'
+                            value       : 'URL_SITE',
+                            description : 'URL du site'
                         },
                         {
                             value       : 'token',
@@ -1328,8 +1328,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'App URL'
+                            value       : 'URL_SITE',
+                            description : 'App URL'
                         },
                         {
                             value       : 'token',
