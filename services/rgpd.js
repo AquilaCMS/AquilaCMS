@@ -463,7 +463,14 @@ const dumpAnonymizedDatabase = async (res) => {
         // Download the dump file
         res.set({'content-type': 'application/gzip'});
         const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
-        return res.download(pathToArchive);
+        return res.download(pathToArchive, function (err) {
+            if (err) {
+                console.log(err); // Check error if you want
+            }
+            fs.unlink(pathToArchive, function () {
+                console.log('File was deleted'); // Callback
+            });
+        });
     } catch (error) {
         if (error && error.name && error.name === 'NSError') {
             throw error;

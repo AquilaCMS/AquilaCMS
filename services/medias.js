@@ -9,6 +9,7 @@
 const AdmZip   = require('adm-zip');
 const moment   = require('moment');
 const path     = require('path');
+const fs       = require('fs');
 const slash    = require('slash');
 const mongoose = require('mongoose');
 const ObjectID = mongoose.Types.ObjectId;
@@ -39,10 +40,54 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultFields);
 
+const getAllFiles =  (dirPath, arrayOfFiles) => {
+    const files = fs.readdirSync(dirPath);
+
+    arrayOfFiles = arrayOfFiles || [];
+
+    files.forEach(function (file) {
+        if (fsp.statSync(`${dirPath}/${file}`).isDirectory()) {
+            arrayOfFiles = getAllFiles(`${dirPath}/${file}`, arrayOfFiles);
+        } else {
+            arrayOfFiles.push(path.join(dirPath, file));
+        }
+    });
+
+    return arrayOfFiles;
+};
+
+const getTotalSize = (directoryPath) => {
+    const arrayOfFiles = getAllFiles(directoryPath);
+
+    let totalSize = 0;
+    arrayOfFiles.forEach(function (filePath) {
+        totalSize += fsp.statSync(filePath).size;
+    });
+
+    return totalSize;
+};
+
+const getGoodDirectory = (directoryPath, arrayOfDirectories) => {
+    const files        = fsp.readdirSync(directoryPath);
+    arrayOfDirectories = arrayOfDirectories || [];
+
+    files.forEach(function (file) {
+        if (fsp.statSync(`${directoryPath}/${file}`).isDirectory()) {
+            if (getTotalSize(`${directoryPath}/${file}`) > 500000000) {
+                arrayOfDirectories = getGoodDirectory(`${directoryPath}/${file}`, arrayOfDirectories);
+            } else {
+                arrayOfDirectories.push(path.join(directoryPath, file));
+            }
+        } else {
+            arrayOfDirectories.push(path.join(directoryPath, file));
+        }
+    });
+    return arrayOfDirectories;
+};
 /**
  * Allows you to download a zip containing all the "upload" folder
  */
-const downloadAllDocuments = async () => {
+const downloadAllDocuments = async (res) => {
     console.log('Preparing downloadAllDocuments...');
     const uploadDirectory = server.getUploadDirectory();
 
@@ -52,15 +97,28 @@ const downloadAllDocuments = async () => {
         }
         const zip = new AdmZip();
         if (fsp.existsSync(path.resolve(uploadDirectory, 'documents'))) {
+            console.log('documents');
             zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'medias'))) {
-            zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
+            if (getTotalSize(path.resolve(uploadDirectory, 'medias')) < 500000000) {
+                zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
+            } else {
+                const arrayOfFiles = getGoodDirectory(path.resolve(uploadDirectory, 'medias'));
+                arrayOfFiles.forEach(function (filePath) {
+                    if (fsp.statSync(filePath).isDirectory()) {
+                        zip.addLocalFolder(filePath);
+                    } else {
+                        zip.addLocalFile(filePath);
+                    }
+                });
+            }
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'photos'))) {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'photos'), 'photos');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'fonts'))) {
+            console.log('fonts');
             zip.addLocalFolder(path.resolve(uploadDirectory, 'fonts'), 'fonts');
         }
         zip.writeZip(path.resolve(uploadDirectory, 'temp/documents.zip'), (err) => {
@@ -68,7 +126,14 @@ const downloadAllDocuments = async () => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
+    return res.download(path.resolve(uploadDirectory, 'temp/documents.zip'), 'documents.zip', function (err) {
+        if (err) {
+            console.log(err);
+        }
+        fs.unlink(path.resolve(uploadDirectory, 'temp/documents.zip'), function () {
+            console.log('File was deleted'); // Callback
+        });
+    });
 };
 
 /**

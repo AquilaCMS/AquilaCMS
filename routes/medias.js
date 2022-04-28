@@ -149,12 +149,7 @@ async function uploadAllMedias(req, res, next) {
  */
 async function downloadAllDocuments(req, res, next) {
     try {
-        const result = await mediasServices.downloadAllDocuments();
-
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
-        res.write(result, 'binary');
-        res.end();
+        await mediasServices.downloadAllDocuments(res);
     } catch (error) {
         return next(error);
     }
