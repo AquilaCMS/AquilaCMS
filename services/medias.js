@@ -73,7 +73,7 @@ const getGoodDirectory = (directoryPath, arrayOfDirectories) => {
 
     files.forEach(function (file) {
         if (fsp.statSync(`${directoryPath}/${file}`).isDirectory()) {
-            if (getTotalSize(`${directoryPath}/${file}`) > 500000000) {
+            if (getTotalSize(`${directoryPath}/${file}`) > 512000000) {
                 arrayOfDirectories = getGoodDirectory(`${directoryPath}/${file}`, arrayOfDirectories);
             } else {
                 arrayOfDirectories.push(path.join(directoryPath, file));
@@ -101,7 +101,7 @@ const downloadAllDocuments = async (res) => {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'medias'))) {
-            if (getTotalSize(path.resolve(uploadDirectory, 'medias')) < 500000000) {
+            if (getTotalSize(path.resolve(uploadDirectory, 'medias')) < 512000000) {
                 zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
             } else {
                 const arrayOfFiles = getGoodDirectory(path.resolve(uploadDirectory, 'medias'));
