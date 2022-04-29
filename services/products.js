@@ -390,14 +390,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             .populate(PostBody.populate)
             .lean({virtuals: true}) // {virtuals: true} allows to get virtual fields (stock.qty_real)
             .select(querySelect); // We don't need the price so we can avoid checking the promos and therefore eliminate all the fields we don't need
-        // .sort(PostBody.sort);
     } else {
         prds = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
-            .sort(PostBody.sort)
-            .lean({virtuals: true}) // {virtuals: true} allows to get virtual fields (stock.qty_real)
-            .sort(PostBody.sort);
+            .lean({virtuals: true}); // {virtuals: true} allows to get virtual fields (stock.qty_real)
 
         let prdsPrices = JSON.parse(JSON.stringify(prds));
 
@@ -485,7 +482,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
     }
 
-    if (PostBody.sort?.sortWeight || !PostBody.sort) {
+    const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
+    const sortArray        = sortPropertyName.split('.');
+    if (!PostBody.sort || PostBody.sort?.sortWeight) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
             // add sortWeight to result.datas[i] (modification of an object by reference)
@@ -498,6 +497,19 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
         // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
+    } else if (sortArray[0] === 'translation') {
+        if (PostBody.sort[sortPropertyName] === 1) {
+            prds.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+        } else {
+            prds.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+        }
+    } else {
+        // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
+        if (PostBody.sort[sortPropertyName] === 1) {
+            prds.sort((p1, p2) => p1[sortArray[0]] - p2[sortArray[0]]);
+        } else {
+            prds.sort((p1, p2) => p2[sortArray[0]] - p1[sortArray[0]]);
+        }
     }
 
     let products = prds.slice(skip, limit + skip);
