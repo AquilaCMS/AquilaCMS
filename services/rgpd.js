@@ -16,6 +16,7 @@ const bcrypt         = require('bcrypt');
 const rimraf         = require('rimraf');
 const path           = require('path');
 const faker          = require('faker');
+const moment         = require('moment');
 const {aquilaEvents} = require('aql-utils');
 const fs             = require('../utils/fsp');
 const {execCmd}      = require('../utils/packageManager');
@@ -472,6 +473,56 @@ const dumpAnonymizedDatabase = async (res) => {
     }
 };
 
+const anonymizeBillsById = async (id) => Bills.updateOne({_id: id}, {
+    $set : {
+        client      : new ObjectID(),
+        nom         : faker.name.lastName(),
+        prenom      : faker.name.firstName(),
+        societe     : faker.random.word(),
+        coordonnees : faker.phone.phoneNumber(),
+        email       : faker.internet.email(),
+        address     : {
+            firstname      : faker.name.firstName(),
+            lastname       : faker.name.lastName(),
+            phone_mobile   : faker.phone.phoneNumber(),
+            line1          : faker.address.streetAddress(),
+            zipcode        : faker.address.zipCode(),
+            city           : faker.address.city(),
+            isoCountryCode : faker.address.countryCode()
+        }
+    }
+});
+
+// Check the age of the bills for RGPD restrictions
+const checkDateBills = async () =>  {
+    // 1.get all the bills from the database
+    const bills = await Bills.find({});
+    // 2.browse the array of bills
+    for (let i = 0; i < bills.length; i++) {
+        // 3.get the date of the bill
+        const creationDate = moment(bills[i].createdAt);
+        const now          = moment();
+        // 4.calculate the difference between the current date and the date of the bill
+        const diff = now.diff(creationDate, 'months');
+        // 5.if the difference is superior to 120 months, the bill is deleted
+        if (diff > 120 && bills[i].anonymized === false) {
+            anonymizeBillsById(bills[i]._id);
+            await Bills.updateOne({_id: bills[i]._id}, {$set: {anonymized: true}});
+        }
+    }
+};
+
+// Check the last connexion of the user for RGPD restrictions
+const checkLastConnexion = async () => {
+    // 1.get all the users from the database
+    const users = await Users.find({anonymized: {$exists: false}, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
+    // 2.browse the array of users
+    for (let i = 0; i < users.length; i++) {
+        anonymizeUser(users[i]._id);
+        await Users.updateOne({_id: users[i]._id}, {$set: {anonymized: true}});
+    }
+};
+
 module.exports = {
     getOrdersByUser,
     anonymizeOrdersByUser,
@@ -489,5 +540,8 @@ module.exports = {
     anonymizeDatabase,
     dropDatabase,
     deleteUserDatas,
-    anonymizeUserDatas
+    anonymizeUserDatas,
+    checkDateBills,
+    anonymizeBillsById,
+    checkLastConnexion
 };
