@@ -460,8 +460,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
         const pathToThemeComponents = path.join(global.appRoot, 'modules', myModule.name, pathToComponents);
         await addOrRemoveThemeFiles(
             pathToThemeComponents,
-            false,
-            myModule.types || myModule.type || ''
+            false
         );
     }
     return copyTab;
@@ -570,8 +569,7 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
         const pathToThemeComponents = path.join(global.appRoot, _module.path, pathToComponents);
         await addOrRemoveThemeFiles(
             pathToThemeComponents,
-            true,
-            _module.types || _module.type || ''
+            true
         );
         console.log('Removing dependencies of the module...');
         // Remove the dependencies of the module
@@ -770,7 +768,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
  * @param {string} pathThemeComponents path to the front component of the module. ie: "modules/my-module-aquila/theme_components"
  * @param {boolean} toRemove if true then we delete the files in "themes/currentTheme/modules" and "themes/currentTheme/list_modules"
  */
-const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
+const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     // Check if the theme_components folder exists in the module, then it's a front module
     if (!fs.existsSync(pathThemeComponents)) {
         return;
@@ -779,7 +777,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     const listOfFile   = await fs.readdir(pathThemeComponents);
     for (const file of listOfFile) {
         if (toRemove) {
-            await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''), type);
+            await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
             const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (fs.existsSync(filePath)) {
                 try {
@@ -810,14 +808,11 @@ const removeImport = async (thisModuleElement, exportDefaultListModule, pathList
     await fs.writeFile(pathListModules, result);
 };
 
-const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, type) => {
+const removeFromListModule = async (file, currentTheme) => {
     try {
         const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
-            const result = await fs.readFile(pathListModules, 'utf8');
-            if (Array.isArray(type)) {
-                type = type.find((t) => t.component === file).type;
-            }
+            const result            = await fs.readFile(pathListModules, 'utf8');
             const thisModuleElement = new RegExp(`{[^{]*${file}[^}]*},`, 'gm');
             await removeImport(thisModuleElement, result, pathListModules);
         }
