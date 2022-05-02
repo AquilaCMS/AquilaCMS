@@ -515,19 +515,11 @@ const checkDateBills = async () =>  {
 // Check the last connexion of the user for RGPD restrictions
 const checkLastConnexion = async () => {
     // 1.get all the users from the database
-    const users = await Users.find({});
+    const users = await Users.find({anonymized: {$exists: false}, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
     // 2.browse the array of users
     for (let i = 0; i < users.length; i++) {
-        // 3.get the last connexion of the user
-        const lastConnexion = moment(users[i].lastConnexion);
-        const now           = moment();
-        // 4.calculate the difference between the current date and the date of the last connexion
-        const diff = now.diff(lastConnexion, 'months');
-        // 5.if the difference is superior to 36 months, the user is anonymized
-        if (diff > 36 && users[i].anonymized === false) {
-            anonymizeUser(users[i]._id);
-            await Users.updateOne({_id: users[i]._id}, {$set: {anonymized: true}});
-        }
+        anonymizeUser(users[i]._id);
+        await Users.updateOne({_id: users[i]._id}, {$set: {anonymized: true}});
     }
 };
 
