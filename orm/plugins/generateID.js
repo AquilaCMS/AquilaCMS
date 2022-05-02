@@ -9,8 +9,10 @@ module.exports = function generateID(schema) {
         await utilsDatabase.preUpdates(this, next, schema);
     });
 
-    schema.pre('insertMany', async function (next) {
-        if (this._id.id[0] !== 255 && this.isNew) this._id = generate();
+    schema.pre('insertMany', async function (next, docs) {
+        docs.forEach((insert) => {
+            if (insert._id[0] !== 'f') insert._id = generate();
+        });
         await utilsDatabase.preUpdates(this, next, schema);
     });
 
