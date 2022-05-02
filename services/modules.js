@@ -705,7 +705,10 @@ const setFrontModules = async (theme) => {
  * @param {*} theme : theme
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
-    const savePath = pathModule.replace('theme_components', ''); // useless
+    let savePath              = pathModule.replace('theme_components', '');
+    const moduleComponentType = await retrieveModuleComponentType(theme);
+    if (moduleComponentType !== '') savePath = savePath.replace(moduleComponentType, '');
+
     if (pathModule.lastIndexOf('theme_components') === -1) {
         pathModule = path.join(pathModule, 'theme_components');
     }
@@ -713,8 +716,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         pathModule = path.join(pathModule, '/');
     }
 
-    const moduleComponentType = await retrieveModuleComponentType(theme);
-    if (moduleComponentType !== '') pathModule = path.join(pathModule, moduleComponentType, '/');
+    if (moduleComponentType !== '' && pathModule.lastIndexOf(moduleComponentType) === -1) pathModule = path.join(pathModule, moduleComponentType, '/');
 
     // Check if the module component type exists in the theme_components folder
     const hasAccess = await fs.hasAccess(pathModule);
