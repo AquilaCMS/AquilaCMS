@@ -62,7 +62,8 @@ const yarnBuildCustom = async (themeName = '') => {
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
                 const appRoot         = slash(global.appRoot);
-                const globalEnvConfig = JSON.stringify(global.envFile).replace(/"/g, '#') || '{}';
+                const globalAppUrl    = global.envConfig.environment.appUrl;
+                const globalEnvConfig = JSON.stringify({environment: {appUrl: globalAppUrl}}).replace(/"/g, '#') || '{}';
                 returnValues          = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; global.envConfig = '${globalEnvConfig}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);

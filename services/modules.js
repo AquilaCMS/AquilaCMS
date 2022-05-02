@@ -455,8 +455,11 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
         }
 
         // If the module must import components into the front
+        let pathToComponents = 'theme_components';
+        if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+        const pathToThemeComponents = path.join(global.appRoot, 'modules', myModule.name, pathToComponents);
         await addOrRemoveThemeFiles(
-            path.join(global.appRoot, 'modules', myModule.name, 'theme_components'),
+            pathToThemeComponents,
             false,
             myModule.types || myModule.type || ''
         );
@@ -562,8 +565,11 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
     if (themeModuleComponent === 'no-installation') {
         console.log(`No components were required by this theme (${currentTheme})`);
     } else {
+        let pathToComponents = 'theme_components';
+        if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+        const pathToThemeComponents = path.join(global.appRoot, _module.path, pathToComponents);
         await addOrRemoveThemeFiles(
-            path.resolve(global.appRoot, _module.path, 'theme_components'),
+            pathToThemeComponents,
             true,
             _module.types || _module.type || ''
         );
@@ -702,8 +708,6 @@ const setFrontModules = async (theme) => {
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
     const savePath = pathModule.replace('theme_components', ''); // useless
-    console.log(`Set module's front files... ${pathModule}`);
-
     if (pathModule.lastIndexOf('theme_components') === -1) {
         pathModule = path.join(pathModule, 'theme_components');
     }
@@ -720,25 +724,22 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         return;
     }
     const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
-    const resultDir    = await fs.readdir(pathModule);
+    const resultDir    = await fs.readdir(pathModule, {withFileTypes: true});
+    const filesList    = resultDir.filter((file) => file.isFile());
 
     // For each module front file
-    for (let i = 0; i < resultDir.length; i++) {
-        const file = resultDir[i];
-        if (!file.startsWith('Module') || !file.endsWith('.js')) {
-            continue;
-        }
+    for (let i = 0; i < filesList.length; i++) {
+        const file       = filesList[i].name;
         const info       = await fs.readFile(path.join(savePath, 'info.json'));
         const parsedInfo = JSON.parse(info);
         let type         = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
             type = parsedInfo.info.types.find((t) => t.component === file).type;
         }
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> componentname
-        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
-        console.log(jsxModuleToImport);
-        const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
-        const result          = await fs.readFile(pathListModules, 'utf8');
+        const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
+        const jsxModuleToImport     = `{jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const pathListModules       = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
+        const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
@@ -748,7 +749,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
             if (match && match.length > 0) {
                 exportDefaultListModule = match[0];
             }
-            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
+            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))}${jsxModuleToImport}]`;
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
@@ -777,14 +778,8 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     const currentTheme = global.envConfig.environment.currentTheme;
     const listOfFile   = await fs.readdir(pathThemeComponents);
     for (const file of listOfFile) {
-        if (!file.startsWith('Module') || !file.endsWith('.js')) {
-            continue;
-        }
         if (toRemove) {
-            const fileNameWithoutModule = file.replace('Module', '')
-                .replace('.js', '')
-                .toLowerCase();
-            await removeFromListModule(file, currentTheme, fileNameWithoutModule, type);
+            await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''), type);
             const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (fs.existsSync(filePath)) {
                 try {
@@ -810,27 +805,21 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
  * @param {*} exportDefaultListModule [{ jsx: require('./ModuleMonModule1.js').default, code: 'aq-monmodule1' }, ...]
  * @param {*} pathListModules themes/${currentTheme}/modules/list_modules.js`
  */
-const removeImport = async (jsxModuleToImport, exportDefaultListModule, pathListModules) => {
-    // We remove the spaces
-    const objectToRemove = jsxModuleToImport.replace(/\s+/g, '');
-    // We remove the spaces from the information contained in the export table
-    exportDefaultListModule = exportDefaultListModule.replace(/\s+/g, '');
-    // We replace with "" the object to be deleted from the file
-    const result = exportDefaultListModule.replace(objectToRemove, '');
-    await fs.writeFile(pathListModules, `export default ${result}`);
+const removeImport = async (thisModuleElement, exportDefaultListModule, pathListModules) => {
+    const result = exportDefaultListModule.replace(thisModuleElement, '');
+    await fs.writeFile(pathListModules, result);
 };
 
 const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, type) => {
     try {
-        const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
+        const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
             const result = await fs.readFile(pathListModules, 'utf8');
             if (Array.isArray(type)) {
                 type = type.find((t) => t.component === file).type;
             }
-            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
-            const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-            await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
+            const thisModuleElement = new RegExp(`{[^{]*${file}[^}]*},`, 'gm');
+            await removeImport(thisModuleElement, result, pathListModules);
         }
     } catch (error) {
         console.error(error);
