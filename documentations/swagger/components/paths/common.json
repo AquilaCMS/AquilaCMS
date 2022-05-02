@@ -3,7 +3,41 @@
         "post": {
             "deprecated": false,
             "security": [],
-            "responses": {},
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "url": {"type":"array"}
+                        },
+                        "examples":{
+                            "example1":{
+                                "description":"Put the path of what you want",
+                                "value":{"url":["",""]}
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200":{
+                    "description": "",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                            "" : {"type":"array"}
+                        },
+                        "examples":{
+                            "example1":{
+                                "description":"Put the path of what you want",
+                                "value":[{"text":"Accueil","link":"/","isHome":true}]
+                            }
+                        }
+                    }
+                }
+
+                }
+            },
             "parameters": [],
             "tags": [
                 "Common"
