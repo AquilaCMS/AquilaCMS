@@ -42,6 +42,17 @@ if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
+const objectPathCrawler = (object, pathAsArray) => {
+    for (let i = 0; i < Object.keys(object).length; i++) {
+        const key = Object.keys(object)[i];
+        if (typeof object[key] === 'object' && object[key] !== null && key === pathAsArray[0]) {
+            pathAsArray.shift();
+            return objectPathCrawler(object[key], pathAsArray);
+        }
+        if (pathAsArray[0] === key) return object[key];
+    }
+};
+
 const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
@@ -498,17 +509,25 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     } else if (sortArray[0] === 'translation') {
-        if (PostBody.sort[sortPropertyName] === 1) {
+        if (`${PostBody.sort[sortPropertyName]}` === '1') {
             prds.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
         } else {
             prds.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
         }
     } else {
         // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
-        if (PostBody.sort[sortPropertyName] === 1) {
-            prds.sort((p1, p2) => p1[sortArray[0]] - p2[sortArray[0]]);
+        if (`${PostBody.sort[sortPropertyName]}` === '1') {
+            prds.sort((p1, p2) => {
+                const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                return p1Value - p2Value;
+            });
         } else {
-            prds.sort((p1, p2) => p2[sortArray[0]] - p1[sortArray[0]]);
+            prds.sort((p1, p2) => {
+                const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                return p2Value - p1Value;
+            });
         }
     }
 
