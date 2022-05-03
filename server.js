@@ -87,6 +87,9 @@ const setEnvConfig = async () => {
         await configuration.save();
         await require('./services/admin').removeAdminInformation('server_restart_rebuild');
     }
+    if (!configuration.environment.photoPath) {
+        configuration.environment.photoPath = 'uploads';
+    }
     global.envConfig = configuration.toObject();
 
     if ((await Configuration.countDocuments()) > 1) {
