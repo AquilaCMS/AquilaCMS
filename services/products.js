@@ -482,15 +482,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             if (prd.price) {
                 if (prd.price.et.special) {
                     arraySpecialPrice.et.push(prd.price.et.special);
-                    prd.price.et.thisPriceSort = prd.price.et.special;
-                } else {
-                    prd.price.et.thisPriceSort = prd.price.et.normal;
                 }
                 if (prd.price.ati.special) {
                     arraySpecialPrice.ati.push(prd.price.ati.special);
-                    prd.price.ati.thisPriceSort = prd.price.ati.special;
-                } else {
-                    prd.price.ati.thisPriceSort = prd.price.ati.normal;
                 }
             }
         }
@@ -521,10 +515,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
-    const sortArray        = sortPropertyName.split('.');
-    if (sortArray[0] === 'price') sortArray[sortArray.length - 1] = 'thisPriceSort';
-
     if (!PostBody.sort || PostBody.sort?.sortWeight) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
@@ -538,26 +528,35 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
         // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-    } else if (sortArray[0] === 'translation') {
-        if (`${PostBody.sort[sortPropertyName]}` === '1') {
-            prds.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
-        } else {
-            prds.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
-        }
     } else {
-        // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
-        if (`${PostBody.sort[sortPropertyName]}` === '1') {
-            prds.sort((p1, p2) => {
-                const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
-                const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                return p1Value - p2Value;
-            });
+        const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
+        let sortArray          = sortPropertyName.split('.');
+        if (sortArray[0] === 'price') {
+            const taxes = sortArray[1];
+            sortArray   = ['price', 'priceSort', taxes];
+        }
+
+        if (sortArray[0] === 'translation') {
+            if (`${PostBody.sort[sortPropertyName]}` === '1') {
+                prds.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+            } else {
+                prds.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+            }
         } else {
-            prds.sort((p1, p2) => {
-                const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
-                const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                return p2Value - p1Value;
-            });
+            // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
+            if (`${PostBody.sort[sortPropertyName]}` === '1') {
+                prds.sort((p1, p2) => {
+                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                    return p1Value - p2Value;
+                });
+            } else {
+                prds.sort((p1, p2) => {
+                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                    return p2Value - p1Value;
+                });
+            }
         }
     }
 
