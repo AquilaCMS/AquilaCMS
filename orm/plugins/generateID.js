@@ -11,7 +11,7 @@ module.exports = function generateID(schema) {
 
     schema.pre('insertMany', async function (next, docs) {
         docs.forEach((insert) => {
-            if (insert._id[0] !== 'f') insert._id = generate();
+            if (!insert._id || insert._id[0] !== 'f') insert._id = generate();
         });
         await utilsDatabase.preUpdates(this, next, schema);
     });
