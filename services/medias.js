@@ -9,7 +9,6 @@
 const AdmZip   = require('adm-zip');
 const moment   = require('moment');
 const path     = require('path');
-const fs       = require('fs');
 const slash    = require('slash');
 const mongoose = require('mongoose');
 const ObjectID = mongoose.Types.ObjectId;
@@ -41,7 +40,7 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultFields);
 
 const getAllFiles =  (dirPath, arrayOfFiles) => {
-    const files = fs.readdirSync(dirPath);
+    const files = fsp.readdirSync(dirPath);
 
     arrayOfFiles = arrayOfFiles || [];
 
@@ -97,7 +96,6 @@ const downloadAllDocuments = async (res) => {
         }
         const zip = new AdmZip();
         if (fsp.existsSync(path.resolve(uploadDirectory, 'documents'))) {
-            console.log('documents');
             zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'medias'))) {
@@ -118,7 +116,6 @@ const downloadAllDocuments = async (res) => {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'photos'), 'photos');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'fonts'))) {
-            console.log('fonts');
             zip.addLocalFolder(path.resolve(uploadDirectory, 'fonts'), 'fonts');
         }
         zip.writeZip(path.resolve(uploadDirectory, 'temp/documents.zip'), (err) => {
@@ -126,14 +123,11 @@ const downloadAllDocuments = async (res) => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return res.download(path.resolve(uploadDirectory, 'temp/documents.zip'), 'documents.zip', function (err) {
-        if (err) {
-            console.log(err);
-        }
-        fs.unlink(path.resolve(uploadDirectory, 'temp/documents.zip'), function () {
-            console.log('File was deleted'); // Callback
-        });
+    const temp = fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
+    fsp.unlink(path.resolve(uploadDirectory, 'temp/documents.zip'), function () {
+        console.log('File was deleted'); // Callback
     });
+    return temp;
 };
 
 /**

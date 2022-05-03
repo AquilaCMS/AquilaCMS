@@ -130,5 +130,4 @@ log
 !/themes/README.md
 !/themes/.gitignore
 package-lock.json
-yarn.lock
-yarn.lock
+

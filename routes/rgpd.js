@@ -98,7 +98,12 @@ async function copyAndAnonymizeDatabase(req, res, next) {
  */
 async function dumpAnonymizedDatabase(req, res, next) {
     try {
-        await rgpdServices.dumpAnonymizedDatabase(res);
+        const result = await rgpdServices.dumpAnonymizedDatabase(req.body);
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
+        res.write(result, 'binary');
+        res.end();
     } catch (error) {
         return next(error);
     }
