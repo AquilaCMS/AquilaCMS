@@ -87,7 +87,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         if (fs.existsSync(path.join(global.appRoot, url))) {
             res.sendFile(path.join(global.appRoot, url));
         } else {
-            url = url.replace('backoffice', global.envConfig.environment.photoPath || 'uploads');
+            url = url.replace('backoffice', require('../utils/server').getUploadDirectory());
             if (fs.existsSync(path.join(global.appRoot, url))) {
                 res.sendFile(path.join(global.appRoot, url));
             } else {
