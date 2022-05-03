@@ -478,23 +478,53 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
         priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
-        for (const prd of prdsPrices) {
+        for (const prd of prds) {
             if (prd.price) {
                 if (prd.price.et.special) {
                     arraySpecialPrice.et.push(prd.price.et.special);
+                    prd.price.et.thisPriceSort = prd.price.et.special;
+                } else {
+                    prd.price.et.thisPriceSort = prd.price.et.normal;
                 }
                 if (prd.price.ati.special) {
                     arraySpecialPrice.ati.push(prd.price.ati.special);
+                    prd.price.ati.thisPriceSort = prd.price.ati.special;
+                } else {
+                    prd.price.ati.thisPriceSort = prd.price.ati.normal;
                 }
             }
         }
 
         specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+
+        if (reqRes !== undefined && PostBody.withPromos !== false) {
+            reqRes.res.locals.datas  = prds;
+            reqRes.req.body.PostBody = PostBody;
+            const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+            prds                     = productsDiscount.datas;
+            // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+            // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
+        }
+        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
+            prds = prds.filter((prd) =>  {
+                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
+                return pr >= (
+                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+                )
+                && pr <= (
+                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+                );
+            });
+        }
     }
 
     const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
     const sortArray        = sortPropertyName.split('.');
+    if (sortArray[0] === 'price') sortArray[sortArray.length - 1] = 'thisPriceSort';
+
     if (!PostBody.sort || PostBody.sort?.sortWeight) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
@@ -531,45 +561,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    let products = prds.slice(skip, limit + skip);
-
-    if (PostBody.structure.price !== 0) {
-        if (reqRes !== undefined && PostBody.withPromos !== false) {
-            reqRes.res.locals.datas  = products;
-            reqRes.req.body.PostBody = PostBody;
-            const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-            products                 = productsDiscount.datas;
-            // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
-            // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
-        }
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
-            products = products.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
-                )
-                && pr <= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
-                );
-            });
-        }
-
-        if (
-            PostBody.sort
-            && (
-                PostBody.sort['price.priceSort.et']
-                || PostBody.sort['price.priceSort.ati']
-            )
-        ) {
-            if (PostBody.sort['price.priceSort.et']) {
-                products = orderByPriceSort(products, PostBody, 'price.priceSort.et');
-            } else if (PostBody.sort['price.priceSort.ati']) {
-                products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
-            }
-        }
-    }
+    const products = prds.slice(skip, limit + skip);
 
     // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
     if (Object.keys(PostBody.structure).length > 0) {
@@ -584,19 +576,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMin,
         specialPriceMax
     };
-};
-
-const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
-    tProducts = tProducts.sort((a, b) => {
-        if (a.price.priceSort > b.price.priceSort) {
-            return Number(PostBody.sort[param]) === 1 ? 1 : -1;
-        }
-        if (b.price.priceSort > a.price.priceSort) {
-            return Number(PostBody.sort[param]) === 1 ? -1 : 1;
-        }
-        return 0;
-    });
-    return tProducts;
 };
 
 const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
