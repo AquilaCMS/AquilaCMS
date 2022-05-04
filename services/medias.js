@@ -291,9 +291,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         await utilsModules.modulesLoadFunctions('downloadFile', {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
             outPath : filePathCache
-        }, () => {
-            fsp.copyFileSync(filePath, filePathCache);
-        });
+        }, () => fsp.copyFileSync(filePath, filePathCache));
     } else {
     // otherwise, we recover the original image, we resize it, we compress it and we return it
     // resize
@@ -313,9 +311,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 await utilsModules.modulesLoadFunctions('downloadFile', {
                     key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
                     outPath : filePathCache
-                }, async () => {
-                    await fsp.copyFileSync(filePath, filePathCache);
-                });
+                }, async () => fsp.copyFileSync(filePath, filePathCache));
             } catch (err) {
                 return '/';
             }
