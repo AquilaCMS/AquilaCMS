@@ -115,7 +115,7 @@
                         }
                     }
                 },
-                "description": "PostBody",
+                "description": "Add a news on the website",
                 "required": false
             }
         }

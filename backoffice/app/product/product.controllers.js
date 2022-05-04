@@ -376,7 +376,7 @@ ProductControllers.controller("nsProductCategories", [
                 tab.push({id: productID, checked: true});
             }
             //we save
-            CategoryV2.save({_id: node._id, productsList: tab}, function () {
+            CategoryV2.save({_id: node._id, code: node.code, productsList: tab}, function () {
 
             });
         };

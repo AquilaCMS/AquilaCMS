@@ -7,6 +7,7 @@
  */
 
 const mongoose         = require('mongoose');
+const {aquilaEvents}   = require('aql-utils');
 const translationUtils = require('../../utils/translation');
 const Schema           = mongoose.Schema;
 const utilsDatabase    = require('../../utils/database');
@@ -59,5 +60,7 @@ CmsBlocksSchema.pre('updateOne', async function (next) {
 CmsBlocksSchema.pre('findOneAndUpdate', async function (next) {
     utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
+
+aquilaEvents.emit('cmsBlocksSchema', CmsBlocksSchema);
 
 module.exports = CmsBlocksSchema;

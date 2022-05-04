@@ -6,10 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const helper        = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const helper         = require('../../utils/utils');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
 
 const LanguagesSchema = new Schema({
     code            : {type: String, required: true, unique: true},
@@ -39,5 +40,7 @@ LanguagesSchema.pre('save', async function (next) {
     this.code = helper.slugify(this.code);
     next();
 });
+
+aquilaEvents.emit('languagesSchemaInit', LanguagesSchema);
 
 module.exports = LanguagesSchema;

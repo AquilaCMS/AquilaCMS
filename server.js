@@ -87,6 +87,9 @@ const setEnvConfig = async () => {
         await configuration.save();
         await require('./services/admin').removeAdminInformation('server_restart_rebuild');
     }
+    if (!configuration.environment.photoPath) {
+        configuration.environment.photoPath = 'uploads';
+    }
     global.envConfig = configuration.toObject();
 
     if ((await Configuration.countDocuments()) > 1) {
@@ -104,7 +107,7 @@ const initFrontFramework = async (themeName = null) => {
     const pathToInit   = path.join(pathToTheme, 'themeInit.js');
     const languageInit = await require('./services/themes').languageManagement(themeName);
     if (languageInit === 'OK') {
-        themeInfo = utilsThemes.loadInfoTheme(themeName);
+        themeInfo = utilsThemes.loadThemeInfo(themeName);
         if (themeInfo === null) {
             themeInfo = {};
         }
@@ -135,7 +138,7 @@ const initFrontFramework = async (themeName = null) => {
                     }
                 } else {
                     let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
-                    msg    += "You can also change or create a 'infoTheme.json' file in your theme";
+                    msg    += "You can also change or create a 'themeInfo.json' file in your theme";
                     throw  msg;
                 }
             } catch (errorInit) {

@@ -14,6 +14,7 @@ const servicesMail                       = require('./mail');
 const QueryBuilder                       = require('../utils/QueryBuilder');
 const utilsModules                       = require('../utils/modules');
 const NSErrors                           = require('../utils/errors/NSErrors');
+const modulesUtils                       = require('../utils/modules');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -37,7 +38,11 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody, true);
+    const user = await queryBuilder.findOne(PostBody, true);
+
+    return modulesUtils.modulesLoadFunctions('postGetUserById', {user}, async function () {
+        return user;
+    });
 };
 
 const getUserByAccountToken = async (activateAccountToken) => {
@@ -195,7 +200,7 @@ const getUserTypes = async (query) => {
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
-    const user           = await Users.findOneAndUpdate({email: {$regex: email, $options: 'i'}}, {resetPassToken}, {new: true});
+    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
