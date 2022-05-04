@@ -787,7 +787,8 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     const currentTheme             = global.envConfig.environment.currentTheme;
     const listOfFile               = await fs.readdir(pathThemeComponents);
     const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
-    const moduleName               = pathThemeComponentsArray[pathThemeComponentsArray.length - 2];
+    let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
+    if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
     for (const file of listOfFile) {
         if (toRemove) {
             await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
