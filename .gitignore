@@ -129,3 +129,4 @@ log
 !/themes/default_theme
 !/themes/README.md
 !/themes/.gitignore
+package-lock.json
