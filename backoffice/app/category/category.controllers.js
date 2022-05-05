@@ -18,34 +18,26 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.searchObj = {
             productInCategory: "true" // default value
         };
+        $scope.structure = {
+            code         : 1,
+            active       : 1,
+            clickable    : 1,
+            isDisplayed  : 1,
+            action       : 1,
+            colorName    : 1,
+            openDate     : 1,
+            closeDate    : 1,
+            ancestors    : 1,
+            children     : 1,
+            img          : 1,
+            alt          : 1,
+            displayOrder : 1,
+            canonical_weight : 1
+        }
 
         $scope.getCategory = function() {
-            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
+            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {...$scope.structure, productsList: -1}/*, populate: ["productsList.id"]*/}}, function (response) {
                 $scope.category = response;
-                if($scope.category && $scope.category.productsList){
-                    if($scope.category.productsList.length > 0){
-                        $scope.products = $scope.category.productsList.map((element) => {
-                            return {
-                                checked: true,
-                                sortWeight: element.sortWeight || 0,
-                                ...element.id
-                            }
-                        })
-                        $scope.totalItems = $scope.category.productsList.length;
-                        $scope.products = filterProducts($scope.products);
-                        $scope.products = $scope.products.filter(function(value, index){
-                            return index < 14; // it the first page
-                        });
-                    }else{
-                        // no products in this cat, so we need to change the setup
-                        $scope.searchObj.productInCategory == "false";
-                        $scope.getProducts();
-                    }
-                }else{
-                    // no products in this cat, so we need to change the setup
-                    $scope.searchObj.productInCategory == "false";
-                    $scope.getProducts();
-                }
                 $scope.getAttrib();
             });
     
@@ -758,6 +750,48 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
         };
 
+        $scope.getCatPrdList = function () {
+            if(!$scope.category.productsList) {
+                $scope.loadPrds = true;
+                CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {productsList: 1}, populate: ["productsList.id"]}}, function (response) {
+                    $scope.category.productsList = response.productsList;
+                    if($scope.category && $scope.category.productsList){
+                        if($scope.category.productsList.length > 0){
+                            $scope.products = $scope.category.productsList.map((element) => {
+                                return {
+                                    checked: true,
+                                    sortWeight: element.sortWeight || 0,
+                                    ...element.id
+                                }
+                            })
+                            $scope.totalItems = $scope.category.productsList.length;
+                            $scope.products = filterProducts($scope.products);
+                            $scope.products = $scope.products.filter(function(value, index){
+                                return index < 14; // it the first page
+                            });
+                        }else{
+                            // no products in this cat, so we need to change the setup
+                            $scope.searchObj.productInCategory == "false";
+                            $scope.getProducts();
+                        }
+                    }else{
+                        // no products in this cat, so we need to change the setup
+                        $scope.searchObj.productInCategory == "false";
+                        $scope.getProducts();
+                    }
+                    $scope.loadPrds = false;
+                });
+            }
+        }
+        $scope.getCatFilters = function () {
+            if(!$scope.category.filters) {
+                CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {filters: 1}}}, function (response) {
+                    $scope.category.filters = response.filters;
+                    
+                });
+            }
+        }
+
         $scope.getCategory()
 
     }
@@ -772,13 +806,19 @@ CategoryControllers.controller("CategoryListCtrl", [
         const structure = {
             _id: 1,
             children: 1,
-            ancestor: 1,
+            ancestors: 1,
             active: 1,
             isDisplayed: 1,
             code: 1,
             nodes: 1,
             translation: 1,
-            displayOrder: 1
+            displayOrder: 1,
+            /*productsList: -1,
+            filters: -1,
+            clickable: -1,
+            img: -1,
+            openDate: -1,
+            closeDate: -1*/
         };
 
         $scope.expandOneCat = function(oneCat){

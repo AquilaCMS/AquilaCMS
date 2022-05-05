@@ -122,7 +122,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let result = await queryBuilder.find(PostBody);
 
     if (PostBody.filter._id) {
-        result.count = count;
+        result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
         // We order the products according to the order given by the fuzzy search just before
         result.datas.sort((a, b) => {
             const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
@@ -1055,7 +1055,7 @@ const downloadProduct = async (req, res) => {
 };
 
 const getProductsListing = async (req, res) => {
-    const structure = req.body.PostBody.structure;
+    const structure = req.body.PostBody.structure || {};
     // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
