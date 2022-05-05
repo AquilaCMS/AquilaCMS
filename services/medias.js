@@ -103,31 +103,36 @@ const uploadAllMedias = async (reqFile, insertDB) => {
     }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
-        const filename    = filenames[index];
-        const init_file   = path.resolve(path_unzip, filename);
-        const target_file = path.resolve(target_path, filename);
-        const name_file   = filename.split('.')
-            .slice(0, -1)
-            .join('.');
+        try {
+            const filename    = filenames[index];
+            const init_file   = path.resolve(path_unzip, filename);
+            const target_file = path.resolve(target_path, filename);
+            const name_file   = filename.split('.')
+                .slice(0, -1)
+                .join('.');
 
-        // Check if folder
-        if (fsp.lstatSync(init_file)
-            .isDirectory()) {
-            return;
-        }
+            // Check if folder
+            if (fsp.lstatSync(init_file)
+                .isDirectory()) {
+                return;
+            }
 
-        // Move file to / medias
-        require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
-            if (err) console.error(err);
-        });
+            // Move file to / medias
+            require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
+                if (err) console.error(err);
+            });
 
-        // Insert it in the database
-        if (insertDB) {
-            await Medias.updateOne({name: name_file}, {
-                link  : `medias/${filename}`,
-                name  : name_file,
-                group : path.parse(reqFile.originalname).name
-            }, {upsert: true});
+            // Insert it in the database
+            if (insertDB) {
+                await Medias.updateOne({name: name_file}, {
+                    link  : `medias/${filename}`,
+                    name  : name_file,
+                    group : path.parse(reqFile.originalname).name
+                }, {upsert: true});
+            }
+        } catch (e) {
+            console.error(e);
+            throw NSErrors.InvalidFile;
         }
     }
 
