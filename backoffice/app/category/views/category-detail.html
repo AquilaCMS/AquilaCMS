@@ -11,13 +11,13 @@
                     <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
+                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" ng-click="getCatPrdList()" translate>category.detail.listPdt</a>
                 </li>
                 <li>
                     <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" ng-click="getCatFilters()" translate>category.detail.filtres</a>
                 </li>
             </ul>
         </div>
@@ -210,7 +210,8 @@
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'" hook-category-detail-productList>
                 <div class="tableWrapperOverflow">
-                    <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                    <p ng-show="loadPrds">Chargement des produits ...</p>
+                    <table ng-show="!loadPrds" class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
                     aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">
