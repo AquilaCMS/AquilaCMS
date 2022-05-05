@@ -121,7 +121,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
     let result = await queryBuilder.find(PostBody);
 
-    if (PostBody.filter._id) {
+    if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
         // We order the products according to the order given by the fuzzy search just before
         result.datas.sort((a, b) => {
