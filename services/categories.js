@@ -160,7 +160,7 @@ const setCategory = async (postBody) => {
     const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
     // remove image properly
     if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
-        const imgPath = path.join(global.envConfig.environment.photoPath, oldCat.img);
+        const imgPath = path.join(require('../utils/server').getUploadDirectory(), oldCat.img);
         ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
         if (await fsp.existsSync(imgPath)) {
             await fsp.unlinkSync(imgPath);

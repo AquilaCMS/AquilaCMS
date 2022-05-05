@@ -131,7 +131,8 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ],
-    lastConnexion : Date
+    lastConnexion : Date,
+    anonymized    : {type: Boolean, default: false}
 }, {
     timestamps : true,
     id         : false

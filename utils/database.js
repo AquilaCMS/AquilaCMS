@@ -43,7 +43,7 @@ const connect = async () => {
         await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
-
+    mongoose.plugin(require('../orm/plugins/generateID'));
     return mongoose;
 };
 

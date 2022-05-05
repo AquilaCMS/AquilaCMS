@@ -31,7 +31,7 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const cacheFolder = path.join(global.envConfig.environment.photoPath, 'cache');
+    const cacheFolder = path.join(require('../utils/server').getUploadDirectory(), 'cache');
     let fileName      = '';
     let filePathCache = '';
 
