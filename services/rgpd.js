@@ -515,7 +515,7 @@ const checkDateBills = async () =>  {
 // Check the last connexion of the user for RGPD restrictions
 const checkLastConnexion = async () => {
     // 1.get all the users from the database
-    const users = await Users.find({anonymized: {$exists: false}, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
+    const users = await Users.find({$or: [{anonymized: {$exists: false}}, {anonymized: false}], lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
     // 2.browse the array of users
     for (let i = 0; i < users.length; i++) {
         anonymizeUser(users[i]._id);
