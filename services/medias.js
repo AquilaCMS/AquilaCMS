@@ -86,8 +86,21 @@ const uploadAllMedias = async (reqFile, insertDB) => {
     const zip = new AdmZip(path_init);
     zip.extractAllTo(path_unzip);
     // Browse all the files to add them to the medias table
-    const filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
-    if (filenames.length === 0) throw NSErrors.MediaNotInRoot;
+    let filenames = '';
+    // check if zip is empty || use of try/catch to avoid fsp native error when the zip is empty and throw NSErrors
+    try {
+        filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
+    } catch (e) {
+        fsp.deleteRecursive(path_unzip);
+        fsp.deleteRecursive(path_init);
+        throw NSErrors.MediaNotFound;
+    }
+    // if zip have folder but no file
+    if (filenames.length === 0) {
+        fsp.deleteRecursive(path_unzip);
+        fsp.deleteRecursive(path_init);
+        throw NSErrors.MediaNotInRoot;
+    }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
         const filename    = filenames[index];
@@ -118,6 +131,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
         }
     }
 
+    fsp.deleteRecursive(path_unzip);
+    fsp.deleteRecursive(path_init);
     console.log('Upload medias done !');
     // return true;
 };
