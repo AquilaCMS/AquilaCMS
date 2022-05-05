@@ -2468,7 +2468,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         if (err && err.data && err.data.message) {
                                             toastService.toast('danger', err.data.message);
                                         }
-                                        $scope.onError(err);
+                                        if(typeof $scope.onError === 'function') $scope.onError(err);
                                     }, function (evt) {
                                         $scope.disableUpload = true;
                                         $scope.progress[evt.config.data.file.$ngfBlobUrl] = parseInt(100.0 * evt.loaded / evt.total);

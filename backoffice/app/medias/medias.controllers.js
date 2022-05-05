@@ -316,6 +316,10 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
         $scope.cancel = function () {
             $modalInstance.close('cancel')
         };
+        $scope.onError = function () {
+            $modalInstance.close('error')
+        };
+        
     }
 ]);
 

@@ -8,7 +8,7 @@
                     <p translate>medias.multi.uploadInfo</p>
                 </div>
                 <div style="margin-top: 20px;text-align: center;">
-                    <ns-upload-files accepttype=".zip" multiple="false" type="mediaMass" before-function="beforeMediaMass" after-function="uploadedMediaMass" entity="local.insertDBMediaUpload"></ns-upload-files>
+                    <ns-upload-files accepttype=".zip" multiple="false" type="mediaMass" before-function="beforeMediaMass" after-function="uploadedMediaMass" entity="local.insertDBMediaUpload" on-error="onError()"></ns-upload-files>
                     <div style="text-align: center;">
                         <input type="checkbox" ng-model="local.insertDBMediaUpload" ng-true-value="true" id="inDBMedia" ng-false-value="false">
                         <label for="inDBMedia" translate>medias.medias.uploadInsert</label>
