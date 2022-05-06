@@ -86,7 +86,7 @@ const getGoodDirectory = (directoryPath, arrayOfDirectories) => {
 /**
  * Allows you to download a zip containing all the "upload" folder
  */
-const downloadAllDocuments = async (res) => {
+const downloadAllDocuments = async () => {
     console.log('Preparing downloadAllDocuments...');
     const uploadDirectory = server.getUploadDirectory();
 
@@ -123,8 +123,7 @@ const downloadAllDocuments = async (res) => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return path.resolve(uploadDirectory, 'temp/documents.zip')
-    
+    return path.resolve(uploadDirectory, 'temp/documents.zip');
 };
 
 /**

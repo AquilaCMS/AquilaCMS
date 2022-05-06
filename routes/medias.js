@@ -150,7 +150,7 @@ async function uploadAllMedias(req, res, next) {
  */
 async function downloadAllDocuments(req, res, next) {
     try {
-        const path = await mediasServices.downloadAllDocuments(res);
+        const path = await mediasServices.downloadAllDocuments();
         return res.download(path, 'documents.zip', function (err) {
             if (err) {
                 console.log(err);
