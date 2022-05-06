@@ -8,6 +8,7 @@
 
 const moment   = require('moment-business-days');
 const buffer   = require('buffer');
+const path     = require('path');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
 const fsp      = require('../utils/fsp');
@@ -120,12 +121,12 @@ const exportData = async (model, PostBody) => {
         const datas           = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
         const csvFields       = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
         const uploadDirectory = server.getUploadDirectory();
-        if (!fsp.existsSync(`/${uploadDirectory}/temp`)) {
-            fsp.mkdirSync(`/${uploadDirectory}/temp`);
+        if (!fsp.existsSync(path.resolve(uploadDirectory, 'temp'))) {
+            fsp.mkdirSync(path.resolve(uploadDirectory, 'temp'));
         }
 
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fsp.writeFile(`/${uploadDirectory}/temp/${Date.now()}.csv`, buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${Date.now()}.csv`), buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
         result.url = Date.now();
         return result;
     }
