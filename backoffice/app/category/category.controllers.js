@@ -36,7 +36,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         }
 
         $scope.getCategory = function() {
-            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {...$scope.structure, productsList: -1}/*, populate: ["productsList.id"]*/}}, function (response) {
+            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {...$scope.structure, productsList: -1}}}, function (response) {
                 $scope.category = response;
                 $scope.getAttrib();
             });
@@ -753,7 +753,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.getCatPrdList = function () {
             if(!$scope.category.productsList) {
                 $scope.loadPrds = true;
-                CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {productsList: 1}, populate: ["productsList.id"]}}, function (response) {
+                CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: {productsList: 1}}}, function (response) {
                     $scope.category.productsList = response.productsList;
                     if($scope.category && $scope.category.productsList){
                         if($scope.category.productsList.length > 0){
@@ -772,13 +772,12 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                         }else{
                             // no products in this cat, so we need to change the setup
                             $scope.searchObj.productInCategory == "false";
-                            $scope.getProducts();
                         }
                     }else{
                         // no products in this cat, so we need to change the setup
                         $scope.searchObj.productInCategory == "false";
-                        $scope.getProducts();
                     }
+                    $scope.getProducts();
                     $scope.loadPrds = false;
                 });
             }
