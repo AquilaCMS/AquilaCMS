@@ -1766,7 +1766,7 @@
               "modifier_weight": -50
             }
           ],
-          "ref": "thisrt",
+          "ref": "tshirt",
           "type": "SINGLE",
           "isRequired": true,
           "title": "T-shirt",
