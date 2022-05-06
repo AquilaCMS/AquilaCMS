@@ -12,11 +12,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$h
             "*"
             
           ];
-        
-          
-        
-        
-        
+ 
         $scope.local = {
             customTranslate: '',
             allTranslateNames: [],
@@ -51,10 +47,10 @@ TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$h
                 translateFactory.loadTranslation(
                     { currentTranslate: $scope.local.currentTranslate, lang: $scope.local.lang },
                     (response) => {
-                        $scope.local.customTranslate = JSON.stringify(response['0'], undefined, 2);
+                        $scope.local.customTranslate = JSON.stringify(response.data, undefined, 2);
                         $scope.currentTranslate = $scope.local.currentTranslate
-                        $scope.schema = response['1']
-                        $scope.model = JSON.parse(response['0']);
+                        $scope.schema = response.schema
+                        $scope.model = JSON.parse(response.data);
                     },
                     (err) => {
                         toastService.toast('danger', err.data.translations.fr);
