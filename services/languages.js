@@ -83,8 +83,8 @@ const translateGet = async (filePath, lang) => {
         const pathName  = path.join(themePath, `${filePath}.json`);
         const temp      = fs.readFileSync(pathName, 'utf8');
         const tradObj   = {};
-        tradObj['0']    = temp;
-        tradObj['1']    = createSchema(JSON.parse(temp));
+        tradObj.data    = temp;
+        tradObj.schema  = createSchema(JSON.parse(temp));
 
         return tradObj;
     } catch (error) {
