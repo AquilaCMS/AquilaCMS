@@ -10,6 +10,7 @@ const path             = require('path');
 const {adminAuthRight} = require('../middleware/authentication');
 const mediasServices   = require('../services/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
+const fsp              = require('../utils/fsp');
 
 module.exports = function (app) {
     app.post('/v2/medias', adminAuthRight('medias'), listMedias);
@@ -149,12 +150,15 @@ async function uploadAllMedias(req, res, next) {
  */
 async function downloadAllDocuments(req, res, next) {
     try {
-        const result = await mediasServices.downloadAllDocuments(req.body);
-
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
-        res.write(result, 'binary');
-        res.end();
+        const path = await mediasServices.downloadAllDocuments(res);
+        return res.download(path, 'documents.zip', function (err) {
+            if (err) {
+                console.log(err);
+            }
+            fsp.unlink(path, function () {
+                console.log('File was deleted'); // Callback
+            });
+        });
     } catch (error) {
         return next(error);
     }

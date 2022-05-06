@@ -123,11 +123,8 @@ const downloadAllDocuments = async (res) => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    const temp = fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
-    fsp.unlink(path.resolve(uploadDirectory, 'temp/documents.zip'), function () {
-        console.log('File was deleted'); // Callback
-    });
-    return temp;
+    return path.resolve(uploadDirectory, 'temp/documents.zip')
+    
 };
 
 /**
