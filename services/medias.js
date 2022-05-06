@@ -333,23 +333,20 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             console.warn('No image (or item) found. Default image used.');
         }
     }
-
-    // if the requested image is already cached, it is returned direct
-    if (filePathCache && await fsp.existsSync(filePathCache)) {
-        return filePathCache;
-    }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
         fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = path.join(_path, global.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
+    // if the requested image is already cached, it is returned direct
+    if (filePathCache && await fsp.existsSync(filePathCache)) {
+        return filePathCache;
+    }
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
             outPath : filePathCache
-        }, () => {
-            fsp.copyFileSync(filePath, filePathCache);
-        });
+        }, () => fsp.copyFileSync(filePath, filePathCache));
     } else {
     // otherwise, we recover the original image, we resize it, we compress it and we return it
     // resize
@@ -369,9 +366,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 await utilsModules.modulesLoadFunctions('downloadFile', {
                     key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
                     outPath : filePathCache
-                }, async () => {
-                    await fsp.copyFileSync(filePath, filePathCache);
-                });
+                }, async () => fsp.copyFileSync(filePath, filePathCache));
             } catch (err) {
                 return '/';
             }
@@ -767,10 +762,9 @@ const getImageStream = async (url, res) => {
             res.set('Content-Type', `image/${imagePath.split('.').pop()}`);
         }
         if (imagePath && await fsp.existsSync(imagePath) && (await fsp.lstat(imagePath)).isFile()) {
-            fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
-        } else {
-            res.status(404).send('Not found');
+            return res.sendFile(imagePath);
         }
+        res.status(404).send('Not found');
     } else {
         res.status(404).send('Not found');
     }
