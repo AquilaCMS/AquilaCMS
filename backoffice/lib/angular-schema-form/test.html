@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js" charset="utf-8"></script>
+    <script src="https://code.angularjs.org/1.5.3/angular-sanitize.min.js" charset="utf-8"></script>
+    <script src="dist/schema-form.min.js" charset="utf-8"></script>
+    <script src="dist/bootstrap-decorator.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      angular.module('test', ['schemaForm']).controller('FooCtrl', function($scope) {
+        $scope.schema = {
+          properties: {
+            name: {type: "string"}
+          }
+        };
+        $scope.form = ['name'];
+      })
+    </script>
+  </head>
+  <body ng-app="test" ng-controller="FooCtrl">
+    <form sf-schema="schema" sf-form="form"></form>
+  </body>
+</html>

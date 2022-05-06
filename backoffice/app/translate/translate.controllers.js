@@ -1,8 +1,22 @@
 
 const TranslateControllers = angular.module('aq.translate.controllers', []);
 
-TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastService', 'translateFactory', '$translate', /*'LanguagesApi',*/
-    function ($scope, $http, toastService, translateFactory, $translate/*, LanguagesApi*/) {
+TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$http', 'toastService', 'translateFactory', '$translate', /*'LanguagesApi',*/
+    function (schemaForm, $scope, $http, toastService, translateFactory, $translate/*, LanguagesApi*/) {
+        
+          $scope.form = [
+            {
+                type: "submit",
+                title: "Sauvegarder"
+            },
+            "*"
+            
+          ];
+        
+          
+        
+        
+        
         $scope.local = {
             customTranslate: '',
             allTranslateNames: [],
@@ -37,7 +51,10 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
                 translateFactory.loadTranslation(
                     { currentTranslate: $scope.local.currentTranslate, lang: $scope.local.lang },
                     (response) => {
-                        $scope.local.customTranslate = JSON.stringify(response, undefined, 2);
+                        $scope.local.customTranslate = JSON.stringify(response['0'], undefined, 2);
+                        $scope.currentTranslate = $scope.local.currentTranslate
+                        $scope.schema = response['1']
+                        $scope.model = JSON.parse(response['0']);
                     },
                     (err) => {
                         toastService.toast('danger', err.data.translations.fr);
@@ -45,6 +62,29 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
                 );
             }
         };
+
+        $scope.onSubmit = function(form) {
+            // First we broadcast an event so all fields validate themselves
+            $scope.$broadcast('schemaFormValidate');
+        
+            // Then we check if the form is valid
+            if (form.$valid) {
+                try {
+                    translateFactory.saveTranslate(
+                        { currentTranslate: $scope.currentTranslate, lang: $scope.local.lang }, { datas: JSON.stringify($scope.model) },
+                        (response) => {
+                            toastService.toast('success', $translate.instant("translate.translateSaved"));
+                        },
+                        (err) => {
+                            toastService.toast('danger', err.data.translations.fr);
+                        }
+                    );
+                } catch (err) {
+                    const textTranslated = $translate.instant("translate.toast.invalidJSON");
+                    toastService.toast('danger', `${textTranslated}: ` + err.message);
+                }
+            }
+          }
 
         $scope.local.saveTranslate = function () {
             if ($scope.local.currentTranslate !== "") {

@@ -6,12 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path          = require('path');
-const fs            = require('../utils/fsp');
-const ServiceConfig = require('./config');
-const {Languages}   = require('../orm/models');
-const NSErrors      = require('../utils/errors/NSErrors');
-const QueryBuilder  = require('../utils/QueryBuilder');
+const path           = require('path');
+const {createSchema} = require('genson-js');
+const fs             = require('../utils/fsp');
+const ServiceConfig  = require('./config');
+const {Languages}    = require('../orm/models');
+const NSErrors       = require('../utils/errors/NSErrors');
+const QueryBuilder   = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
@@ -80,7 +81,12 @@ const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
         const pathName  = path.join(themePath, `${filePath}.json`);
-        return fs.readFile(pathName, 'utf8');
+        const temp      = fs.readFileSync(pathName, 'utf8');
+        const tradObj   = {};
+        tradObj['0']    = temp;
+        tradObj['1']    = createSchema(JSON.parse(temp));
+
+        return tradObj;
     } catch (error) {
         throw NSErrors.TranslationError;
     }

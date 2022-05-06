@@ -39,6 +39,7 @@
     "express-ejs-extend": "0.0.1",
     "faker": "5.5.3",
     "fuse.js": "6.5.3",
+    "genson-js": "^0.0.8",
     "glob": "8.0.1",
     "helmet": "5.0.2",
     "imagemin": "7.0.1",
