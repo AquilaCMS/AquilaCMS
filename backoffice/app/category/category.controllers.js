@@ -13,6 +13,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.currentPage = 1;
         $scope.rule = {};
         $scope.usedInFilters = [];
+        $scope.dlProducts = [];
         $scope.selectedAttributes;
         $scope.selectedFilters;
         $scope.searchObj = {
@@ -189,7 +190,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         };
 
         var initValues = {start: 0, limit: 15};
-        $scope.getProducts = function () {
+        $scope.getProducts = function (forceQueryProducts = false) {
             var params = {
                 page: $scope.currentPage,
                 limit: $scope.itemPerPage,
@@ -261,11 +262,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             let arrayListOfProducts;
             if($scope.category && $scope.category.productsList){
                 arrayListOfProducts = $scope.category.productsList.map(function(element) {
-                    if(typeof element.id === "string"){
-                        return element.id;
-                    }else{
-                        return element.id.id || element.id._id; // product bundle doesn't have id :(
-                    }
+                    return element.id;
                 });
             }
             if($scope.searchObj.productInCategory == "true"){
@@ -274,52 +271,70 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                         _id: {$in: arrayListOfProducts}, 
                         ...paramsV2.PostBody.filter
                     };
-                    paramsV2.PostBody.limit = arrayListOfProducts.length;
+                    paramsV2.PostBody.limit = $scope.category.productsList.length;
                     delete paramsV2.PostBody.page;
                 }
             }else{
                 paramsV2.PostBody.filter = {_id: {$nin: arrayListOfProducts}, ...paramsV2.PostBody.filter};
             }
-
-            ProductsV2.list(paramsV2, function (res) {
-                if(angular.isArray(res.datas)) {
-                    $scope.totalItems = res.count;
-                    $scope.products = res.datas;
-
-                    if($scope.category.productsList && $scope.category.productsList.length > 0) {
-                        for(var i = 0; i < $scope.products.length; i++) {
-                            var prd = $scope.category.productsList.find(function (item) {
-                                let idOfItem;
-                                if(typeof item.id === "string"){
-                                    idOfItem = item.id;
-                                }else{
-                                    idOfItem = item.id.id || item.id._id; // product bundle doesn't have id :(
+            if ($scope.searchObj.productInCategory !== "true" || forceQueryProducts) {
+                ProductsV2.list(paramsV2, function (res) {
+                    if(angular.isArray(res.datas)) {
+                        $scope.totalItems = res.count;
+                        $scope.dlProducts = res.datas;
+    
+                        if($scope.category.productsList && $scope.category.productsList.length > 0) {
+                            for(var i = 0; i < $scope.dlProducts.length; i++) {
+                                var prd = $scope.category.productsList.find(function (item) {
+                                    return item.id == $scope.dlProducts[i]._id;
+                                });
+                                if(prd) {
+                                    $scope.dlProducts[i].sortWeight = prd.sortWeight;
+                                    $scope.dlProducts[i].checked = true;
                                 }
-                                return idOfItem == $scope.products[i]._id;
-                            });
-                            if(prd) {
-                                $scope.products[i].sortWeight = prd.sortWeight;
-                                $scope.products[i].checked = true;
+                            }
+                            $scope.products = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
+                            if($scope.searchObj.productInCategory == "true"){
+                                // we only take 15 products, with the correct page (index sort)
+                                $scope.products = $scope.products.filter(function(value, index) {
+                                    const page = $scope.currentPage;
+                                    const indexMin = (page-1)*15;
+                                    const indexMax = page*15;
+                                    if(indexMin <= index && index <= indexMax) {
+                                        return true;
+                                    }
+    
+                                });
                             }
                         }
-                        $scope.products = filterProducts($scope.products); // filter product by "sortWeight" and "checked" 
-                        if($scope.searchObj.productInCategory == "true"){
-                            // we only take 15 products, with the correct page (index sort)
-                            $scope.products = $scope.products.filter(function(value, index) {
-                                const page = $scope.currentPage;
-                                const indexMin = (page-1)*15;
-                                const indexMax = page*15;
-                                if(indexMin <= index && index <= indexMax) {
-                                    return true;
-                                }
-
-                            });
+                    } else {
+                        $scope.products = null;
+                    }
+                });
+            } else {
+                if($scope.category.productsList && $scope.category.productsList.length > 0) {
+                    for(var i = 0; i < $scope.dlProducts.length; i++) {
+                        var prd = $scope.category.productsList.find(function (item) {
+                            return item.id == $scope.dlProducts[i]._id;
+                        });
+                        if(prd) {
+                            $scope.dlProducts[i].sortWeight = prd.sortWeight;
+                            $scope.dlProducts[i].checked = true;
                         }
                     }
-                } else {
-                    $scope.products = null;
+                    $scope.products = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
+                    $scope.products = $scope.products.filter(function(value, index) {
+                        const page = $scope.currentPage;
+                        const indexMin = (page-1)*15;
+                        const indexMax = page*15;
+                        if(indexMin <= index && index <= indexMax) {
+                            return true;
+                        }
+
+                    });
                 }
-            });
+            }
+            $scope.loadPrds = false;
         };
 
         function filterProducts(products) {
@@ -347,7 +362,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.changePosition = function (id, pos) {
             const index = $scope.category.productsList.findIndex(function (prd) {
-                return prd.id._id == id;
+                return prd.id == id;
             });
             if(index == -1){
                 // the prodcuts isn't in productsList, so we need to add it to
@@ -561,7 +576,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.checkProduct = function (id, checked) {
             var index = $scope.category.productsList.findIndex(function (item) {
-                return item.id._id === id;
+                return item.id === id;
             });
             if(index == -1) {
                 if(checked == true || typeof checked === "undefined"){
@@ -581,9 +596,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             // we re-build the correct array
             const newCat = angular.copy($scope.category);
-            for(let oneProduct of newCat.productsList){
-                oneProduct.id = oneProduct.id._id;
-            }
             CategoryV2.save({
                 _id: newCat._id,
                 productsList: newCat.productsList
@@ -761,7 +773,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                                 return {
                                     checked: true,
                                     sortWeight: element.sortWeight || 0,
-                                    ...element.id
+                                    id: element.id
                                 }
                             })
                             $scope.totalItems = $scope.category.productsList.length;
@@ -777,8 +789,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                         // no products in this cat, so we need to change the setup
                         $scope.searchObj.productInCategory == "false";
                     }
-                    $scope.getProducts();
-                    $scope.loadPrds = false;
+                    $scope.getProducts(true);
                 });
             }
         }

@@ -285,7 +285,7 @@
                         </tr>
                         <tr role="row">
                             <th>
-                                <select ng-model="searchObj.productInCategory" ng-change="getProducts()" class="form-control">
+                                <select ng-model="searchObj.productInCategory" ng-change="currentPage = 1; getProducts(true)" class="form-control">
                                     <option value="true" translate>category.detail.oui</option>
                                     <option value="false" translate>category.detail.non</option>
                                 </select>
