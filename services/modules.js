@@ -736,7 +736,6 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     }
 
     const pathListModules = path.join(pathToThemeModules, 'list_modules.js');
-    const result          = await fs.readFile(pathListModules, 'utf8');
 
     // For each module front file
     const resultDir = await fs.readdir(pathModule, {withFileTypes: true});
@@ -749,6 +748,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
