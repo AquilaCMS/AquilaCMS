@@ -12,7 +12,7 @@ const {Configuration}      = require('../orm/models');
 
 module.exports = function (app) {
     app.get('/encryption/cipher', adminAuth, cipherPasswords);
-    app.get('/createModelData', adminAuth, createModelData);
+    app.get('/createModelData',  createModelData);
 };
 async function createModelData(req, res, next) {
     try {
