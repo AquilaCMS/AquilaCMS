@@ -54,8 +54,25 @@ const ConfigurationSchema = new Schema({
             values : {type: [String]},
             active : {type: Boolean, default: false}
         },
-        needRestart : {type: Boolean, default: false},
-        needRebuild : {type: Boolean, default: false}
+        needRestart    : {type: Boolean, default: false},
+        needRebuild    : {type: Boolean, default: false},
+        searchSettings : {
+            shouldSort         : {type: Boolean, default: true},
+            ignoreLocation     : {type: Boolean, default: true},
+            findAllMatches     : {type: Boolean, default: true},
+            ignoreFieldNorm    : {type: Boolean, default: true},
+            includeScore       : {type: Boolean, default: true},
+            useExtendedSearch  : {type: Boolean, default: true},
+            minMatchCharLength : {type: Number, default: 2},
+            threshold          : {type: Number, default: 0.3},
+            keys               : [
+                {
+                    key    : String,
+                    label  : String,
+                    weight : Number
+                }
+            ]
+        }
 
     },
     taxerate : {

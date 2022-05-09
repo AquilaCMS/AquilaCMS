@@ -723,23 +723,32 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     if (!hasAccess) {
         return;
     }
-    const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
-    const resultDir    = await fs.readdir(pathModule, {withFileTypes: true});
-    const filesList    = resultDir.filter((file) => file.isFile());
+
+    const currentTheme       = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
+    const pathToThemeModules = path.join(global.appRoot, 'themes', currentTheme, 'modules');
+
+    const info       = await fs.readFile(path.join(savePath, 'info.json'));
+    const parsedInfo = JSON.parse(info);
+
+    const moduleFolderInTheme = path.join(pathToThemeModules, parsedInfo.info.name);
+    if (!fs.existsSync(moduleFolderInTheme)) {
+        fs.mkdirSync(moduleFolderInTheme);
+    }
+
+    const pathListModules = path.join(pathToThemeModules, 'list_modules.js');
+    const result          = await fs.readFile(pathListModules, 'utf8');
 
     // For each module front file
+    const resultDir = await fs.readdir(pathModule, {withFileTypes: true});
+    const filesList = resultDir.filter((file) => file.isFile());
     for (let i = 0; i < filesList.length; i++) {
-        const file       = filesList[i].name;
-        const info       = await fs.readFile(path.join(savePath, 'info.json'));
-        const parsedInfo = JSON.parse(info);
-        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
+        const file = filesList[i].name;
+        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
             type = parsedInfo.info.types.find((t) => t.component === file).type;
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
-        const jsxModuleToImport     = `{jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
-        const pathListModules       = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
-        const result                = await fs.readFile(pathListModules, 'utf8');
+        const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
@@ -754,9 +763,9 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         }
 
         // Copy the files (of the module) needed by the front
-        const copyTo  = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+        const copyTo  = path.join(moduleFolderInTheme, file);
         const copyTab = [
-            path.join(global.appRoot, 'themes', currentTheme, 'modules', file)
+            copyTo
         ];
         // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
@@ -775,22 +784,34 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     if (!fs.existsSync(pathThemeComponents)) {
         return;
     }
-    const currentTheme = global.envConfig.environment.currentTheme;
-    const listOfFile   = await fs.readdir(pathThemeComponents);
+    const currentTheme             = global.envConfig.environment.currentTheme;
+    const listOfFile               = await fs.readdir(pathThemeComponents);
+    const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
+    let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
+    if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
     for (const file of listOfFile) {
         if (toRemove) {
             await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
-            const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+            let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+            if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
-                    console.log(`rm ${filePath}`);
+                    console.log(`Delete ${filePath}`);
                 } catch (err) {
-                    console.log(`cannot rm ${filePath}`);
+                    console.log(`Cannot delete ${filePath}`);
                 }
             }
         } else {
             await frontModuleComponentManagement(currentTheme, pathThemeComponents);
+        }
+    }
+
+    if (toRemove) {
+        const moduleFolderInTheme = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName);
+        if (fs.existsSync(moduleFolderInTheme) && fs.readdirSync(moduleFolderInTheme).length === 0) {
+            await fs.rmdir(moduleFolderInTheme);
+            console.log(`Delete ${moduleFolderInTheme}`);
         }
     }
     // Rebuild du theme
