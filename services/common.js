@@ -124,9 +124,10 @@ const exportData = async (model, PostBody) => {
             fsp.mkdirSync(`/${uploadDirectory}/temp`);
         }
 
+        const date = Date.now()
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fsp.writeFile(`/${uploadDirectory}/temp/${Date.now()}.csv`, buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
-        result.url = Date.now();
+        fsp.writeFile(`/${uploadDirectory}/temp/${date}.csv`, buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        result.url = date;
         return result;
     }
 };
