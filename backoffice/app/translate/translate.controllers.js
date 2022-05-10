@@ -4,13 +4,8 @@ const TranslateControllers = angular.module('aq.translate.controllers', []);
 TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$http', 'toastService', 'translateFactory', '$translate', /*'LanguagesApi',*/
     function (schemaForm, $scope, $http, toastService, translateFactory, $translate/*, LanguagesApi*/) {
         
-          $scope.form = [
-            {
-                type: "submit",
-                title: "Sauvegarder"
-            },
+        $scope.form = [           
             "*"
-            
           ];
  
         $scope.local = {
@@ -18,7 +13,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$h
             allTranslateNames: [],
             currentTranslate: '',
             lang: "fr"
-        };
+        };   
         $scope.showLoader = false;
         $scope.additionnalButtons = [
             {
