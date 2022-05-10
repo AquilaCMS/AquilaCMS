@@ -7,7 +7,6 @@
  */
 
 const moment   = require('moment-business-days');
-const buffer   = require('buffer');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
 const fsp      = require('../utils/fsp');
@@ -101,6 +100,7 @@ const getBreadcrumb = async (url) => {
 };
 
 const exportData = async (model, PostBody) => {
+    const buffer   = require('buffer');
     moment.locale(global.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {

@@ -7,7 +7,6 @@
  */
 
 const path           = require('path');
-const {createSchema} = require('genson-js');
 const fs             = require('../utils/fsp');
 const ServiceConfig  = require('./config');
 const {Languages}    = require('../orm/models');
@@ -78,9 +77,10 @@ const translateSet = async (translateName, translateValue, lang) => {
  * @description Get the contents of the translation file
  */
 const translateGet = async (filePath, lang) => {
+    const {createSchema} = require('genson-js');
     try {
         const themePath = await getTranslatePath(lang);
-        const pathName  = path.join(themePath, `${filePath}.json`);
+        const pathName  = path.resolve(themePath, `${filePath}.json`);
         const temp      = fs.readFileSync(pathName, 'utf8');
         const tradObj   = {};
         tradObj.data    = temp;
