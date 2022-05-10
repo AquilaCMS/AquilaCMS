@@ -94,7 +94,7 @@ var aqModules = [
     "aq.system",
     "aq.invoices",
     "aq.adminList",
-    'aq.dependencies',
+    "aq.dependencies"
 ]
 
 /* App Module */
