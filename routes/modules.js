@@ -22,6 +22,7 @@ module.exports = function (app) {
     app.get('/v2/modules/check', adminAuthRight('modules'), checkDependencies);
     app.post('/v2/module/setConfig', adminAuthRight('modules'), setModuleConfig);
     app.get('/v2/module/installDependencies', adminAuthRight('modules'), installDependencies);
+    app.post('/v2/module/md', adminAuthRight('modules'), getModuleMdV2);
 
     // Deprecated
     app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuthRight('modules'), getModuleMd);
@@ -124,6 +125,17 @@ const removeModule = async (req, res, next) => {
         res.send({status: true});
     } catch (error) {
         return next(error);
+    }
+};
+
+const getModuleMdV2 = async (req, res, next) => {
+    try {
+        const result    = await serviceModule.getModuleMdV2(req.body);
+        const converter = new showdown.Converter();
+        converter.setOption('tables', true);
+        res.json({html: converter.makeHtml(result)});
+    } catch (error) {
+        next(error);
     }
 };
 
