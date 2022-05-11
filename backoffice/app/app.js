@@ -31,6 +31,7 @@ var aqModules = [
     "adminCatagenServices",
     "adminCatagenDirectives",
     "pascalprecht.translate",
+    "schemaForm",
     "ngSanitize",
     "xeditable",
     "ngFileUpload",
@@ -93,7 +94,7 @@ var aqModules = [
     "aq.system",
     "aq.invoices",
     "aq.adminList",
-    'aq.dependencies'
+    "aq.dependencies"
 ]
 
 /* App Module */

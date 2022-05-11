@@ -17,7 +17,7 @@ module.exports = function generateID(schema) {
     });
 
     schema.pre('findOneAndUpdate', async function (next) {
-        if (this.options.upsert && this._conditions._id && this._conditions._id.id[0] !== 255 ) this._id = generate();
+        if (this.options.upsert && this._conditions._id &&  ((this._conditions._id.id &&  this._conditions._id.id[0] !== 255) || (! this._conditions._id.id &&  this._conditions._id[0] !== 255))) this._id = generate();
         await utilsDatabase.preUpdates(this, next, schema);
     });
 };

@@ -68,7 +68,7 @@ const downloadAllDocuments = async () => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
+    return path.resolve(uploadDirectory, 'temp/documents.zip');
 };
 
 /**

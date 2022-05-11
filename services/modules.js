@@ -736,7 +736,6 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     }
 
     const pathListModules = path.join(pathToThemeModules, 'list_modules.js');
-    const result          = await fs.readFile(pathListModules, 'utf8');
 
     // For each module front file
     const resultDir = await fs.readdir(pathModule, {withFileTypes: true});
@@ -749,6 +748,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
@@ -998,6 +998,22 @@ const getModuleMd = async (body) => {
     return text;
 };
 
+/**
+ * Used to define the configuration (conf field) of a module
+ * @param body {object} datas of the request it has moduleName key (required) and 2 optionnals keys: filename which is the name of the file you wanna point to (default README.md), and encoding which is the file encoding (default utf8)
+ * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
+ */
+const getModuleMdV2 = async (body) => {
+    if (!body.moduleName) {
+        throw NSErrors.InvalidParameters;
+    }
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, body.filename || 'README.md');
+    if (await fs.existsSync(pathToMd)) {
+        return fs.readFileSync(pathToMd, body.filename || 'utf8');
+    }
+    return '';
+};
+
 module.exports = {
     getModules,
     getModule,
@@ -1021,5 +1037,6 @@ module.exports = {
     loadAdminModules,
     getConfig,
     setConfig,
-    getModuleMd
+    getModuleMd,
+    getModuleMdV2
 };
