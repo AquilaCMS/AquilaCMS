@@ -1008,7 +1008,7 @@ const getModuleMdV2 = async (body) => {
     }
     const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, body.filename || 'README.md');
     if (await fs.existsSync(pathToMd)) {
-        return fs.readFileSync(pathToMd, body.filename || 'utf8');
+        return fs.readFileSync(pathToMd, body.encoding || 'utf8');
     }
     return '';
 };
