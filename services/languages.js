@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const fs             = require('../utils/fsp');
-const ServiceConfig  = require('./config');
-const {Languages}    = require('../orm/models');
-const NSErrors       = require('../utils/errors/NSErrors');
-const QueryBuilder   = require('../utils/QueryBuilder');
+const path          = require('path');
+const fs            = require('../utils/fsp');
+const ServiceConfig = require('./config');
+const {Languages}   = require('../orm/models');
+const NSErrors      = require('../utils/errors/NSErrors');
+const QueryBuilder  = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];

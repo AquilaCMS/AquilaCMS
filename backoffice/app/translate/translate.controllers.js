@@ -1,8 +1,8 @@
 
 const TranslateControllers = angular.module('aq.translate.controllers', []);
 
-TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http','$translate', 'toastService', 'translateFactory', 'schemaForm', /*'LanguagesApi',*/
-    function ($scope, $http, $translate, toastService, translateFactory, /*, LanguagesApi*/) {
+TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http','$translate', 'toastService', 'translateFactory', /*'LanguagesApi',*/
+    function ($scope, $http, $translate, toastService, translateFactory /*, LanguagesApi*/) {
         
         $scope.form = [           
             "*"
