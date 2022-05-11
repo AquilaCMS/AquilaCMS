@@ -62,7 +62,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http','$transl
             if (form.$valid) {
                 try {
                     translateFactory.saveTranslate(
-                        { currentTranslate: $scope.currentTranslate, lang: $scope.local.lang }, { datas: JSON.stringify($scope.model) },
+                        { currentTranslate: $scope.currentTranslate, lang: $scope.local.lang }, { datas: JSON.stringify($scope.model, null, 2) },
                         (response) => {
                             toastService.toast('success', $translate.instant("translate.translateSaved"));
                         },
