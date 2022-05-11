@@ -789,8 +789,9 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
     let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
     if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
-    for (const file of listOfFile) {
-        if (toRemove) {
+
+    if (toRemove) {
+        for (const file of listOfFile) {
             await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
             let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
@@ -802,18 +803,16 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
                     console.log(`Cannot delete ${filePath}`);
                 }
             }
-        } else {
-            await frontModuleComponentManagement(currentTheme, pathThemeComponents);
         }
-    }
-
-    if (toRemove) {
         const moduleFolderInTheme = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName);
         if (fs.existsSync(moduleFolderInTheme) && fs.readdirSync(moduleFolderInTheme).length === 0) {
             await fs.rmdir(moduleFolderInTheme);
             console.log(`Delete ${moduleFolderInTheme}`);
         }
+    } else {
+        await frontModuleComponentManagement(currentTheme, pathThemeComponents);
     }
+
     // Rebuild du theme
     if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
