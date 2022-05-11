@@ -1,8 +1,8 @@
 
 const TranslateControllers = angular.module('aq.translate.controllers', []);
 
-TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$http', 'toastService', 'translateFactory', '$translate', /*'LanguagesApi',*/
-    function (schemaForm, $scope, $http, toastService, translateFactory, $translate/*, LanguagesApi*/) {
+TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http','$translate', 'toastService', 'translateFactory', 'schemaForm', /*'LanguagesApi',*/
+    function ($scope, $http, $translate, toastService, translateFactory, /*, LanguagesApi*/) {
         
         $scope.form = [           
             "*"
@@ -42,7 +42,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['schemaForm','$scope', '$h
                 translateFactory.loadTranslation(
                     { currentTranslate: $scope.local.currentTranslate, lang: $scope.local.lang },
                     (response) => {
-                        $scope.local.customTranslate = JSON.stringify(response.data, undefined, 2);
+                        $scope.local.customTranslate = JSON.stringify(response.data);
                         $scope.currentTranslate = $scope.local.currentTranslate
                         $scope.schema = response.schema
                         $scope.model = JSON.parse(response.data);
