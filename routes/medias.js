@@ -10,7 +10,6 @@ const path             = require('path');
 const {adminAuthRight} = require('../middleware/authentication');
 const mediasServices   = require('../services/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
-const fsp              = require('../utils/fsp');
 
 module.exports = function (app) {
     app.post('/v2/medias', adminAuthRight('medias'), listMedias);
@@ -155,7 +154,7 @@ async function downloadAllDocuments(req, res, next) {
             if (err) {
                 console.log(err);
             }
-            fsp.unlink(path, function () {
+            require('../utils/fsp').unlink(path, function () {
                 console.log('File was deleted'); // Callback
             });
         });
