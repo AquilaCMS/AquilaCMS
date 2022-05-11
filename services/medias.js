@@ -44,52 +44,6 @@ const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultField
  */
 const downloadAllDocuments = async () => {
     console.log('Preparing downloadAllDocuments...');
-
-    const getAllFiles =  (dirPath, arrayOfFiles) => {
-        const files = fsp.readdirSync(dirPath);
-
-        arrayOfFiles = arrayOfFiles || [];
-
-        files.forEach(function (file) {
-            if (fsp.statSync(`${dirPath}/${file}`).isDirectory()) {
-                arrayOfFiles = getAllFiles(`${dirPath}/${file}`, arrayOfFiles);
-            } else {
-                arrayOfFiles.push(path.join(dirPath, file));
-            }
-        });
-
-        return arrayOfFiles;
-    };
-
-    const getTotalSize = (directoryPath) => {
-        const arrayOfFiles = getAllFiles(directoryPath);
-
-        let totalSize = 0;
-        arrayOfFiles.forEach(function (filePath) {
-            totalSize += fsp.statSync(filePath).size;
-        });
-
-        return totalSize;
-    };
-
-    const getGoodDirectory = (directoryPath, arrayOfDirectories) => {
-        const files        = fsp.readdirSync(directoryPath);
-        arrayOfDirectories = arrayOfDirectories || [];
-
-        files.forEach(function (file) {
-            if (fsp.statSync(`${directoryPath}/${file}`).isDirectory()) {
-                if (getTotalSize(`${directoryPath}/${file}`) > 512000000) {
-                    arrayOfDirectories = getGoodDirectory(`${directoryPath}/${file}`, arrayOfDirectories);
-                } else {
-                    arrayOfDirectories.push(path.join(directoryPath, file));
-                }
-            } else {
-                arrayOfDirectories.push(path.join(directoryPath, file));
-            }
-        });
-        return arrayOfDirectories;
-    };
-
     const uploadDirectory = server.getUploadDirectory();
 
     await utilsModules.modulesLoadFunctions('downloadAllDocuments', {}, () => {
@@ -101,18 +55,7 @@ const downloadAllDocuments = async () => {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'medias'))) {
-            if (getTotalSize(path.resolve(uploadDirectory, 'medias')) < 512000000) {
-                zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
-            } else {
-                const arrayOfFiles = getGoodDirectory(path.resolve(uploadDirectory, 'medias'));
-                arrayOfFiles.forEach(function (filePath) {
-                    if (fsp.statSync(filePath).isDirectory()) {
-                        zip.addLocalFolder(filePath);
-                    } else {
-                        zip.addLocalFile(filePath);
-                    }
-                });
-            }
+            zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
         }
         if (fsp.existsSync(path.resolve(uploadDirectory, 'photos'))) {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'photos'), 'photos');
