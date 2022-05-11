@@ -12,6 +12,7 @@ const path     = require('path');
 const slash    = require('slash');
 const mongoose = require('mongoose');
 const ObjectID = mongoose.Types.ObjectId;
+const move     = require('mv');
 
 const {
     Medias,
@@ -91,25 +92,26 @@ const uploadAllMedias = async (reqFile, insertDB) => {
     try {
         filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
     } catch (e) {
-        fsp.deleteRecursive(path_unzip);
-        fsp.deleteRecursive(path_init);
+        deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotFound;
     }
     // if zip have folder but no file
     if (filenames.length === 0) {
-        fsp.deleteRecursive(path_unzip);
-        fsp.deleteRecursive(path_init);
+        deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotInRoot;
     }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
         try {
-            const filename    = filenames[index];
-            const init_file   = path.resolve(path_unzip, filename);
-            const target_file = path.resolve(target_path, filename);
-            const name_file   = filename.split('.')
-                .slice(0, -1)
-                .join('.');
+            let filename                 = filenames[index];
+            const init_file              = path.resolve(path_unzip, filename);
+            let target_file              = path.resolve(target_path, filename);
+            let name_file                = filename.split('.').slice(0, -1).join('.');
+            const now                    = Date.now();
+            const ext_file               = filename.split('.').pop();
+            const filename_duplicated    = `${name_file + now}.${ext_file}`;
+            const name_file_duplicated   = filename_duplicated.split('.').slice(0, -1).join('.');
+            const target_file_duplicated = path.resolve(target_path, filename_duplicated);
 
             // Check if folder
             if (fsp.lstatSync(init_file)
@@ -117,13 +119,22 @@ const uploadAllMedias = async (reqFile, insertDB) => {
                 return;
             }
 
+            // if target_file exists use the target_file_duplicated variable
+            if (fsp.existsSync(target_file)) {
+                target_file = target_file_duplicated;
+            }
             // Move file to / medias
-            require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
+            move(init_file, target_file, {mkdirp: true}, (err) => {
                 if (err) console.error(err);
             });
 
             // Insert it in the database
             if (insertDB) {
+                // check if filename already exist in the database
+                if (await Medias.findOne({name: name_file})) {
+                    name_file = name_file_duplicated;
+                    filename  = filename_duplicated;
+                }
                 await Medias.updateOne({name: name_file}, {
                     link  : `medias/${filename}`,
                     name  : name_file,
@@ -136,10 +147,13 @@ const uploadAllMedias = async (reqFile, insertDB) => {
         }
     }
 
+    deleteTempFiles(path_unzip, path_init);
+    console.log('Upload medias done !');
+};
+
+const deleteTempFiles = async (path_unzip, path_init) => {
     fsp.deleteRecursive(path_unzip);
     fsp.deleteRecursive(path_init);
-    console.log('Upload medias done !');
-    // return true;
 };
 
 /* **************** Documents **************** *
