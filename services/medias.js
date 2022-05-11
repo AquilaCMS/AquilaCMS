@@ -130,8 +130,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
 
             // Insert it in the database
             if (insertDB) {
-                // check if filename already exist in the database
-                if (await Medias.findOne({name: name_file})) {
+                // check if filename already exist in the database OR if link already exist in the database
+                if (await Medias.findOne({$or: [{name: name_file}, {link: `medias/${filename}`}]})) {
                     name_file = name_file_duplicated;
                     filename  = filename_duplicated;
                 }
