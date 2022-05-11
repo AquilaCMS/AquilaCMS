@@ -295,7 +295,7 @@ adminCatagenServices.factory("ExportCollectionCSV", [
                 const linkElement = document.createElement("a");
                 try {
                     
-                    linkElement.setAttribute("href", 'http://localhost:3010/temp/' + data.url + '.csv');
+                    linkElement.setAttribute("href", '/temp/' + data.url + '.csv');
                     linkElement.setAttribute("download", filename);
                     const clickEvent = new MouseEvent("click", {"view": window, "bubbles": true, "cancelable": false});
                     linkElement.dispatchEvent(clickEvent);
