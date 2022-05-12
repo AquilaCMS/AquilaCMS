@@ -210,8 +210,11 @@
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'" hook-category-detail-productList>
                 <div class="tableWrapperOverflow">
-                    <p ng-show="loadPrds">Chargement des produits ...</p>
-                    <table ng-show="!loadPrds" class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                    
+                    <div ng-show="loadPrds" id="overlayModule">
+                        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                    </div>
+                    <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
                     aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">
@@ -292,21 +295,21 @@
                             </th>
                             <th></th>
                             <th>
-                                <input type="text" ng-change="getProducts()" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
+                                <input ng-model-options="{debounce: 500}" type="text" ng-change="currentPage = 1; getProducts()" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
                             </th>
                             <th>
                             </th>
                             <th>
-                                <input type="text" ng-change="getProducts()" ng-model="searchObj.translation.name"
+                                <input ng-model-options="{debounce: 500}" type="text" ng-change="currentPage = 1; getProducts()" ng-model="searchObj.translation.name"
                                        translate translate-attr-placeholder='category.detail.ph1' class="form-control" />
                             </th>
                             <th>
-                                <input ng-model="searchObj['price.ati.normal'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
-                                <input ng-model="searchObj['price.ati.normal'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['price.ati.normal'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['price.ati.normal'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
                             </th>
                             <th>
-                                <input ng-model="searchObj['stock.qty'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
-                                <input ng-model="searchObj['stock.qty'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['stock.qty'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['stock.qty'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
                             </th>
                             <th>
                                 <select ng-model="searchObj.type" ng-change="getProducts()" class="form-control">
