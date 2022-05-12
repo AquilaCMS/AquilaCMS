@@ -200,7 +200,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             };
 
             if($scope.pagination) {
-                console.log($scope.searchObj)
                 if(Object.keys($scope.searchObj).length > 0) {
                     const filterKeys = Object.keys($scope.searchObj);
                     const filterLength = filterKeys.length;
