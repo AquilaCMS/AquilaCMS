@@ -531,7 +531,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     } else {
         const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
         let sortArray          = sortPropertyName.split('.');
-        if (sortArray[0] === 'price') {
+        if (sortArray[0] === 'price' && sortArray[1] !== 'priceSort') {
             const taxes = sortArray[1];
             sortArray   = ['price', 'priceSort', taxes];
         }
