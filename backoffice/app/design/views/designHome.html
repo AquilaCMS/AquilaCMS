@@ -10,7 +10,7 @@
         <ns-buttons disable-save="disableSave" return-path="/" form="form" hide-save-and-quit="true">
 
             <div style="text-align: center">
-                <textarea style="width:95%;height:500px" ng-model="local.customCSS" required></textarea>
+                <textarea class="MyText" style="width:95%;height:500px" onscroll="loadText()" ng-model="local.customCSS" required></textarea>
             </div>
 
         </ns-buttons>

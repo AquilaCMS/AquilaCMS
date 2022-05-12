@@ -9,6 +9,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
             currentCss  : ''
         };
 
+       
 
         $http.get('/v2/themes/css').then((response) => {
             $scope.local.allCssNames = response.data;
@@ -21,13 +22,15 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
             designFactory.loadNewCss(
                 { currentCss: $scope.local.currentCss },
                 (response) => {
-                    $scope.local.customCSS = response.data;
+                    $scope.local.customCSS = (response.data).substring(0,20000);
+                    setData(response.data)
                 },
                 (err) => {
                     toastService.toast('danger', err.data.message);
                 }
             );
         };
+        
 
         $scope.saveCss = function () {
             designFactory.saveCss(
@@ -42,3 +45,29 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
         };
     }]);
 
+
+let data;
+let limit = 2
+let timeout = null
+
+function setData(_data){
+    data=_data
+}
+
+function loadText(){
+    if(timeout !== null) clearTimeout(timeout)
+    timeout = setTimeout(function() {
+        let elements = document.getElementsByClassName('MyText')[0];
+        let scroll_percent = ((elements.scrollTop + elements.offsetHeight) / elements.scrollHeight * 100)
+        if(scroll_percent > 70){
+            if(data.length > (limit+1)*10000){
+                elements.value = (elements.value) + data.substring(limit*10000,(limit+1)*10000)
+                limit+=1
+            } 
+            else{
+                elements.value = elements.val + data.substring(limit*10000,data.length)
+            }
+           
+        }
+    }, 300)
+}
