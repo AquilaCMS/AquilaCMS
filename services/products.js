@@ -478,7 +478,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
         priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
-        for (const prd of prds) {
+        for (const prd of prdsPrices) {
             if (prd.price) {
                 if (prd.price.et.special) {
                     arraySpecialPrice.et.push(prd.price.et.special);
