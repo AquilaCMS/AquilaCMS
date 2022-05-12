@@ -29,6 +29,10 @@
                 </ul>
             </div>
             <div class="tab-content">
+                <span class="pull-right" style="position:absolute;right:60px;margin-top:30px;">
+                    <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookProductInfo" style="display:block;"></span>
+                </span>
+
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'simple'" form="form"></ns-product-general>
                 </div>
