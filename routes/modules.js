@@ -22,10 +22,9 @@ module.exports = function (app) {
     app.get('/v2/modules/check', adminAuthRight('modules'), checkDependencies);
     app.post('/v2/module/setConfig', adminAuthRight('modules'), setModuleConfig);
     app.get('/v2/module/installDependencies', adminAuthRight('modules'), installDependencies);
-    app.post('/v2/module/md', adminAuthRight('modules'), getModuleMdV2);
+    app.post('/v2/modules/md', adminAuthRight('modules'), getModuleMd);
 
     // Deprecated
-    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuthRight('modules'), getModuleMd);
     app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuthRight('modules'), setModuleConfigById); // deprecated -> use /v2/module/setConfig
 };
 
@@ -128,23 +127,9 @@ const removeModule = async (req, res, next) => {
     }
 };
 
-const getModuleMdV2 = async (req, res, next) => {
-    try {
-        const result    = await serviceModule.getModuleMdV2(req.body);
-        const converter = new showdown.Converter();
-        converter.setOption('tables', true);
-        res.json({html: converter.makeHtml(result)});
-    } catch (error) {
-        next(error);
-    }
-};
-
-/**
- * @deprecated
- */
 const getModuleMd = async (req, res, next) => {
     try {
-        const result    = await serviceModule.getModuleMd(req.body);
+        const result    = await serviceModule.getModuleMdV2(req.body);
         const converter = new showdown.Converter();
         converter.setOption('tables', true);
         res.json({html: converter.makeHtml(result)});
@@ -168,7 +153,6 @@ async function setModuleConfigById(req, res, next) {
 
 async function installDependencies(req, res, next) {
     try {
-        console.log('INSTALL DEPS');
         return res.json(await serviceModule.installDependencies());
     } catch (error) {
         console.error(error);
