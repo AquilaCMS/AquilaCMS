@@ -53,6 +53,58 @@ const objectPathCrawler = (object, pathAsArray) => {
     }
 };
 
+const sortProductList = (products, PostBodySort, category) => {
+    if (!PostBodySort || PostBodySort?.sortWeight) {
+        /**
+         * If a category is not filled in, this means that we are on the search page and the sorting by weight has already been done
+         */
+        if (category) {
+            products.forEach((product, index) => {
+                const idx = category.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
+                // add sortWeight to result.datas[i] (modification of an object by reference)
+                if (idx > -1) {
+                    products[index].sortWeight = category.productsList[idx].sortWeight;
+                } else {
+                    products[index].sortWeight = -1;
+                }
+            });
+            // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
+            products.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
+        }
+    } else {
+        const sortPropertyName = Object.getOwnPropertyNames(PostBodySort)[0];
+        let sortArray          = sortPropertyName.split('.');
+        if (sortArray[0] === 'price' && sortArray[1] !== 'priceSort') {
+            const taxes = sortArray[1];
+            sortArray   = ['price', 'priceSort', taxes];
+        }
+
+        if (sortArray[0] === 'translation') {
+            if (`${PostBodySort[sortPropertyName]}` === '1') {
+                products.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+            } else {
+                products.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+            }
+        } else {
+            // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
+            if (`${PostBodySort[sortPropertyName]}` === '1') {
+                products.sort((p1, p2) => {
+                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                    return p1Value - p2Value;
+                });
+            } else {
+                products.sort((p1, p2) => {
+                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
+                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
+                    return p2Value - p1Value;
+                });
+            }
+        }
+    }
+    return products;
+};
+
 const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
@@ -134,12 +186,17 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
     if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
-        // We order the products according to the order given by the fuzzy search just before
-        result.datas.sort((a, b) => {
-            const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
-            const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
-            return aIndex - bIndex;
-        });
+
+        if (PostBody.sort && !PostBody.sort.sortWeight) {
+            result.datas = sortProductList(result.datas, PostBody.sort);
+        } else {
+            // We order the products according to the order given by the fuzzy search just before
+            result.datas.sort((a, b) => {
+                const aIndex = PostBody.filter._id.$in.indexOf(a._id.toString());
+                const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
+                return aIndex - bIndex;
+            });
+        }
         delete PostBody.filter._id;
     }
 
@@ -527,50 +584,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    if (!PostBody.sort || PostBody.sort?.sortWeight) {
-        prds.forEach((product, index) => {
-            const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
-            // add sortWeight to result.datas[i] (modification of an object by reference)
-            if (idx > -1) {
-                prds[index].sortWeight = menu.productsList[idx].sortWeight;
-            } else {
-                prds[index].sortWeight = -1;
-            }
-        });
-
-        // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
-        prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-    } else {
-        const sortPropertyName = Object.getOwnPropertyNames(PostBody.sort)[0];
-        let sortArray          = sortPropertyName.split('.');
-        if (sortArray[0] === 'price' && sortArray[1] !== 'priceSort') {
-            const taxes = sortArray[1];
-            sortArray   = ['price', 'priceSort', taxes];
-        }
-
-        if (sortArray[0] === 'translation') {
-            if (`${PostBody.sort[sortPropertyName]}` === '1') {
-                prds.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
-            } else {
-                prds.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
-            }
-        } else {
-            // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
-            if (`${PostBody.sort[sortPropertyName]}` === '1') {
-                prds.sort((p1, p2) => {
-                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
-                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p1Value - p2Value;
-                });
-            } else {
-                prds.sort((p1, p2) => {
-                    const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
-                    const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p2Value - p1Value;
-                });
-            }
-        }
-    }
+    prds = sortProductList(prds, PostBody.sort, menu);
 
     const products = prds.slice(skip, limit + skip);
 
