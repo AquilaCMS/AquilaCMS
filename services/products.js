@@ -387,6 +387,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     let priceMax        = {et: 0, ati: 0};
     let specialPriceMin = {et: 0, ati: 0};
     let specialPriceMax = {et: 0, ati: 0};
+    let priceSortMin    = {et: 0, ati: 0};
+    let priceSortMax    = {et: 0, ati: 0};
 
     // If we don't need the price information, we can bypass a lot of processes
     if (PostBody.structure.price === 0) {
@@ -467,6 +469,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
         const arrayPrice        = {et: [], ati: []};
         const arraySpecialPrice = {et: [], ati: []};
+        const arrayPriceSort    = {et: [], ati: []};
 
         for (const prd of prds) {
             if (prd.price) {
@@ -486,11 +489,20 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                 if (prd.price.ati.special) {
                     arraySpecialPrice.ati.push(prd.price.ati.special);
                 }
+                if (prd.price.priceSort.et) {
+                    arrayPriceSort.et.push(prd.price.priceSort.et);
+                }
+                if (prd.price.priceSort.ati) {
+                    arrayPriceSort.ati.push(prd.price.priceSort.ati);
+                }
             }
         }
 
         specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+
+        priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
+        priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
 
         if (reqRes !== undefined && PostBody.withPromos !== false) {
             reqRes.res.locals.datas  = prds;
@@ -573,7 +585,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         priceMin,
         priceMax,
         specialPriceMin,
-        specialPriceMax
+        specialPriceMax,
+        priceSortMin,
+        priceSortMax
     };
 };
 
