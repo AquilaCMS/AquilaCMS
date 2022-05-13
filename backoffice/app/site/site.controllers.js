@@ -227,11 +227,8 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         {
             if (confirm($translate.instant("confirm.deleteImage")))
             {
+                $scope.articles.pervImage = articles.img;
                 $scope.articles.img = "";
-                SiteDeleteImage.deleteImage({_id: articles._id}, function (response)
-                {
-                    toastService.toast("success", $translate.instant("site.detail.imgDelete"));
-                });
             }
         };
 
