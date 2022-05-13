@@ -24,6 +24,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
                 (response) => {
                     $scope.local.customCSS = (response.data).substring(0,20000);
                     setData(response.data)
+                    document.getElementById('MyText').addEventListener("scroll", loadText)
                 },
                 (err) => {
                     toastService.toast('danger', err.data.message);
@@ -53,6 +54,7 @@ let timeout = null
 function setData(_data){
     data=_data
 }
+
 
 function loadText(){
     if(timeout !== null) clearTimeout(timeout)
