@@ -149,12 +149,15 @@ async function uploadAllMedias(req, res, next) {
  */
 async function downloadAllDocuments(req, res, next) {
     try {
-        const result = await mediasServices.downloadAllDocuments();
-
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
-        res.write(result, 'binary');
-        res.end();
+        const path = await mediasServices.downloadAllDocuments();
+        return res.download(path, 'documents.zip', function (err) {
+            if (err) {
+                console.log(err);
+            }
+            require('../utils/fsp').unlink(path, function () {
+                console.log('File was deleted'); // Callback
+            });
+        });
     } catch (error) {
         return next(error);
     }

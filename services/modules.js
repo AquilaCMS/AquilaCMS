@@ -736,7 +736,6 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     }
 
     const pathListModules = path.join(pathToThemeModules, 'list_modules.js');
-    const result          = await fs.readFile(pathListModules, 'utf8');
 
     // For each module front file
     const resultDir = await fs.readdir(pathModule, {withFileTypes: true});
@@ -749,6 +748,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
@@ -789,8 +789,9 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
     let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
     if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
-    for (const file of listOfFile) {
-        if (toRemove) {
+
+    if (toRemove) {
+        for (const file of listOfFile) {
             await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
             let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
@@ -802,18 +803,16 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
                     console.log(`Cannot delete ${filePath}`);
                 }
             }
-        } else {
-            await frontModuleComponentManagement(currentTheme, pathThemeComponents);
         }
-    }
-
-    if (toRemove) {
         const moduleFolderInTheme = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName);
         if (fs.existsSync(moduleFolderInTheme) && fs.readdirSync(moduleFolderInTheme).length === 0) {
             await fs.rmdir(moduleFolderInTheme);
             console.log(`Delete ${moduleFolderInTheme}`);
         }
+    } else {
+        await frontModuleComponentManagement(currentTheme, pathThemeComponents);
     }
+
     // Rebuild du theme
     if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
@@ -982,20 +981,18 @@ const setConfig = async (name, newConfig) => {
 
 /**
  * Used to define the configuration (conf field) of a module
- * @param body {object} datas of the request
+ * @param body {object} datas of the request it has moduleName key (required) and 2 optionnals keys: filename which is the name of the file you wanna point to (default README.md), and encoding which is the file encoding (default utf8)
  * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
- * @deprecated
  */
 const getModuleMd = async (body) => {
     if (!body.moduleName) {
         throw NSErrors.InvalidParameters;
     }
-    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
-    let text       = '';
-    if (fs.existsSync(pathToMd)) {
-        text = await fs.readFileSync(pathToMd, 'utf8');
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, body.filename || 'README.md');
+    if (await fs.existsSync(pathToMd)) {
+        return fs.readFileSync(pathToMd, body.encoding || 'utf8');
     }
-    return text;
+    return '';
 };
 
 module.exports = {

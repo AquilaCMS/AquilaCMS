@@ -238,7 +238,7 @@ ThemesController.controller("ThemesCtrl", [
                     }
                 }, function (err) {
                     $scope.showLoading2 = false;
-                    console.log(err);
+                    console.error(err);
                 });
             } else {
                 $scope.saveTheme();
