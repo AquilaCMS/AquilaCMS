@@ -12,7 +12,6 @@ const path     = require('path');
 const slash    = require('slash');
 const mongoose = require('mongoose');
 const ObjectID = mongoose.Types.ObjectId;
-const move     = require('mv');
 
 const {
     Medias,
@@ -124,9 +123,12 @@ const uploadAllMedias = async (reqFile, insertDB) => {
                 target_file = target_file_duplicated;
             }
             // Move file to / medias
-            move(init_file, target_file, {mkdirp: true}, (err) => {
-                if (err) console.error(err);
-            });
+            try {
+                await fsp.moveFile(init_file, target_file, {mkdirp: true});
+            } catch (e) {
+                console.error(e);
+                throw NSErrors.MediaNotFound;
+            }
 
             // Insert it in the database
             if (insertDB) {
