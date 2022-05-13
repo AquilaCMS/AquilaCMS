@@ -11,7 +11,9 @@
                     additionnal-buttons="additionnalButtons"
                     more-buttons="moreButtons"
                     >
-            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            <div style="height: 40px" ng-show='languages.length > 1'>
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
             <div class="scrollmenu">
                 <ul class="nav nav-tabs" hook-product-detail-tab>
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
@@ -29,7 +31,7 @@
                 </ul>
             </div>
             <div class="tab-content">
-                <span class="pull-right" style="position:absolute;right:60px;margin-top:30px;">
+                <span class="pull-right" style="margin-bottom:30px;">
                     <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookProductInfo" style="display:block;"></span>
                 </span>
 
