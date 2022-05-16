@@ -132,6 +132,7 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
     const fuseRes = fuse.search(pattern);
+    if (limit === 0) return {data: fuseRes, count: fuseRes.length};
     if (limit === 1) return {data: fuseRes.slice(0, 1), count: fuseRes.length};
     const res = [];
 
@@ -169,6 +170,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     }
 
     let count;
+    const realLimit = PostBody.limit;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -178,7 +180,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         if (!PostBody.filter.$and) PostBody.filter.$and = [];
         PostBody.filter.$and.push({active: true});
         PostBody.filter.$and.push({_visible: true});
-        const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, PostBody.limit, PostBody.page, lang);
+        const thisLimit        = (PostBody.sort && !PostBody.sort.sortWeight) ? 0 : PostBody.limit;
+        const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, thisLimit, PostBody.page, lang);
         const data             = searchedProducts.data;
         count                  = searchedProducts.count;
         PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
@@ -220,6 +223,17 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
         if (PostBody.sort && !PostBody.sort.sortWeight) {
             result.datas = sortProductList(result.datas, PostBody.sort);
+            // To create the pagination
+            const res = [];
+            let i     = 0;
+            if (PostBody.page !== 1) {
+                i = (PostBody.page - 1) * realLimit;
+            }
+            while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
+                res.push(result.datas[i]);
+                i++;
+            }
+            result.datas = res;
         } else {
             // We order the products according to the order given by the fuzzy search just before
             result.datas.sort((a, b) => {
