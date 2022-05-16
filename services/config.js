@@ -130,36 +130,25 @@ const saveEnvFile = async (body, files) => {
 };
 
 const saveEnvConfig = async (body) => {
-    const oldConfig = await Configuration.findOne({});
-    if (typeof body.environment?.contentSecurityPolicy !== 'undefined') {
-        const tempValueActive = body.environment.contentSecurityPolicy.active;
-        if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
-            if (typeof tempValueActive === 'string') {
-                if (tempValueActive === 'false') {
-                    body.environment.contentSecurityPolicy.active = false;
-                } else if (tempValueActive === 'true') {
-                    body.environment.contentSecurityPolicy.active = true;
-                }
-            }
-        }
-        if (typeof body.environment.contentSecurityPolicy.values === 'undefined') {
-            body.environment.contentSecurityPolicy.values = [];
-        }
-    }
-    const {environment, stockOrder} = body;
+    const oldConfig                 = await Configuration.findOne({});
+    const newConfig                 = JSON.parse(JSON.stringify(body), (key, value) => ((value === 'true' || value === 'false') ?  value === 'true' : value));
+    const {environment, stockOrder} = newConfig;
+    // environment
     if (environment) {
-        // compare two array
-        const array2 = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
-        const array1 = environment.contentSecurityPolicy.values.slice().sort();
-        const isSame = array1.length === array2.length && array1.every((value, index) =>  value === array2[index]);
+        // Content security policy
+        // compare two array (old contentPolicy & new contentPolicy)
+        const oldValues = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
+        const newValues = environment.contentSecurityPolicy.values.slice().sort();
+        const isSame    = newValues.length === oldValues.length && newValues.every((value, index) =>  value === oldValues[index]);
         if (
             oldConfig.environment.appUrl !== environment.appUrl
             || oldConfig.environment.adminPrefix !== environment.adminPrefix
             || isSame === false
             || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
         ) {
-            body.needRestart = true;
+            newConfig.needRestart = true;
         }
+        // images
         if (environment.defaultImage !== oldConfig.defaultImage) {
             await ServiceCache.flush();
             await ServiceCache.cleanCache();
@@ -167,11 +156,13 @@ const saveEnvConfig = async (body) => {
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
-        // specific treatment
-        if (environment.demoMode) {
+        // specific treatment (seo)
+        if (oldConfig.environment.demoMode !== environment.demoMode) {
             const seoService = require('./seo');
-            console.log('DemoMode : removing sitemap.xml');
-            await seoService.removeSitemap(); // Remove the sitemap.xml
+            if (environment.demoMode) {
+                console.log('DemoMode : removing sitemap.xml');
+                await seoService.removeSitemap(); // Remove the sitemap.xml
+            }
             console.log('DemoMode : changing robots.txt');
             await seoService.manageRobotsTxt(false); // Ban robots.txt
         }
@@ -179,26 +170,9 @@ const saveEnvConfig = async (body) => {
 
     // if the stockOrder has changed, in this case for the stock labels, we apply the changes to the product with these labels
     if (stockOrder) {
-        const result = diff(
-            JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),
-            stockOrder.labels,
-            '_id',
-            {updatedValues: diff.updatedValues.second}
-        );
-        for (let i = 0; i < result.removed.length; i++) {
-            await Products.updateMany(
-                {'stock.label': result.removed[i].code},
-                {'stock.label': null, 'stock.translation': undefined}
-            );
-        }
-        for (let i = 0; i < result.updated.length; i++) {
-            await Products.updateMany(
-                {'stock.label': result.updated[i].code},
-                {'stock.translation': result.updated[i].translation}
-            );
-        }
+        await updateProductsStockOrder(stockOrder, oldConfig.stockOrder);
     }
-    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
     global.envConfig = cfg;
 };
 
@@ -243,6 +217,27 @@ const needRebuildAndRestart = async (restart = false, rebuild = false) => {
             }
         }
     });
+};
+
+const updateProductsStockOrder = async (stockOrder, oldStockOrder) => {
+    const result = diff(
+        JSON.parse(JSON.stringify(oldStockOrder.labels)),
+        stockOrder.labels,
+        '_id',
+        {updatedValues: diff.updatedValues.second}
+    );
+    for (let i = 0; i < result.removed.length; i++) {
+        await Products.updateMany(
+            {'stock.label': result.removed[i].code},
+            {'stock.label': null, 'stock.translation': undefined}
+        );
+    }
+    for (let i = 0; i < result.updated.length; i++) {
+        await Products.updateMany(
+            {'stock.label': result.updated[i].code},
+            {'stock.translation': result.updated[i].translation}
+        );
+    }
 };
 
 module.exports = {
