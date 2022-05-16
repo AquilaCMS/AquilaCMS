@@ -188,6 +188,33 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
     let result = await queryBuilder.find(PostBody);
 
+    queryBuilder.defaultFields = defaultFields;
+
+    // We delete the reviews that are not visible and verify
+    if (PostBody && structure && structure.reviews === 1) {
+        serviceReviews.keepVisibleAndVerifyArray(result);
+    }
+
+    if (reqRes !== undefined && PostBody.withPromos !== false) {
+        reqRes.res.locals = result;
+        result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+
+        const arrayPriceSort = {et: [], ati: []};
+        for (const prd of result.datas) {
+            if (prd.price) {
+                if (prd.price.priceSort.et) {
+                    arrayPriceSort.et.push(prd.price.priceSort.et);
+                }
+                if (prd.price.priceSort.ati) {
+                    arrayPriceSort.ati.push(prd.price.priceSort.ati);
+                }
+            }
+        }
+
+        result.priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
+        result.priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
+    }
+
     if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
 
@@ -202,18 +229,6 @@ const getProducts = async (PostBody, reqRes, lang) => {
             });
         }
         delete PostBody.filter._id;
-    }
-
-    queryBuilder.defaultFields = defaultFields;
-
-    // We delete the reviews that are not visible and verify
-    if (PostBody && structure && structure.reviews === 1) {
-        serviceReviews.keepVisibleAndVerifyArray(result);
-    }
-
-    if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals = result;
-        result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
 
     // Get the maximum and minimum price in the Produc's query
@@ -240,20 +255,6 @@ const getProducts = async (PostBody, reqRes, lang) => {
             arraySpecialPrice.ati.push(prd.price.ati.special);
         }
     }
-
-    // Need result.datas to get the specials prices (not from DB query)
-    // const specialNormalET  = await Products.aggregate([
-    //     {$match: PostBody.filter},
-    //     {$group: {_id: null, min: {$min: '$price.et.special'}, max: {$max: '$price.et.special'}}}
-    // ]);
-    // const specialNormalATI = await Products.aggregate([
-    //     {$match: PostBody.filter},
-    //     {$group: {_id: null, min: {$min: '$price.ati.special'}, max: {$max: '$price.ati.special'}}}
-    // ]);
-    // if (specialNormalET.length > 0 & specialNormalATI.length > 0) {
-    //     result.specialPriceMin = {et: specialNormalET[0].min, ati: specialNormalATI[0].min};
-    //     result.specialPriceMax = {et: specialNormalET[0].max, ati: specialNormalATI[0].max};
-    // }
 
     result.specialPriceMin = {
         et  : Math.min(...arraySpecialPrice.et),
