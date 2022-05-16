@@ -175,6 +175,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         const textSearch = PostBody.filter.$text.$search;
         delete PostBody.filter.$text;
+        if (!PostBody.filter.$and) PostBody.filter.$and = [];
         PostBody.filter.$and.push({active: true});
         PostBody.filter.$and.push({_visible: true});
         const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, PostBody.limit, PostBody.page, lang);
