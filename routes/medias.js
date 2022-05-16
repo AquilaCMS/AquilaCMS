@@ -19,6 +19,7 @@ module.exports = function (app) {
     app.post('/v2/medias/upload', adminAuthRight('medias'), uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
+    app.get('/v2/medias/testRoute/:reverse?', testRoute);
     app.get('/v2/medias/download/documents', adminAuthRight('medias'), downloadAllDocuments);
     app.post('/v2/medias/download/documents', adminAuthRight('medias'), uploadAllDocuments);
     app.post('/v2/medias/download/medias', adminAuthRight('medias'), uploadAllMedias);
@@ -175,5 +176,22 @@ async function uploadAllDocuments(req, res, next) {
         }
     } else {
         next(NSErrors.InvalidFile);
+    }
+}
+
+async function testRoute(req, res, next) {
+    try {
+        if (req.params.reverse !== 'true') {
+            if (await require('../utils/fsp').existsSync('.flag')) {
+                await require('../utils/fsp').moveFile('.flag', 'testFlag/.flag');
+            }
+        } else {
+            if (await require('../utils/fsp').existsSync('testFlag/.flag')) {
+                await require('../utils/fsp').moveFile('testFlag/.flag', '.flag');
+            }
+        }
+        return res.json(req.params.reverse || 'false');
+    } catch (err) {
+        next(err);
     }
 }
