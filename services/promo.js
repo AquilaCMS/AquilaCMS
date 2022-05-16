@@ -769,7 +769,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
 function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
     let discountET  = 0;
     let discountATI = 0;
-    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(2));
+    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(5));
 
     if (discountValueET) {
         discountET  = prices.et - discountValueET;
