@@ -105,9 +105,9 @@ const sortProductList = (products, PostBodySort, category) => {
     return products;
 };
 
-const getProductsByOrderedSearch = async (pattern, limit, page = 1, lang = global.defaultLang) => {
+const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
-    const allProductsWithSearchCriteria = await Products.find({active: true, _visible: true}).select(selectedFields).lean();
+    const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
     const selectedFieldsArray = [
         {name: `translation.${lang}.name`, weight: 100},
@@ -173,12 +173,16 @@ const getProducts = async (PostBody, reqRes, lang) => {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
-        const searchedProducts = await getProductsByOrderedSearch(PostBody.filter.$text.$search, PostBody.limit, PostBody.page, lang);
+        const textSearch = PostBody.filter.$text.$search;
+        delete PostBody.filter.$text;
+        if (!PostBody.filter.$and) PostBody.filter.$and = [];
+        PostBody.filter.$and.push({active: true});
+        PostBody.filter.$and.push({_visible: true});
+        const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, PostBody.limit, PostBody.page, lang);
         const data             = searchedProducts.data;
         count                  = searchedProducts.count;
         PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
         PostBody.limit         = 0;
-        delete PostBody.filter.$text;
         delete PostBody.structure;
     }
 

@@ -40,7 +40,7 @@ const getCarts = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
-const getCartById = async (id, PostBody = null, user = null, lang = null, userInfo = null) => {
+const getCartById = async (id, PostBody = null, user = null) => {
     if (PostBody && PostBody.structure) {
         // Need to have all the fields for the discount rules
         const structure = PostBody.structure;
@@ -53,21 +53,8 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, userIn
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        await utilsDatabase.populateItems(cart.items);
-        const products        = cart.items.map((product) => product.id);
-        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
-        if (productsCatalog) {
-            for (let i = 0; i < cart.items.length; i++) {
-                let item = cart.items[i];
-                if (item.type !== 'bundle' && !item.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-                item          = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item, PostBody, cart}, async () => item);
-                cart.items[i] = item;
-            }
-            cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
-            await cart.save();
-        }
         if (user && !user.isAdmin) {
-            cart = await linkCustomerToCart(cart, userInfo);
+            cart = await linkCustomerToCart(cart, user);
         }
     }
     return cart;
@@ -113,7 +100,7 @@ const setComment = async (cartId, comment) => {
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
 };
 
-const deleteCartItem = async (cartId, itemId) => {
+const deleteCartItem = async (cartId, itemId, userInfo) => {
     let cart = await Cart.findOne({_id: cartId});
     if (!cart) throw NSErrors.CartNotFound;
     cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
@@ -145,6 +132,18 @@ const deleteCartItem = async (cartId, itemId) => {
         );
     } else {
         throw NSErrors.CartItemNotFound;
+    }
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: undefined, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
     }
 
     await cart.save();
@@ -261,7 +260,19 @@ const addItem = async (postBody, userInfo) => {
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
-    cart           = data;
+    cart = data;
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang.code, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang.code, false);
+    }
     cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
     const _newCart = await cart.save();
     if (postBody.item.parent) {
@@ -321,13 +332,25 @@ const updateQty = async (postBody, userInfo) => {
 
     // Manage stock
     // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
-    await cart.updateOne({
+    cart = await Cart.findOneAndUpdate({_id: cart._id}, {
         $set : {'items.$[item].quantity': postBody.item.quantity}
     }, {
         arrayFilters : [{'item._id': postBody.item._id}],
         new          : true
     });
     await linkCustomerToCart(cart, userInfo);
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+    }
     cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
