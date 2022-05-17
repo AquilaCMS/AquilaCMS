@@ -130,42 +130,13 @@ const saveEnvFile = async (body, files) => {
 };
 
 const saveEnvConfig = async (body) => {
-    const oldConfig                 = await Configuration.findOne({});
-    const newConfig                 = JSON.parse(JSON.stringify(body), (key, value) => ((value === 'true' || value === 'false') ?  value === 'true' : value));
+    const oldConfig = await Configuration.findOne({});
+    // convert formdata to JS object (to convert string bool to real bool)
+    let newConfig                   = convertBoolValues(body);
     const {environment, stockOrder} = newConfig;
     // environment
     if (environment) {
-        // Content security policy
-        // compare two array (old contentPolicy & new contentPolicy)
-        const oldValues = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
-        const newValues = environment.contentSecurityPolicy.values.slice().sort();
-        const isSame    = newValues.length === oldValues.length && newValues.every((value, index) =>  value === oldValues[index]);
-        if (
-            oldConfig.environment.appUrl !== environment.appUrl
-            || oldConfig.environment.adminPrefix !== environment.adminPrefix
-            || isSame === false
-            || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
-        ) {
-            newConfig.needRestart = true;
-        }
-        // images
-        if (environment.defaultImage !== oldConfig.defaultImage) {
-            await ServiceCache.flush();
-            await ServiceCache.cleanCache();
-        }
-        if (environment.photoPath) {
-            environment.photoPath = path.normalize(environment.photoPath);
-        }
-        // specific treatment (seo)
-        if (oldConfig.environment.demoMode !== environment.demoMode) {
-            const seoService = require('./seo');
-            if (environment.demoMode) {
-                console.log('DemoMode : removing sitemap.xml');
-                await seoService.removeSitemap(); // Remove the sitemap.xml
-            }
-            console.log('DemoMode : changing robots.txt');
-            await seoService.manageRobotsTxt(false); // Ban robots.txt
-        }
+        newConfig = await updateConfig(newConfig, oldConfig);
     }
 
     // if the stockOrder has changed, in this case for the stock labels, we apply the changes to the product with these labels
@@ -238,6 +209,46 @@ const updateProductsStockOrder = async (stockOrder, oldStockOrder) => {
             {'stock.translation': result.updated[i].translation}
         );
     }
+};
+
+const convertBoolValues = (body) => JSON.parse(JSON.stringify(body), (key, value) => ((value === 'true' || value === 'false') ?  value === 'true' : value));
+
+const updateConfig = async (newConfig, oldConfig) => {
+    // Content security policy
+    if (typeof newConfig?.environment?.contentSecurityPolicy !== 'undefined' && typeof newConfig.environment.contentSecurityPolicy.values === 'undefined') {
+        newConfig.environment.contentSecurityPolicy.values = [];
+    }
+    // compare two array (old contentPolicy & new contentPolicy)
+    const oldValues = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
+    const newValues = newConfig.environment.contentSecurityPolicy.values.slice().sort();
+    const isSame    = newValues.length === oldValues.length && newValues.every((value, index) =>  value === oldValues[index]);
+    if (
+        oldConfig.environment.appUrl !== newConfig.environment.appUrl
+        || oldConfig.environment.adminPrefix !== newConfig.environment.adminPrefix
+        || isSame === false
+        || oldConfig.environment.contentSecurityPolicy.active !== newConfig.environment.contentSecurityPolicy.active
+    ) {
+        newConfig.needRestart = true;
+    }
+    // images
+    if (newConfig.environment.defaultImage !== oldConfig.defaultImage) {
+        await ServiceCache.flush();
+        await ServiceCache.cleanCache();
+    }
+    if (newConfig.environment.photoPath) {
+        newConfig.environment.photoPath = path.normalize(newConfig.environment.photoPath);
+    }
+    // specific treatment (seo)
+    if (oldConfig.environment.demoMode !== newConfig.environment.demoMode) {
+        const seoService = require('./seo');
+        if (newConfig.environment.demoMode) {
+            console.log('DemoMode : removing sitemap.xml');
+            await seoService.removeSitemap(); // Remove the sitemap.xml
+        }
+        console.log('DemoMode : changing robots.txt');
+        await seoService.manageRobotsTxt(false); // Ban robots.txt
+    }
+    return newConfig;
 };
 
 module.exports = {
