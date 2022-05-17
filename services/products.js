@@ -248,16 +248,18 @@ const getProducts = async (PostBody, reqRes, lang) => {
         if (PostBody.sort && !PostBody.sort.sortWeight) {
             result.datas = sortProductList(result.datas, PostBody.sort);
             // To create the pagination
-            const res = [];
-            let i     = 0;
-            if (PostBody.page !== 1) {
-                i = (PostBody.page - 1) * realLimit;
+            if (typeof PostBody.page !== 'undefined') {
+                const res = [];
+                let i     = 0;
+                if (PostBody.page !== 1) {
+                    i = (PostBody.page - 1) * realLimit;
+                }
+                while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
+                    res.push(result.datas[i]);
+                    i++;
+                }
+                result.datas = res;
             }
-            while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
-                res.push(result.datas[i]);
-                i++;
-            }
-            result.datas = res;
         } else {
             // We order the products according to the order given by the fuzzy search just before
             result.datas.sort((a, b) => {
@@ -1020,15 +1022,6 @@ function checkAttribsValidity(array) {
         }
     }
     return true;
-}
-
-function getTaxDisplay(user) {
-    if (user && user.taxDisplay !== undefined) {
-        if (!user.taxDisplay) {
-            return 'et';
-        }
-    }
-    return 'ati';
 }
 
 const downloadProduct = async (req, res) => {
