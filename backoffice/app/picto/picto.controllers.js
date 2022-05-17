@@ -171,10 +171,9 @@ PictoControllers.controller('PictoNewCtrl', [
     'PictoApi',
     '$routeParams',
     'toastService',
-    'RuleApi',
     '$location',
     '$translate',
-    function ($scope, PictoApi, $routeParams, toastService, RuleApi, $location, $translate) {
+    function ($scope, PictoApi, $routeParams, toastService, $location, $translate) {
         $scope.picto = {
             location : 'TOP_LEFT',
             enabled  : false,
