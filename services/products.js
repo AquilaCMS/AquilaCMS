@@ -105,6 +105,30 @@ const sortProductList = (products, PostBodySort, category) => {
     return products;
 };
 
+// Function to retrieve and remove the price filter from the PostBody
+const priceFilterFromPostBody = (PostBody) => {
+    let priceFilter;
+    if (PostBody.filter.$and) {
+        for (let i = 0; i < PostBody.filter.$and.length; i++) {
+            const thisField = PostBody.filter.$and[i];
+            if (thisField.$or) {
+                for (let j = 0; j < thisField.$or.length; j++) {
+                    if (thisField.$or[j]) {
+                        const thisSubFieldArray = Object.keys(thisField.$or[j])[0].split('.');
+                        if (thisSubFieldArray[0] === 'price') {
+                            priceFilter = thisField;
+                            PostBody.filter.$and.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
+    }
+    return priceFilter;
+};
+
 const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
@@ -488,13 +512,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         let prdsPrices = JSON.parse(JSON.stringify(prds));
 
         // We collect all the products belonging to this category in order to have the min and max
-        let priceFilter;
-        if (PostBody.filter.$and) {
-            priceFilter = PostBody.filter.$and[0];
-            PostBody.filter.$and.shift();
-            if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
-        }
-        prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
+        const priceFilter = priceFilterFromPostBody(PostBody);
+        prdsPrices        = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
         if (priceFilter) {
             prdsPrices = prdsPrices.filter((prd) => {
                 if (priceFilter.$or[1]['price.ati.special']) {
@@ -588,19 +607,19 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
             // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
         }
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
-            prds = prds.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
-                )
-                && pr <= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
-                );
-            });
-        }
+        // if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
+        //     prds = prds.filter((prd) =>  {
+        //         const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
+        //         return pr >= (
+        //             PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+        //             || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+        //         )
+        //         && pr <= (
+        //             PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+        //             || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+        //         );
+        //     });
+        // }
     }
 
     prds = sortProductList(prds, PostBody.sort, menu);
@@ -1115,19 +1134,15 @@ const getProductsListing = async (req, res) => {
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
-        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
-        if (
-            req.body.PostBody.filter.$and
-            && req.body.PostBody.filter.$and[0]
-            && req.body.PostBody.filter.$and[0].$or
-        ) {
+        const priceFilter = priceFilterFromPostBody(req.body.PostBody);
+        if (priceFilter) {
             result.datas = result.datas.filter((prd) =>  {
                 const pr = prd.price.ati.special || prd.price.ati.normal;
                 return pr >= (
-                    req.body.PostBody.filter.$and[0].$or[1]['price.ati.special'].$gte
-                    || req.body.PostBody.filter.$and[0].$or[0]['price.ati.normal'].$gte)
-                    && pr <= (req.body.PostBody.filter.$and[0].$or[1]['price.ati.special'].$lte
-                    || req.body.PostBody.filter.$and[0].$or[0]['price.ati.normal'].$lte);
+                    priceFilter.$or[1]['price.ati.special'].$gte
+                    || priceFilter.$or[0]['price.ati.normal'].$gte)
+                    && pr <= (priceFilter.$or[1]['price.ati.special'].$lte
+                    || priceFilter.$or[0]['price.ati.normal'].$lte);
             });
         }
     }
