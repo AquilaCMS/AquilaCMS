@@ -222,7 +222,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     queryBuilder.defaultFields = defaultFields;
     // If there is a page management, we retrieve the products on the current page
     let result = JSON.parse(JSON.stringify(allProductsRes));
-    if (PostBody.page) result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
+    if (PostBody.page && currentPageProductsIds) result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
 
     // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
