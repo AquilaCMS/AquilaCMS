@@ -187,7 +187,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
         let properties = [];
         properties     = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
-        if (!PostBody.structure.price || PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
+        if (PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
         if (properties.includes('score')) {
             PostBody.structure = {score: structure.score};
         }
@@ -1166,16 +1166,18 @@ const getProductsListing = async (req, res) => {
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
-        const priceFilter = priceFilterFromPostBody(req.body.PostBody);
-        if (priceFilter) {
-            result.datas = result.datas.filter((prd) =>  {
-                const pr = prd.price.ati.special || prd.price.ati.normal;
-                return pr >= (
-                    priceFilter.$or[1]['price.ati.special'].$gte
-                    || priceFilter.$or[0]['price.ati.normal'].$gte)
-                    && pr <= (priceFilter.$or[1]['price.ati.special'].$lte
-                    || priceFilter.$or[0]['price.ati.normal'].$lte);
-            });
+        if (structure.price !== 0) {
+            const priceFilter = priceFilterFromPostBody(req.body.PostBody);
+            if (priceFilter) {
+                result.datas = result.datas.filter((prd) =>  {
+                    const pr = prd.price.ati.special || prd.price.ati.normal;
+                    return pr >= (
+                        priceFilter.$or[1]['price.ati.special'].$gte
+                        || priceFilter.$or[0]['price.ati.normal'].$gte)
+                        && pr <= (priceFilter.$or[1]['price.ati.special'].$lte
+                        || priceFilter.$or[0]['price.ati.normal'].$lte);
+                });
+            }
         }
     }
 
