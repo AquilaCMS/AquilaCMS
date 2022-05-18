@@ -51,7 +51,7 @@ let data;
 let limit = 1
 let timeout = null
 let elements
-
+let end = false
 function setData(_data){
     data=_data
     elements = document.getElementsByClassName('MyText')[0];
@@ -69,7 +69,8 @@ function loadText(){
                 limit+=1
             } 
             else{
-                elements.value = elements.val + data.substring(limit*10000,data.length)
+                if(!end)  elements.value = elements.value + data.substring(limit*10000,data.length)
+                end = true;
             }
            
         }
