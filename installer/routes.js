@@ -68,6 +68,7 @@ module.exports = (installRouter) => {
 
     installRouter.post('/config', async (req, res) => {
         try {
+            global.envConfig = {environment: {appUrl: req.body.appUrl}}; // We take the appUrl info as soon as possible
             await require('./install').firstLaunch(req, true);
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();

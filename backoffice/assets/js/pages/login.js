@@ -1,8 +1,4 @@
 $(document).ready(function () {
-    /* ---------- Placeholder Fix for IE ---------- */
-    $("input").iCheck({
-        checkboxClass : "icheckbox_square-blue"
-    });
 
     function hideError(){
         $("#error_msg_bad_login").hide();

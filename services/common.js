@@ -7,12 +7,9 @@
  */
 
 const moment   = require('moment-business-days');
-const buffer   = require('buffer');
 const path     = require('path');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
-const fsp      = require('../utils/fsp');
-const server   = require('../utils/server');
 
 const getBreadcrumb = async (url) => {
     if (!url) {
@@ -102,6 +99,10 @@ const getBreadcrumb = async (url) => {
 };
 
 const exportData = async (model, PostBody) => {
+    const fsp    = require('../utils/fsp');
+    const server = require('../utils/server');
+    const buffer = require('buffer');
+
     moment.locale(global.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
@@ -125,9 +126,10 @@ const exportData = async (model, PostBody) => {
             fsp.mkdirSync(path.resolve(uploadDirectory, 'temp'));
         }
 
+        const date   = Date.now();
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${Date.now()}.csv`), buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
-        result.url = Date.now();
+        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        result.url = date;
         return result;
     }
 };

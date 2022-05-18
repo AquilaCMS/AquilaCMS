@@ -165,7 +165,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 }
             },(err) => {
                 toastService.toast("danger", err.data.message);
-                console.log(err);
+                console.error(err);
             });
 
             

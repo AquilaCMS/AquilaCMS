@@ -55,7 +55,7 @@ const getOrdersByUser = async (id) => Orders.find({'customer.id': id}, '-__v').l
 const anonymizeOrdersByUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email     = faker.internet.email();
+    const email     = `${faker.internet.email()}_`;
     return Orders.updateMany({'customer.id': id}, {
         $set : {
             'customer.email'    : email,
@@ -86,7 +86,7 @@ const getReviewsByUser = async (id) => {
 
 const anonymizeCartsByUser = async (id) => Cart.updateMany({'customer.id': id}, {
     $set : {
-        'customer.email' : faker.internet.email(),
+        'customer.email' : `${faker.internet.email()}_`,
         'customer.phone' : faker.phone.phoneNumber()
     }
 });
@@ -117,7 +117,7 @@ const anonymizeBillsByUser = async (id) => Bills.updateMany({client: id}, {
         prenom      : faker.name.firstName(),
         societe     : faker.random.word(),
         coordonnees : faker.phone.phoneNumber(),
-        email       : faker.internet.email()
+        email       : `${faker.internet.email()}_`
     }
 });
 
@@ -133,7 +133,7 @@ const anonymizeReviewsByUser = async (id) => Products.updateMany({}, {
 const anonymizeUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email     = faker.internet.email();
+    const email     = `${faker.internet.email()}_`;
     return Users.updateOne({_id: id}, {
         $set : {
             email,
@@ -443,7 +443,7 @@ const generateFakeAddresses = async (options) => {
     return addr;
 };
 
-const dumpAnonymizedDatabase = async (res) => {
+const dumpAnonymizedDatabase = async () => {
     try {
         await copyDatabase();
         let uri = global.envFile.db;
@@ -462,9 +462,12 @@ const dumpAnonymizedDatabase = async (res) => {
         // Removal of the copy database
         await dropDatabase();
         // Download the dump file
-        res.set({'content-type': 'application/gzip'});
         const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
-        return res.download(pathToArchive);
+        const temp          = fs.readFile(pathToArchive, 'binary');
+        fs.unlink(pathToArchive, function () {
+            console.log('File was deleted'); // Callback
+        });
+        return temp;
     } catch (error) {
         if (error && error.name && error.name === 'NSError') {
             throw error;
@@ -515,7 +518,7 @@ const checkDateBills = async () =>  {
 // Check the last connexion of the user for RGPD restrictions
 const checkLastConnexion = async () => {
     // 1.get all the users from the database
-    const users = await Users.find({anonymized: {$exists: false}, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
+    const users = await Users.find({$or: [{anonymized: {$exists: false}}, {anonymized: false}], isAdmin: false, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
     // 2.browse the array of users
     for (let i = 0; i < users.length; i++) {
         anonymizeUser(users[i]._id);
