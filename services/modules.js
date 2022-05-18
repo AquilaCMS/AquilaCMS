@@ -981,28 +981,10 @@ const setConfig = async (name, newConfig) => {
 
 /**
  * Used to define the configuration (conf field) of a module
- * @param body {object} datas of the request
- * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
- * @deprecated
- */
-const getModuleMd = async (body) => {
-    if (!body.moduleName) {
-        throw NSErrors.InvalidParameters;
-    }
-    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
-    let text       = '';
-    if (fs.existsSync(pathToMd)) {
-        text = await fs.readFileSync(pathToMd, 'utf8');
-    }
-    return text;
-};
-
-/**
- * Used to define the configuration (conf field) of a module
  * @param body {object} datas of the request it has moduleName key (required) and 2 optionnals keys: filename which is the name of the file you wanna point to (default README.md), and encoding which is the file encoding (default utf8)
  * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
  */
-const getModuleMdV2 = async (body) => {
+const getModuleMd = async (body) => {
     if (!body.moduleName) {
         throw NSErrors.InvalidParameters;
     }
@@ -1036,6 +1018,5 @@ module.exports = {
     loadAdminModules,
     getConfig,
     setConfig,
-    getModuleMd,
-    getModuleMdV2
+    getModuleMd
 };

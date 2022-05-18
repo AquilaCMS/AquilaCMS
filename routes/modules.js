@@ -129,7 +129,7 @@ const removeModule = async (req, res, next) => {
 
 const getModuleMd = async (req, res, next) => {
     try {
-        const result    = await serviceModule.getModuleMdV2(req.body);
+        const result    = await serviceModule.getModuleMd(req.body);
         const converter = new showdown.Converter();
         converter.setOption('tables', true);
         res.json({html: converter.makeHtml(result)});
