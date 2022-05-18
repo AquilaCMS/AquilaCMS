@@ -197,6 +197,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let count;
     let currentPageProductsIds;
     const realLimit = PostBody.limit;
+    const sort      = PostBody.sort;
+    delete PostBody.sort;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -207,7 +209,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
         PostBody.filter.$and.push({active: true});
         PostBody.filter.$and.push({_visible: true});
 
-        const thisLimit        = (PostBody.sort && !PostBody.sort.sortWeight) ? 0 : PostBody.limit;
+        const thisLimit        = (sort && !sort.sortWeight) ? 0 : PostBody.limit;
         const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, thisLimit, PostBody.page, lang);
         currentPageProductsIds = searchedProducts.currentPageProducts.map((res) => res.item._id.toString());
         count                  = searchedProducts.count;
@@ -252,8 +254,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
     if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
 
-        if (PostBody.sort && !PostBody.sort.sortWeight) {
-            result.datas = sortProductList(result.datas, PostBody.sort);
+        if (sort && !sort.sortWeight) {
+            result.datas = sortProductList(result.datas, sort);
             // To create the pagination
             if (PostBody.page) {
                 const res = [];
