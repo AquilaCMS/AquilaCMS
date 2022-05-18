@@ -1143,6 +1143,8 @@ const getProductsListing = async (req, res) => {
         }
         await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
         result.datas = datas;
+    } else {
+        delete result.allProductsRes;
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
