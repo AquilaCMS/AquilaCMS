@@ -52,14 +52,14 @@ const getCartById = async (id, PostBody = null, user = null) => {
     }
     if (!PostBody) PostBody = {};
     // Force matching current user and the cart's customer
-    const customer = (user?.isAdmin ? {} : {'customer.id': (user?._id)});
+    // const customer = (user?.isAdmin ? {} : {'customer.id': (user?._id)});
     // if (customer['customer.id'] === undefined) {
     //     customer['customer.id'] = '000000000000000000000000';
     // }
     PostBody.filter = {
         ...PostBody.filter,
-        _id : mongoose.Types.ObjectId(id),
-        ...customer
+        _id : mongoose.Types.ObjectId(id)
+        // ...customer
     };
 
     // let cart = await queryBuilder.findById(id, PostBody);
