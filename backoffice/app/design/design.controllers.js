@@ -69,7 +69,7 @@ function loadText(){
                 limit+=1
             } 
             else{
-                elements.value = elements.val + data.substring(limit*10000,data.length-1)
+                elements.value = elements.val + data.substring(limit*10000,data.length)
             }
            
         }
