@@ -48,26 +48,28 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
 
 
 let data;
-let limit = 2
+let limit = 1
 let timeout = null
+let elements
 
 function setData(_data){
     data=_data
+    elements = document.getElementsByClassName('MyText')[0];
 }
 
 
 function loadText(){
     if(timeout !== null) clearTimeout(timeout)
     timeout = setTimeout(function() {
-        let elements = document.getElementsByClassName('MyText')[0];
+        
         let scroll_percent = ((elements.scrollTop + elements.offsetHeight) / elements.scrollHeight * 100)
-        if(scroll_percent > 70){
+        if(scroll_percent > 70 && data.length > 10000){
             if(data.length > (limit+1)*10000){
                 elements.value = (elements.value) + data.substring(limit*10000,(limit+1)*10000)
                 limit+=1
             } 
             else{
-                elements.value = elements.val + data.substring(limit*10000,data.length)
+                elements.value = elements.val + data.substring(limit*10000,data.length-1)
             }
            
         }
