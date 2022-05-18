@@ -180,14 +180,14 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
  */
 // eslint-disable-next-line no-unused-vars
 const getProducts = async (PostBody, reqRes, lang) => {
-    let properties = [];
     let structure;
     if (PostBody && PostBody.structure) {
         // required to have all fields for promo rules
-        structure  = PostBody.structure;
-        properties = Object.keys(PostBody.structure).concat(defaultFields);
+        structure      = PostBody.structure;
+        let properties = [];
+        properties     = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
-        delete PostBody.structure;
+        if (!PostBody.structure.price || PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
         if (properties.includes('score')) {
             PostBody.structure = {score: structure.score};
         }
@@ -216,12 +216,24 @@ const getProducts = async (PostBody, reqRes, lang) => {
         const allProducts      = searchedProducts.allProducts;
         PostBody.filter._id    = {$in: allProducts.map((res) => res.item._id.toString())};
         PostBody.limit         = 0;
-        delete PostBody.structure;
+    }
+
+    let querySelect = '';
+    if (PostBody.structure) {
+        for (const [key, value] of Object.entries(PostBody.structure)) {
+            if (value === 0) {
+                querySelect = `${querySelect}-${key} `;
+            }
+        }
     }
 
     // We fetch all products calculated via the search
-    const allProductsRes       = await queryBuilder.find(PostBody);
+    const allProducts          = await Products
+        .find(PostBody.filter)
+        .populate(PostBody.populate)
+        .select(querySelect);
     queryBuilder.defaultFields = defaultFields;
+    const allProductsRes       = {datas: allProducts, count: allProducts.length};
     // If there is a page management, we retrieve the products on the current page
     let result = JSON.parse(JSON.stringify(allProductsRes));
     if (PostBody.page && currentPageProductsIds) result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
@@ -253,6 +265,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
     if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
+        delete PostBody.structure;
 
         if (sort && !sort.sortWeight) {
             result.datas = sortProductList(result.datas, sort);
