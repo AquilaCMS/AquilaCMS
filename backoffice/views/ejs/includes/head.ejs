@@ -1,23 +1,27 @@
-
 <header class="header">
-    <div ng-if="demoMode" style="width: 100%; height: 17px; background-color: red; margin-bottom: 0;text-align: center; font-size: 12px; padding-top: 3px;margin-bottom: -7px;">
+    <div ng-if="demoMode"
+        style="width: 100%; height: 17px; background-color: red; margin-bottom: 0;text-align: center; font-size: 12px; padding-top: 3px;margin-bottom: -7px;">
         /!\ This is a demo mode ! /!\
     </div>
-    <a href="#" class="btn-menu"><span></span></a><a href="#/" class="logo"><img id="logoAquila" src="css/images/logo.png" alt="logo Aquila" style="margin-top: 9px;height: 50px;"/></a>
+    <a href="#" class="btn-menu"><span></span></a><a href="#/" class="logo"><img id="logoAquila"
+            src="css/images/logo.png" alt="logo Aquila" style="margin-top: 9px;height: 50px;" /></a>
     <nav class="nav-access">
         <ul>
-            <li ng-controller="loggedCtrl">
-                    <a href="#" data-toggle="dropdown">
-                        <!--span.hidden-xs {{userInfo.email}}-->
-                        <span id="user" style="margin-bottom: 25px">{{userInfo.email}} <i class="fa fa-user-circle-o fa-2x i-style" style="width: 50px; margin-left: 5px; font-size: 2.3em"></i></span> </a>
+            <li>
+                <a href="#" data-toggle="dropdown">
+                    <!--span.hidden-xs {{userInfo.email}}-->
+                    <span id="user" style="margin-bottom: 25px">{{userInfo.email}} <i
+                            class="fa fa-user-circle-o fa-2x i-style"
+                            style="width: 50px; margin-left: 5px; font-size: 2.3em"></i></span>
+                </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#/list/detail/{{userInfo.id}}"><i class="fa fa-user"></i><span>Profil</span></a></li>
+                    <li><a href="#/list/detail/{{userInfo._id}}"><i class="fa fa-user"></i><span>Profil</span></a></li>
                     <li><a href="" ng-click="logout()"><i class="fa fa-power-off"></i><span>Déconnexion</span></a></li>
                 </ul>
             </li>
         </ul>
     </nav>
-    
+
     <!-- /.nav-access-->
 </header>
 <!-- /.header-->

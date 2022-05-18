@@ -3,14 +3,15 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs","HookProductInfo",
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs, HookProductInfo) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.additionnalTabs = ProductsTabs;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        $scope.hookProductInfo = HookProductInfo;
 
         SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
@@ -219,7 +220,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     });
                 }
             } else {
-                strInvalidFields = checkForm(["code", "name"]);
+                strInvalidFields = checkForm(["name"]);
             }
             //we remove ", "
             if (strInvalidFields.substring(strInvalidFields.length - 2, strInvalidFields.length) == ", ") {

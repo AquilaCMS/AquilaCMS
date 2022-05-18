@@ -6,9 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const Schema        = mongoose.Schema;
-const utilsDatabase = require('../../utils/database');
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
+const utilsDatabase  = require('../../utils/database');
 /**
  * schema d'une gallerie photo et/ou video
  */
@@ -47,5 +48,7 @@ GallerySchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, GallerySchema);
     next();
 });
+
+aquilaEvents.emit('gallerySchemaInit', GallerySchema);
 
 module.exports = GallerySchema;

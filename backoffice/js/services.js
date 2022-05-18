@@ -93,31 +93,6 @@ adminCatagenServices.factory("Cart", [
     }
 ]);
 
-adminCatagenServices.factory("AdminScroll", [
-    "$resource", function ($resource)
-    {
-        return $resource("client/admin/:start/:limit", {}, {
-            query: {method: "GET", params: {start: "", limit: ""}, isArray: true}
-        });
-    }
-]);
-adminCatagenServices.factory("AdminSearch", [
-    "$resource", function ($resource)
-    {
-        return $resource("client/admin/search", {}, {
-            query: {method: "POST", params: {}, isArray: true}
-        });
-    }
-]);
-adminCatagenServices.factory("AdminNew", [
-    "$resource", function ($resource)
-    {
-        return $resource("client/admin/new", {}, {
-            save: {method: "POST", params: {}}
-        });
-    }
-]);
-
 adminCatagenServices.factory("TerritoryCountries", [
     "$resource", function ($resource)
     {
@@ -142,35 +117,6 @@ adminCatagenServices.factory("Themes", [
     {
         return $resource("themes/:name", {}, {
             useTheme: {method: "POST", params: {}, isArray: true}
-        });
-    }
-]);
-
-adminCatagenServices.factory("Schedule", [
-    "$resource", function ($resource)
-    {
-        return $resource("schedule/:action/:jobName", {}, {
-            query: {method: "GET", params: {action: "", jobName: ""}, isArray: false},
-            pause: {method: "GET", params: {action: "pause"}},
-            play: {method: "GET", params: {action: "play"}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("Discount", [
-    "$resource", function ($resource)
-    {
-        return $resource("discounts/:discountId", {}, {
-            query: {method: "GET", params: {action: "", discountId: ""}, isArray: true}, update: {method: "POST", params: {}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("Mailer", [
-    "$resource", function ($resource)
-    {
-        return $resource("v2/mail/:typeMail", {}, {
-            send: {method: "POST", params: {}}
         });
     }
 ]);
@@ -206,24 +152,6 @@ adminCatagenServices.factory("ConfigUpdate", [
         return $resource("update/:url", {}, {
             query: {method: "GET", params: {url: ""}}
         });
-    }
-]);
-
-adminCatagenServices.service("RuleApi", [
-    "$resource",
-    function ($resource)
-    {
-        return $resource(
-            ":action/:_id",
-            {},
-            {
-                query: {method: "POST", params: {action: "rule", _id: ""}, isArray: false},
-                list: {method: "POST", params: {action: "rules", _id: ""}, isArray: true},
-                save: {method: "PUT", params: {action: "rule", _id: ""}, isArray: false},
-                delete: {method: "DELETE", params: {action: "rule"}, isArray: false},
-                testUser: {method: "POST", params: {action: "rules", _id: 'testUser'}, isArray: true}
-            }
-        );
     }
 ]);
 
@@ -294,9 +222,8 @@ adminCatagenServices.factory("ExportCollectionCSV", [
                 const filename = data.file;
                 const linkElement = document.createElement("a");
                 try {
-                    const blob = new Blob([data.csv]);
-                    const url = window.URL.createObjectURL(blob);
-                    linkElement.setAttribute("href", url);
+                    
+                    linkElement.setAttribute("href", 'http://localhost:3010/temp/' + data.url + '.csv');
                     linkElement.setAttribute("download", filename);
                     const clickEvent = new MouseEvent("click", {"view": window, "bubbles": true, "cancelable": false});
                     linkElement.dispatchEvent(clickEvent);

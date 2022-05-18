@@ -58,7 +58,7 @@ const setMailType = async (body, _id = null) => {
     }
 };
 
-const deleteMailType = async (code) => {
+const deleteMailType = async (code, removeInMailRef = true) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});
@@ -67,7 +67,7 @@ const deleteMailType = async (code) => {
     const mail = await Mail.findOne({type: code});
     if (!mail) return doc;
     mail.type = '';
-    await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
+    if (removeInMailRef) await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
     return doc;
 };
 

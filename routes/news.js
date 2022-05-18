@@ -74,6 +74,7 @@ async function getNewsTags(req, res, next) {
 async function saveNew(req, res, next) {
     try {
         await ServicesPreview.deleteNewPreview(req.body.code);
+        if(req.body.pervImage) await servicesNews.deleteImage(req.body.pervImage)
         return res.json(await servicesNews.saveNew(req.body));
     } catch (err) {
         return next(err);

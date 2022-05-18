@@ -40,8 +40,9 @@ const generateFilters = async (res, lang = '') => {
         // productsList[i].id is an id or a Products : if it's not a Products we populate it
         if (!productsList || (productsList.length && typeof productsList[0] !== 'object')) {
             const category = await Categories.findById(res._id).populate({
-                path  : 'productsList.id',
-                match : {_visible: true, active: true}
+                path   : 'productsList.id',
+                match  : {_visible: true, active: true},
+                select : 'id attributes pictos' // Select minimum properties to improve performance
             }).lean();
             productsList   = category.productsList;
         }
@@ -159,8 +160,8 @@ const setCategory = async (postBody) => {
     const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
     // remove image properly
     if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
-        const imgPath = path.join(global.envConfig.environment.photoPath, oldCat.img);
-        ServiceCache.deleteCacheImage('category', oldCat);
+        const imgPath = path.join(require('../utils/server').getUploadDirectory(), oldCat.img);
+        ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
         if (await fsp.existsSync(imgPath)) {
             await fsp.unlinkSync(imgPath);
         }

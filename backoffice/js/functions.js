@@ -25,8 +25,6 @@
 
     $doc.ready(function ()
     {
-        $('.select').dropdown();
-
         $('.btn-menu').on('click', function (event)
         {
             event.preventDefault();

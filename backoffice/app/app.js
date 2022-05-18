@@ -31,6 +31,7 @@ var aqModules = [
     "adminCatagenServices",
     "adminCatagenDirectives",
     "pascalprecht.translate",
+    "schemaForm",
     "ngSanitize",
     "xeditable",
     "ngFileUpload",
@@ -39,10 +40,8 @@ var aqModules = [
     "infinite-scroll",
     'ui.tinymce',
     "angular-bind-html-compile",
-    "ngMessages",
     "aquilaCmsBlocks",
     "ui.tree",
-    "angular-clipboard",
     "color.picker",
     "inputDropdown",
     "googlechart",
@@ -93,7 +92,7 @@ var aqModules = [
     "aq.system",
     "aq.invoices",
     "aq.adminList",
-    'aq.dependencies'
+    "aq.dependencies"
 ]
 
 /* App Module */

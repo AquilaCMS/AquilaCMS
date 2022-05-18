@@ -171,10 +171,9 @@ PictoControllers.controller('PictoNewCtrl', [
     'PictoApi',
     '$routeParams',
     'toastService',
-    'RuleApi',
     '$location',
     '$translate',
-    function ($scope, PictoApi, $routeParams, toastService, RuleApi, $location, $translate) {
+    function ($scope, PictoApi, $routeParams, toastService, $location, $translate) {
         $scope.picto = {
             location : 'TOP_LEFT',
             enabled  : false,
@@ -189,7 +188,7 @@ PictoControllers.controller('PictoNewCtrl', [
         };
 
         $scope.save = function (back) {
-            if ($scope.picto === undefined || $scope.picto.code === "" || $scope.picto.title === "") {
+            if ($scope.picto === undefined || $scope.picto.title === "") {
                 toastService.toast("danger", $translate.instant("picto.details.formPictoIncomplete"));
                 return;
             }

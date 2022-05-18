@@ -1,6 +1,6 @@
 {
     "t1": "Translation",
-    "customTheme": "File to translate:",
+    "translateFile": "File to translate:",
     "reboot": "Apply to website (reboot)",
     "translateSaved": "Traduction sauvegardés !",
     "buildSucceed": "Build succeed, restarting the server",

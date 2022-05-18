@@ -58,7 +58,7 @@ const loadDynamicRoutes = (app) => {
  * Route exceptions
  */
 const manageExceptionsRoutes = async (req, res, next) => {
-    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', '.mp4'].includes(path.extname(req.url).toLowerCase())) {
+    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', 'mp4'].includes(path.extname(req.url).toLowerCase())) {
         res.setHeader('Cache-Control', 'public, max-age=2592000');
 
         const dt = new Date(Date.now());
@@ -87,7 +87,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         if (fs.existsSync(path.join(global.appRoot, url))) {
             res.sendFile(path.join(global.appRoot, url));
         } else {
-            url = url.replace('backoffice', global.envConfig.environment.photoPath || 'uploads');
+            url = url.replace('backoffice', require('../utils/server').getUploadDirectory());
             if (fs.existsSync(path.join(global.appRoot, url))) {
                 res.sendFile(path.join(global.appRoot, url));
             } else {

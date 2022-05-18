@@ -196,12 +196,12 @@ ProductControllers.controller("ProductListCtrl", [
                 code: 1,
                 active: 1,
                 _visible: 1,
-                stock: 1
+                stock: 1,
+                images: 1,
+                stock: 1,
+                type: 1,
+                attributes: 1
             };
-            $scope.columns.map((col) => {
-                let field = col.cell.component_template
-                structure[field.replace(/{{|}}|product\./ig, '')] = 1
-            })
 
             const paramsV2 = {
                 lang: "fr",
@@ -376,7 +376,7 @@ ProductControllers.controller("nsProductCategories", [
                 tab.push({id: productID, checked: true});
             }
             //we save
-            CategoryV2.save({_id: node._id, productsList: tab}, function () {
+            CategoryV2.save({_id: node._id, code: node.code, productsList: tab}, function () {
 
             });
         };

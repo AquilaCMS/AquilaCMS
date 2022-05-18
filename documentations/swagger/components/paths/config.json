@@ -2,10 +2,10 @@
     "/api/v2/config": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "ADMIN ONLY, return the configuration of the server.",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -74,7 +74,7 @@
                         }
                     }
                 },
-                "description": "config",
+                "description": "Put the new configuration you want in the postbody",
                 "required": false
             }
         }

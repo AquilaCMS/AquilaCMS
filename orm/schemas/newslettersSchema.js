@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const NewslettersSchema = new Schema({
     _id     : {type: ObjectId, auto: true},
@@ -23,5 +23,7 @@ const NewslettersSchema = new Schema({
 }, {
     id : false
 });
+
+aquilaEvents.emit('newslettersSchemaInit', NewslettersSchema);
 
 module.exports = NewslettersSchema;

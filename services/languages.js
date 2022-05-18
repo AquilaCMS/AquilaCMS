@@ -77,10 +77,16 @@ const translateSet = async (translateName, translateValue, lang) => {
  * @description Get the contents of the translation file
  */
 const translateGet = async (filePath, lang) => {
+    const {createSchema} = require('genson-js');
     try {
         const themePath = await getTranslatePath(lang);
-        const pathName  = path.join(themePath, `${filePath}.json`);
-        return fs.readFile(pathName, 'utf8');
+        const pathName  = path.resolve(themePath, `${filePath}.json`);
+        const temp      = fs.readFileSync(pathName, 'utf8');
+        const tradObj   = {};
+        tradObj.data    = temp;
+        tradObj.schema  = createSchema(JSON.parse(temp));
+
+        return tradObj;
     } catch (error) {
         throw NSErrors.TranslationError;
     }

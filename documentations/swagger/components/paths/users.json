@@ -212,7 +212,37 @@
             "parameters": [],
             "tags": [
                 "User"
-            ]
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "userId":"ObjectID",
+                            "billing_address":{"type":"number"},
+                            "delivery_address":{"type":"number"},
+                            "addresses":[{
+                                "_id":"ObjectID",
+                                "line1":{"type":"string"},
+                                "zipcode":{"type":"string"},
+                                "city":{"type":"string"},
+                                "isoCountryCode":{"type":"string"},
+                                "phone_mobile":{"type":"number"},
+                                "firstname":{"type":"string"},
+                                "lastname":{"type":"string"},
+                                "civility":{"type":"number"},
+                                "idx_delivery_address":{"type":"number"},
+                                "idx_billing_address": {"type":"string"}
+                            }]
+                        },
+                        "examples":{
+                            "example1":{
+                                "value":{"userId":null,"billing_address":2,"delivery_address":0,"addresses":[{"_id":null,"line1":"12 road street","zipcode":"012345","city":"Oxford","isoCountryCode":"GB","phone_mobile":"0102030405","firstname":"James","lastname":"Bond","civility":0,"idx_delivery_address":0,"idx_billing_address":""}]}
+                            }
+                        }
+                        
+                    }
+                }
+            }
         }
     },
     "/api/v2/user/resetpassword": {
