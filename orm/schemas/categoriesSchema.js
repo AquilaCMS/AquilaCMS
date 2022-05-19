@@ -19,7 +19,7 @@ const CategoriesSchema = new Schema({
     active       : {type: Boolean, default: false},
     clickable    : {type: Boolean, default: true},
     isDisplayed  : {type: Boolean, default: true},
-    action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container']},
+    action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container', 'categorylist']},
     // thumbnailUrl : {type: String},
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
