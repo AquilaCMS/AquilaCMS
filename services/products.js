@@ -237,7 +237,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         const allProducts = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
-            .select(querySelect);
+            .select(querySelect)
+            .lean();
         allProductsRes    = {datas: allProducts, count: allProducts.length};
     } else {
         allProductsRes = await queryBuilder.find(PostBody);
@@ -249,7 +250,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     if (PostBody.page) {
         // With the fuzzy search pagination
         if (currentPageProductsIds) {
-            result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
+            result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._id.toString()));
         }
     }
 
