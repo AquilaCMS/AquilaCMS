@@ -6,21 +6,19 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const fs       = require('../../utils/fsp');
-
+const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
+const fs                = require('../../utils/fsp');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
+const utils             = require('../../utils/utils');
 
-const utils         = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
-const defaultVAT    = 20;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
+const defaultVAT = 20;
 
 const CartSchema = new Schema({
     updated : {type: Date, default: Date.now},
@@ -103,7 +101,7 @@ CartSchema.methods.calculateBasicTotal = function () {
     for (let i = 0, l = cart.items.length; i < l; i++) {
         const item = cart.items[i];
 
-        if (item.get('price.special.ati') !== undefined) {
+        if ((item.get && item.get('price.special.ati') !== undefined) || (item.price.special && item.price.special.ati)) {
             if (item.price.special === undefined || item.price.special.ati === undefined) {
                 item.price.special = {
                     et  : item.id.price.et.special,
@@ -226,23 +224,6 @@ CartSchema.post('updateOne', async function (doc, next) {
 CartSchema.post('findOneAndUpdate', async function (doc, next) {
     if (doc) {
         await updateCarts(this.getUpdate(), this.getQuery()._id, next);
-    }
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findOne', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findById', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
     }
     next();
 });

@@ -5,8 +5,10 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
     
     $scope.trademarks = [];
     $scope.filter = {};
+    $scope.currentPage = 1;
+    $scope.totalItems = 0;
     
-    $scope.getTradeMarks = function(){
+    $scope.getTradeMarks = function(page = 1){
         let filter = {};
         const filterKeys = Object.keys($scope.filter);
         for (let i = 0, leni = filterKeys.length; i < leni; i++) {
@@ -17,8 +19,10 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
                 filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
             }
         }
-        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 99}}, function({datas}) {
+        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 12, page: page}}, function({datas, count}) {
             $scope.trademarks = datas
+            $scope.totalItems = count
+            $scope.currentPage = page
         });
     }
     
@@ -30,13 +34,27 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
 
 }]);
 
-TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate)
+TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', 'ProductsV2', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate, ProductsV2)
 {
     $scope.trademark = {}
+
+    $scope.totalItems = 0
+    $scope.currentPage = 1
+
+    $scope.getTradeMarkPrds = function (trdmk, page = 1) {
+        
+        ProductsV2.list({PostBody: {filter: {'trademark.code': trdmk.code}, limit: 12, page, structure: '*'}}, function (result) {
+            $scope.products = result.datas
+            $scope.totalItems = result.count
+            $scope.currentPage = page
+        })
+    }
 
     TrademarksV2.query({PostBody: {filter: {_id: $routeParams.trademarkId}, structure: '*'}}, function (data)
     {
         $scope.trademark = data;
+        $scope.getTradeMarkPrds(data, 1)
+        $scope.isEditMode = true;
     });
 
     $scope.updateTrademark = function (updt)
@@ -78,6 +96,14 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
             }
         });
     };
+    
+    $scope.getImage = function(trademark) {
+        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo.split('\\').pop().split('/').pop()}`;
+    }
+
+    $scope.goToProductDetails = function (productType, productCode) {
+        $location.path("/products/" + productType + "/" + productCode);
+    };
 
 }]);
 
@@ -87,6 +113,8 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
     $scope.master = {
         name: '', _id: ''
     };
+
+    $scope.isEditMode = false;
 
     $scope.reset = function ()
     {
@@ -100,7 +128,7 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
                 if(msg._id) {
                     console.log("Trademark Saved!");
                     toastService.toast("success", $translate.instant("trademark.detail.markSaved"));
-                    $location.path("/trademarks");
+                    $location.path("/trademarks/"+msg._id);
                 } else {
                     toastService.toast("warning", $translate.instant("trademark.detail.nameValue"));
                     console.error("Error!");
@@ -108,7 +136,7 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
             }, function(error){
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
-                        toastService.toast("danger",  error.data.message);
+                        toastService.toast("danger",  $translate.instant("trademark.detail.errorName"));
                     }
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);

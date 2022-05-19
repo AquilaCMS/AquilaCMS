@@ -1,13 +1,37 @@
 "use strict";
 
-/* App Module */
-var adminCatagenApp = angular.module("adminCatagenApp", [
+Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
+    let roundNum = +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+    if (places !== 0 && addingTrailingZeros) {
+        roundNum        = roundNum.toString();
+        let intPart     = roundNum;
+        let decimalPart = '';
+
+        // if we have a decimal number we split it into two parts
+        if (roundNum.includes('.')) {
+            roundNum    = roundNum.split('.');
+            intPart     = roundNum[0];
+            decimalPart = roundNum[1];
+        }
+
+        // if the size of the decimal part is not equal to the number of digits after the decimal point given in parameter, we add the missing zeros
+        if (decimalPart.length !== places) {
+            const numOfMissingZero = places - decimalPart.length;
+            decimalPart            = decimalPart.padEnd(numOfMissingZero + decimalPart.length, 0);
+        }
+        roundNum = `${intPart}.${decimalPart}`;
+    }
+    return roundNum;
+};
+
+var aqModules = [
     "ngRoute",
     "adminCatagenControllers",
     "adminCatagenFilters",
     "adminCatagenServices",
     "adminCatagenDirectives",
     "pascalprecht.translate",
+    "schemaForm",
     "ngSanitize",
     "xeditable",
     "ngFileUpload",
@@ -16,10 +40,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "infinite-scroll",
     'ui.tinymce',
     "angular-bind-html-compile",
-    "ngMessages",
     "aquilaCmsBlocks",
     "ui.tree",
-    "angular-clipboard",
     "color.picker",
     "inputDropdown",
     "googlechart",
@@ -33,7 +55,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.medias",
     "aq.modules",
     "aq.translation",
-    "aq.dependencies",
     "aq.cmsBlocks",
     "aq.design",
     "aq.translate",
@@ -71,8 +92,12 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.invoices",
     "aq.optionsSet",
     "aq.adminList",
-    "aq.options"
-]);
+    "aq.options",
+    "aq.dependencies"
+]
+
+/* App Module */
+var    adminCatagenApp = angular.module("adminCatagenApp", aqModules);
 
 //================================================
 // Check if the user is connected
@@ -131,7 +156,7 @@ var checkAccess = function (route) {
                         deferred.reject();
                         toastService.toast("danger", $translate.instant("global.accessForbidden"));
                         $location.path("/");
-                    }, 0);
+                    }, 500);
                 }
             });
             return deferred.promise;
@@ -143,7 +168,7 @@ var delayTimer;
 function input(ele) {
     clearTimeout(delayTimer);
     delayTimer = setTimeout(function() {
-       ele.value = parseFloat(ele.value).toFixed(2).toString();
+       ele.value = parseFloat(ele.value).aqlRound(2).toString();
     }, 800); 
 }
 
@@ -230,7 +255,7 @@ adminCatagenApp
                 var deferred = $q.defer();
                 var translation = {};
 
-                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
+                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 0}}).then(function (response)
                 {
                     const translationArray = []; // {url:"", name:""}
 

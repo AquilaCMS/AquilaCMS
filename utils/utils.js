@@ -5,15 +5,13 @@
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
-const axios          = require('axios');
-const path           = require('path');
-const Json2csvParser = require('json2csv').Parser;
-const {
-    transforms: {unwind, flatten}
-} = require('json2csv');
-const {v4: uuidv4}   = require('uuid');
-const mongoose       = require('mongoose');
-const fs             = require('./fsp');
+const axios                   = require('axios');
+const path                    = require('path');
+const Json2csvParser          = require('json2csv').Parser;
+const {transforms: {flatten}} = require('json2csv');
+const {v4: uuidv4}            = require('uuid');
+const mongoose                = require('mongoose');
+const fs                      = require('./fsp');
 
 /**
  *
@@ -79,40 +77,58 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
-    let decomposedAttribute = [];
-    for (let j = 0; j < data.length; j++) {
-        const line = data[j];
-        for (const [key, value] of Object.entries(line)) {
-            if (Array.isArray(value)) {
-                for (let i = 0; i < value.length; i++) {
-                    if (typeof value[i] === 'object') {
-                        const index = fields.indexOf(key);
-                        if (index !== -1) {
-                            fields.splice(index, 1);
-                            for (let x = 0; x < Object.entries(value[i]).length; x++) {
-                                fields.push(`${key}.${Object.entries(value[i])[x][0]}`);
-                                if (decomposedAttribute.includes(key) === false) {
-                                    decomposedAttribute = key;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    let _fields = [];
+    for (let i = 0; i < data.length; i++) {
+        const line = data[i];
+        _fields    = getJSONKeys(_fields, line);
     }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
     const transforms     = [
-        unwind({paths: decomposedAttribute}),
-        flatten({objects: true})
+        flatten({objects: false, arrays: true})
     ];
-    const json2csvParser = new Json2csvParser({fields, transforms});
+    const json2csvParser = new Json2csvParser({fields: _fields.sort((a, b) => a.localeCompare(b)), transforms, delimiter: ';', escapeQuote: '""', quotes: '"'});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,
         exportPath : folderPath
     };
 };
+
+const getJSONKeys = (fields, data, parentKey = '') => {
+    for (let ii = 0; ii < Object.keys(data).length; ii++) {
+        const key   = Object.keys(data)[ii];
+        const value = data[key];
+        if (checkForValidMongoDbID.test(value) && !fields.includes(parentKey + key)) {
+            // in case of an ObjectId =>
+            fields.push(parentKey + key);
+        } else if (Array.isArray(value) && value.length > 0) {
+            // in case of an arraytoHtmlEntities
+            if (typeof value[0] !== 'object') {
+                // if it's an string or number array =>
+                data[key] = value.join(',');
+                if (!fields.includes(parentKey + key)) fields.push(parentKey + key);
+            } else if (typeof value[0] === 'object') {
+                // if it's an object array =>
+                data[key] = {...value};
+                fields    = getJSONKeys(fields, data[key], `${parentKey}${key}.`);
+            }
+        } else if (
+            typeof value === 'object'
+            && !checkForValidMongoDbID.test(value)
+            && value
+            && value !== {}
+        ) {
+            // in case of an object =>
+            fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
+        } else if (value && !fields.includes(parentKey + key)) {
+            // in case of a string / number
+            fields.push(parentKey + key);
+        }
+    }
+    return fields;
+};
+
+const checkForValidMongoDbID = new RegExp('^[0-9a-fA-F]{24}$');
 
 /**
  * Detect if array contain duplicated values
@@ -151,7 +167,7 @@ const downloadFile = async (url, dest) => {
             res.pipe(file);
             res.on('data', (chunk) => {
                 downloaded += chunk.length;
-                console.log(`Downloading ${(100.0 * downloaded / len).toFixed(2)}% ${downloaded} bytes\r`);
+                console.log(`Downloading ${(100.0 * downloaded / len).aqlRound(2)}% ${downloaded} bytes\r`);
             }).on('end', () => {
                 file.end();
                 resolve(null);
@@ -165,7 +181,11 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text) => require('slug')(text, {lower: true});
+const slugify = (text = '') => {
+    const slug = require('slug');
+    slug.extend({_: '_'});
+    return slug(text, {lower: true});
+};
 
 /**
  * transform a price in ATI to ET

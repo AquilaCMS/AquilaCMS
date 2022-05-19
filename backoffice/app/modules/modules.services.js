@@ -13,7 +13,8 @@ angular.module("aq.modules.services", ["ngResource"]).factory("ModulesService", 
             check: {method: "POST", params: {id: "@id", action: "check"}},
             setConfig: {method: "PUT", params: {id: "@id", action: "config"}},
             delete: {method: "DELETE", params: {id: "@id"}},
-            md: {method: "POST", params: {id: "@id", action: "md"}}
+            md: {method: "POST", params: {id: "@id", action: "md"}},
+            installModulesDeps: {method: "GET", params: {id: "installDependencies"}}
         })
     }
 ]).factory("ModuleServiceV2", [

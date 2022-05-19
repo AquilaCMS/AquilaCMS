@@ -75,14 +75,14 @@ const assignTranslation = (json, lang) => {
 
 const checkTranslations = (value, key, errors, lang) => {
     if (typeof key === 'string' && value !== undefined && typeof value !== 'string') {
-        errors.push(`translations.${lang}.${key}, n'est pas une chaine de caractère`);
+        errors.push(`translations.${lang}.${key}, is not a string`);
     }
     return errors;
 };
 
 function checkCustomFields(customObject, parent, fields) {
     const errorsType = {
-        string : 'une chaine de caractère'
+        string : 'a string'
     };
     const errors     = [];
     const customKeys = Object.keys(customObject);
@@ -100,7 +100,7 @@ function checkCustomFields(customObject, parent, fields) {
                 && ((typeof customObject[customKeys[i]]) !== fields[j].type.toString())
             ) {
                 // TODO P4 "Error management": put the code system
-                errors.push(`${(parent ? `${parent}.` : '') + fields[j].key}, n'est pas ${errorsType[fields[j].type]}`);
+                errors.push(`${(parent ? `${parent}.` : '') + fields[j].key}, is not ${errorsType[fields[j].type]}`);
             }
         }
     }

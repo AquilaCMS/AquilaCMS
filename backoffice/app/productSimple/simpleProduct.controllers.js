@@ -3,16 +3,17 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs","HookProductInfo",
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs, HookProductInfo) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.additionnalTabs = ProductsTabs;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        $scope.hookProductInfo = HookProductInfo;
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
             if ($scope.product && $scope.product.set_attributes === undefined) {
                 const set_attributes = datas.find(function (setAttr) {
@@ -26,7 +27,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         });
 
         $scope.loadNewAttrs = function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -74,7 +75,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             ProductsV2.query({ PostBody: { filter: { code: $routeParams.code, type: $routeParams.type }, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false } }, function (product) {
                 $scope.product = product;
 
-                genAttributes();
+                $scope.genAttributes();
 
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
@@ -139,9 +140,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             }
         ];
 
-        function genAttributes() {
+        $scope.genAttributes = function () {
             angular.forEach($scope.product.attributes, function (attributeI) {
-                AttributesV2.query({ PostBody: { filter: { _id: attributeI.id }, structure: '*' } }, function (attribute) {
+                AttributesV2.query({ PostBody: { filter: { code: attributeI.code }, structure: '*' } }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
@@ -219,7 +220,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     });
                 }
             } else {
-                strInvalidFields = checkForm(["code", "name"]);
+                strInvalidFields = checkForm(["name"]);
             }
             //we remove ", "
             if (strInvalidFields.substring(strInvalidFields.length - 2, strInvalidFields.length) == ", ") {
@@ -263,11 +264,14 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         $location.path("/products");
                     } else {
                         toastService.toast("success", $translate.instant("simple.productSaved"));
+                        if($scope.product.type !== $routeParams.type) {
+                            window.location.hash = `/products/${savedPrd.type}/${savedPrd.code}`
+                        }
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
                             $scope.product = savedPrd;
-                            genAttributes();
+                            $scope.genAttributes();
                         } else {
                             window.location.href = `#/products/${savedPrd.type}/${savedPrd.code}`;
                             $location.path(window.location.href);

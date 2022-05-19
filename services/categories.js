@@ -7,6 +7,7 @@
  */
 
 const mongoose         = require('mongoose');
+const path             = require('path');
 const {
     Categories,
     Products,
@@ -14,14 +15,16 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
+const fsp              = require('../utils/fsp');
 const ServiceRules     = require('./rules');
+const ServiceCache     = require('./cache');
 const ServiceLanguages = require('./languages');
 
 const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
 const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultFields);
 
-const getCategories = async (PostBody) => queryBuilder.find(PostBody);
+const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
 const generateFilters = async (res, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
@@ -37,8 +40,9 @@ const generateFilters = async (res, lang = '') => {
         // productsList[i].id is an id or a Products : if it's not a Products we populate it
         if (!productsList || (productsList.length && typeof productsList[0] !== 'object')) {
             const category = await Categories.findById(res._id).populate({
-                path  : 'productsList.id',
-                match : {_visible: true, active: true}
+                path   : 'productsList.id',
+                match  : {_visible: true, active: true},
+                select : 'id attributes pictos' // Select minimum properties to improve performance
             }).lean();
             productsList   = category.productsList;
         }
@@ -140,19 +144,34 @@ const generateFilters = async (res, lang = '') => {
 
 const getCategory = async (PostBody, withFilter = null, lang = '') => {
     lang      = ServiceLanguages.getDefaultLang(lang);
-    const res =  await queryBuilder.findOne(PostBody);
+    const res =  await queryBuilder.findOne(PostBody, true);
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => {
-    await Categories.updateOne({_id: req.body._id}, {$set: req.body});
-    const newCat = await Categories.findOne({_id: req.body._id});
-    return newCat;
+const setCategory = async (postBody) => {
+    if (postBody.productsList) {
+        for (let i = postBody.productsList.length - 1; i >= 0; i--) {
+            if (postBody.productsList[i].id == null) {
+                postBody.productsList.splice(i, 1);
+            }
+        }
+    }
+
+    const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
+    // remove image properly
+    if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
+        const imgPath = path.join(require('../utils/server').getUploadDirectory(), oldCat.img);
+        ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
+        if (await fsp.existsSync(imgPath)) {
+            await fsp.unlinkSync(imgPath);
+        }
+    }
+    return Categories.findOne({_id: postBody._id}).lean();
 };
 
-const createCategory = async (req) => {
-    const newMenu   = new Categories(req.body);
-    const id_parent = req.body.id_parent;
+const createCategory = async (postBody) => {
+    const newMenu   = new Categories(postBody);
+    const id_parent = postBody.id_parent;
     const _menu     = await Categories.findOne({_id: id_parent});
     if (id_parent) {
         newMenu.ancestors = [..._menu.ancestors, id_parent];
@@ -169,7 +188,7 @@ const createCategory = async (req) => {
 };
 
 const deleteCategory = async (id) => {
-    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)});
+    const _menu = await Categories.findOne({_id: mongoose.Types.ObjectId(id)}).lean();
     if (!_menu) {
         throw NSErrors.NotFound;
     }
@@ -186,56 +205,63 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, user = null) => {
-    const queryCondition = {
-        // ancestors : {$size: 0},
-        code
+const getCategoryTreeForMenu = async (code, user = null, levels = 3) => {
+    const projectionObj     = {
+        _id          : 1,
+        clickable    : 1,
+        action       : 1,
+        children     : 1,
+        displayOrder : 1,
+        code         : 1,
+        translation  : 1,
+        img          : 1,
+        colorName    : 1
     };
+    const projectionOptions = Object.keys(projectionObj).map((key) => `${key}`).join(' ');
 
-    let projectionOptions = {};
-    if (user && !user.isAdmin) {
-        const date          = new Date();
-        queryCondition.$and = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-        childConds.$and     = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-
-        projectionOptions = {
-            canonical_weight : 0,
-            active           : 0,
-            createdAt        : 0,
-            openDate         : 0,
-            ancestors        : 0
+    let match = {};
+    if (!user || !user.isAdmin) {
+        const date = new Date();
+        match      = {
+            isDisplayed : true,
+            active      : true,
+            $and        : [
+                {$or: [{openDate: {$lte: date}}, {openDate: {$eq: undefined}}]},
+                {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
+            ]
         };
     }
 
-    // TODO P5 Manage populate recursion (currently only 3 levels)
+    // Construct query
+    const populatPatern = {
+        path    : 'children',
+        match,
+        options : {sort: {displayOrder: 'asc'}},
+        select  : projectionOptions
+    };
+
+    let queryPopulate = { // Start with the last level
+        ...populatPatern,
+        populate : {
+            path   : 'children',
+            match,
+            select : projectionOptions.replace('children', '') // don't take children in the last level
+        }
+    };
+
+    // Recurcive populate
+    for (let i = levels - 1; i >= 1; i--) { // Start at 1 because we already have the first level, and we already defined the last
+        const lastLevel = i === levels - 1;
+        if (!lastLevel) {
+            queryPopulate = {...populatPatern, populate: {...queryPopulate}};
+        }
+    }
+
     // the populate in the pre does not work
-    return Categories.findOne(queryCondition)
-        .select({productsList: 0, ...projectionOptions})
-        .populate({
-            path     : 'children',
-            match    : childConds,
-            options  : {sort: {displayOrder: 'asc'}},
-            select   : projectionOptions,
-            populate : {
-                path     : 'children',
-                match    : childConds,
-                options  : {sort: {displayOrder: 'asc'}},
-                select   : projectionOptions,
-                populate : {
-                    path     : 'children',
-                    match    : childConds,
-                    options  : {sort: {displayOrder: 'asc'}},
-                    populate : {path: 'children'},
-                    select   : projectionOptions
-                }
-            }
-        });
+    return Categories.findOne({code})
+        .select(projectionObj)
+        .populate(queryPopulate)
+        .lean();
 };
 
 const execRules = async () => ServiceRules.execRules('category');
@@ -246,7 +272,7 @@ const execRules = async () => ServiceRules.execRules('category');
 const execCanonical = async () => {
     try {
         // All active categories
-        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
@@ -256,12 +282,15 @@ const execCanonical = async () => {
             const current_category = categories[iCat];
 
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-            const current_category_slugs = await getCompleteSlugs(current_category._id, tabLang);
+            const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
+
+            // Don't do populate here, heap of memory on big categories
+            // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
 
             // For each product in this category
-            const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
-            for (let iProduct = 0; iProduct < cat_with_products.productsList.length; iProduct++) {
-                const product = cat_with_products.productsList[iProduct].id;
+            for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
+                const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
+                if (!product) continue;
 
                 // Construction of the slug
                 let bForceForOtherLang = false;
@@ -306,40 +335,31 @@ const execCanonical = async () => {
     }
 };
 
-/**
- * Built a category slug from his parents
- * @param {guid} categorie_id category id
- * @param {guid} tabLang Language table
- */
-const getCompleteSlugs = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang = '') => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-    // For the current category
-    const current_category = await Categories.findOne({_id: categorie_id});
-    const lang             = ServiceLanguages.getDefaultLang();
+    const current_category       = await Categories.findOne({_id: categorie_id}).lean();
 
-    if (typeof current_category !== 'undefined') {
-        // Add the current category to the list of categories to browse
-        const categoriesToBrowse = current_category.ancestors;
-        categoriesToBrowse.push(categorie_id);
+    if (!defaultLang) {
+        defaultLang = ServiceLanguages.getDefaultLang();
+    }
 
-        // For each "grandparent"
-        for (let iCat = 0; iCat < categoriesToBrowse.length; iCat++) {
-            const parent_category_id = categoriesToBrowse[iCat];
-            const parent_category    = await Categories.findOne({_id: parent_category_id});
+    if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
+        let ancestorsSlug = [];
+        if (current_category.ancestors.length > 0) {
+            if (current_category.ancestors.length > 1) {
+                console.log(`To many ancestors in ${current_category.code}`);
+            }
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang, defaultLang);
+        }
 
-            // We add it to the slug
-            if (typeof parent_category !== 'undefined' && parent_category?.active) { // Usually the root is not taken, so it must be deactivated
-                // For each of the languages
-                for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                    const currentLang = tabLang[iLang];
-                    if (typeof parent_category.translation[currentLang] !== 'undefined') {
-                        if (typeof current_category_slugs[currentLang] === 'undefined') { // 1st time
-                            current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
-                        }
-                        current_category_slugs[currentLang] = `${current_category_slugs[currentLang]}/${parent_category.translation[currentLang].slug}`;
-                    }
-                }
+        for (let iLang = 0; iLang < tabLang.length; iLang++) {
+            const currentLang = tabLang[iLang];
+            const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
+                current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
+            } else {
+                current_category_slugs[currentLang] = `${baseLang}/${current_category.translation[currentLang].slug}`;
             }
         }
     }
@@ -353,12 +373,12 @@ const applyTranslatedAttribs = async (PostBody) => {
         // Get all products
         let _categories = [];
         if (PostBody === undefined || PostBody === {}) {
-            _categories = await Categories.find({});
+            _categories = await Categories.find({}).lean();
         } else {
-            _categories = [await queryBuilder.findOne(PostBody)];
+            _categories = [await queryBuilder.findOne(PostBody, true)];
         }
         // Get all attributes
-        const _attribs = await Attributes.find({});
+        const _attribs = await Attributes.find({}).lean();
 
         for (let i = 0; i < _categories.length; i++) {
             if (_categories[i].filters && _categories[i].filters.attributes !== undefined) {
@@ -396,17 +416,50 @@ async function removeChildren(menu) {
     }
 }
 
+async function importCategoryProducts(datas, cat) {
+    const category = await Categories.findOne({_id: cat._id}).populate(['productsList.id']);
+    if (category) {
+        for (const data of datas) {
+            const foundPrd = category.productsList.find((prd) => prd.id.code === data.code);
+            if ((typeof data.isInclude === 'string' ? (data.isInclude.toLowerCase() === 'false') : (data.isInclude === 'false')) && foundPrd?.checked) {
+                category.productsList = category.productsList.filter((prd) => prd.id.code !== data.code);
+            } else if (!foundPrd) {
+                const product = await Products.findOne({code: data.code});
+                if (product) {
+                    category.productsList.push({id: product._id, checked: true});
+                }
+            }
+        }
+        await category.save();
+        return true;
+    }
+    return false;
+}
+
+async function exportCategoryProducts(catId) {
+    const category = await Categories.findOne({_id: catId}).populate(['productsList.id']);
+    if (category) {
+        return category.productsList.map((prd) => ({
+            code            : prd.id.code,
+            isInclude       : true,
+            manuallyChecked : !!prd.checked
+        }));
+    }
+    return [];
+}
+
 module.exports = {
     getCategories,
     generateFilters,
     getCategory,
     setCategory,
     createCategory,
-    getCategoryChild,
+    getCategoryTreeForMenu,
     execRules,
     execCanonical,
-    getCompleteSlugs,
     applyTranslatedAttribs,
     removeChildren,
-    deleteCategory
+    deleteCategory,
+    importCategoryProducts,
+    exportCategoryProducts
 };

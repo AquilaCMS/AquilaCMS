@@ -96,7 +96,6 @@
         "5d24a4844aa9c1692db04ae4"
       ],
       "is_new": true,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -199,7 +198,7 @@
           "name": "White basic t-shirt",
           "slug": "first-product",
           "description1": {
-            "title": "Summer 2020 collection",
+            "title": "Summer 2022 collection",
             "text": "<span style=\"font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify; background-color: rgb(255, 255, 255);\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</span><br>"
           },
           "description2": {
@@ -213,7 +212,7 @@
           "name": "T-shirt basique blanc",
           "slug": "premier-produit",
           "description1": {
-            "title": "Collection summer 2020",
+            "title": "Collection summer 2022",
             "text": "<span style=\"font-family: &quot;Open Sans&quot;, Arial, sans-serif; font-size: 14px; text-align: justify; background-color: rgb(255, 255, 255);\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</span><br>"
           },
           "description2": {
@@ -307,7 +306,6 @@
         "5c667f8a28a49c049c5863c8"
       ],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -492,7 +490,6 @@
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -677,7 +674,6 @@
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -843,7 +839,6 @@
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1049,7 +1044,6 @@
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1215,7 +1209,6 @@
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1392,7 +1385,6 @@
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1587,7 +1579,6 @@
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
-      "kind": "SimpleProduct",
       "attributes": [
         {
           "type": "color",
@@ -1738,7 +1729,6 @@
       "weight": 0,
       "associated_prds": [],
       "is_new": false,
-      "kind": "BundleProduct",
       "images": [],
       "type": "bundle",
       "bundle_sections": [
@@ -1776,7 +1766,7 @@
               "modifier_weight": -50
             }
           ],
-          "ref": "thisrt",
+          "ref": "tshirt",
           "type": "SINGLE",
           "isRequired": true,
           "title": "T-shirt",

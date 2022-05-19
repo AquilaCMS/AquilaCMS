@@ -7,14 +7,18 @@
  */
 
 const {securityForceActif} = require('../middleware/security');
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const ServicePayment       = require('../services/payments');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
     app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
-    app.put('/v2/paymentMethod', adminAuth, savePaymentMethod);
-    app.post('/v2/payments/order', adminAuth, getOrdersPayments);
+    app.put('/v2/paymentMethod', adminAuthRight('paymentMethods'), autoFillCode, savePaymentMethod);
+    app.post('/v2/payments/order', adminAuthRight('payments'), getOrdersPayments);
+    app.post('/v2/payment/info', adminAuthRight('payments'), infoPayment);
+    app.put('/v2/payment/update', adminAuthRight('payments'), updatePayment);
+    app.post('/v2/payment/order/:orderNumber/:lang?', orderPayment); // middleware adminAuthRight removed
 };
 
 async function getOrdersPayments(req, res, next) {
@@ -51,5 +55,48 @@ async function savePaymentMethod(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function infoPayment(req, res, next) {
+    try {
+        const order = await ServicePayment.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
+        res.json(order);
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function updatePayment(req, res, next) {
+    try {
+        return res.json(await ServicePayment.updatePayment(req.body));
+    } catch (e) {
+        next(e);
+    }
+}
+
+/**
+ * Create a payment and return a form for front-end redirection
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function orderPayment(req, res, next) {
+    try {
+        return res.send(await ServicePayment.orderPayment(req));
+    } catch (e) {
+        next(e);
     }
 }

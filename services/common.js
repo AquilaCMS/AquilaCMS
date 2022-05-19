@@ -28,7 +28,7 @@ const getBreadcrumb = async (url) => {
         url.splice(index, 1);
     }
 
-    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code');
+    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code').lean();
     let lang              = '';
     if (defaultLanguage !== null) {
         lang = defaultLanguage.code;
@@ -76,7 +76,7 @@ const getBreadcrumb = async (url) => {
         });
 
         if (url && url[0]) {
-            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]});
+            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]}).lean();
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].title,
@@ -98,6 +98,10 @@ const getBreadcrumb = async (url) => {
 };
 
 const exportData = async (model, PostBody) => {
+    const fsp    = require('../utils/fsp');
+    const server = require('../utils/server');
+    const buffer = require('buffer');
+
     moment.locale(global.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
@@ -108,12 +112,24 @@ const exportData = async (model, PostBody) => {
         PostBody.structure = !PostBody.structure            ? [] : PostBody.structure;
 
         const {filter, populate, sort, structure} = PostBody;
-        const addStructure                        = {};
-        structure.forEach((struct) => addStructure[struct] = 1);
-        const datas     = await require('mongoose').model(model).find(filter, addStructure).sort(sort).populate(populate).lean();
-        const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+        if (model === 'users') {
+            structure.push('-password');
+            structure.push('-resetPassToken');
+        } else if (model === 'products') {
+            structure.push('-reviews');
+        }
+        const datas           = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
+        const csvFields       = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+        const uploadDirectory = server.getUploadDirectory();
+        if (!fsp.existsSync(`/${uploadDirectory}/temp`)) {
+            fsp.mkdirSync(`/${uploadDirectory}/temp`);
+        }
 
-        return utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
+        const date   = Date.now();
+        const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
+        fsp.writeFile(`/${uploadDirectory}/temp/${date}.csv`, buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        result.url = date;
+        return result;
     }
 };
 

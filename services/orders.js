@@ -7,6 +7,7 @@
  */
 
 const moment           = require('moment');
+const {aquilaEvents}   = require('aql-utils');
 const {
     Orders,
     Cart,
@@ -14,11 +15,9 @@ const {
     Products,
     PaymentMethods,
     Territory,
-    Bills,
-    Promo
+    Bills
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
-const aquilaEvents     = require('../utils/aquilaEvents');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utils            = require('../utils');
 const ServiceMail      = require('./mail');
@@ -67,7 +66,7 @@ const getOrders = async (PostBody) => {
     return result;
 };
 
-const getOrder = async (PostBody) => queryBuilder.findOne(PostBody);
+const getOrder = async (PostBody, lean = false) => queryBuilder.findOne(PostBody, lean);
 
 const saveOrder = async (order) => Orders.updateOne({_id: order._id.toString()}, {$set: order});
 
@@ -114,111 +113,6 @@ const setStatus = async (_id, status, sendMail = true) => {
     }
 };
 
-const paymentSuccess = async (query, updateObject, paymentCode = '') => {
-    console.log('service order paymentSuccess()');
-
-    try {
-        let filterCode = paymentCode;
-        if (filterCode === '') {
-            if (updateObject.$set) {
-                filterCode = updateObject.$set.payment[0].mode;
-            } else if (updateObject.$push) {
-                filterCode = updateObject.$push.payment.mode;
-            } else if (updateObject.payment) {
-                filterCode = updateObject.payment[0].mode;
-            } else {
-                console.error('paymentSuccess() : no payment in object');
-                return;
-            }
-        }
-        filterCode = filterCode.toLocaleLowerCase();
-
-        const paymentMethod = await PaymentMethods.findOne({code: filterCode});
-        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
-        if (!_order) {
-            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
-        }
-        // Immediate payment method (e.g. credit card)
-        if (!paymentMethod.isDeferred) {
-            await setStatus(_order._id, orderStatuses.PAID);
-        }
-        try {
-            await ServiceMail.sendMailOrderToClient(_order._id);
-        } catch (e) {
-            console.error(e);
-        }
-        try {
-            await ServiceMail.sendMailOrderToCompany(_order._id);
-        } catch (e) {
-            console.error(e);
-        }
-        // We check that the products of the basket are well orderable
-        const {bookingStock} = global.envConfig.stockOrder;
-        if (bookingStock === 'payment') {
-            for (let i = 0; i < _order.items.length; i++) {
-                const orderItem = _order.items[i];
-                const _product  = await Products.findOne({_id: orderItem.id});
-                if (_product.kind === 'SimpleProduct') {
-                    if ((_product.stock.orderable) === false) {
-                        throw NSErrors.ProductNotOrderable;
-                    }
-                    // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
-                } else if (_product.kind === 'BundleProduct') {
-                    for (let j = 0; j < orderItem.selections.length; j++) {
-                        const section = orderItem.selections[j];
-                        for (let k = 0; k < section.products.length; k++) {
-                            const productId        = section.products[k];
-                            const _product_section = await Products.findOne({_id: productId.id});
-                            if (_product_section.type === 'simple') {
-                                if ((_product_section.stock.orderable) === false) {
-                                    throw NSErrors.ProductNotOrderable;
-                                }
-                                await ServicesProducts.updateStock(_product_section._id, -orderItem.quantity);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // If the order has a discount of type "promo code"
-        if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
-            try {
-            // then we increase the number of uses of this promo
-                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
-                    $inc : {'codes.$.used': 1}
-                });
-                // then we must also update the number of unique users who have used this "promo code"
-                const result = await Orders.distinct('customer.id', {
-                    'promos.promoCodeId' : _order.promos[0].promoCodeId
-                });
-                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
-                    $set : {'codes.$.client_used': result.length}
-                });
-            // TODO P6 : Decrease the stock of the product offered
-            // if (_cart.promos[0].gifts.length)
-            } catch (err) {
-                console.error(err);
-            }
-        }
-        aquilaEvents.emit('aqPaymentReturn', _order._id);
-        return _order;
-    } catch (err) {
-        console.error('La commande est introuvable:', err);
-        throw err;
-    }
-};
-
-const paymentFail = async (query, update) => {
-    if (update.status) { delete update.status; }
-    if (update.$set && update.$set.status) {
-        update.$set.status = orderStatuses.PAYMENT_FAILED;
-    } else {
-        update.$set = {status: orderStatuses.PAYMENT_FAILED};
-    }
-    return Orders.findOneAndUpdate(query, update);
-};
-
 const cancelOrder = async (orderId) => {
     const order = await Orders.findOne({
         _id    : orderId,
@@ -252,7 +146,14 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: orderStatuses.PAYMENT_PENDING, createdAt: {$lt: dateAgo}})
+    return Orders.find({
+        createdAt : {$lt: dateAgo},
+        status    : {
+            $in : [
+                orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING
+            ]
+        }})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -303,7 +204,7 @@ const rma = async (orderId, returnData, lang) => {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
                 if (_product.type === 'simple') {
                     // The quantity is incremented
-                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0);
+                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0, rmaProduct.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < rmaProduct.selections.length; i++) {
                         const selectionProducts = rmaProduct.selections[i].products;
@@ -384,7 +285,7 @@ const rma = async (orderId, returnData, lang) => {
 
     await Bills.create(data);
 
-    if (returnData.sendMail) {
+    if (returnData.sendMail && _order.customer.id) {
         const articles = [];
         const datas    = {
             number    : _order.number,
@@ -405,41 +306,9 @@ const rma = async (orderId, returnData, lang) => {
     return _order;
 };
 
-const infoPayment = async (orderId, returnData, sendMail, lang) => {
-    const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-    if (paymentMethod.isDeferred) {
-        returnData.isDeferred = paymentMethod.isDeferred;
-    }
-    returnData.name          = paymentMethod.translation[lang].name;
-    returnData.operationDate = Date.now();
-    await setStatus(orderId, orderStatuses.PAID);
-    const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
-
-    if (sendMail) {
-        // const orderdata = [];
-        // const datas = {
-        //     number : _order.number
-        // };
-
-        // for(let i = 0; i < returnData.products.length; i++) {
-        //     orderdata.push(`${returnData.products[i].product_code} (${returnData.products[i].qty_returned})`);
-        // }
-
-        // datas.orderdata = orderdata.join(", ");
-        /**
-         * DO NOT DELETE THE COMMENTED CODE BELOW
-         */
-        ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
-            console.error(err);
-        });
-    }
-    aquilaEvents.emit('aqPaymentReturn', _order._id);
-    return _order;
-};
-
-const duplicateItemsFromOrderToCart = async (req) => {
-    const orderId = req.body.idOrder || null;
-    let cartId    = req.body.idCart || null;
+const duplicateItemsFromOrderToCart = async (postBody, userInfo) => {
+    const orderId = postBody.idOrder || null;
+    let cartId    = postBody.idCart || null;
     let products  = [];
     // If we send an order id, we get the items of this order, otherwise we get the products sent directly (ex: foodOption)
     if (orderId) {
@@ -463,7 +332,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
         //             bundle_section_ref : "Plat du menu"
         //         }
         //     ]}];
-        products = req.body.products;
+        products = postBody.products;
     }
     let _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
     if (!_cart) {
@@ -474,7 +343,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
     let isErrorOccured      = false;
     let isErrorOccuredIndex = 0;
     let itemsPushed         = 0;
-    await ServiceCart.linkCustomerToCart(_cart, req);
+    await ServiceCart.linkCustomerToCart(_cart, userInfo);
     for (let i = 0; i < products.length; i++) {
         _cart                   = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         const productThatExists = await Products.findOne({_id: products[i].id, active: true, _visible: true});
@@ -522,9 +391,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+                _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
                 itemsPushed++;
-                _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+                _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
                 await _cart.save();
             }
         } else if (productThatExists && productThatExists.stock && productThatExists.stock.orderable) {
@@ -545,9 +414,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
             }
             item.code  = productThatExists.code;
             item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-            _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
+            _cart      = await productThatExists.addToCart(_cart, item, userInfo, _lang.code);
             itemsPushed++;
-            _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
+            _cart = await ServicePromo.checkForApplyPromo(userInfo, _cart, _lang.code);
             await _cart.save();
         } else {
             isErrorOccured = true;
@@ -597,7 +466,7 @@ const addPackage = async (orderId, pkgData) => {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
                 if (_product.type === 'simple') {
                     // Decrement the quantity
-                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped);
+                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped, pkgProduct.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < pkgProduct.selections.length; i++) {
                         const selectionProducts = pkgProduct.selections[i].products;
@@ -663,30 +532,6 @@ const delPackage = async (orderId, pkgId) => {
     return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id').populate('items.selections.products');
 };
 
-const updatePayment = async (body) => {
-    let msg = {status: true};
-    if (body.field !== '') {
-        try {
-            const updOrder = await Orders.findOneAndUpdate({
-                _id : body._id
-            }, {
-                $set : {
-                    [`payment.$[item].${body.field}`] : body.value
-                }
-            }, {
-                new          : true,
-                arrayFilters : [{'item._id': body.paymentId}]
-            });
-            if (!updOrder) msg = {status: false};
-            return msg;
-        } catch (error) {
-            return {status: false};
-        }
-    } else {
-        return {status: false};
-    }
-};
-
 const updateStatus = async (body, params) => {
     const order = await Orders.findOne({$or: [{_id: params.id}, {_id: body.id}]});
     if (!order) {
@@ -727,16 +572,12 @@ module.exports = {
     getOrderById,
     setOrder,
     setStatus,
-    paymentSuccess,
-    paymentFail,
     cancelOrder,
     cancelOrders,
     rma,
-    infoPayment,
     duplicateItemsFromOrderToCart,
     addPackage,
     delPackage,
-    updatePayment,
     updateStatus,
     cancelOrderRequest,
     orderStatuses

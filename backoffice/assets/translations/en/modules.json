@@ -32,5 +32,8 @@
     },
     "toast": {
         "errGetPlugins": "Can't get the list of plugins"
-    }
+    },
+    "installDepsStart": "Install start ...",
+    "installDepsSuccess":"Install finished successfully",
+    "installDepsFailed":"Install finished with errors"
 }

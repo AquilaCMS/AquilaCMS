@@ -4,7 +4,7 @@
 
         <ns-buttons is-edit-mode="isEditMode" remove="remove(client._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/clients" form="form" additionnal-buttons="additionnalButtons" more-buttons="moreButtons">
             <div class="scrollmenu">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs" hook-client-detail-tab>
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>client.detail.tab.general</a></li>
                     <li ng-if="isEditMode"><a data-toggle="tab" href="#orders" target="_self" translate>client.detail.tab.orders</a></li>
                     <li ng-if="isEditMode"><a data-toggle="tab" href="#discount" target="_self" translate>client.detail.tab.discount</a></li>
@@ -17,7 +17,7 @@
 
             <div class="tab-content">
 
-                <div id="general" class="tab-pane fade in active">
+                <div id="general" class="tab-pane fade in active" hook-client-detail-general data="client">
                     <!-- ------------- General & other --------------- -->
                     <div class="row">
                         <!-- ------------- General --------------- -->
@@ -119,6 +119,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.checkAccount</label>
+                                            <div class="col-sm-10">
+                                                <ns-switch ng-model="client.isActiveAccount" name="isActiveAccount"></ns-switch>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,15 +179,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+
+                                    <div class="form-group" ng-if="isEditMode">
                                         <div class="col-sm-12">
-                                            <label class="col-sm-2 control-label" translate>client.detail.checkAccount</label>
+                                            <label class="col-sm-2 control-label" translate>client.detail.lastConnexion</label>
                                             <div class="col-sm-10">
-                                                <ns-switch ng-model="client.isActiveAccount" name="isActiveAccount"></ns-switch>
+                                                <span class="input-span">{{client.lastConnexion | date:"dd/MM/yy - hh:mm"}}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    
+                                    <div class="form-group" ng-if="isEditMode">
                                         <div class="col-sm-12">
                                             <label class="col-sm-2 control-label" translate>client.detail.birthday</label>
                                             <div class="col-sm-10">
@@ -264,7 +274,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="col-lg-4" ng-repeat="address in client.addresses">
-                                                        <address style="background:#eef3f7;padding:10px;border-radius: 10px">
+                                                        <address style="background:#FFF;padding:10px;border-radius: 10px;border: 1px solid #ccc;">
                                                             <div>
                                                                 <h3 style="margin: 0 0 20px 0;" ng-show="$index === client.billing_address">{{'client.detail.address.billing_address' | translate}}</h3>
                                                                 <h3 style="margin: 0 0 20px 0;" ng-show="$index === client.delivery_address">{{'client.detail.address.shipping_address' | translate}}</h3>
@@ -373,7 +383,7 @@
                 </div>
 
                 <!-- ------------- Orders --------------- -->
-                <div id="orders" class="tab-pane fade">
+                <div id="orders" class="tab-pane fade" hook-client-detail-orders data="cart">
                     <div class="row">
                         <div class="col-md-12" ng-if="isEditMode">
                             <div class="box subbox">
@@ -412,7 +422,7 @@
                     </div>
                 </div>
 
-                <div id="discount" class="tab-pane fade">
+                <div id="discount" class="tab-pane fade" hook-client-detail-discount>
                         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
                         
                                 <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
@@ -492,7 +502,7 @@
                             </div>
                 </div>
 
-                <div id="attributs" class="tab-pane fade">
+                <div id="attributs" class="tab-pane fade" hook-client-detail-attributs>
                     <div class="form-group">
                         <label for="attrSet" class="col-sm-2 control-label">Set d'attribut</label>
                         <div class="col-sm-3">
@@ -507,7 +517,7 @@
                         <p ng-show="!client.attributes || !client.attributes.length" translate>product.general.noAttribs</p>
                     </div>
                 </div>
-                <div id="downloadHistory" class="tab-pane fade">
+                <div id="downloadHistory" class="tab-pane fade" hook-client-detail-download>
                     <h3 style="display: inline" translate>client.detail.downloadHistory</h3>
                     <div class="form-group" style="margin-top: 20px;">
                         <div>

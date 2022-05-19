@@ -7,20 +7,21 @@
  */
 
 const URL                  = require('url');
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const {StaticsPreview}     = require('../orm/models');
 const ServiceStatic        = require('../services/statics');
 const ServiceStaticPreview = require('../services/preview');
 const {isAdmin}            = require('../utils/utils');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
     app.post('/v2/static', securityForceActif(['active']), getStatic);
-    app.post('/v2/static/preview', adminAuth, previewStatic);
+    app.post('/v2/static/preview', adminAuthRight('staticPage'), previewStatic);
     app.post('/v2/static/:id', getStaticById);
-    app.put('/v2/static', adminAuth, setStatic);
-    app.delete('/v2/static/:id', adminAuth, deleteStatic);
+    app.put('/v2/static', adminAuthRight('staticPage'), autoFillCode, setStatic);
+    app.delete('/v2/static/:id', adminAuthRight('staticPage'), deleteStatic);
 };
 
 /**
@@ -98,11 +99,9 @@ async function getStatic(req, res, next) {
 }
 
 /**
- * Function returning a static page according to its id
+ * Function returning a static page according to its id (unused)
  */
 async function getStaticById(req, res, next) {
-    console.warn('Unused route ?? : /v2/static/:id');
-
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);
         if (!isAdmin(req.info) && result.translation) {
@@ -126,9 +125,9 @@ async function getStaticById(req, res, next) {
 async function setStatic(req, res, next) {
     try {
         if (req.body._id) {
-            await ServiceStatic.setStatic(req);
+            await ServiceStatic.setStatic(req.body);
         } else {
-            await ServiceStatic.createStatic(req);
+            await ServiceStatic.createStatic(req.body);
         }
 
         await ServiceStaticPreview.deletePreview(req.body.code);
@@ -145,7 +144,7 @@ async function setStatic(req, res, next) {
  */
 async function deleteStatic(req, res, next) {
     try {
-        const result = await ServiceStatic.deleteStatic(req);
+        const result = await ServiceStatic.deleteStatic(req.params.id);
         return res.json(result);
     } catch (error) {
         return next(error);

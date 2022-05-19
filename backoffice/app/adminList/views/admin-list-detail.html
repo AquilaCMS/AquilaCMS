@@ -1,59 +1,62 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
     <ns-box data-title="admin-list.t1" title-icon="fa fa-shield fa-lg" close-href="#/list">
 
-        <div style="position: absolute;left:500px;">
-            <button ng-click="goToCustomer(user._id)" class="btn btn-default pull-right" type="button"
-                translate>admin-list.customer
-            </button>
-        </div>
+        <div hook-adminlist-detail data="user">
 
-        <ns-buttons is-edit-mode="isEditMode" save-and-quit="save(user)"
-            disable-save="disableSave" return-path="/list" form="form">
-
-            <div class="form-group">
-                <label for="firstname" class="col-sm-2 control-label" translate>admin-list.prenom</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="firstname" placeholder="Prénom"
-                        ng-model="user.firstname">
-                </div>
+            <div style="position: absolute;left:500px;">
+                <button ng-click="goToCustomer(user._id)" class="btn btn-default pull-right" type="button"
+                    translate>admin-list.customer
+                </button>
             </div>
 
-            <div class="form-group">
-                <label for="lastname" class="col-sm-2 control-label" translate>admin-list.nom</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="lastname" placeholder="Nom" ng-model="user.lastname">
-                </div>
-            </div>
+            <ns-buttons is-edit-mode="isEditMode" save-and-quit="save(user)"
+                disable-save="disableSave" return-path="/list" form="form" >
 
-            <div class="form-group">
-                <label for="email" class="col-sm-2 control-label" translate>admin-list.mail</label>
-                <div class="col-sm-9">
-                    <input type="email" class="form-control" id="email" placeholder="E-mail" ng-model="user.email"
-                        required>
-                </div>
-            </div>
-            <br />
-
-            <div class="form-group">
-                <div class="col-sm-10 col-md-offset-1">
-                    <label translate>admin-list.cocher</label>
-                    <br /><br />
-                    <div style="display: flex;flex-wrap: wrap;flex-direction: row;">
-
-                        <div ng-repeat="oneItem in rights" style="width: 300px">
-                            <label>
-                                <input type="checkbox" value="{{oneItem.code}}"
-                                    ng-checked="user.accessList.indexOf(oneItem.code) == -1"
-                                    ng-click="toggleSelection(oneItem.code)"><span>{{' ' + oneItem.translate[adminLang].name}}</span>
-                            </label><br />
-                        </div>
-
+                <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label" translate>admin-list.prenom</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="firstname" placeholder="Prénom"
+                            ng-model="user.firstname">
                     </div>
                 </div>
-            </div>
 
-        </ns-buttons>
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label" translate>admin-list.nom</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="lastname" placeholder="Nom" ng-model="user.lastname">
+                    </div>
+                </div>
 
+                <div class="form-group">
+                    <label for="email" class="col-sm-2 control-label" translate>admin-list.mail</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="email" placeholder="E-mail" ng-model="user.email"
+                            required>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="col-sm-10 col-md-offset-1">
+                        <label translate>admin-list.cocher</label>
+                        <br /><br />
+                        <div style="display: flex;flex-wrap: wrap;flex-direction: row;">
+
+                            <div ng-repeat="oneItem in rights" style="width: 300px">
+                                <label>
+                                    <input type="checkbox" value="{{oneItem.code}}"
+                                        ng-checked="user.accessList.indexOf(oneItem.code) == -1"
+                                        ng-click="toggleSelection(oneItem.code)"><span>{{' ' + oneItem.translate[adminLang].name}}</span>
+                                </label><br />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </ns-buttons>
+
+        </div>
 
     </ns-box>
 </form>

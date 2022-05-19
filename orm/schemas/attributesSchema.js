@@ -6,29 +6,35 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const AttributesSchema = new Schema({
-    code  : {type: String, required: true, unique: true},
+    code  : {type: String, required: true, unique: false},
     type  : {type: String, required: true},
     _type : {
         type    : String,
         enum    : ['products', 'users'],
-        default : 'products'
+        default : 'products',
+        unique  : false
     },
-    param         : {type: String, required: true},
-    position      : {type: Number, default: 1},
-    default_value : {},
-    visible       : {type: Boolean, default: true},
-    usedInRules   : {type: Boolean, default: true},
-    usedInFilters : {type: Boolean, default: false},
-    translation   : {}
+    param          : {type: String, required: true},
+    set_attributes : [{type: ObjectId, ref: 'setAttributes'}],
+    position       : {type: Number, default: 1},
+    default_value  : {},
+    visible        : {type: Boolean, default: true},
+    usedInRules    : {type: Boolean, default: true},
+    usedInFilters  : {type: Boolean, default: false},
+    translation    : {},
+    isVariantable  : Boolean
 }, {
     id : false
 });
+
+AttributesSchema.index({code: 1, _type: 1}, {unique: true});
 
 AttributesSchema.statics.translationValidation = async function (self) {
     let errors = [];
@@ -62,7 +68,7 @@ AttributesSchema.statics.translationValidation = async function (self) {
 };
 
 AttributesSchema.statics.checkCode = async function (data) {
-    await utilsDatabase.checkCode('attributes', data._id, data.code);
+    await utilsDatabase.checkCode('attributes', data._id, data.code, {_type: data._type});
 };
 
 /**

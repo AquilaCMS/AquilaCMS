@@ -13,21 +13,14 @@ const {MailType} = require('../orm/models');
 /**
  * Get the emails
  */
-const getMailTypes = async () => {
-    const {MailType} = require('../orm/models');
-    return MailType.find({}).sort({position: 1});
-};
+const getMailTypes = async () => MailType.find({}).sort({position: 1}).lean();
 
 /**
-* Get a mailType by _id
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
+* Get a mailType by code
+ * @param {String} code
+ * @param {Object} MailType
  */
-const getMailType = async (code) => {
-    const {MailType} = require('../orm/models');
-    return MailType.findOne({code});
-};
+const getMailType = async (code) => MailType.findOne({code}).lean();
 
 /**
  * @description Modify or create a new mail type in the admin
@@ -65,7 +58,7 @@ const setMailType = async (body, _id = null) => {
     }
 };
 
-const deleteMailType = async (code) => {
+const deleteMailType = async (code, removeInMailRef = true) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});
@@ -74,7 +67,7 @@ const deleteMailType = async (code) => {
     const mail = await Mail.findOne({type: code});
     if (!mail) return doc;
     mail.type = '';
-    await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
+    if (removeInMailRef) await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
     return doc;
 };
 

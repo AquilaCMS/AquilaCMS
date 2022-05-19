@@ -4,7 +4,6 @@ import Head from 'next/head';
 import {
     NSPageAccount,
     NSContext,
-    NSSidebarAccount,
     NSToast,
     getLangPrefix,
     createOrUpdateUser,
@@ -13,6 +12,7 @@ import {
     updateNewsletterUser
 } from 'aqlrc';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 // import getAPIUrl from 'lib/getAPIUrl';
 import { withI18next } from 'lib/withI18n';
@@ -127,6 +127,14 @@ class PageAccount extends NSPageAccount {
             console.error(error);
         }
     } */
+
+    handleAttributeValueEdit = (e) => {
+        const {value, name} = e.target;
+        const {user} = this.state;
+        const idx = user.attributes.findIndex(attr => attr.code === name)
+        user.attributes[idx].value = value
+        this.setState({user})
+    }
 
     handlerOptinNewsletter = async () => {
         const { optinNewsletter } = this.state;
@@ -263,6 +271,16 @@ class PageAccount extends NSPageAccount {
                                                                     <input type="text" className="field" name="firstname" id="field-firstname" value={user.firstname} onChange={this.handleFormChange} required />
                                                                 </div>
                                                             </div>
+                                                            {
+                                                                user.attributes && user.attributes.filter(attr => attr.param === "Oui").map(attr => (
+                                                                    <div className="form__row form__row--flex align-right">
+                                                                        <label htmlFor="field-lastname" className="form__label">{attr.name}<span>*</span></label>
+                                                                        <div className="form__controls" style={{ textAlign: 'end' }}>
+                                                                            <input type="text" className="field" name={attr.code} id="field-lastname" value={attr.value} onChange={this.handleAttributeValueEdit} />
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            }
                                                             <div className="form__row form__row--flex align-right">
                                                                 <label htmlFor="field-birthDate" className="form__label">{t('account:account.page.label.birthDate')}</label>
                                                                 <div className="form__controls" style={{ textAlign: 'end' }}>
@@ -333,7 +351,7 @@ class PageAccount extends NSPageAccount {
                                         </div>{/* <!-- /.section__body --> */}
                                     </section>{/* <!-- /.section-client-area --> */}
                                 </div>{/* <!-- /.content --> */}
-                                <NSSidebarAccount active="infos" gNext={{ Link, Router }} t={t} />
+                                <SidebarAccount active="infos" />
                             </div>{/* <!-- /.container container--flex --> */}
                         </div>{/* <!-- /.shell --> */}
                     </div>

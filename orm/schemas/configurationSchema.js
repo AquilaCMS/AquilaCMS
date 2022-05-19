@@ -28,6 +28,7 @@ const ConfigurationSchema = new Schema({
         logPath           : {type: String},
         errorPath         : {type: String},
         favicon           : {type: String},
+        defaultImage      : {type: String},
         cacheTTL          : {type: Number},
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},
@@ -52,6 +53,25 @@ const ConfigurationSchema = new Schema({
         contentSecurityPolicy : {
             values : {type: [String]},
             active : {type: Boolean, default: false}
+        },
+        needRestart    : {type: Boolean, default: false},
+        needRebuild    : {type: Boolean, default: false},
+        searchSettings : {
+            shouldSort         : {type: Boolean, default: true},
+            ignoreLocation     : {type: Boolean, default: true},
+            findAllMatches     : {type: Boolean, default: true},
+            ignoreFieldNorm    : {type: Boolean, default: true},
+            includeScore       : {type: Boolean, default: true},
+            useExtendedSearch  : {type: Boolean, default: true},
+            minMatchCharLength : {type: Number, default: 2},
+            threshold          : {type: Number, default: 0.3},
+            keys               : [
+                {
+                    key    : String,
+                    label  : String,
+                    weight : Number
+                }
+            ]
         }
 
     },
@@ -62,11 +82,12 @@ const ConfigurationSchema = new Schema({
         default : [{rate: 5.5}, {rate: 10}, {rate: 20}]
     },
     stockOrder : {
-        cartExpireTimeout         : {type: Number, required: true, default: 48},
-        pendingOrderCancelTimeout : {type: Number, required: true, default: 48},
-        requestMailPendingCarts   : {type: Number, required: true, default: 24},
-        bookingStock              : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
-        labels                    : {
+        cartExpireTimeout                : {type: Number, required: true, default: 48},
+        pendingOrderCancelTimeout        : {type: Number, required: true, default: 48},
+        nbDaysToDeleteOlderFailedPayment : {type: Number, default: 30},
+        requestMailPendingCarts          : {type: Number, required: true, default: 24},
+        bookingStock                     : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
+        labels                           : {
             type    : [{code: {type: String, required: true}, translation: {}}],
             default : [
                 {

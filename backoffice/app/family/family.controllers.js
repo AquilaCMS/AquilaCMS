@@ -5,7 +5,7 @@ FamilyControllers.controller('FamilyEditCtrl', ['$scope', '$modalInstance', '$fi
         $scope.family = item;
         let parentsList = [];
 
-        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
             $scope.parents = $scope.getParentsList(item.type);
 
             $scope.showParents = function () {
@@ -63,7 +63,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
     function ($scope, $modal, $filter, $http, $q, FamilyV2, CategoryV2, childrenfamily, $translate)     {
         $scope.universes = [];
 
-        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function({datas}) {
+        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function({datas}) {
             $scope.universes = datas
         });
 
@@ -131,7 +131,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             }
         };
 
-        CategoryV2.list({PostBody: {filter: {origine: 'admin'}, limit: 99}}, function (response) {
+        CategoryV2.list({PostBody: {filter: {origine: 'admin'}, limit: 0}}, function (response) {
             $scope.allMenus = response.datas;
             $scope.categoryList = $filter('filter')($scope.allMenus, {type: "category"});
             $scope.menuList = [];
@@ -143,13 +143,13 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         };
 
         function updateMenu() {
-            FamilyV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function({datas}) {
+            FamilyV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function({datas}) {
                 $scope.universes = datas
                 if ($scope.selectedUniverse) {
-                    FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedUniverse}, limit: 99, structure: '*' }}, function (result) {
+                    FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedUniverse}, limit: 0, structure: '*' }}, function (result) {
                         $scope.families = result.datas;
                         if ($scope.selectedFamily) {
-                            FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedFamily }, limit: 99, structure: '*' } }, function (result) {
+                            FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedFamily }, limit: 0, structure: '*' } }, function (result) {
                                 $scope.subFamilies = result.datas;
                             });
                         }
@@ -212,7 +212,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
                 $scope.selectedUniverse = idUniverse;
                 $scope.families = [];
     
-                FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 99, populate:'children'}}, function (result) {
+                FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 0, populate:'children'}}, function (result) {
                     $scope.families = result.children;
                 });
             }else{
@@ -224,7 +224,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             if($scope.selectedFamily != idCategoryV2){
                 $scope.selectedFamily = idCategoryV2;
                 $scope.subFamilies = [];
-                FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 99, populate: 'children'}}, function (result) {
+                FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 0, populate: 'children'}}, function (result) {
                     if(result.datas[0] != undefined){
                         $scope.subFamilies = result.datas[0].children;
                     }
@@ -262,7 +262,7 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
             name   : '', code   : '', type   : familyType, types  : fakeTypes, parent : parent != "" ? parent : null
         };
 
-        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
             $scope.parents = $scope.getParentsList(familyType);
             parentsList = datas
         });
@@ -337,7 +337,7 @@ FamilyControllers.controller('FamilyDetailCtrl', ['$scope', '$filter', '$http', 
         $scope.family.parentName = "";
 
         $scope.loadParents = function () {
-            return $scope.parents.length ? null : FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
+            return $scope.parents.length ? null : FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function ({datas}) {
                 $scope.parents = datas;
                 const selected = $filter('filter')($scope.parents, {_id: $scope.family.parent});
                 $scope.family.parentName = selected.length ? selected[0].name : null;

@@ -38,9 +38,14 @@ ThemesController.controller("ThemesCtrl", [
             if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined) {
                 $scope.customiseTheme.arrayGroup = [];
                 for (let i = 0; i < $scope.themeConfig.variables[lang].length; i++) {
+                    // Determine the type (number, text, etc)
+                    $scope.themeConfig.variables[lang][i].type = typeof($scope.themeConfig.variables[lang][i].value);
+                    // Determine if is color (special case)
+                    if($scope.themeConfig.variables[lang][i].type === 'string' && $scope.themeConfig.variables[lang][i].value.startsWith("#") && $scope.themeConfig.variables[lang][i].value.length === 7){
+                        $scope.themeConfig.variables[lang][i].type = "color";
+                    }
                     if ($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1) {
                         $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
-
                     }
                 }
             }
@@ -233,7 +238,7 @@ ThemesController.controller("ThemesCtrl", [
                     }
                 }, function (err) {
                     $scope.showLoading2 = false;
-                    console.log(err);
+                    console.error(err);
                 });
             } else {
                 $scope.saveTheme();

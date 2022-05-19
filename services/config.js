@@ -9,11 +9,14 @@
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
 const {merge}                   = require('lodash');
+const ServiceCache              = require('./cache');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
+
+const isProd = !serverUtils.dev;
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -68,13 +71,14 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
 };
 
 const updateEnvFile = async () => {
-    const aquila_env = serverUtils.getEnv('AQUILA_ENV');
-    let oldEnvFile   = await fs.readFile(global.envPath);
-    oldEnvFile       = JSON.parse(oldEnvFile);
+    const aquila_env      = serverUtils.getEnv('AQUILA_ENV');
+    const absoluteEnvPath = path.join(global.appRoot, global.envPath);
+    let oldEnvFile        = await fs.readFile(absoluteEnvPath);
+    oldEnvFile            = JSON.parse(oldEnvFile);
     if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
         oldEnvFile[aquila_env] = global.envFile;
         global.envFile         = oldEnvFile[aquila_env];
-        await fs.writeFile(global.envPath, JSON.stringify(oldEnvFile, null, 4));
+        await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
     }
 };
 
@@ -127,7 +131,7 @@ const saveEnvFile = async (body, files) => {
 
 const saveEnvConfig = async (body) => {
     const oldConfig = await Configuration.findOne({});
-    if (typeof body.environment.contentSecurityPolicy !== 'undefined') {
+    if (typeof body.environment?.contentSecurityPolicy !== 'undefined') {
         const tempValueActive = body.environment.contentSecurityPolicy.active;
         if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
             if (typeof tempValueActive === 'string') {
@@ -155,6 +159,10 @@ const saveEnvConfig = async (body) => {
             || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
         ) {
             body.needRestart = true;
+        }
+        if (environment.defaultImage !== oldConfig.defaultImage) {
+            await ServiceCache.flush();
+            await ServiceCache.cleanCache();
         }
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
@@ -190,7 +198,8 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, {$set: body});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    global.envConfig = cfg;
 };
 
 /**
@@ -207,9 +216,39 @@ const getConfigTheme = async () => {
     };
 };
 
+// Set config props to true if step is needed (0: rest props1: build)
+const needRebuildAndRestart = async (restart = false, rebuild = false) => {
+    const _config = await Configuration.findOne({});
+    if (isProd && rebuild) {
+        _config.environment.needRebuild = true;
+    } else {
+        _config.environment.needRebuild = false;
+    }
+    if (restart) {
+        _config.environment.needRestart = true;
+    }
+    await _config.save();
+    await require('./admin').removeAdminInformation('server_restart_rebuild');
+    await require('./admin').insertAdminInformation({
+        code        : 'server_restart_rebuild',
+        type        : 'warning',
+        translation : {
+            en : {
+                title : _config.environment.needRebuild ? 'Rebuild & Restart Aquila' : 'Restart Aquila',
+                text  : `To apply lanquages changes, ${_config.environment.needRebuild ? 'rebuild & restart' : 'restart'} Aquila <a href="#/themes">here</a>`
+            },
+            fr : {
+                title : _config.environment.needRebuild ? 'Compilez & Redemarrez Aquila' : 'Redemarrez Aquila',
+                text  : `Pour appliquer les modifications apportées au langues, ${_config.environment.needRebuild ? 'compilez & redemarrez' : 'redemarrez'} Aquila <a href="#/themes">ici</a>`
+            }
+        }
+    });
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
-    getConfigTheme
+    getConfigTheme,
+    needRebuildAndRestart
 };

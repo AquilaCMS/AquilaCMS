@@ -9,7 +9,7 @@
       "active": false,
       "clickable": false,
       "isDisplayed": false,
-      "action": "catalog",
+      "action": "container",
       "ancestors": [],
       "children": [
         "5c6676a1583a67281c09f77c",
@@ -326,7 +326,6 @@
       "isDisplayed": true,
       "action": "catalog",
       "ancestors": [
-        "5b7ea55c09c72307ffb3c7dd",
         "5c6676a1583a67281c09f77c"
       ],
       "children": [],
@@ -432,7 +431,6 @@
       "isDisplayed": true,
       "action": "catalog",
       "ancestors": [
-        "5b7ea55c09c72307ffb3c7dd",
         "5c6676a1583a67281c09f77c"
       ],
       "children": [],
@@ -519,7 +517,6 @@
       "isDisplayed": true,
       "action": "catalog",
       "ancestors": [
-        "5b7ea55c09c72307ffb3c7dd",
         "5c6676a1583a67281c09f77c"
       ],
       "children": [],

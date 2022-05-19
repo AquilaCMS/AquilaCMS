@@ -57,6 +57,7 @@ class NSErrors {
     static get OperatorRestricted() { return this.makeErrorAlias(NSErrors.Forbidden, 'OperatorRestricted'); }
     static get PromoCodePromoNotAuthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'PromoCodePromoNotAuthorized'); }
     static get ComponentNotAllowed() { return this.makeErrorAlias(NSErrors.Forbidden, 'ComponentNotAllowed'); }
+    static get ProductTypeInvalid() { return this.makeErrorAlias(NSErrors.Forbidden, 'ProductTypeInvalid'); }
 
     static get NotFound() { return new NSError(404, 'NotFound'); }
     static get AccountUserNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'AccountUserNotFound'); }

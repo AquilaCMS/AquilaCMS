@@ -1,4 +1,5 @@
 import React from 'react';
+import 'aql-utils';
 import axios from 'axios';
 import App from 'next/app';
 import Head from 'next/head';
@@ -16,7 +17,6 @@ import {
 } from 'aqlrc';
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
-import { getModulesHookFunctionsByType } from '../lib/utils';
 import 'styles/global.css';
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
@@ -136,7 +136,8 @@ class AquilaApp extends App {
                                 addresses: 1,
                                 delivery_address: 1,
                                 billing_address: 1,
-                                birthDate: 1
+                                birthDate: 1,
+                                attributes: 1
                             }
                         };
                         user = await getUser(user._id, PostBody, bundle.ctx);
@@ -187,7 +188,6 @@ class AquilaApp extends App {
                 lang,
                 routerLang,
                 urlLang,
-                hooksFunctions: await getModulesHookFunctionsByType()
             };
             return { pageProps };
         } catch (err) {

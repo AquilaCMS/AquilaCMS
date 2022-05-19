@@ -6,19 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const utilsDatabase               = require('../utils/database');
-const NSErrors                    = require('../utils/errors/NSErrors');
-const ServiceCart                 = require('../services/cart');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const NSErrors                         = require('../utils/errors/NSErrors');
+const ServiceCart                      = require('../services/cart');
+const {authentication, adminAuthRight} = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/carts',  adminAuth, getCarts);
+    app.post('/v2/carts',  adminAuthRight('cart'), getCarts);
     app.post('/v2/cart/:id', getCartById);
     app.put('/v2/cart/item', addItem);
     app.put('/v2/cart/updateQty', updateQty);
     app.put('/v2/cart/to/order', authentication, setCartToOrder);
     app.delete('/v2/cart/:cartId/item/:itemId', deleteCartItem);
-    app.get('/v2/cart/user/:idclient',  adminAuth, getCartforClient);
+    app.get('/v2/cart/user/:idclient',  adminAuthRight('cart'), getCartforClient);
     app.delete('/v2/cart/discount/:cartId', removeDiscount);
     app.put('/v2/cart/addresses', updateAddresses);
     app.put('/v2/cart/delivery', authentication, updateDelivery);
@@ -55,9 +54,9 @@ const getCartforClient = async (req, res, next) => {
  */
 const getCartById = async (req, res, next) => {
     try {
-        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
+        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info);
         if (result) {
-            await utilsDatabase.populateItems(result.items);
+            // await utilsDatabase.populateItems(result.items);
             return res.json(result);
         }
         return next(NSErrors.CartNotFound);
@@ -85,7 +84,7 @@ async function setCartToOrder(req, res, next) {
  */
 async function deleteCartItem(req, res, next) {
     try {
-        const result = await ServiceCart.deleteCartItem(req.params.cartId, req.params.itemId);
+        const result = await ServiceCart.deleteCartItem(req.params.cartId, req.params.itemId, req.info);
         return res.json(result.data.cart);
     } catch (error) {
         return next(error);
@@ -101,7 +100,7 @@ const addItem = async (req, res, next) => {
     // YES : add product
     // NO : create and add
     try {
-        const result = await ServiceCart.addItem(req);
+        const result = await ServiceCart.addItem(req.body, req.info);
         if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }
@@ -117,7 +116,7 @@ const addItem = async (req, res, next) => {
  */
 async function updateQty(req, res, next) {
     try {
-        const result = await ServiceCart.updateQty(req);
+        const result = await ServiceCart.updateQty(req.body, req.info);
         if (result.data) {
             return res.json(result.data.cart);
         }
@@ -134,7 +133,7 @@ async function updateQty(req, res, next) {
 async function updateComment(req, res, next) {
     try {
         const result = await ServiceCart.setComment(req.body.cartId, req.body.comment);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {
         return next(error);
@@ -148,7 +147,7 @@ async function updateComment(req, res, next) {
 async function updateAddresses(req, res, next) {
     try {
         const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {
         return next(error);
@@ -162,7 +161,7 @@ async function updateAddresses(req, res, next) {
 async function updateDelivery(req, res, next) {
     try {
         const result = await ServiceCart.updateDelivery(req.body, req.query ? req.query.removeDeliveryDatas : false);
-        await ServiceCart.linkCustomerToCart(result.data.cart, req);
+        await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.send(result.data.cart);
     } catch (err) {
         return next(err);

@@ -1,9 +1,10 @@
 import React from 'react';
 import Head from 'next/head';
 import {
-    NSPageAccount, NSAddressMultiple, NSContext, NSSidebarAccount, getCmsBlock, getLangPrefix
+    NSPageAccount, NSAddressMultiple, NSContext, getCmsBlock, getLangPrefix
 } from 'aqlrc';
 import Layout from 'components/Layout';
+import SidebarAccount from 'components/SidebarAccount';
 import { Link, Router } from 'routes';
 import { withI18next } from 'lib/withI18n';
 
@@ -59,7 +60,7 @@ class PageAddresses extends NSPageAccount {
                                         </div>
                                     </section>{/* <!-- /.section-client-area --> */}
                                 </div>{/* <!-- /.content --> */}
-                                <NSSidebarAccount active="addresses" gNext={{ Link, Router }} t={t} />
+                                <SidebarAccount active="addresses" />
                             </div>{/* <!-- /.container container--flex --> */}
                         </div>{/* <!-- /.shell --> */}
                     </div>

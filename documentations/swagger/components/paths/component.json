@@ -114,8 +114,8 @@
                             },
                             "example3": {
                                 "summary": "Get ns-menu",
-                                "description": "Get menu.<br/><br/>Specify in parameters : 'componentName' : 'ns-menu'<br/>'code' equals the menu code",
-                                "value": {"lang":"en"}
+                                "description": "Get menu with 2 levels of children.<br/><br/>Specify in parameters : 'componentName' : 'ns-menu'<br/>'code' equals the menu code",
+                                "value": {"lang":"en", "levels":2}
                             },
                             "example4": {
                                 "summary": "Get ns-slider",

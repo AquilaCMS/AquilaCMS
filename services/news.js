@@ -14,9 +14,9 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields);
 
-const getNews = async (PostBody) => queryBuilder.find(PostBody);
+const getNews = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
+const getNew = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const getNewsTags = async (query, lang) => {
     if (!lang) {
@@ -55,6 +55,14 @@ const saveNew = async (_new) => {
     return News.create(_new);
 };
 
+const deleteImage = async (_old) => {
+    const fsp  = require('../utils/fsp');
+    const path = require('path');
+
+    if (!_old) throw NSErrors.UnprocessableEntity;
+    const imgPath = path.resolve(require('../utils/server').getUploadDirectory(), _old);
+    await fsp.unlink(imgPath);
+};
 const deleteNew = async (_id) => {
     if (!_id) throw NSErrors.UnprocessableEntity;
     const result = await News.deleteOne({_id});
@@ -66,5 +74,6 @@ module.exports = {
     getNew,
     getNewsTags,
     saveNew,
-    deleteNew
+    deleteNew,
+    deleteImage
 };

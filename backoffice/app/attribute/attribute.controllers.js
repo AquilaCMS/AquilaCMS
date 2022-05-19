@@ -44,7 +44,7 @@ AttributeControllers.controller('AttributeListCtrl', [
                 filter,
                 structure : '*',
                 populate  : 'set_attributes',
-                limit     : 99
+                limit     : 0
             };
             if ($scope.local.search) {
                 PostBody.filter[`translation.${$scope.adminLang}.name`] = {$regex: $scope.local.search, $options: 'i'};
@@ -60,7 +60,7 @@ AttributeControllers.controller('AttributeListCtrl', [
 
         function getAttributesOrphans() {
             // recuperation des attributs n'appartenant a aucun set
-            AttributesV2.list({PostBody: {filter: {'set_attributes.0': {$exists: false}, _type: $scope._type}, limit: 99, structure: '*'}}, function ({datas}) {
+            AttributesV2.list({PostBody: {filter: {'set_attributes.0': {$exists: false}, _type: $scope._type}, limit: 0, structure: '*'}}, function ({datas}) {
                 $scope.attributesOrphans = datas;
             });
         }
@@ -139,6 +139,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.generateInputs();
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
+                $scope.attribute.update = true;
             });
         };
 
@@ -160,7 +161,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
             $scope.getAttr();
         }
 
-        SetAttributesV2.list({PostBody: {filter: {type: $scope._type}, structure: '*', limit: 99}}, function ({datas}) {
+        SetAttributesV2.list({PostBody: {filter: {type: $scope._type}, structure: '*', limit: 0}}, function ({datas}) {
             $scope.setAttributes = datas;
             if ($scope.isEditMode === false) {
                 datas.forEach((element) => {
@@ -204,7 +205,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 let count = 0;
                 let j     = 0;
                 while ($scope.valuesError == '' && j < $scope.attribute.translation[$scope.lang].values.length) {
-                    if ($scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
+                    if (i !== j && $scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
                         count++;
                     }
 
@@ -245,7 +246,6 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                     }
                 }
 
-                data.update = true;
                 data._type  = $scope._type;
                 AttributesV2.save(data, function (res) {
                     if (res._id) {

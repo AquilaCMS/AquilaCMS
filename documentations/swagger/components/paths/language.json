@@ -5,7 +5,7 @@
             "security": [],
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "Return all the languages available on your website",
                     "content": {
                         "application/json": {
                             "schema": {

@@ -1,22 +1,5 @@
 const ProductControllers = angular.module("aq.product.controllers", []);
 
-ProductControllers.controller("ProductBeforeCreateCtrl", [
-    "$scope", "NSConstants", "$location", function ($scope, NSConstants, $location) {
-        $scope.productTypes = NSConstants.productTypes;
-        $scope.settings = {
-            productType: $scope.productTypes[0].code
-        };
-
-        $scope.validate = function (settings) {
-            $location.path(`/products/${settings.productType}/new`);
-        };
-
-        $scope.cancel = function () {
-            $location.path("/products");
-        };
-    }
-]);
-
 ProductControllers.controller("SelectProductsCtrl", [
     "$scope", "$modalInstance", "queryFilter", "toastService", "productSelected",
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
@@ -64,7 +47,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
-                const link = `/images/products/196x173/${image._id}/${image.url.split('/')[image.url.split('/').length - 1]}`;
+                const link = `/images/products/196x173/${image._id}/${image.url.split('\\').pop().split('/').pop()}`;
                 return link;
             } catch (e) {
                 return '';
@@ -79,7 +62,7 @@ ProductControllers.controller("ProductListCtrl", [
         };
 
         $scope.getAttributesClassed = function () {
-            AttributesV2.list({ PostBody: { filter: { _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 0}}, function ({datas}) {
                 $scope.attribs = datas;
             });
         };
@@ -209,16 +192,22 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
+            const structure = {
+                code: 1,
+                active: 1,
+                _visible: 1,
+                stock: 1,
+                images: 1,
+                stock: 1,
+                type: 1,
+                attributes: 1
+            };
+
             const paramsV2 = {
                 lang: "fr",
                 PostBody: {
                     filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
-                    structure: {
-                        code: 1,
-                        active: 1,
-                        _visible: 1,
-                        stock: 1
-                    },
+                    structure,
                     limit: $scope.nbItemsPerPage,
                     page: $scope.currentPage,
                     sort: params.sortObj
@@ -272,13 +261,13 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2", "$translate",
-    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope", "$translate",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, $rootScope, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
 
         $scope.loadNewAttrs = async function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -287,7 +276,7 @@ ProductControllers.controller("nsProductGeneral", [
             });
         };
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 0}}, function ({datas}) {
             $scope.setAttributes = datas;
 
             if ($scope.product && $scope.product.set_attributes === undefined) {
@@ -301,11 +290,28 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
+        $scope.isGoodCanonical = function () {
+            if ($scope.product) {
+                // Detect canonical for all languages
+                let isGoodCanonicalForAllLang = true;
+                for (let index = 0; index < $rootScope.languages.length; index++) {
+                    const aLang = $rootScope.languages[index];
+                    if(!($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                        isGoodCanonicalForAllLang = false;
+                    }
+                }
 
-        $scope.changeActiveVisible = function (product) {
+                if($scope.product.active || isGoodCanonicalForAllLang){
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
-                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
+                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules) {
                     $scope.product = product;
                     $scope.adminUrl = "";
                     ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
@@ -313,7 +319,7 @@ ProductControllers.controller("nsProductGeneral", [
                         $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
 
-                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 0 } }, function (categoriesLink) {
                         $scope.cat = categoriesLink.datas.length !== 0;
                     });
 
@@ -324,13 +330,7 @@ ProductControllers.controller("nsProductGeneral", [
                         ExecRules.exec({ type: "category" }, function (result) {
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', $translate.instant("product.general.finished"))
-                                ProductsV2.query({ PostBody: { filter: { _id: $scope.product._id }, structure: '*' } }, function (response) {
-                                    $scope.product = response;
-                                    $scope.product.active = true;
-                                    ProductsV2.save({}, $scope.product, function (response) {
-                                        window.location.reload()
-                                    })
-                                })
+                                window.location.reload();
                             })
                         }, function (error) {
                             console.log(error)
@@ -376,14 +376,14 @@ ProductControllers.controller("nsProductCategories", [
                 tab.push({ id: productID, checked: true });
             }
             //we save
-            CategoryV2.save({ _id: node._id, productsList: tab }, function () {
+            CategoryV2.save({_id: node._id, code: node.code, productsList: tab}, function () {
 
             });
         };
 
         $scope.catDisabled = function (node) {
             let final = false;
-            if (node.action == "page") {
+            if(node.action !== "catalog"){
                 final = true;
             } else {
                 if (node.productsList) {
@@ -435,7 +435,7 @@ ProductControllers.controller("nsProductOptions", [
                         });
                     }
                 } else {
-                    $scope.product.set_options = "";
+                    $scope.product.set_options = undefined;
                     $scope.product.options = [];
                 }
                 getOptionsSet();

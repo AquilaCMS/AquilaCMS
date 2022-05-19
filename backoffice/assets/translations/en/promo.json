@@ -34,7 +34,7 @@
         "ph6": "Limit / Person",
         "gen": "General",
         "codePromo": "Promo code",
-        "seg": "Segmentation",
+        "seg": "Rules",
         "action": "Action",
         "type": "Type",
         "promoCart": "Cart promo",
@@ -81,7 +81,8 @@
         "promoDeleted": "Promo deleted",
         "promoCloned": "Cloned promotion!",
         "errorQteMaxEnter": "Maximum quantity and Max usage per customer must be numbers or '*'",
-        "msgDiscount": "The discount is negative ! The price will increase !"
+        "msgDiscount": "The discount is negative ! The price will increase !",
+        "infoRules" : "This discount applies the following rules:"
     },
     "list": {
         "t1": "Discounts",

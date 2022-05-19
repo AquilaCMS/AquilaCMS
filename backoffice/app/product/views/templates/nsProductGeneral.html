@@ -1,31 +1,9 @@
-<span class="pull-right" style="position:absolute;right:5%;z-index: 1;">
-    <span class="label label-info" style="display:block; margin-bottom: 10px;margin-top:10px;">
-        <span translate>product.general.pdtType</span> :
-        <span class="badge">{{productTypeName}}</span>
-    </span>
-    <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookInfo" style="display:block;"></span>
-</span>
-<style>
-    .col-sm-11{
-        width:70%;
-    }
-    @media (max-width: 768px) {
-        .col-sm-11{
-            width:100%;
-            padding-left: 0px;
-            padding-right: 0px;
-        }
-    }
-    .form-goup{
-        display: inline;
-    }
-</style>
 <h3 translate>product.general.infoGen</h3>
 <div class="form-group">
     <div class="col-sm-11">
         <label for="code" class="col-sm-2 control-label" translate>product.general.code</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="code" name="code" ng-model="product.code" ng-disabled="isEditMode" required>
+            <input type="text" class="form-control" id="code" name="code" ng-model="product.code" ng-disabled="isEditMode">
             <div class="ns-error-message">
                 <div ng-show="(form.code.$dirty || form.nsSubmitted) && form.code.$error.required" translate>product.general.fieldReq</div>
             </div>
@@ -35,7 +13,25 @@
 
 <div class="form-group">
     <div class="col-sm-11">
+        <label for="type" class="col-sm-2 control-label" translate>product.general.type</label>
+        <div class="col-sm-10">
+            <select name="type" class="form-control" ng-model="product.type" ng-change="changeType()">
+                <option ng-disabled="product.type === 'simple'" value="simple" translate>category.detail.simple</option>
+                <option ng-disabled="product.type === 'bundle'" value="bundle" translate>category.detail.compose</option>
+                <option ng-disabled="product.type === 'virtual'" value="virtual" translate>category.detail.virtual</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11">
         <label for="name" class="col-sm-2 control-label" translate>product.general.nom</label>
+
+        <!-- Tricks for display the tooltip for the product.general.type -->
+        <i style="float:left;margin-left: -10px;margin-top: -45px" class="fa fa-question-circle" popover="{{'product.general.typeTooltip' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
+        <!-- End Tricks -->
+
         <div class="col-sm-10">
             <input type="text" class="form-control" id="name" name="name" ng-model="product.translation[lang].name" required>
             <div class="ns-error-message">
@@ -86,7 +82,7 @@
 </div>
 
 <div class="form-group">
-    <div ng-if="product.translation[lang].canonical || product.active" class="col-sm-11">
+    <div ng-if="isEditMode && isGoodCanonical()" class="col-sm-11">
             <label for="active" class="col-sm-2 control-label" translate>product.general.actif</label>
             <div class="col-sm-2">
                 <ns-switch id="active" ng-model="product.active" name="active"></ns-switch>
@@ -100,7 +96,7 @@
             <div bind-html-compile="product.component_template"></div>
     </div>
 
-    <div ng-if="!product.translation[lang].canonical && !product.active && isEditMode" class="col-sm-11">
+    <div ng-if="isEditMode && !isGoodCanonical()" class="col-sm-11">
         <label for="active" class="col-sm-2 control-label" translate>product.general.actifVisible</label>
         <div class="col-sm-2">
             <div ng-click="changeActiveVisible(product)">
@@ -173,5 +169,10 @@
         <div class="col-sm-10 tinyeditor-big">
             <ns-tinymce shortcode="false" lang="lang" text="product.translation[lang].description1.text"></ns-tinymce>
         </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11" hook-product-detail-general data="product">
     </div>
 </div>

@@ -6,16 +6,19 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const fs            = require('../../utils/fsp');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const NSErrors      = require('../../utils/errors/NSErrors');
-const utils         = require('../../utils/utils');
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const path           = require('path');
+const fs             = require('../../utils/fsp');
+const NSErrors       = require('../../utils/errors/NSErrors');
+const utils          = require('../../utils/utils');
 const {
     checkCustomFields,
     checkTranslations
 } = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
+const utilsDatabase  = require('../../utils/database');
+const reviewService  = require('../../services/reviews');
+const helper         = require('../../utils/utils');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -55,7 +58,6 @@ const ProductsSchema = new Schema({
         {
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
-            values      : String,
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
@@ -103,7 +105,8 @@ const ProductsSchema = new Schema({
             position         : Number,
             modificationDate : String,
             default          : {type: Boolean, default: false},
-            extension        : {type: String, default: '.jpg'}
+            extension        : {type: String, default: '.jpg'},
+            content          : String
         }
     ],
     code_ean    : String,
@@ -146,10 +149,11 @@ const ProductsSchema = new Schema({
         }]
     },
     stats : {
-        views : {type: Number, default: 0}
+        views : {type: Number, default: 0},
+        sells : {type: Number, default: 0}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     timestamps       : true,
     usePushEach      : true,
     id               : false
@@ -178,20 +182,52 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        const optionsPrice = await this.model('products').getOptionsPrice(item.options, this._id.toString());
-        item.price         = {
-            vat  : {rate: this.price.tax},
-            unit : {
-                et  : this.price.et.normal + optionsPrice,
-                ati : this.price.ati.normal + optionsPrice
-            }
-        };
 
-        if (this.price.et.special !== undefined && this.price.et.special !== null) {
-            item.price.special = {
-                et  : this.price.et.special + optionsPrice,
-                ati : this.price.ati.special + optionsPrice
+        const optionsPrice = await this.model('products').getOptionsPrice(item.options, this._id.toString());
+        if (optionsPrice) {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal + optionsPrice,
+                    ati : this.price.ati.normal + optionsPrice
+                }
             };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special + optionsPrice,
+                    ati : this.price.ati.special + optionsPrice
+                };
+            }
+        } else if (item.selected_variant) {
+            item.price = {
+                unit : {
+                    ati : item.selected_variant.price.ati.normal,
+                    et  : item.selected_variant.price.et.normal
+                },
+                vat : {rate: item.selected_variant.price.tax}
+            };
+            if (item.selected_variant.price.et.special !== undefined && item.selected_variant.price.et.special !== null) {
+                item.price.special = {
+                    et  : item.selected_variant.price.et.special,
+                    ati : item.selected_variant.price.ati.special
+                };
+            }
+        } else {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal,
+                    ati : this.price.ati.normal
+                }
+            };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special,
+                    ati : this.price.ati.special
+                };
+            }
         }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
@@ -249,6 +285,38 @@ ProductsSchema.statics.getOptionsWeight = async function (options, idOfProduct) 
         }
     }
     return optionsModifier;
+};
+
+ProductsSchema.methods.updateData = async function (data) {
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
+
+    // Slugify images name
+    if (data.images) {
+        for (const image of data.images) {
+            image.title = helper.slugify(image.title);
+        }
+        for (const prdImage of this.images) {
+            if (!data.images.find((img) => img._id.toString() === prdImage._id.toString()) && prdImage.url) {
+                // on delete les images cache generées depuis cette image
+                await require('../../services/cache').deleteCacheImage('products', this);
+                // puis on delete l'image original
+                const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
+                try {
+                    await fs.unlinkSync(joindPath);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+    }
+
+    reviewService.computeAverageRateAndCountReviews(data);
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    return updPrd;
 };
 
 ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
@@ -357,6 +425,10 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
+ProductsSchema.methods.hasVariantsValue = function (that) {
+    return that ? (that.variants_values && that.variants_values.length > 0 && that.variants_values.find((vv) => vv.active)) : (this.variants_values && this.variants_values.length > 0 && this.variants_values.find((vv) => vv.active));
+};
+
 ProductsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('products', that._id, that.code);
 };
@@ -366,26 +438,6 @@ ProductsSchema.statics.checkSlugExist = async function (that) {
 };
 
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
-    // suppression des images en cache si la principale est supprimée
-    if (this.getUpdate().$set && this.getUpdate().$set._id) {
-        const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        for (let i = 0; i < oldPrd.images.length; i++) {
-            if (this.getUpdate().$set.images) {
-                if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
-                    try {
-                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    try {
-                        require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-            }
-        }
-    }
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 

@@ -41,14 +41,21 @@
         "preview": "Aperçu",
         "finished": "Terminé",
         "errorCategorization": "Erreur lors de la categorisation",
-        "coherenceTitle": "Cohérence du produit"
+        "coherenceTitle": "Cohérence du produit",
+        "changeType": "Changer le type",
+        "type": "Type",
+        "typeTooltip": "Changer le type de produit (nécessite une sauvegarde du produit)",
+        "views": "Vues",
+        "sells": "Ventes",
+        "stats": "Statistiques"
     },
     "modal": {
         "activeProduct": "Activer un produit",
         "close": "Fermer",
         "help": "Ce produit n'est pas activable car il ne possède pas de 'canonical' (URL unique).</br>Pour se faire, vous devez : </br></br><span ng-if='!cat'>- <a target='_blank' href='{{admin}}#/categories'>Ajouter ce produit à une catégorie</a> ou <a target='_blank' href='{{admin}}#/jobs'>générer une catégorisation</a></br></br></span><span>- <a target='_blank' href='{{admin}}#/jobs'>Générer la 'canonicalisation'</a></span>",
         "runCanonicalisation": "- Lancer \"Catégorisation\" puis \"Canonicalisation\"",
-        "coherenceTitle": "Voici les problèmes de ce produit :"
+        "coherenceTitle": "Voici les problèmes de ce produit :",
+        "saveFirst": "Enregistrez le produit pour pouvoir ajouter des images"
     },
     "marketing": {
         "fournisseur": "Fournisseur",
@@ -86,14 +93,16 @@
     },
     "photo": {
         "add": "Ajouter",
-        "nom": "Nom",
-        "title": "Balise Title",
+        "nom": "Originale",
+        "title": "Nom",
         "picturessaved": "Images sauvegardées :",
         "alt": "Balise Alt",
         "pos": "Position",
-        "img": "Image Principale",
-        "url": "URL",
-        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
+        "img": "Principale",
+        "url": "Chemin",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème",
+        "youtubeId": "Video Youtube ID" ,
+        "type": "Video Youtube"
     },
     "list": {
         "ph1": "Nom",
@@ -141,9 +150,31 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical",
-        "notValid": "Les informations saisies ne sont pas valides"
+        "notValid": "Les informations saisies ne sont pas valides",
+        "URLcanonical": "Impossible de générer l'URL de test car pas de canonical"
     },
+    "declinaisons": {
+        "title1": "Déclinaisons utilisés",
+        "title2": "Liste des déclinaisons",
+        "code": "Code",
+        "name": "Nom",
+        "typeDisplay": "Type d'affichage",
+        "available": "Disponible",
+        "picture": "Image",
+        "variant": "Declinaison",
+        "variants": "Declinaisons",
+        "price": "Prix base TTC",
+        "quantity": "Quantité",
+        "default": "Defaut",
+        "createAttribs": "Vous devez creer au moins un attribut marqué comme declinaison de produits <a style='text-decoration: underline;' href='#/products/attributes'>ici</a>",
+        "displayImage": "Afficher en image",
+        "displayRadio": "Radio boutons",
+        "displayList": "Listes des valeurs",
+        "displayList2": "Liste des déclinaisons",
+        "activateAllVariants": "Activer toutes les déclinaisons",
+        "disableAllVariants": "Désactiver toutes les déclinaisons"
+    },
+    "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories",
     "optionsSet": {
         "title": "Jeu d'options et options du produit",
         "edit": "Editer le jeu d'options",

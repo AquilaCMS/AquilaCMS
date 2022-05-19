@@ -6,33 +6,23 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {Cart, Orders, PaymentMethods} = require('../orm/models');
-const orderService                   = require('../services/orders');
-const ServiceOrder                   = require('../services/orders');
-const ServiceAuth                    = require('../services/auth');
-const {middlewareServer}             = require('../middleware');
-const {authentication, adminAuth}    = require('../middleware/authentication');
-const NSErrors                       = require('../utils/errors/NSErrors');
-const {isAdmin}                      = require('../utils/utils');
+const ServiceOrder                                = require('../services/orders');
+const ServiceAuth                                 = require('../services/auth');
+const {authentication, adminAuth, adminAuthRight} = require('../middleware/authentication');
+const {isAdmin}                                   = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', adminAuth, rma);
-    app.post('/v2/order/infoPayment', adminAuth, infoPayment);
+    app.post('/v2/order/rma', adminAuthRight('orders'), rma);
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', adminAuth, addPackage);
-    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
+    app.post('/v2/order/delpkg', adminAuthRight('orders'), delPackage);
     app.put('/v2/order/updateStatus', adminAuth, updateStatus);
-    app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
-    app.put('/v2/order/updatePayment', adminAuth, updatePayment);
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuthRight('orders'), cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', adminAuth, setOrder);
-
-    // Deprecated
-    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
+    app.put('/v2/order', adminAuthRight('orders'), setOrder);
 };
 
 /**
@@ -46,7 +36,8 @@ async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         if (!isAdmin(req.info)) {
-            PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
+            const {orderStatuses}          = require('../services/orders');
+            PostBodyVerified.filter.status = {$nin: [orderStatuses.PAYMENT_FAILED]};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
         return res.json(result);
@@ -105,22 +96,7 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        const order = await orderService.rma(req.body.order, req.body.return, req.body.lang);
-        res.json(order);
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function infoPayment(req, res, next) {
-    try {
-        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
+        const order = await ServiceOrder.rma(req.body.order, req.body.return, req.body.lang);
         res.json(order);
     } catch (err) {
         return next(err);
@@ -140,7 +116,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
             {_id: req.body.idOrder || null},
             'customer.id'
         );
-        return res.json(await orderService.duplicateItemsFromOrderToCart(req));
+        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req.body, req.info));
     } catch (err) {
         return next(err);
     }
@@ -154,7 +130,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
  */
 async function addPackage(req, res, next) {
     try {
-        await orderService.addPackage(req.body.order, req.body.package);
+        await ServiceOrder.addPackage(req.body.order, req.body.package);
         res.end();
     } catch (err) {
         return next(err);
@@ -163,7 +139,7 @@ async function addPackage(req, res, next) {
 
 async function delPackage(req, res, next) {
     try {
-        res.json(await orderService.delPackage(req.body.order, req.body.package));
+        res.json(await ServiceOrder.delPackage(req.body.order, req.body.package));
     } catch (err) {
         return next(err);
     }
@@ -185,23 +161,9 @@ async function updateStatus(req, res, next) {
     }
 }
 
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function updatePayment(req, res, next) {
-    try {
-        return res.json(await ServiceOrder.updatePayment(req.body));
-    } catch (e) {
-        next(e);
-    }
-}
-
 async function cancelOrder(req, res, next) {
     try {
-        const result = await orderService.cancelOrder(req.params.id || req.body.id);
+        const result = await ServiceOrder.cancelOrder(req.params.id || req.body.id);
         if (result) {
             return res.status(403).json(result);
         }
@@ -213,7 +175,7 @@ async function cancelOrder(req, res, next) {
 
 async function cancelOrderRequest(req, res, next) {
     try {
-        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.info);
+        const result = await ServiceOrder.cancelOrderRequest(req.params.id || req.body.id, req.info);
         if (result) {
             return res.json({code: 'ORDER_ASK_CANCEL_SUCCESS'});
         }
@@ -222,71 +184,4 @@ async function cancelOrderRequest(req, res, next) {
     } catch (err) {
         return next(err);
     }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function payOrder(req, res, next) {
-    const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
-    if (!order) {
-        return next(NSErrors.OrderNotFound);
-    }
-    const query  = {...req.body.filterPayment};
-    query.active = true;
-    // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
-    // Otherwise, we recover all the active payment methods
-    try {
-        const paymentMethods = await PaymentMethods.find(query);
-        // We check that the desired payment method is available
-        const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
-        if (!method) {
-            return next(NSErrors.PaymentModeNotAvailable);
-        }
-
-        await orderService.paymentSuccess({
-            number        : req.params.orderNumber,
-            status        : 'PAYMENT_PENDING',
-            'customer.id' : req.info._id
-        }, {
-            $set : {
-                status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method, req.params.lang)]
-            }
-        });
-
-        if (method.isDeferred) {
-            await Cart.deleteOne({_id: order.cartId});
-        }
-
-        return res.json(await Orders.findOne({_id: order._id}));
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {*} order
- * @param {*} method
- * @deprecated
- */
-function createPayment(order, method, lang) {
-    return {
-        type          : 'CREDIT',
-        operationDate : Date.now(),
-        status        : 'TODO',
-        mode          : method.code.toUpperCase(),
-        amount        : order.priceTotal.ati,
-        isDeferred    : method.isDeferred,
-        name          : method.translation[lang].name
-    };
 }

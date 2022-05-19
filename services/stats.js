@@ -143,7 +143,11 @@ async function insertType(type, nb) {
         const isoDate = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).toISOString();
         const pushed  = {};
         pushed[type]  = {$each: [{date: isoDate, count: nb}]};
-        await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
+        // Check if stats exists for this day
+        const todayExist = await StatsHistory.findOne({'visit.date': isoDate}).lean();
+        if (!todayExist) {
+            await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
+        }
     } catch (error) {
         console.error(error);
     }

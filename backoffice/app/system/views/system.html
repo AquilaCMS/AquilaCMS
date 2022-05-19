@@ -13,9 +13,10 @@
                     <li><a data-toggle="tab" href="#other" target="_self" translate>system.environment.other.title</a>
                     </li>
                     <li><a data-toggle="tab" href="#log" target="_self" translate>system.environment.log.title</a></li>
+                    <li><a data-toggle="tab" href="#search" target="_self" translate>system.environment.searchSettings.title</a></li>
                 </ul>
             </div>
-            <div class="tab-content ng-scope" style="width:50%;margin-left:10%">
+            <div class="tab-content ng-scope">
                 <div id="security" class="tab-pane fade in active">
                     <div>
                         <h3 translate>system.environment.security.contentPolicy.title</h3>
@@ -106,8 +107,8 @@
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.other.uploadAllDocument</label>
-                        <ns-upload-files accepttype=".zip" multiple="false" type="document"
-                            before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
+                        <ns-upload-files accepttype=".zip" multiple="false" type="document" is-selected="isSelected"
+                            before-function="beforeDocument" after-function="uploadedDocument"></ns-upload-files>
                         <div translate>system.environment.other.uploadAllDocumentInfo</div>
                     </div>
                 </div>
@@ -131,6 +132,16 @@
                         <textarea rows="20" class="form-control" ng-model="log.log" readonly
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
+                    <div class="pull-right">
+                        <span>{{log.displayedLinesLogs}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
+                        <button type="button" class="btn btn-success" ng-click="pageIncrease('log')">
+                            <p translate>system.environment.log.seeMoreLogs</p>
+                        </button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
                     <div class="form-group">
                         <label translate>system.environment.log.errorFileTitle</label>
                         <input type="text" class="form-control" ng-model="system.environment.errorPath"
@@ -141,8 +152,87 @@
                         <textarea rows="20" class="form-control" ng-change="zaer" ng-model="log.error" readonly
                             style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
+                    <div class="pull-right">
+                        <span>{{log.displayedLinesErrors}}</span>
+                        <span translate>system.environment.log.linesDisplayed</span>
+                        <button type="button" class="btn btn-success" ng-click="pageIncrease('error')">
+                            <p translate>system.environment.log.seeMoreErrors</p>
+                        </button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
                 </div>
-                <!--other div here-->
+                <div id="search" class="tab-pane fade">
+                    <h3 translate>system.environment.searchSettings.title</h3>
+                    <br />
+                    <div style="max-width: 1000px;  display: block; margin: 0 auto;">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="shouldSort" class="form-label">shouldSort</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="shouldSort" ng-model="system.environment.searchSettings.shouldSort"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="ignoreLocation" class="form-label">ignoreLocation</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="ignoreLocation" ng-model="system.environment.searchSettings.ignoreLocation"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="findAllMatches" class="form-label">findAllMatches</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="findAllMatches" ng-model="system.environment.searchSettings.findAllMatches"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="ignoreFieldNorm" class="form-label">ignoreFieldNorm</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="ignoreFieldNorm" ng-model="system.environment.searchSettings.ignoreFieldNorm"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="includeScore" class="form-label">includeScore</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="includeScore" ng-model="system.environment.searchSettings.includeScore"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="useExtendedSearch" class="form-label">useExtendedSearch</label>
+                                <div class="col-md-6">
+                                    <ns-switch name="useExtendedSearch" ng-model="system.environment.searchSettings.useExtendedSearch"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="minMatchCharLength" class="form-label">minMatchCharLength</label>
+                                <div class="col-md-6">
+                                    <input type="number" class="form-control" name="minMatchCharLength" ng-model="system.environment.searchSettings.minMatchCharLength" style="max-width: 132px;">
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="col-md-6" for="threshold" class="form-label">threshold</label>
+                                <div class="col-md-6">
+                                    <input type="number" step="0.1" class="form-control" name="threshold" ng-model="system.environment.searchSettings.threshold" style="max-width: 132px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p style="text-align: right;font-style: italic"><span translate>system.environment.searchSettings.findDoc</span><span><a style="text-decoration: underline;" href="https://fusejs.io/api/options.html" target="_blank">https://fusejs.io/api/options.html</a></span></p>
+                        </div>
+                        <h3 translate>system.environment.searchSettings.keysWeight</h3>
+                        <div class="row keys">
+                            <div ng-repeat="key in system.environment.searchSettings.keys track by $index" class="col-md-6 form-group key">
+                                <label class="col-md-6" for="{{key.key}}" class="form-label">{{key.label}}</label>
+                                <div class="col-md-6">
+                                    <input type="number" step="0.1" class="form-control" name="{{key.key}}" ng-model="key.weight" style="max-width: 132px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </ns-buttons>
     </form>

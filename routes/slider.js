@@ -6,16 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}   = require('../middleware/authentication');
-const ServiceSlider = require('../services/slider');
+const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
+const ServiceSlider    = require('../services/slider');
 
 module.exports = function (app) {
     app.post('/v2/sliders', getSliders);
     app.post('/v2/slider', getSlider);
     app.post('/v2/slider/:id', getSliderById);
-    app.put('/v2/slider/:id?', adminAuth, setSlider);
-    app.delete('/v2/slider/:id', adminAuth, deleteSlider);
-    app.delete('/v2/slider/:_id/:_id_item', adminAuth, deleteItemSlider);
+    app.put('/v2/slider/:id?', adminAuthRight('slider'), autoFillCode, setSlider);
+    app.delete('/v2/slider/:id', adminAuthRight('slider'), deleteSlider);
+    app.delete('/v2/slider/:_id/:_id_item', adminAuthRight('slider'), deleteItemSlider);
 };
 
 /**
@@ -23,7 +24,7 @@ module.exports = function (app) {
  */
 async function getSliders(req, res, next) {
     try {
-        const result = await ServiceSlider.getSliders(req.body.PostBody);
+        const result = await ServiceSlider.getSliders(req.body.PostBody, req.info);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -34,7 +35,7 @@ async function getSliders(req, res, next) {
  */
 async function getSliderById(req, res, next) {
     try {
-        const result = await ServiceSlider.getSliderById(req.params.id, req.body.PostBody);
+        const result = await ServiceSlider.getSliderById(req.params.id, req.body.PostBody, req.info);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -45,7 +46,7 @@ async function getSliderById(req, res, next) {
  */
 async function getSlider(req, res, next) {
     try {
-        const result = await ServiceSlider.getSlider(req.body.PostBody);
+        const result = await ServiceSlider.getSlider(req.body.PostBody, req.info);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -60,10 +61,10 @@ async function setSlider(req, res, next) {
         let result;
         if (req.body._id) {
             // We update the slider
-            result = await ServiceSlider.setSlider(req);
+            result = await ServiceSlider.setSlider(req.body._id, req.body);
         } else {
             // Creating the slider
-            result = await ServiceSlider.createSlider(req);
+            result = await ServiceSlider.createSlider(req.body);
         }
         return res.json(result);
     } catch (error) {
@@ -75,7 +76,7 @@ async function setSlider(req, res, next) {
  */
 async function deleteSlider(req, res, next) {
     try {
-        await ServiceSlider.deleteSlider(req);
+        await ServiceSlider.deleteSlider(req.params.id);
         return res.json({status: true});
     } catch (error) {
         return next(error);

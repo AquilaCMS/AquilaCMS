@@ -47,5 +47,6 @@
     "mandatory": "Mandatory",
     "optional": "Optional",
     "mandatoryOptionsNotSelected": "One mandatory option as no value !",
-    "optionsIncorrectValue": "One of the options doesn't have a correct value"
+    "optionsIncorrectValue": "One of the options doesn't have a correct value",
+    "variantUnavailable": "This variant is not available"
 }

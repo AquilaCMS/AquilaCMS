@@ -13,9 +13,9 @@ import {
     NSProductCard,
     NSProductCardList,
     NSProductStock,
-    imgDefaultBase64,
+    truncate,
     NSToast,
-    truncate
+    NSProductVariants
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
 import {
@@ -32,6 +32,24 @@ import Error from './_error';
  * PageProduct - Page produit (surcharge NSPageProduct)
  * @return {React.Component}
  */
+
+ const Video = ({ content }) => (
+    <iframe
+        width="560"
+        height="315"
+        src={`https://www.youtube.com/embed/${content}`}
+        style={{
+            maxWidth : '100%',
+            position : 'absolute',
+            left     : 0,
+            right    : 0,
+            margin   : 'auto',
+            top      : '50%',
+            transform: 'translateY(-50%)',
+        }}
+        title={content}
+    />
+);
 
 class PageProduct extends NSPageProduct {
     constructor(props) {
@@ -258,8 +276,8 @@ class PageProduct extends NSPageProduct {
                         isDefault = elementValue.control.default;
                     }
                     return <div>
-                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
-                        <input defaultChecked={isDefault} onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} value={elementValue.name[lang]} key={elementValue._id + index} type="checkbox" />
+                            <label>{elementValue.name[lang]}</label>
+                            <input defaultChecked={isDefault} onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} value={elementValue.name[lang]} key={elementValue._id + index} type="checkbox" />
                     </div>
                 }
             }));
@@ -267,8 +285,8 @@ class PageProduct extends NSPageProduct {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
                     return <>
-                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
-                        <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="number" />
+                            <label>{elementValue.name[lang]}</label>
+                            <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="number" />
                     </>
                 }
             }));
@@ -276,7 +294,7 @@ class PageProduct extends NSPageProduct {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
                     return <>
-                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <label>{elementValue.name[lang]}</label>
                         <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="text" />
                     </>
                 }
@@ -298,7 +316,7 @@ class PageProduct extends NSPageProduct {
                     }
                 </select >
             )
-        }
+        } else return null;
     }
 
     render = () => {
@@ -332,7 +350,7 @@ class PageProduct extends NSPageProduct {
             if (typeof modifier !== "undefined") {
                 priceFinal += modifier;
             }
-            return priceFinal.toFixed(2);
+            return priceFinal.aqlRound(2);
         };
         const {
             openModal,
@@ -350,15 +368,15 @@ class PageProduct extends NSPageProduct {
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
-        let imgDefault = imgDefaultBase64;
+        let imgDefault = `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/no-image/${product.slug[lang]}.jpg`;
         let imgAlt = 'illustration produit';
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/products/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${foundImg.name}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/products/516x400/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.images[0].name}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -396,9 +414,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.options) {
             options = product.options;
         }
-
-
-
+        const lightboxImages = product.images.sort((a, b) => a.position - b.position).map((item) => {
+            if (item.content) return { content: <Video content={item.content} />, alt: item.alt };
+            return { content: `/images/${product.selected_variant ? 'productsVariant' : 'products'}/max/${item._id}/${item.title}${item.extension}`, alt: item.alt };
+        });
 
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -479,10 +498,10 @@ class PageProduct extends NSPageProduct {
                                         {typeof window !== 'undefined' && isOpen
                                             && (
                                                 <Lightbox
-                                                    mainSrc={`/images/products/max-80/${product.images[photoIndex]._id}/${product.slug[lang]}${product.images[photoIndex].extension}`}
-                                                    nextSrc={`/images/products/max-80/${product.images[(photoIndex + 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + 1) % product.images.length].extension}`}
-                                                    prevSrc={`/images/products/max-80/${product.images[(photoIndex + product.images.length - 1) % product.images.length]._id}/${product.slug[lang]}${product.images[(photoIndex + product.images.length - 1) % product.images.length].extension}`}
-                                                    imageTitle={product.images[photoIndex].alt}
+                                                    mainSrc={lightboxImages[photoIndex].content}
+                                                    nextSrc={lightboxImages[(photoIndex + 1) % product.images.length].content}
+                                                    prevSrc={lightboxImages[(photoIndex + product.images.length - 1) % product.images.length].content}
+                                                    imageTitle={lightboxImages[photoIndex].alt}
                                                     onCloseRequest={() => this.setState({ isOpen: false })}
                                                     onMovePrevRequest={() => this.setState({ photoIndex: (photoIndex + product.images.length - 1) % product.images.length })}
                                                     onMoveNextRequest={() => this.setState({ photoIndex: (photoIndex + 1) % product.images.length })}
@@ -491,29 +510,27 @@ class PageProduct extends NSPageProduct {
                                         <ul className="list-images">
                                             {
                                                 product.images && product.images.filter((img) => !img.default) ? product.images.filter((img) => !img.default).map((img, index) => (
-                                                    <li key={img.url}>
+                                                    <li key={img._id} style={{ width: '82px', display: 'flex', alignItems: 'center' }}>
                                                         <a onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
-                                                            <img
-                                                                itemProp="image"
-                                                                src={`/images/products/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`}
-                                                                alt={img.alt}
-                                                            />
+                                                            {
+                                                                img.content ? <img src={`https://img.youtube.com/vi/${img.content}/0.jpg`} />
+                                                                : <img itemProp="image" src={`/images/${product.selected_variant ? 'productsVariant' : 'products'}/82x82/${img._id}/${product.slug[lang]}-${index}${img.extension}`} alt={img.alt} />
+                                                            }
                                                         </a>
                                                     </li>
                                                 )) : ''
-                                            }
+                                                }
                                         </ul>
                                     </div>
                                 </div>
-
                                 <div className="section__content">
                                     <div className="product__actions-mobile visible-xs-block">
                                         <NSProductStock stock={product.stock} />
                                         <div className="product-price">
-                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.aqlRound(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
 
                                             <strong>
-                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>{currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).aqlRound(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                             </strong>
                                         </div>
 
@@ -523,9 +540,9 @@ class PageProduct extends NSPageProduct {
                                             )
                                         }
 
-                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
+                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : (product.type === 'simple' ? this.addToCart : ''))} aria-label={t('product:ajoutPanier')}>
                                             <i className="ico-shopping-cart-white" />
-                                            <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
+                                            <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : (product.type === 'simple' ? t('product:ajoutPanier') : ''))}</span>
                                         </button>
                                     </div>{/* <!-- /.product__actions-mobile --> */}
 
@@ -539,14 +556,15 @@ class PageProduct extends NSPageProduct {
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
                                     }
+                                    <NSProductVariants product={product} hasVariants={this.hasVariants} selectVariant={this.selectVariant} t={t} />
                                     <div className="product-options" style={{ textAlign: "right" }}>
                                         {options.map((element) => {
                                             return (
-                                                <>
+                                                <React.Fragment key={element._id}>
                                                     <div>{element.name[lang]}{element.mandatory == true ? <span> ({t('product:mandatory')})</span> : <span> ({t('product:optional')})</span>}</div>
 
                                                     {this.renderOptions(element)}
-                                                </>
+                                                </React.Fragment>
                                             )
                                         })}
                                     </div>
@@ -583,7 +601,7 @@ class PageProduct extends NSPageProduct {
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
                                                 {
-                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.aqlRound(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
                                                 }
 
                                                 <strong>
@@ -619,9 +637,9 @@ class PageProduct extends NSPageProduct {
                                             {
                                                 (!product.stock || (product.stock && product.stock.status !== 'epu'))
                                                 && (
-                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
+                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : (product.type === 'simple' ? this.addToCart : ''))} aria-label={t('product:ajoutPanier')}>
                                                         <i className="ico-shopping-cart-white" />
-                                                        <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
+                                                        <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : (product.type === 'simple' ? t('product:ajoutPanier') : ''))}</span>
                                                     </button>
                                                 )
                                             }
@@ -631,7 +649,7 @@ class PageProduct extends NSPageProduct {
                             </section>{/* <!-- /.section-product-main --> */}
 
                             {
-                                product.description1 && product.description1.length > 0 && (
+                                product.description1 && (
                                     <section className="section-product-description">
                                         <header className="section__head">
                                             <h4>{product.description1.title ? product.description1.title : null}</h4>
@@ -757,7 +775,7 @@ class PageProduct extends NSPageProduct {
                                             <div className="rating-value">
                                                 {
                                                     product.reviews && product.reviews.average
-                                                        ? <strong>{product.reviews.average.toFixed(1)}/5</strong>
+                                                        ? <strong>{product.reviews.average.aqlRound(1)}/5</strong>
                                                         : t('product:noReview')
                                                 }
                                             </div>{/* <!-- /.rating-value --> */}
@@ -901,10 +919,10 @@ class PageProduct extends NSPageProduct {
                                     <h3 className="modifier-popup__header">{t('product:composeMenu')}</h3>
                                     <form ref={(form) => this.formMenu = form}>
                                         <div className="form__body">
-                                            <NSBundleProduct product={product} />
+                                            <NSBundleProduct product={product} t={t} />
 
                                             <div className="product-price">
-                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} {currencySymbol} </strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).aqlRound(2)} €</strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">

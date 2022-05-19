@@ -1,8 +1,8 @@
 const AdminListControllers = angular.module("aq.adminList.controllers", []);
 
 AdminListControllers.controller("AdminCtrl", [
-    "$scope", "AdminScroll", "$modal", "ClientV2", "$location",
-    function ($scope, AdminScroll, $modal, ClientV2, $location) {
+    "$scope", "$modal", "ClientV2", "$location",
+    function ($scope, $modal, ClientV2, $location) {
         $scope.filter = {};
         function init() {
             $scope.sortType = "lastname"; // set the default sort type
@@ -94,12 +94,12 @@ AdminListControllers.controller("AdminDeleteCtrl", [
 ]);
 
 AdminListControllers.controller("AdminNewCtrl", [
-    "$scope", "AdminNew", "$location", "toastService", "ClientV2", "$translate", "AdminListApi", "$rootScope",
-    function ($scope, AdminNew, $location, toastService, ClientV2, $translate, AdminListApi, $rootScope) {
+    "$scope", "$location", "toastService", "ClientV2", "$translate", "AdminListApi", "$rootScope",
+    function ($scope, $location, toastService, ClientV2, $translate, AdminListApi, $rootScope) {
         $scope.user = { accessList: [] };
         $scope.rights = [];
 
-        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 0, structure: '*' } }, function (data) {
             $scope.rights = data.datas;
         });
 
@@ -153,7 +153,7 @@ AdminListControllers.controller("AdminDetailCtrl", [
             $scope.user = client;
             $scope.user.oldEmail = client.email;
         });
-        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 0, structure: '*' } }, function (data) {
             $scope.rights = data.datas;
         });
 

@@ -43,7 +43,7 @@ const genSitemap = async () => {
 
         try {
             const appUrl     = global.envConfig.environment.appUrl;
-            const languages  = await Languages.find({status: 'visible'});
+            const languages  = await Languages.find({status: 'visible'}).lean();
             const _languages = {};
             for (let i = 0, leni = languages.length; i < leni; i++) {
                 _languages[languages[i].code] = languages[i];
@@ -57,7 +57,7 @@ const genSitemap = async () => {
                 url : []
             };
 
-            const statics = await Statics.find({active: true});
+            const statics = await Statics.find({active: true}).lean();
 
             // Loop static page
             for (let i = 0, leni = statics.length; i < leni; i++) {
@@ -99,7 +99,7 @@ const genSitemap = async () => {
                 }
             }
 
-            const categories = await Categories.find({active: true, action: 'catalog'});
+            const categories = await Categories.find({active: true, action: 'catalog'}).lean();
 
             for (let i = 0, leni = categories.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -134,7 +134,7 @@ const genSitemap = async () => {
                 }
             }
 
-            const products = await Products.find({active: true, _visible: true});
+            const products = await Products.find({active: true, _visible: true}).lean();
 
             for (let i = 0, leni = products.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -172,7 +172,7 @@ const genSitemap = async () => {
                 }
             }
 
-            const articles = await News.find({isVisible: true});
+            const articles = await News.find({isVisible: true}).lean();
 
             for (let i = 0, leni = articles.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -236,7 +236,7 @@ const removeSitemap = async () => {
 * Allow / Disallow seo in robots.txt
 */
 const manageRobotsTxt = async (allow = true) => {
-    const filePath  = path.join( getUploadDirectory(), 'robots.txt');
+    const filePath  = path.join(global.appRoot, getUploadDirectory(), 'robots.txt');
     let contentFile = 'User-agent: *\nAllow: /';
 
     if (!allow) {

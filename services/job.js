@@ -45,7 +45,10 @@ const initAgendaDB = async () => {
                 'Clean cache',
                 'Remove temp file',
                 'Remove previews',
-                'Mail to pending carts'
+                'Mail to pending carts',
+                'Delete orders\' failed payments',
+                'RGPD bills',
+                'RGPD users'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
             // If a "system" job does not exist in the database then it is created
@@ -66,20 +69,29 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', {fr: 'Annulation des commandes en attente de paiement', en: 'Cancellation of orders awaiting payment'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cohérence produits') {
                             await setJob(undefined, tJobsSystem[6], '0 1 1 * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true);
-                        /* } else if (tJobsSystem[i] === 'Cohérence données') {
-                        await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
-                    */ } else if (tJobsSystem[i] === 'Build stats') {
+                        } else if (tJobsSystem[i] === 'Cohérence données') {
+                            await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Build stats') {
                             await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', {fr: 'Construction des statistiques de la veille', en: 'Construction of the statistics of the previous day'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cache requests clean') {
                             await setJob(undefined, tJobsSystem[9], '0 */6 * * *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
-                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove temp file') {
-                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove previews') {
-                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
+                        } else if (tJobsSystem[i] === 'Delete orders\' failed payments') {
+                            await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/payments/deleteFailedPayment', {
+                                fr : 'Supprime les anciens paiements echoués des anciennes commandes',
+                                en : 'Remove failed payments from old orders'
+                            }, 'service', 'system', '', true, '');
+                        } else if (tJobsSystem[i] === 'RGPD bills') {
+                            await setJob(undefined, tJobsSystem[15], '* * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'RGPD users') {
+                            await setJob(undefined, tJobsSystem[16], '* * 1 * * *', '/services/rgpd/checkLastConnexion', {fr: 'Anonymise les utilisateurs inactifs de plus de 3 ans pour le RGPD', en: 'Anonymizes inactive users older than 3 years for RGPD'}, 'service', 'system', '', true);
                         }
                     } catch (error) {
                         console.error(error);

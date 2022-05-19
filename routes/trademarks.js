@@ -6,15 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}       = require('../middleware/authentication');
-const trademarkServices = require('../services/trademarks');
+const {adminAuth}          = require('../middleware/authentication');
+const {autoFillCode}       = require('../middleware/autoFillCode');
+const {securityForceActif} = require('../middleware/security');
+const trademarkServices    = require('../services/trademarks');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/trademarks', getTrademarks);
-    app.post('/v2/trademark', getTrademark);
-    app.post('/v2/trademark/:id', getTrademarkById);
-    app.put('/v2/trademark', adminAuth, setTrademark);
+    app.post('/v2/trademarks', securityForceActif(['active']), getTrademarks);
+    app.post('/v2/trademark', securityForceActif(['active']), getTrademark);
+    app.post('/v2/trademark/:id', adminAuth, getTrademarkById);
+    app.put('/v2/trademark', adminAuth, autoFillCode, setTrademark);
     app.delete('/v2/trademark/:id', adminAuth, deleteTrademark);
 };
 /* eslint-enable no-use-before-define */
@@ -58,7 +60,7 @@ async function getTrademarkById(req, res, next) {
  */
 async function setTrademark(req, res, next) {
     try {
-        const result = await trademarkServices.saveTrademark(req);
+        const result = await trademarkServices.saveTrademark(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -70,7 +72,7 @@ async function setTrademark(req, res, next) {
 async function deleteTrademark(req, res, next) {
     // We remove the trademark from the products
     try {
-        const result = await trademarkServices.deleteTrademark(req);
+        const result = await trademarkServices.deleteTrademark(req.params.id);
         return res.json(result);
     } catch (error) {
         return next(error);

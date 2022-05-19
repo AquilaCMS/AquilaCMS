@@ -2,110 +2,116 @@
     <form name="form" class="form-horizontal" role="form" ng-submit="save(setAttribute)">
         <ns-buttons is-edit-mode="true" save-and-quit="save(setAttribute, true)" disable-save="disableSave" return-path="/{{type}}/setAttributes"
             remove="remove(setAttribute._id)" hide-remove="setAttribute.code == 'defaut'" form="form">
-            <div class="scrollmenu">
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <a data-toggle="tab" target="_self" ng-click="changeTab('setAttributes')" translate>setAttribute.detail.tab.setAttr</a>
-                    </li>
-                    <li ng-show="type === 'products'">
-                        <a data-toggle="tab" target="_self" ng-click="changeTab('setQuestions')" translate>setAttribute.detail.tab.question</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="tab-content">
-                <div ng-show="tabActive === 'setAttributes'">
-                    <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label" translate>setAttribute.detail.code</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" id="code" ng-model="setAttribute.code" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label" translate>setAttribute.detail.nom</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" id="name" ng-model="setAttribute.name" required>
-                        </div>
-                    </div>
-                    <br />
-
-                    <a ng-if="type === 'products'" href="#/products/attributes/new/{{ setAttribute.code }}" class="btn btn-default" translate>setAttribute.detail.createAttr</a>
-                    <a ng-if="type === 'users'"  href="#/users/attributes/new/{{ setAttribute.code }}" class="btn btn-default" translate>setAttribute.detail.createAttr</a>
-                    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" style="margin-top: 20px;">
-                        <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
-                            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                            <thead>
-                                <tr role="row" class="pointer">
-                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
-                                        style="width: 200px;" aria-sort="ascending" translate>
-                                        setAttribute.detail.code
-                                    </th>
-                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
-                                        style="width: 200px;" aria-sort="ascending">
-                                        <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
-                                            setAttribute.detail.nom
-                                            <span ng-show="sortType == 'name' && !sortReverse" class="ico-chevron-down"></span>
-                                            <span ng-show="sortType == 'name' && sortReverse" class="ico-chevron-up"></span>
-                                        </a>
-                                    </th>
-                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
-                                        style="width: 200px;" aria-sort="ascending" translate>
-                                        setAttribute.detail.type
-                                    </th>
-                                    <!--<th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
-                                                style="width: 200px;">
-                                                Actions
-                                            </th>-->
-                                </tr>
-                            </thead>
-                            <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()"
-                                infinite-scroll-distance="1" infinite-scroll-immediate-check="true" infinite-scroll-disabled='scroller.busy'>
-                                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToAttributeDetails(attribute.code,setAttribute.code)"
-                                    ng-repeat="attribute in att | orderBy:sortType:sortReverse">
-                                    <td data-label="Code :" class="sorting_1">{{attribute.code}}</td>
-                                    <td data-label="Nom :" class="sorting_1">{{attribute.translation[defaultLang].name}}</td>
-                                    <td data-label="Type :" class="sorting_1">{{attribute.type}}</td>
-                                    <!--<td class=" ">
-                                                <a href="#/attributes/{{attribute.code}}" class="btn btn-blue btn-with-icon">
-                                                    <i class="ico-magnifier-primary"></i>
-                                                    <span class="text">Modifier</span>
-                                                </a>
-                                            </td>-->
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            
+            <div hook-attributesset-detail data="setAttribute">
+            
+                <div class="scrollmenu">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" target="_self" ng-click="changeTab('setAttributes')" translate>setAttribute.detail.tab.setAttr</a>
+                        </li>
+                        <li ng-show="type === 'products'">
+                            <a data-toggle="tab" target="_self" ng-click="changeTab('setQuestions')" translate>setAttribute.detail.tab.question</a>
+                        </li>
+                    </ul>
                 </div>
-                <div ng-show="tabActive === 'setQuestions' && type === 'products'">
-                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-                    <div class="form-group">
-                        <div class="col-sm-11" translate>
-                            setAttribute.detail.descriptionQuestion
+                <div class="tab-content">
+                    <div ng-show="tabActive === 'setAttributes'">
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label" translate>setAttribute.detail.code</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="code" ng-model="setAttribute.code" disabled>
+                            </div>
                         </div>
-                        <div class="col-sm-11">
-                            <div class="col-sm-5">
-                                <label for="questions" translate>setAttribute.detail.addQuestion</label>
-                                <button class="btn-add" type="button" ng-click="addQuestion()" style="margin-left: 10px;">
-                                    <i class="fa fa-plus"></i>
-                                </button>
-                                <div ng-repeat="question in setAttribute.questions track by $index" >
-                                    <div style="display: flex; margin-top: 10px">
-                                        <input  type="text" class="form-control" id="questions" name="questions" placeholder="Critère de notation de l'article"
-                                                ng-model="setAttribute.questions[$index].translation[lang].question">
-                                        <button type="button" class="no-move btn-remove" ng-click="removeQuestion($index)" style="margin-left: 10px;">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </button>
+                        <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label" translate>setAttribute.detail.nom</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="name" ng-model="setAttribute.name" required>
+                            </div>
+                        </div>
+                        <br />
+
+                        <a ng-if="type === 'products'" href="#/products/attributes/new" class="btn btn-default" translate>setAttribute.detail.createAttr</a>
+                        <a ng-if="type === 'users'"  href="#/users/attributes/new" class="btn btn-default" translate>setAttribute.detail.createAttr</a>
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" style="margin-top: 20px;">
+                            <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+                                id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                                <thead>
+                                    <tr role="row" class="pointer">
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            style="width: 200px;" aria-sort="ascending" translate>
+                                            setAttribute.detail.code
+                                        </th>
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            style="width: 200px;" aria-sort="ascending">
+                                            <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
+                                                setAttribute.detail.nom
+                                                <span ng-show="sortType == 'name' && !sortReverse" class="ico-chevron-down"></span>
+                                                <span ng-show="sortType == 'name' && sortReverse" class="ico-chevron-up"></span>
+                                            </a>
+                                        </th>
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                            style="width: 200px;" aria-sort="ascending" translate>
+                                            setAttribute.detail.type
+                                        </th>
+                                        <!--<th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                                                    style="width: 200px;">
+                                                    Actions
+                                                </th>-->
+                                    </tr>
+                                </thead>
+                                <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()"
+                                    infinite-scroll-distance="1" infinite-scroll-immediate-check="true" infinite-scroll-disabled='scroller.busy'>
+                                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToAttributeDetails(attribute.code,setAttribute.code)"
+                                        ng-repeat="attribute in att | orderBy:sortType:sortReverse">
+                                        <td data-label="Code :" class="sorting_1">{{attribute.code}}</td>
+                                        <td data-label="Nom :" class="sorting_1">{{attribute.translation[defaultLang].name}}</td>
+                                        <td data-label="Type :" class="sorting_1">{{attribute.type}}</td>
+                                        <!--<td class=" ">
+                                                    <a href="#/attributes/{{attribute.code}}" class="btn btn-blue btn-with-icon">
+                                                        <i class="ico-magnifier-primary"></i>
+                                                        <span class="text">Modifier</span>
+                                                    </a>
+                                                </td>-->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div ng-show="tabActive === 'setQuestions' && type === 'products'">
+                        <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+                        <div class="form-group">
+                            <div class="col-sm-11" translate>
+                                setAttribute.detail.descriptionQuestion
+                            </div>
+                            <div class="col-sm-11">
+                                <div class="col-sm-5">
+                                    <label for="questions" translate>setAttribute.detail.addQuestion</label>
+                                    <button class="btn-add" type="button" ng-click="addQuestion()" style="margin-left: 10px;">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                    <div ng-repeat="question in setAttribute.questions track by $index" >
+                                        <div style="display: flex; margin-top: 10px">
+                                            <input  type="text" class="form-control" id="questions" name="questions" placeholder="Critère de notation de l'article"
+                                                    ng-model="setAttribute.questions[$index].translation[lang].question">
+                                            <button type="button" class="no-move btn-remove" ng-click="removeQuestion($index)" style="margin-left: 10px;">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <br />
+                <!-- <div style="text-align: right">
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                    <button type="button" class="btn btn-danger" ng-click="remove(setAttribute.code)" ng-if="setAttribute.code != 'defaut'">Supprimer</button>
+                </div> -->
+
             </div>
-            <br />
-            <!-- <div style="text-align: right">
-                <button type="submit" class="btn btn-success">Enregistrer</button>
-                <button type="button" class="btn btn-danger" ng-click="remove(setAttribute.code)" ng-if="setAttribute.code != 'defaut'">Supprimer</button>
-            </div> -->
+
         </ns-buttons>
         <style>
                 .valid{

@@ -225,52 +225,41 @@ class CartSuccess extends React.Component {
                                                                                 let descPromoT = '';
                                                                                 if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
                                                                                     // On check si le produit courant a recu une promo
-                                                                                    const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
+                                                                                    const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
                                                                                     if (prdPromoFound) {
                                                                                         basePrice = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
                                                                                         descPromo = (
-                                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePrice).toFixed(2)}€</span></del>
+                                                                                            <del><span className="price" style={{ color: '#979797' }}>{(basePrice).aqlRound(2)}€</span></del>
                                                                                         );
                                                                                         descPromoT = (
-                                                                                            <><del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).toFixed(2)}€</span></del><br /></>
+                                                                                            <><del><span className="price" style={{ color: '#979797' }}>{(basePrice * item.quantity).aqlRound(2)}€</span></del><br /></>
                                                                                         );
                                                                                     }
                                                                                 }
-                                                                                let imgDefault = imgDefaultBase64;
+                                                                                let imgDefault = `/images/${item.selected_variant ? 'productsVariant' : 'products'}/82x82/${item.image}/${item.slug}.jpg`;
                                                                                 let imgAlt = 'illustration produit';
-                                                                                if (item.id.images && item.id.images.length) {
-                                                                                    const foundImg = item.id.images.find((img) => img.default);
-                                                                                    if (foundImg) {
-                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = foundImg.alt || imgAlt;
-                                                                                    } else {
-                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = item.id.images[0].alt || imgAlt;
-                                                                                    }
-                                                                                }
                                                                                 return (
-                                                                                    <tr key={item.id._id} className="cart-item cart-item--small">
+                                                                                    <tr key={item._id} className="cart-item cart-item--small">
                                                                                         <td>
                                                                                             <div className="cart__container">
                                                                                                 <figure className="cart__image" style={{ width: '82px' }}>
                                                                                                     <img src={imgDefault} alt={imgAlt} />
                                                                                                 </figure>
-
                                                                                                 <h5 className="cart__title">
-                                                                                                    {item.id.name}
+                                                                                                    {(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id.name)}
                                                                                                     {
                                                                                                         item.selections && <ul style={{ fontSize: '13px' }}>
                                                                                                             {
                                                                                                                 item.selections.map((section) => (
                                                                                                                     section.products.map((productSection, indexSel) => (
-                                                                                                                        <li style={{ listStyle: 'none' }} key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                        <li style={{ listStyle: 'none' }} key={indexSel}>{productSection.name} {`${(item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                            (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
                                                                                                                                 '+' :
                                                                                                                                 '') +
-                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
                                                                                                                             ''
                                                                                                                             }`}</li>
                                                                                                                     ))
@@ -289,22 +278,20 @@ class CartSuccess extends React.Component {
                                                                                                                     ? (
                                                                                                                         <del><span
                                                                                                                             className="price__old"
-                                                                                                                        >{item.price.unit[taxDisplay].toFixed(2)} €</span>
+                                                                                                                        >{item.price.unit[taxDisplay].aqlRound(2)} €</span>
                                                                                                                         </del>
                                                                                                                     )
                                                                                                                     : descPromo
                                                                                                             }
-                                                                                                            <span>{this.getUnitPrice(item).toFixed(2)}</span> €
+                                                                                                            <span>{this.getUnitPrice(item).aqlRound(2)}</span> €
                                                                                                         </span>
                                                                                                     </span>
                                                                                                 </h5>
                                                                                             </div>
                                                                                         </td>
-
                                                                                         <td>
                                                                                             <span className="cart__qty">{item.quantity}</span>
                                                                                         </td>
-
                                                                                         <td className="hidden-sm">
                                                                                             <span className="price cart__price-single">
                                                                                                 {
@@ -312,12 +299,12 @@ class CartSuccess extends React.Component {
                                                                                                         ? (
                                                                                                             <del><span
                                                                                                                 className="price__old"
-                                                                                                            >{item.price.unit[taxDisplay].toFixed(2)} €</span>
+                                                                                                            >{item.price.unit[taxDisplay].aqlRound(2)} €</span>
                                                                                                             </del>
                                                                                                         )
                                                                                                         : descPromo
                                                                                                 }
-                                                                                                <span>{this.getUnitPrice(item).toFixed(2)} €</span>
+                                                                                                <span>{this.getUnitPrice(item).aqlRound(2)} €</span>
                                                                                             </span>
                                                                                         </td>
                                                                                         <td>
@@ -327,14 +314,14 @@ class CartSuccess extends React.Component {
                                                                                                         ? (
                                                                                                             <><del><span
                                                                                                                 className="price__old"
-                                                                                                            >{(item.price.unit[taxDisplay] * item.quantity).toFixed(2)} €</span>
+                                                                                                            >{(item.price.unit[taxDisplay] * item.quantity).aqlRound(2)} €</span>
                                                                                                             </del><br /></>
                                                                                                         )
                                                                                                         : descPromoT
                                                                                                 }
-                                                                                                <span>{(this.getUnitPrice(item) * item.quantity).toFixed(2)}</span> €
+                                                                                                <span>{(this.getUnitPrice(item) * item.quantity).aqlRound(2)}</span> €
                                                                                                 {taxDisplay === 'ati' && (
-                                                                                                    <span className="price__meta"><br />{t('success:page.taxes_includes')} : <span>{((this.getUnitPrice(item, true) * item.quantity) - (this.getUnitPrice(item, false) * item.quantity)).toFixed(2)}</span> €
+                                                                                                    <span className="price__meta"><br />{t('success:page.taxes_includes')} : <span>{((this.getUnitPrice(item, true) * item.quantity) - (this.getUnitPrice(item, false) * item.quantity)).aqlRound(2)}</span> €
                                                                                                     </span>
                                                                                                 )}
                                                                                             </span>
@@ -375,10 +362,10 @@ class CartSuccess extends React.Component {
                                                                             {
                                                                                 order.promos && order.promos.length > 0 ? order.promos.map((promo, index) => {
                                                                                     if (index === 0) {
-                                                                                        priceBefore.push((order.priceTotal[taxDisplay] + promo[`discount${taxDisplay.toUpperCase()}`]).toFixed(2));
+                                                                                        priceBefore.push((order.priceTotal[taxDisplay] + promo[`discount${taxDisplay.toUpperCase()}`]).aqlRound(2));
                                                                                     } else {
                                                                                         const find = index - 1;
-                                                                                        priceBefore.push((parseFloat(priceBefore[find]) + promo[`discount${taxDisplay.toUpperCase()}`]).toFixed(2));
+                                                                                        priceBefore.push((parseFloat(priceBefore[find]) + promo[`discount${taxDisplay.toUpperCase()}`]).aqlRound(2));
                                                                                     }
                                                                                     return '';
                                                                                 }) : ''
@@ -392,7 +379,7 @@ class CartSuccess extends React.Component {
                                                                                             <br />
                                                                                             <span>
                                                                                                 <small style={{ color: '#dc5d45' }}>
-                                                                                                    {t('success:page.discount_code')} ({promo.code}) : -{promo[`discount${taxDisplay.toUpperCase()}`].toFixed(2)}€<br />
+                                                                                                    {t('success:page.discount_code')} ({promo.code}) : -{promo[`discount${taxDisplay.toUpperCase()}`].aqlRound(2)}€<br />
                                                                                                     {promo.description}
                                                                                                 </small>
                                                                                             </span>
@@ -401,12 +388,12 @@ class CartSuccess extends React.Component {
                                                                                 }) : ''
                                                                             }
                                                                             <h6 className="table__total-value">
-                                                                                {t(`success:page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].toFixed(2)}€
+                                                                                {t(`success:page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].aqlRound(2)}€
                                                                                 <br />
                                                                                 {
                                                                                     taxDisplay === 'ati'
                                                                                     && <small style={{ color: '#dc5d45' }}>
-                                                                                        {t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).toFixed(2)} €
+                                                                                        {t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).aqlRound(2)} €
                                                                                     </small>
                                                                                 }
                                                                                 {
@@ -414,7 +401,7 @@ class CartSuccess extends React.Component {
                                                                                         ? <>
                                                                                             <br />
                                                                                             <small style={{ color: '#dc5d45' }}>
-                                                                                                {t(`success:page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).toFixed(2)} €
+                                                                                                {t(`success:page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).aqlRound(2)} €
                                                                                             </small>
                                                                                         </>
                                                                                         : ''
@@ -424,7 +411,7 @@ class CartSuccess extends React.Component {
                                                                                         ? <>
                                                                                             <br />
                                                                                             <small style={{ color: '#dc5d45' }}>
-                                                                                                {t('success:page.additionnal_fees')}: {order.additionnalFees[taxDisplay].toFixed(2)} €
+                                                                                                {t('success:page.additionnal_fees')}: {order.additionnalFees[taxDisplay].aqlRound(2)} €
                                                                                             </small>
                                                                                         </>
                                                                                         : ''

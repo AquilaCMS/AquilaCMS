@@ -21,7 +21,7 @@
             </div>
             <br/>
             <div class="tab-content">
-                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'">
+                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'" hook-shipment-detail data="shipment">
 
                     <div class="form-group">
                         <label for="name" class="col-sm-2 control-label" translate>paymentMethod.detail.actif</label>
@@ -36,7 +36,7 @@
                             <input type="text" class="form-control" id="code" translate translate-attr-placeholder='shipment.detail.ph1'
                                 ng-model="shipment.code"
                                 name="code"
-                                required>
+                                >
                         </div>
                     </div>
                     <div class="form-group">
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="preparationtime" class="col-sm-2 control-label" translate>shipment.detail.trait</label>
+                        <label for="preparationtime" class="col-sm-2 control-label" translate>shipment.detail.traitement</label>
                         <div class="col-sm-6 col-lg-2">
                             <input name="delay" type="number" class="form-control" min="0" id="preparationtime" ng-model="shipment.preparation.delay">
                         </div>
@@ -95,59 +95,11 @@
                             ng-model="shipment.translation[lang].information"></textarea>
                         </div>
                     </div>
-
-                    <div ng-if="shipment.type === 'RELAY_POINT'">
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label" translate>shipment.detail.adresse</label>
-                            <div class="col-sm-7 col-lg-5">
-                                <input type="text" class="form-control" id="address" translate translate-attr-placeholder='shipment.detail.ph2'
-                                    ng-model="shipment.address.name" name="address.name">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label"></label>
-                            <div class="col-sm-7 col-lg-5">
-                                <input type="text" class="form-control" id="address2" translate translate-attr-placeholder='shipment.detail.ph5'
-                                    ng-model="shipment.address.line1" name="address.line1" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label"></label>
-                            <div class="col-sm-7 col-lg-5">
-                                <input type="text" class="form-control" id="address3" translate translate-attr-placeholder='shipment.detail.ph6'
-                                    ng-model="shipment.address.line2" name="address.line2">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label"></label>
-                            <div class="col-sm-7 col-lg-5">
-                                <input type="text" class="form-control" id="address4" translate translate-attr-placeholder='shipment.detail.ph7'
-                                    ng-model="shipment.address.zipcode" name="address.zipcode" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label"></label>
-                            <div class="col-sm-7 col-lg-5">
-                                <input type="text" class="form-control" id="address5" translate translate-attr-placeholder='shipment.detail.ph8'
-                                    ng-model="shipment.address.city" name="address.city" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="address" class="col-sm-2 control-label"></label>
-                            <div class="col-sm-7 col-lg-5">
-                                <select name="pays" id="country1" class="form-control"
-                                    ng-model="shipment.address.isoCountryCode"
-                                    ng-options="country.code as country.translation[lang].name for country in countries.datas"
-                                    ng-change="setCountryName()">
-                                    <option value="" translate>shipment.detail.pays</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div bind-html-compile="shipment.component_template"></div>
                 </div>
 
-                <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">
+                <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'" hook-shipment-detail-country data="shipment">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -202,7 +154,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'">
+                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'" hook-shipment-detail-price data="shipment">
                     <table class="table table-striped">
                         <thead>
                             <tr>

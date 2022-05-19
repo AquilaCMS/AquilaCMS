@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Head from 'next/head';
-import nsModules from 'modules/list_modules';
+import nsModules from '../modules/list_modules';
 import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
 
@@ -66,29 +66,10 @@ function listModulePage(type, props = {}) {
 }
 
 /**
- * Liste les modules et recupere les finction de hook en fonction du type
- * @param {*} type
- * @returns {React.Component}
- */
-async function getModulesHookFunctionsByType(type = 'all') {
-    let modulesFileTheme = nsModules.map((m) => m.jsx);
-    if (type !== 'all') modulesFileTheme = nsModules ? nsModules.filter((m) => m.type === type).map((m) => m.jsx) : [];
-    const hooksFunctions = {};
-    for (const moduleFileTheme of modulesFileTheme) {
-        const nsModuleKeys = Object.keys(moduleFileTheme).filter((key) => key !== 'default');
-        for (const nsModuleKey of nsModuleKeys) {
-            if (hooksFunctions[nsModuleKey] === undefined) hooksFunctions[nsModuleKey] = [];
-            hooksFunctions[nsModuleKey].push(async () => await moduleFileTheme[nsModuleKey]());
-        }
-    }
-    return hooksFunctions;
-}
-
-/**
  * Return the currency symbol
  * @returns {string}
  */
-function getCurrencySymbol() {
+ function getCurrencySymbol() {
     return "€";
 }
 
@@ -132,10 +113,9 @@ function caculateNewPrice(product, options, tax = "ati") {
 }
 
 export {
-    countProductInCartByCategory,
-    countProductInCartByProduct,
+    countProductInCartByCategory, 
+    countProductInCartByProduct, 
     listModulePage,
-    getModulesHookFunctionsByType,
     getCurrencySymbol,
     caculateNewPrice
 };

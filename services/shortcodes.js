@@ -13,7 +13,7 @@ const {Shortcodes} = require('../orm/models');
  * Get shortcodes
  */
 exports.getShortcodes = async function () {
-    return Shortcodes.find({});
+    return Shortcodes.find({}).lean();
 };
 
 /*
@@ -160,7 +160,7 @@ exports.initDBValues = async () => {
                         },
                         {
                             props       : 'adaptiveHeight',
-                            description : 'Ajuster automatiquement la hauteur du carousel aux blockcms',
+                            description : 'Ajuster automatiquement la hauteur du carrousel aux blockcms',
                             type        : 'text'
                         },
                         {
@@ -227,10 +227,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-blog-articles',
             translation : {
                 fr : {
-                    description : 'Affiche le listing des articles / posts du blog', name : 'Listing d\'articles du blog'
+                    description : 'Affiche le listing des articles / posts du blog',
+                    name        : 'Listing d\'articles du blog'
                 },
                 en : {
-                    description : 'Displays the list of posts', name : 'Listing of articles'
+                    description : 'Displays the list of posts',
+                    name        : 'Listing of articles'
                 }
             }
         },
@@ -239,10 +241,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-breadcrumb',
             translation : {
                 fr : {
-                    description : 'Affiche un fil d\'ariane sur le site (aide à la navigation)', name : 'Breadcrumb (fil d\'ariane)'
+                    description : 'Affiche un fil d\'ariane sur le site (aide à la navigation)',
+                    name        : 'Breadcrumb (fil d\'ariane)'
                 },
                 en : {
-                    description : 'Display a breadcrumb', name : 'Breadcrumb'
+                    description : 'Display a breadcrumb',
+                    name        : 'Breadcrumb'
                 }
             }
         },
@@ -251,10 +255,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-btn-login',
             translation : {
                 fr : {
-                    description : 'Affichage du bouton de Login / Mon Compte', name : 'Bouton'
+                    description : 'Affichage du bouton de Login / Mon Compte',
+                    name        : 'Bouton'
                 },
                 en : {
-                    description : 'Display of the Login / My Account button', name : 'Button'
+                    description : 'Display of the Login / My Account button',
+                    name        : 'Button'
                 }
             }
         },
@@ -263,10 +269,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-cart-count',
             translation : {
                 fr : {
-                    description : 'Affiche une image \'panier\' avec le nombre de produit affiché', name : 'Panier (avec compteur)'
+                    description : 'Affiche une image \'panier\' avec le nombre de produit affiché',
+                    name        : 'Panier (avec compteur)'
                 },
                 en : {
-                    description : 'Displays a \'cart\' logo with the number of products displayed', name : 'Cart count'
+                    description : 'Displays a \'cart\' logo with the number of products displayed',
+                    name        : 'Cart count'
                 }
             }
         },
@@ -358,7 +366,7 @@ exports.initDBValues = async () => {
                 },
                 en : {
                     description : 'Displays the validation button of a contact form (form)',
-                    name        : 'Block Slider',
+                    name        : 'Form Validator',
                     properties  : [
                         {
                             props       : 'button-title',
@@ -447,7 +455,7 @@ exports.initDBValues = async () => {
                 },
                 en : {
                     description : 'Listing of thumbnails products',
-                    name        : 'Block Slider',
+                    name        : 'List of product labels',
                     properties  : [
                         {
                             props       : 'value',
@@ -523,10 +531,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-top-button',
             translation : {
                 fr : {
-                    description : 'Affiche un petit bouton pour rediriger vers le haut de la page', name : 'Top Button'
+                    description : 'Affiche un petit bouton pour rediriger vers le haut de la page',
+                    name        : 'Top Button'
                 },
                 en : {
-                    description : 'Displays a small button to redirect to the top of the page', name : 'Top Button'
+                    description : 'Displays a small button to redirect to the top of the page',
+                    name        : 'Top Button'
                 }
             }
         }, {
@@ -534,10 +544,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-lang',
             translation : {
                 fr : {
-                    description : 'Affiche un système de choix de langue', name : 'Langue'
+                    description : 'Affiche un système de choix de langue',
+                    name        : 'Langue'
                 },
                 en : {
-                    description : 'Displays a language selection system', name : 'Langue'
+                    description : 'Displays a language selection system',
+                    name        : 'Langue'
                 }
             }
         },
@@ -546,10 +558,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-login',
             translation : {
                 fr : {
-                    description : 'Affiche un systeme complet d\'identification', name : 'Identification'
+                    description : 'Affiche un systeme complet d\'identification',
+                    name        : 'Identification'
                 },
                 en : {
-                    description : 'Displays a complete identification system', name : 'Login'
+                    description : 'Displays a complete identification system',
+                    name        : 'Login'
                 }
             }
         }, {
@@ -894,12 +908,12 @@ exports.initDBValues = async () => {
             tag         : 'ns-slider',
             translation : {
                 fr : {
-                    description : 'Carousel d\'image',
-                    name        : 'Carousel',
+                    description : 'Carrousel d\'image',
+                    name        : 'Carrousel',
                     properties  : [
                         {
                             props       : 'ns-code',
-                            description : 'Code du carousel',
+                            description : 'Code du carrousel',
                             type        : 'text'
                         }
                     ]

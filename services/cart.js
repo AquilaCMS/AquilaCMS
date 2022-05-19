@@ -8,6 +8,7 @@
 
 const moment            = require('moment');
 const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
 const {
     Cart,
     Orders,
@@ -15,9 +16,9 @@ const {
     Languages,
     Configuration
 }                       = require('../orm/models');
-const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
 const utilsDatabase     = require('../utils/database');
+const utilsModules      = require('../utils/modules');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
@@ -39,7 +40,7 @@ const getCarts = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
-const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
+const getCartById = async (id, PostBody = null, user = null) => {
     if (PostBody && PostBody.structure) {
         // Need to have all the fields for the discount rules
         const structure = PostBody.structure;
@@ -52,19 +53,8 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const products        = cart.items.map((product) => product.id);
-        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
-        if (productsCatalog) {
-            for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') {
-                    cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-                }
-            }
-            cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
-            await cart.save();
-        }
         if (user && !user.isAdmin) {
-            cart = await linkCustomerToCart(cart, req);
+            cart = await linkCustomerToCart(cart, user);
         }
     }
     return cart;
@@ -100,7 +90,7 @@ const setCartAddresses = async (cartId, addresses) => {
         await utilsDatabase.populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
-        console.log(err);
+        console.error(err);
         throw err;
     }
 };
@@ -110,7 +100,7 @@ const setComment = async (cartId, comment) => {
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
 };
 
-const deleteCartItem = async (cartId, itemId) => {
+const deleteCartItem = async (cartId, itemId, userInfo) => {
     let cart = await Cart.findOne({_id: cartId});
     if (!cart) throw NSErrors.CartNotFound;
     cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
@@ -121,13 +111,13 @@ const deleteCartItem = async (cartId, itemId) => {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
-                await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity);
+                await ServicesProducts.updateStock(cartItem.id, cartItem.quantity, undefined, cartItem.selected_variant);
             } else if (cartItem.type === 'bundle') {
                 for (let i = 0; i < cartItem.selections.length; i++) {
                     const selectionProducts = cartItem.selections[i].products;
                     // we check that each product is orderable
                     for (let j = 0; j < selectionProducts.length; j++) {
-                        const selectionProduct = await Products.findById(selectionProducts[j]);
+                        const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                         if (selectionProduct.type === 'simple') {
                             await ServicesProducts.updateStock(selectionProduct._id, cartItem.quantity);
                         }
@@ -143,31 +133,46 @@ const deleteCartItem = async (cartId, itemId) => {
     } else {
         throw NSErrors.CartItemNotFound;
     }
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: undefined, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+    }
 
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
-const addItem = async (req) => {
-    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'}).populate('items.id');
+const addItem = async (postBody, userInfo) => {
+    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'}).populate('items.id');
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
-    const _product = await Products.findOne({_id: req.body.item.id});
-    await linkCustomerToCart(cart, req);
-    if (!_product) {
+
+    const _product = await Products.findOne({_id: postBody.item.id});
+
+    let variant;
+    await linkCustomerToCart(cart, userInfo);
+    if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
-
-    if (typeof req.body.item.options !== 'undefined' && req.body.item.options !== null) {
+    if (typeof postBody.item.options !== 'undefined' && postBody.item.options !== null) {
         // we set options in the cart !
         // quick check if all mandatory options are present
         for (const oneProductOptions of _product.options) {
             if (oneProductOptions && oneProductOptions.mandatory === true) {
-                const isPresent = req.body.item.options.findIndex((oneOptionsInBody) => oneOptionsInBody._id.toString() === oneProductOptions._id.toString());
+                const isPresent = postBody.item.options.findIndex((oneOptionsInBody) => oneOptionsInBody._id.toString() === oneProductOptions._id.toString());
                 if (isPresent === -1 ) {
                     throw NSErrors.InvalidOptions;
                 }
@@ -175,7 +180,7 @@ const addItem = async (req) => {
         }
         // add to item
         // add code, add name, add modifier, add control
-        for (const oneOptionsInReq of req.body.item.options) {
+        for (const oneOptionsInReq of postBody.item.options) {
             const optionInProduct     = _product.options.find(((oneOptions) => oneOptions.code === oneOptionsInReq.code));
             oneOptionsInReq.mandatory = optionInProduct.mandatory;
             oneOptionsInReq.type      = optionInProduct.type;
@@ -222,8 +227,19 @@ const addItem = async (req) => {
                 }
             }
         }
+    } else if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
+        throw NSErrors.InvalidParameters;
+    } else if (_product.hasVariantsValue(_product) && typeof !postBody.item.selected_variant) {
+        // we set variant in the cart !
+        // quick check if all mandatory options are present
+        const isPresent = _product.variants_values.findIndex((oneVariant) => postBody.item.selected_variant._id.toString() === oneVariant._id.toString());
+        if (isPresent === -1 ) {
+            throw NSErrors.InvalidParameters;
+        } else {
+            postBody.item.selected_variant.id = postBody.item.selected_variant._id;
+            variant                           = _product.variants_values[isPresent];
+        }
     }
-
     if (cart.items && cart.items.length) {
         // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
         const indexes     = cart.items.toObject()
@@ -231,30 +247,21 @@ const addItem = async (req) => {
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
             .map(({index}) => index);
         let isANewProduct = false;
-        /* eslint-disable no-labels */
         for (const index of indexes) {
-            let selections;
-            if (cart.items[index].type === 'bundle') {
-                selections = cart.items[index].selections.toObject().map((elem) => {
-                    const id = elem.products[0]._id.toString();
-                    return {
-                        bundle_section_ref : elem.bundle_section_ref,
-                        products           : [id]
-                    };
-                });
-            }
             if (
                 cart.items[index].type === 'bundle'
-                && JSON.stringify(selections) !== JSON.stringify(req.body.item.selections)
+                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
+            // eslint-disable-next-line no-empty
             ) {
                 continue;
             } else {
-                if (typeof req.body.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
+                if (typeof postBody.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
                     // check if same options
                     const optionsOfItemInCart = cart.items[index].options;
-                    if (req.body.item.options.length === optionsOfItemInCart.length) {
+                    if (postBody.item.options.length === optionsOfItemInCart.length) {
+                        // eslint-disable-next-line no-labels
                         loopCheckOptions:
-                        for (const oneOptions of req.body.item.options) {
+                        for (const oneOptions of postBody.item.options) {
                             const indexOptions = optionsOfItemInCart.findIndex((element) => element.code === oneOptions.code);
                             if (indexOptions === -1) {
                                 isANewProduct = true;
@@ -270,10 +277,12 @@ const addItem = async (req) => {
                                                 continue;
                                             } else {
                                                 isANewProduct = true;
+                                                // eslint-disable-next-line no-labels
                                                 break loopCheckOptions;
                                             }
                                         } else {
                                             isANewProduct = true;
+                                            // eslint-disable-next-line no-labels
                                             break loopCheckOptions;
                                         }
                                     }
@@ -291,96 +300,131 @@ const addItem = async (req) => {
                     } else {
                         isANewProduct = true;
                     }
-                } else {
-                    if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') {
+                } else if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
+                    // check if same variant
+                    const variantOfItemInCart = cart.items[index].selected_variant;
+                    if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
                         isANewProduct = index;
                         break;
-                    } else  if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) {
+                    } else {
+                        isANewProduct = true;
+                    }
+                } else {
+                    if ((typeof postBody.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') || (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined')) {
+                        isANewProduct = index;
+                        break;
+                    } else  if ((typeof postBody.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) || (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined')) {
                         isANewProduct = index;
                         break;
                     }
                 }
-                /* eslint-enable no-labels */
             }
         }
         if (typeof isANewProduct === 'number') {
-            req.body.item._id       = cart.items[isANewProduct]._id.toString();
-            req.body.item.quantity += cart.items[isANewProduct].quantity;
-
-            delete req.body.item.id;
-            delete req.body.item.weight;
-            return updateQty(req);
+            postBody.item._id       = cart.items[isANewProduct]._id.toString();
+            postBody.item.quantity += cart.items[isANewProduct].quantity;
+            delete postBody.item.id;
+            delete postBody.item.weight;
+            return updateQty(postBody, userInfo);
         }
     }
     if (_product.translation[_lang.code]) {
-        req.body.item.name = _product.translation[_lang.code].name;
+        postBody.item.name = _product.translation[_lang.code].name;
+        postBody.item.slug = _product.translation[_lang.code].slug;
     }
-    req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageUrl(_product);
+    postBody.item.code  = _product.code;
+    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
     const idGift        = mongoose.Types.ObjectId();
-    if (req.body.item.parent) {
-        req.body.item._id = idGift;
+    if (postBody.item.parent) {
+        postBody.item._id = idGift;
     }
 
-    const weightOptionsModifier = await mongoose.model('products').getOptionsWeight(req.body.item.options, req.body.item.id);
-
-    const finalPrice = _product.weight + weightOptionsModifier;
-
-    const item = {...req.body.item, weight: finalPrice, price: _product.price, options: req.body.item.options};
-    if (_product.type !== 'virtual') {
-        item.stock = _product.stock;
+    let item = {
+        ...postBody.item,
+        weight       : _product.weight,
+        price        : _product.price,
+        description1 : _product.translation[_lang.code].description1,
+        description2 : _product.translation[_lang.code].description2,
+        canonical    : _product.translation[_lang.code].canonical,
+        attributes   : _product.attributes
+    };
+    if (postBody.item.options) {
+        item.weight += await mongoose.model('products').getOptionsWeight(postBody.item.options, postBody.item.id);
+        item.options = postBody.item.options;
     }
-    const data = await _product.addToCart(cart, item, req.info, _lang.code);
+
+    if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
+    if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
+
+    // Here you can change any information of a product before adding it to the user's cart
+    item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
+
+    const data = await _product.addToCart(cart, item, userInfo, _lang.code);
+
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
-    cart           = data;
-    cart           = await ServicePromo.checkForApplyPromo(req.info, cart, _lang.code);
+    cart = data;
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang.code, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang.code, false);
+    }
+    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
     const _newCart = await cart.save();
-    if (req.body.item.parent) {
-        _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
+    if (postBody.item.parent) {
+        _newCart.items.find((item) => item._id.toString() === postBody.item.parent).children.push(idGift);
     }
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
-const updateQty = async (req) => {
-    if (!req.body.item || req.body.item.quantity <= 0) {
+const updateQty = async (postBody, userInfo) => {
+    if (!postBody.item || postBody.item.quantity <= 0) {
         return {code: 'BAD_REQUEST', status: 400}; // res status 400
     }
-    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'});
+    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'});
     if (!cart) {
         throw NSErrors.InactiveCart;
     }
 
-    const item     = cart.items.find((item) => item._id.toString() === req.body.item._id);
+    const item     = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
     const _product = await Products.findOne({_id: item.id});
 
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
         const ServicesProducts = require('./products');
 
-        const quantityToAdd = req.body.item.quantity - item.quantity;
+        const quantityToAdd = postBody.item.quantity - item.quantity;
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, item.selected_variant)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
             // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd);
+            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variant);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
                 // we check that each product is orderable
                 for (let j = 0; j < selectionProducts.length; j++) {
-                    const selectionProduct = await Products.findById(selectionProducts[j]);
+                    const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd, item.selected_variant).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
@@ -392,19 +436,32 @@ const updateQty = async (req) => {
     }
 
     // Manage stock
-    // await servicesProducts.handleStock(item, _product, req.body.item.quantity);
-    await cart.updateOne({
-        $set : {'items.$[item].quantity': req.body.item.quantity}
+    // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
+    cart = await Cart.findOneAndUpdate({_id: cart._id}, {
+        $set : {'items.$[item].quantity': postBody.item.quantity}
     }, {
-        arrayFilters : [{'item._id': req.body.item._id}],
+        arrayFilters : [{'item._id': postBody.item._id}],
         new          : true
     });
-    await linkCustomerToCart(cart, req);
-    cart = await ServicePromo.checkForApplyPromo(req.info, cart);
+    await linkCustomerToCart(cart, userInfo);
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+    }
+    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
+    await utilsDatabase.populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -434,6 +491,8 @@ const checkCountryTax = async (_cart, _user) => {
 };
 
 const cartToOrder = async (cartId, _user, lang = '') => {
+    const {orderStatuses} = require('./orders');
+
     try {
         const _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         if (!_cart) {
@@ -481,12 +540,12 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
                 const _product = await Products.findOne({_id: cartItem.id});
-                if (_product.kind === 'SimpleProduct') {
+                if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -cartItem.quantity);
+                    await ServicesProducts.updateStock(_product._id, -cartItem.quantity, undefined, cartItem.selected_variant);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < cartItem.selections.length; j++) {
                         const section = cartItem.selections[j];
@@ -520,11 +579,11 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             delivery       : cartObj.delivery,
             lang,
             // if priceTotal === 0, then the order is set to status 'PAID'
-            status         : (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'),
+            status         : (priceTotal.ati === 0 ? orderStatuses.PAID : orderStatuses.PAYMENT_PENDING),
             priceTotal,
             priceSubTotal,
             comment        : cartObj.comment,
-            historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
+            historyStatus  : [{status: (priceTotal.ati === 0 ? orderStatuses.PAID : orderStatuses.PAYMENT_PENDING), date: moment(new Date())}],
             customer       : {
                 ..._user,
                 id : _user._id
@@ -532,6 +591,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
+        delete newOrder._id;
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {
@@ -557,6 +617,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
+        aquilaEvents.emit('postCartToOrder', _cart);
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
@@ -578,7 +639,7 @@ const removeOldCarts = async () => {
                 const ServicesProducts = require('./products');
                 const cartItem         = carts[cartIndex].items[cartItemIndex];
                 if (cartItem.type === 'simple') {
-                    await ServicesProducts.updateStock(cartItem.id, cartItem.quantity);
+                    await ServicesProducts.updateStock(cartItem.id, cartItem.quantity, undefined, cartItem.selected_variant);
                 } else if (cartItem.type === 'bundle') {
                     for (let selectionIndex = 0; selectionIndex < cartItem.selections.length; selectionIndex++) {
                         const selectionProducts = cartItem.selections[selectionIndex].products;
@@ -604,17 +665,22 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = (stock, qty) => stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
+const checkProductOrderable = (stock, qty, selected_variant = undefined) => {
+    if (selected_variant) {
+        return selected_variant.stock.orderable && (selected_variant.stock.qty - selected_variant.stock.qty_booked - qty) >= 0;
+    }
+    return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
+};
 
 /**
  * Function to associate a user with a cart
  * @param {any} cart
- * @param {Express.Request} req
- * @returns {Promise<any>}
+ * @param {Object} User info
+ * @returns {Object} cart
  */
-const linkCustomerToCart = async (cart, req) => {
+const linkCustomerToCart = async (cart, userInfo) => {
     if (cart && (!cart.customer || !cart.customer.id)) {
-        const user = req.info;
+        const user = userInfo;
         if (user) {
             const customer = {
                 id    : user._id,

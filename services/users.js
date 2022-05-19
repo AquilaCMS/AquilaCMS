@@ -6,13 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const crypto       = require('crypto');
-const mongoose     = require('mongoose');
-const {Users}      = require('../orm/models');
-const servicesMail = require('./mail');
-const QueryBuilder = require('../utils/QueryBuilder');
-const aquilaEvents = require('../utils/aquilaEvents');
-const NSErrors     = require('../utils/errors/NSErrors');
+const crypto                             = require('crypto');
+const mongoose                           = require('mongoose');
+const {aquilaEvents}                     = require('aql-utils');
+const {Users, SetAttributes, Attributes} = require('../orm/models');
+const servicesMail                       = require('./mail');
+const QueryBuilder                       = require('../utils/QueryBuilder');
+const utilsModules                       = require('../utils/modules');
+const NSErrors                           = require('../utils/errors/NSErrors');
+const modulesUtils                       = require('../utils/modules');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -28,20 +30,28 @@ const queryBuilder     = new QueryBuilder(Users, restrictedFields, defaultFields
  * @param {Object} [PostBody.sort] sort
  * @param {Object} [PostBody.structure] structure
  */
-const getUsers = async (PostBody) => queryBuilder.find(PostBody);
+const getUsers = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getUser = async (PostBody) => queryBuilder.findOne(PostBody);
+const getUser = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody);
+    const user = await queryBuilder.findOne(PostBody, true);
+
+    return modulesUtils.modulesLoadFunctions('postGetUserById', {user}, async function () {
+        return user;
+    });
 };
 
-const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+const getUserByAccountToken = async (activateAccountToken) => {
+    if (!activateAccountToken) throw NSErrors.Unauthorized;
+    const user = await Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+    return {isActiveAccount: user?.isActiveAccount};
+};
 
-const setUser = async (id, info, isAdmin = false) => {
+const setUser = async (id, info, isAdmin = false, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -51,6 +61,15 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.isAdmin;
         }
         const userBase = await Users.findOne({_id: id});
+        if (info.attributes) {
+            for (let i = 0; i < info.attributes.length; i++) {
+                const usrAttr = userBase.attributes.find((attr) => attr.code === info.attributes[i].code);
+                if (usrAttr && lang) {
+                    info.attributes[i].translation             = usrAttr.translation;
+                    info.attributes[i].translation[lang].value = info.attributes[i].value;
+                }
+            }
+        }
         if (userBase.email !== info.email) {
             info.isActiveAccount = false;
         }
@@ -90,7 +109,7 @@ const setUserAddresses = async (body) => {
     return userUpdated;
 };
 
-const createUser = async (body, isAdmin = false) => {
+const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunctions('createUser', {body, isAdmin}, async () => {
     // Control password
     body.activateAccountToken = crypto.randomBytes(26).toString('hex');
     body.isActiveAccount      = false;
@@ -110,6 +129,30 @@ const createUser = async (body, isAdmin = false) => {
     }
     let newUser;
     try {
+        if (!body.set_attributes) {
+            const defaultSet    = await SetAttributes.findOne({code: 'defautUser'}).populate(['attributes']);
+            body.set_attributes = defaultSet._id;
+            body.attributes     = defaultSet.attributes.map((attr) => {
+                if (attr.default_value) {
+                    for (let i = 0; i < Object.keys(attr.translation).length; i++) {
+                        const lang =  Object.keys(attr.translation)[i];
+                        if (attr.translation[lang].value === undefined) attr.translation[lang].value = attr.default_value;
+                    }
+                }
+                return attr;
+            });
+        } else {
+            for (let i = 0; i < body.attributes.length; i++) {
+                const attribute                = await Attributes.findOne({code: body.attributes[i].code});
+                body.attributes[i].translation = attribute.translation;
+                if (attribute.type) body.attributes[i].type = attribute.type;
+                if (attribute.type === 'multiselect') {
+                    body.attributes[i].translation[body.lang].values = body.attributes[i].values;
+                } else {
+                    body.attributes[i].translation[body.lang].value = body.attributes[i].value;
+                }
+            }
+        }
         newUser = await (new Users(body)).save();
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
@@ -128,7 +171,7 @@ const createUser = async (body, isAdmin = false) => {
     });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
-};
+});
 
 const deleteUser = async (id) => {
     const query = {_id: id};
@@ -157,7 +200,8 @@ const getUserTypes = async (query) => {
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
-    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
+    const emailRegex     = new RegExp(`^${email}$`, 'i');
+    const user           = await Users.findOneAndUpdate({email: emailRegex}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
@@ -170,7 +214,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     }
     const tokenlink = `${link}?token=${resetPassToken}`;
     if (sendMail) {
-        await servicesMail.sendResetPassword(email, tokenlink, lang);
+        await servicesMail.sendResetPassword(email, tokenlink, resetPassToken, lang);
     }
     return {message: email};
 };

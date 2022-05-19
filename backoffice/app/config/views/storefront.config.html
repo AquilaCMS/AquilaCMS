@@ -1,0 +1,25 @@
+<ns-box data-title="config.environment.titleStoreFront" title-icon="fa fa-cogs fa-lg">
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading" role="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+
+            <div id="general" class="tab-pane fade in active" style="width:50%;margin-left:10%" hook-config-store data="config.environment">
+                <h3 translate>config.environment.menu.general</h3>
+                <br/>
+                <div class="form-group">
+                    <label translate>config.environment.siteName</label> <br />
+                    <input type="text" class="form-control" ng-model="config.environment.siteName">
+                </div>
+                <div class="form-group">
+                    <label translate>config.environment.favicon</label> <br />
+                    <input type="text" class="form-control" ng-model="config.environment.favicon">
+                </div>
+                <div class="form-group">
+                    <label translate>config.environment.defaultImage</label><i style="margin-left:10px" class="fa fa-question-circle" popover="{{'config.environment.defaultImageTips' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i><br />
+                    <input type="text" class="form-control" ng-model="config.environment.defaultImage">
+                </div>
+                
+            </div>
+        </ns-buttons>
+    </form>
+
+</ns-box>

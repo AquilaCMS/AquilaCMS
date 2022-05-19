@@ -11,16 +11,19 @@
                     additionnal-buttons="additionnalButtons"
                     more-buttons="moreButtons"
                     >
-            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            <div style="height: 40px" ng-show='languages.length > 1'>
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
             <div class="scrollmenu">
-                <ul class="nav nav-tabs" >
+                <ul class="nav nav-tabs" hook-product-detail-tab>
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
                     <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
                     <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
                     <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
+                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
+                    <li ng-show="product.type === 'simple'"><a data-toggle="tab" href="#declinaisons" target="_self" translate>product.declinaisons.variants</a></li>
                     <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
                     <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
-                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
                     <li><a data-toggle="tab" href="#categoriesLink" target="_self" translate>simple.linkedCat</a></li>
                     <li><a data-toggle="tab" href="#options" target="_self" translate>simple.options</a></li>
                     <li ng-repeat="tab in additionnalTabs">
@@ -29,6 +32,10 @@
                 </ul>
             </div>
             <div class="tab-content">
+                <span class="pull-right" style="margin-bottom:30px;">
+                    <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookProductInfo" style="display:block;"></span>
+                </span>
+
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'simple'" form="form"></ns-product-general>
                 </div>
@@ -43,7 +50,7 @@
                 </div>
 
                 <div id="photos" class="tab-pane fade">
-                    <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model=product form="form"></ns-product-photo>
+                    <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="product" form="form"></ns-product-photo>
                 </div>
 
                 <div id="cross_selling" class="tab-pane fade">
@@ -158,6 +165,9 @@
                 <div id="categoriesLink" class="tab-pane fade">
                     <ns-product-categories product="product" lang="lang" is-edit-mode="isEditMode" product-type="'simple'" form="form"></ns-product-categories>
                 </div>
+                <div ng-show="product.type === 'simple'" id="declinaisons" class="tab-pane fade">
+                    <ns-product-declinaisons product="product" lang="lang" is-edit-mode="isEditMode" form="form"></ns-product-declinaisons>
+                </div>
                 <div id="options" class="tab-pane fade">
                     <ns-product-options product="product" lang="lang"></ns-product-options>
                 </div>
@@ -167,6 +177,7 @@
                         <div bind-html-compile="tab.content"></div>
                     </div>
                 </div>
+                <div class="tab-pane fade" hook-product-detail-othertab></div>
             </div>
             <!-- <ul class="nav nav-tabs">
                 <li ng-repeat="(key, value) in translation" ng-class="{active: (key == language)}"><a  ng-click="changelanguage(key)" data-toggle="tab">{{key}}</a></li>

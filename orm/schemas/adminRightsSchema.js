@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const utilsDatabase = require('../../utils/database');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
 
 const AdminRightsSchema = new Schema({
     code      : {type: String, unique: true},
@@ -41,5 +41,7 @@ AdminRightsSchema.pre('save', async function (next) {
 AdminRightsSchema.post('save', async function (doc) {
     aquilaEvents.emit('aqNewAdminRights', doc);
 });
+
+aquilaEvents.emit('adminRightsSchemaInit', AdminRightsSchema);
 
 module.exports = AdminRightsSchema;
