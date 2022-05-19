@@ -179,7 +179,7 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
  * @param {string} lang
  */
 // eslint-disable-next-line no-unused-vars
-const getProducts = async (PostBody, reqRes, lang) => {
+const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     let structure;
     if (PostBody && PostBody.structure) {
         // required to have all fields for promo rules
@@ -231,30 +231,25 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
     }
 
-    // We fetch all products calculated via the search
-    const allProducts          = await Products
-        .find(PostBody.filter)
-        .populate(PostBody.populate)
-        .select(querySelect);
+    // Fetch all products
+    let allProductsRes;
+    if (withFilters) {
+        const allProducts = await Products
+            .find(PostBody.filter)
+            .populate(PostBody.populate)
+            .select(querySelect);
+        allProductsRes    = {datas: allProducts, count: allProducts.length};
+    } else {
+        allProductsRes = await queryBuilder.find(PostBody);
+    }
     queryBuilder.defaultFields = defaultFields;
-    const allProductsRes       = {datas: allProducts, count: allProducts.length};
 
     // If there is a page management, we retrieve the products on the current page
     let result = JSON.parse(JSON.stringify(allProductsRes));
     if (PostBody.page) {
+        // With the fuzzy search pagination
         if (currentPageProductsIds) {
             result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
-        } else {
-            const res = [];
-            let i     = 0;
-            if (PostBody.page !== 1) {
-                i = (PostBody.page - 1) * realLimit;
-            }
-            while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
-                res.push(result.datas[i]);
-                i++;
-            }
-            result.datas = res;
         }
     }
 
@@ -1148,7 +1143,9 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
-    const result    = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, req.params.withFilters);
+
     if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
