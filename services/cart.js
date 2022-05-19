@@ -205,7 +205,7 @@ const addItem = async (postBody, userInfo) => {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
-    if (typeof postBody.item.options !== 'undefined' && postBody.item.options !== null) {
+    if (typeof postBody.item.options !== 'undefined' && postBody.item.options.length > 0) {
         // we set options in the cart !
         // quick check if all mandatory options are present
         for (const oneProductOptions of _product.options) {
