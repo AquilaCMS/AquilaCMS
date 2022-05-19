@@ -29,7 +29,7 @@ const servicesMail      = require('./mail');
 const ServiceJob        = require('./job');
 
 const restrictedFields = [];
-const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
+const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt', 'customer'];
 const queryBuilder     = new QueryBuilder(Cart, restrictedFields, defaultFields);
 
 const getCarts = async (PostBody) => queryBuilder.find(PostBody);
@@ -50,13 +50,25 @@ const getCartById = async (id, PostBody = null, user = null) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let cart = await queryBuilder.findById(id, PostBody);
+    if (!PostBody) PostBody = {};
+    PostBody.filter = {
+        ...PostBody.filter,
+        _id : mongoose.Types.ObjectId(id)
+    };
 
+    // let cart = await queryBuilder.findById(id, PostBody);
+    let cart = await queryBuilder.findOne(PostBody);
+
+    // if the cart belongs to a customer and none is login
+    if (cart.customer.email !== undefined && user == null) {
+        return null;
+    }
     if (cart) {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
     }
+
     return cart;
 };
 
@@ -65,7 +77,7 @@ const getCartById = async (id, PostBody = null, user = null) => {
  * @param {*} cartId cart's id
  * @param {*} addresses delivery and / or billing address
  */
-const setCartAddresses = async (cartId, addresses) => {
+const setCartAddresses = async (cartId, addresses, userInfo) => {
     const addressesType = [{type: 'delivery', name: 'livraison'}, {type: 'billing', name: 'facturation'}];
     const update        = {};
     let err;
@@ -81,7 +93,13 @@ const setCartAddresses = async (cartId, addresses) => {
     if (err) throw err;
     let resp;
     try {
-        resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
+        // Force matching current user and the cart's customer
+        const filter = {
+            _id : mongoose.Types.ObjectId(cartId),
+            ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+        };
+
+        resp = await Cart.findOneAndUpdate(filter, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
             await utilsDatabase.populateItems(newCart.items);
@@ -95,15 +113,28 @@ const setCartAddresses = async (cartId, addresses) => {
     }
 };
 
-const setComment = async (cartId, comment) => {
-    const resp = await Cart.findOneAndUpdate({_id: cartId}, {comment}, {new: true});
+const setComment = async (cartId, comment, userInfo) => {
+    // Force matching current user and the cart's customer
+    const filter = {
+        _id : mongoose.Types.ObjectId(cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+    const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
 };
 
 const deleteCartItem = async (cartId, itemId, userInfo) => {
-    let cart = await Cart.findOne({_id: cartId});
+    // Force matching current user and the cart's customer
+    const filter = {
+        _id : mongoose.Types.ObjectId(cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+
+    let cart = await Cart.findOne(filter);
+
     if (!cart) throw NSErrors.CartNotFound;
-    cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
+    filter.status = 'IN_PROGRESS';
+    cart          = await Cart.findOne(filter);
     if (!cart) throw NSErrors.CartInactive;
     const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId);
     if (itemIndex > -1) {
@@ -154,7 +185,14 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
 };
 
 const addItem = async (postBody, userInfo) => {
-    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'}).populate('items.id');
+    // Force matching current user and the cart's customer
+    const filter = {
+        status : 'IN_PROGRESS',
+        _id    : mongoose.Types.ObjectId(postBody.cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+
+    let cart = await Cart.findOne(filter).populate('items.id');
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
@@ -394,7 +432,13 @@ const updateQty = async (postBody, userInfo) => {
     if (!postBody.item || postBody.item.quantity <= 0) {
         return {code: 'BAD_REQUEST', status: 400}; // res status 400
     }
-    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'});
+    // Force matching current user and the cart's customer
+    const filter = {
+        status : 'IN_PROGRESS',
+        _id    : mongoose.Types.ObjectId(postBody.cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+    let cart     = await Cart.findOne(filter);
     if (!cart) {
         throw NSErrors.InactiveCart;
     }

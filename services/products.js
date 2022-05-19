@@ -129,6 +129,7 @@ const priceFilterFromPostBody = (PostBody) => {
     return priceFilter;
 };
 
+// Returns all products found, the products on the current page and the total number of products found
 const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
@@ -156,8 +157,8 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
     const fuseRes = fuse.search(pattern);
-    if (limit === 0) return {data: fuseRes, count: fuseRes.length};
-    if (limit === 1) return {data: fuseRes.slice(0, 1), count: fuseRes.length};
+    if (limit === 0) return {allProducts: fuseRes, currentPageProducts: fuseRes, count: fuseRes.length};
+    if (limit === 1) return {allProducts: fuseRes, currentPageProducts: fuseRes.slice(0, 1), count: fuseRes.length};
     const res = [];
 
     let i = 0;
@@ -168,7 +169,7 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
         res.push(fuseRes[i]);
         i++;
     }
-    return {data: res, count: fuseRes.length};
+    return {allProducts: fuseRes, currentPageProducts: res, count: fuseRes.length};
 };
 
 /**
@@ -178,23 +179,30 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
  * @param {string} lang
  */
 // eslint-disable-next-line no-unused-vars
-const getProducts = async (PostBody, reqRes, lang) => {
-    let properties = [];
+const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     let structure;
     if (PostBody && PostBody.structure) {
         // required to have all fields for promo rules
-        structure  = PostBody.structure;
-        properties = Object.keys(PostBody.structure).concat(defaultFields);
+        PostBody.structure = {
+            ...PostBody.structure,
+            attributes : 1
+        };
+        structure          = PostBody.structure;
+        let properties     = [];
+        properties         = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
-        delete PostBody.structure;
         if (properties.includes('score')) {
             PostBody.structure = {score: structure.score};
         }
+        if (PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
         queryBuilder.defaultFields = ['*'];
     }
 
     let count;
+    let currentPageProductsIds;
     const realLimit = PostBody.limit;
+    const sort      = PostBody.sort;
+    delete PostBody.sort;
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -204,18 +212,46 @@ const getProducts = async (PostBody, reqRes, lang) => {
         if (!PostBody.filter.$and) PostBody.filter.$and = [];
         PostBody.filter.$and.push({active: true});
         PostBody.filter.$and.push({_visible: true});
-        const thisLimit        = (PostBody.sort && !PostBody.sort.sortWeight) ? 0 : PostBody.limit;
+
+        const thisLimit        = (sort && !sort.sortWeight) ? 0 : PostBody.limit;
         const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, thisLimit, PostBody.page, lang);
-        const data             = searchedProducts.data;
+        currentPageProductsIds = searchedProducts.currentPageProducts.map((res) => res.item._id.toString());
         count                  = searchedProducts.count;
-        PostBody.filter._id    = {$in: data.map((res) => res.item._id.toString())};
+        const allProducts      = searchedProducts.allProducts;
+        PostBody.filter._id    = {$in: allProducts.map((res) => res.item._id.toString())};
         PostBody.limit         = 0;
-        delete PostBody.structure;
     }
 
-    let result = await queryBuilder.find(PostBody);
+    let querySelect = '';
+    if (PostBody.structure) {
+        for (const [key, value] of Object.entries(PostBody.structure)) {
+            if (value === 0) {
+                querySelect = `${querySelect}-${key} `;
+            }
+        }
+    }
 
+    // Fetch all products
+    let allProductsRes;
+    if (withFilters) {
+        const allProducts = await Products
+            .find(PostBody.filter)
+            .populate(PostBody.populate)
+            .select(querySelect);
+        allProductsRes    = {datas: allProducts, count: allProducts.length};
+    } else {
+        allProductsRes = await queryBuilder.find(PostBody);
+    }
     queryBuilder.defaultFields = defaultFields;
+
+    // If there is a page management, we retrieve the products on the current page
+    let result = JSON.parse(JSON.stringify(allProductsRes));
+    if (PostBody.page) {
+        // With the fuzzy search pagination
+        if (currentPageProductsIds) {
+            result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
+        }
+    }
 
     // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
@@ -244,11 +280,12 @@ const getProducts = async (PostBody, reqRes, lang) => {
 
     if (PostBody.filter?._id?.$in) {
         result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
+        delete PostBody.structure;
 
-        if (PostBody.sort && !PostBody.sort.sortWeight) {
-            result.datas = sortProductList(result.datas, PostBody.sort);
+        if (sort && !sort.sortWeight) {
+            result.datas = sortProductList(result.datas, sort);
             // To create the pagination
-            if (typeof PostBody.page !== 'undefined') {
+            if (PostBody.page) {
                 const res = [];
                 let i     = 0;
                 if (PostBody.page !== 1) {
@@ -282,7 +319,9 @@ const getProducts = async (PostBody, reqRes, lang) => {
     ]);
     if (normalET.length > 0 & normalATI.length > 0) {
         result.min = {et: normalET[0].min, ati: normalATI[0].min};
+        if (!result.priceSortMin) result.priceSortMin = {et: normalET[0].min, ati: normalATI[0].min};
         result.max = {et: normalET[0].max, ati: normalATI[0].max};
+        if (!result.priceSortMax) result.priceSortMax = {et: normalET[0].max, ati: normalATI[0].max};
     }
 
     // Specials prices
@@ -304,6 +343,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         et  : Math.max(...arraySpecialPrice.et),
         ati : Math.max(...arraySpecialPrice.ati)
     };
+
+    result.allProductsRes = allProductsRes;
 
     return result;
 };
@@ -1102,8 +1143,9 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
-    // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
-    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, req.params.withFilters);
+
     if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
@@ -1120,23 +1162,38 @@ const getProductsListing = async (req, res) => {
             translation : attr.translation
         }));
 
-        await servicesCategory.generateFilters(result, req.body.lang);
+        // We put all products without any pagination in datas to generate filters
+        const datas  = JSON.parse(JSON.stringify(result.datas));
+        result.datas = result.allProductsRes.datas;
+        delete result.allProductsRes;
+
+        const selectedAttributes = [];
+        const filtersArray       = req.body.PostBody.filter.$and;
+        for (let i = 0; i < filtersArray.length; i++) {
+            if (Object.keys(filtersArray[i])[0] === 'attributes') selectedAttributes.push(filtersArray[i].attributes.$elemMatch);
+        }
+        await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
+        result.datas = datas;
+    } else {
+        delete result.allProductsRes;
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
-        const priceFilter = priceFilterFromPostBody(req.body.PostBody);
-        if (priceFilter) {
-            result.datas = result.datas.filter((prd) =>  {
-                const pr = prd.price.ati.special || prd.price.ati.normal;
-                return pr >= (
-                    priceFilter.$or[1]['price.ati.special'].$gte
-                    || priceFilter.$or[0]['price.ati.normal'].$gte)
-                    && pr <= (priceFilter.$or[1]['price.ati.special'].$lte
-                    || priceFilter.$or[0]['price.ati.normal'].$lte);
-            });
+        if (structure.price !== 0) {
+            const priceFilter = priceFilterFromPostBody(req.body.PostBody);
+            if (priceFilter) {
+                result.datas = result.datas.filter((prd) =>  {
+                    const pr = prd.price.ati.special || prd.price.ati.normal;
+                    return pr >= (
+                        priceFilter.$or[1]['price.ati.special'].$gte
+                        || priceFilter.$or[0]['price.ati.normal'].$gte)
+                        && pr <= (priceFilter.$or[1]['price.ati.special'].$lte
+                        || priceFilter.$or[0]['price.ati.normal'].$lte);
+                });
+            }
         }
     }
 

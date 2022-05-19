@@ -132,7 +132,7 @@ async function updateQty(req, res, next) {
  */
 async function updateComment(req, res, next) {
     try {
-        const result = await ServiceCart.setComment(req.body.cartId, req.body.comment);
+        const result = await ServiceCart.setComment(req.body.cartId, req.body.comment, req.info);
         await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {
@@ -146,7 +146,7 @@ async function updateComment(req, res, next) {
  */
 async function updateAddresses(req, res, next) {
     try {
-        const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses);
+        const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses, req.info);
         await ServiceCart.linkCustomerToCart(result.data.cart, req.info);
         return res.json(result.data.cart);
     } catch (error) {

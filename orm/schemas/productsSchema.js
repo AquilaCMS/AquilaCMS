@@ -306,8 +306,8 @@ ProductsSchema.methods.updateData = async function (data) {
                 const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
                 try {
                     await fs.unlinkSync(joindPath);
-                } catch (err) {
-                    console.error(err);
+                } catch {
+                    console.warn(`Unable to remove ${joindPath}`);
                 }
             }
         }
