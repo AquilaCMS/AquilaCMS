@@ -70,6 +70,8 @@
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'container'"
                                         translate>category.detail.container</label>
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'categorylist'"
+                                        translate>category.detail.categorie</label>
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                         translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
@@ -85,13 +87,13 @@
                                 <input ng-model="category.translation[lang].name" name="name" class="form-control" required />
                             </td>
                         </tr>
-                        <tr  ng-if="category.action == 'catalog'">
+                        <tr  ng-if="category.action == 'catalog' || category.action == 'categorylist'">
                             <td translate>category.detail.metaDesc</td>
                             <td>
                                 <input ng-model="category.translation[lang].metaDescription" name="description" class="form-control" />
                             </td>
                         </tr>
-                        <tr id="slug" ng-if="category.action == 'catalog'">
+                        <tr id="slug" ng-if="category.action == 'catalog' || category.action == 'categorylist'">
                             <td translate>category.detail.slugCat</td>
                             <td>
                                 <input ng-model="category.translation[lang].slug" name="slug" class="form-control" required/>
@@ -178,7 +180,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog'">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog' || category.action == 'categorylist'">
                     <tbody>
                         <tr id="text1">
                             <td translate>
