@@ -183,14 +183,18 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let structure;
     if (PostBody && PostBody.structure) {
         // required to have all fields for promo rules
-        structure      = PostBody.structure;
-        let properties = [];
-        properties     = Object.keys(PostBody.structure).concat(defaultFields);
+        PostBody.structure = {
+            ...PostBody.structure,
+            attributes : 1
+        };
+        structure          = PostBody.structure;
+        let properties     = [];
+        properties         = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
-        if (PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
         if (properties.includes('score')) {
             PostBody.structure = {score: structure.score};
         }
+        if (PostBody.structure.price !== 0) delete PostBody.structure; // For catalogue promotions we must keep all product fields
         queryBuilder.defaultFields = ['*'];
     }
 
@@ -234,9 +238,25 @@ const getProducts = async (PostBody, reqRes, lang) => {
         .select(querySelect);
     queryBuilder.defaultFields = defaultFields;
     const allProductsRes       = {datas: allProducts, count: allProducts.length};
+
     // If there is a page management, we retrieve the products on the current page
     let result = JSON.parse(JSON.stringify(allProductsRes));
-    if (PostBody.page && currentPageProductsIds) result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
+    if (PostBody.page) {
+        if (currentPageProductsIds) {
+            result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._doc._id.toString()));
+        } else {
+            const res = [];
+            let i     = 0;
+            if (PostBody.page !== 1) {
+                i = (PostBody.page - 1) * realLimit;
+            }
+            while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
+                res.push(result.datas[i]);
+                i++;
+            }
+            result.datas = res;
+        }
+    }
 
     // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
@@ -1128,8 +1148,7 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
-    // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
-    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+    const result    = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
