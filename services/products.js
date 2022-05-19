@@ -259,7 +259,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    if (reqRes !== undefined && PostBody.withPromos !== false) {
+    if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
 
@@ -309,41 +309,43 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         delete PostBody.filter._id;
     }
 
-    // Get the maximum and minimum price in the Produc's query
-    const normalET  = await Products.aggregate([
-        {$match: PostBody.filter},
-        {$group: {_id: null, min: {$min: '$price.et.normal'}, max: {$max: '$price.et.normal'}}}
-    ]);
-    const normalATI = await Products.aggregate([
-        {$match: PostBody.filter},
-        {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
-    ]);
-    if (normalET.length > 0 & normalATI.length > 0) {
-        result.min = {et: normalET[0].min, ati: normalATI[0].min};
-        if (!result.priceSortMin) result.priceSortMin = {et: normalET[0].min, ati: normalATI[0].min};
-        result.max = {et: normalET[0].max, ati: normalATI[0].max};
-        if (!result.priceSortMax) result.priceSortMax = {et: normalET[0].max, ati: normalATI[0].max};
-    }
-
-    // Specials prices
-    const arraySpecialPrice = {et: [], ati: []};
-    for (const prd of result.datas) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
+    if (structure.price !== 0) {
+        // Get the maximum and minimum price in the Produc's query
+        const normalET  = await Products.aggregate([
+            {$match: PostBody.filter},
+            {$group: {_id: null, min: {$min: '$price.et.normal'}, max: {$max: '$price.et.normal'}}}
+        ]);
+        const normalATI = await Products.aggregate([
+            {$match: PostBody.filter},
+            {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
+        ]);
+        if (normalET.length > 0 & normalATI.length > 0) {
+            result.min = {et: normalET[0].min, ati: normalATI[0].min};
+            if (!result.priceSortMin) result.priceSortMin = {et: normalET[0].min, ati: normalATI[0].min};
+            result.max = {et: normalET[0].max, ati: normalATI[0].max};
+            if (!result.priceSortMax) result.priceSortMax = {et: normalET[0].max, ati: normalATI[0].max};
         }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        }
-    }
 
-    result.specialPriceMin = {
-        et  : Math.min(...arraySpecialPrice.et),
-        ati : Math.min(...arraySpecialPrice.ati)
-    };
-    result.specialPriceMax = {
-        et  : Math.max(...arraySpecialPrice.et),
-        ati : Math.max(...arraySpecialPrice.ati)
-    };
+        // Specials prices
+        const arraySpecialPrice = {et: [], ati: []};
+        for (const prd of result.datas) {
+            if (prd.price.et.special) {
+                arraySpecialPrice.et.push(prd.price.et.special);
+            }
+            if (prd.price.ati.special) {
+                arraySpecialPrice.ati.push(prd.price.ati.special);
+            }
+        }
+
+        result.specialPriceMin = {
+            et  : Math.min(...arraySpecialPrice.et),
+            ati : Math.min(...arraySpecialPrice.ati)
+        };
+        result.specialPriceMax = {
+            et  : Math.max(...arraySpecialPrice.et),
+            ati : Math.max(...arraySpecialPrice.ati)
+        };
+    }
 
     result.allProductsRes = allProductsRes;
 
