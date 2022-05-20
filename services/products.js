@@ -480,17 +480,12 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     // Set PostBody.filter and PostBody.structure
     if (!PostBody.filter) PostBody.filter = {};
-    if (!isAdmin) {
-        PostBody.filter = {
-            ...PostBody.filter,
-            _visible : true,
-            active   : true
-        };
-    }
+
     PostBody.filter = {
         ...PostBody.filter,
         [`translation.${lang}`] : {$exists: true}
     };
+
     if (!PostBody.structure) {
         PostBody.structure = {};
     }
@@ -517,6 +512,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
+
     // If a productsList.id does not respond to the match then productsList.id === null
     if (global.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
         PostBody.structure.stock = 1;
@@ -525,19 +521,26 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // We check that the PostBody information is correct
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
 
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
-
     let prds;
 
-    let priceMin        = {et: 0, ati: 0};
-    let priceMax        = {et: 0, ati: 0};
-    let specialPriceMin = {et: 0, ati: 0};
-    let specialPriceMax = {et: 0, ati: 0};
-    let priceSortMin    = {et: 0, ati: 0};
-    let priceSortMax    = {et: 0, ati: 0};
+    let priceMin               = {et: 0, ati: 0}; // Deprecated
+    let priceMax               = {et: 0, ati: 0}; // Deprecated
+    let specialPriceMin        = {et: 0, ati: 0}; // Deprecated
+    let specialPriceMax        = {et: 0, ati: 0}; // Deprecated
+    let priceSortMin           = {et: 0, ati: 0};
+    let priceSortMax           = {et: 0, ati: 0};
+    let unfilteredPriceSortMin = {et: 0, ati: 0};
+    let unfilteredPriceSortMax = {et: 0, ati: 0};
 
     // If we don't need the price information, we can bypass a lot of processes
     if (PostBody.structure.price === 0) {
+        PostBody.filter     = {
+            ...PostBody.filter,
+            _visible : true,
+            active   : true
+        };
+        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
+
         let querySelect = '';
         for (const [key, value] of Object.entries(PostBody.structure)) {
             if (value === 0) {
@@ -550,6 +553,16 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             .lean({virtuals: true}) // {virtuals: true} allows to get virtual fields (stock.qty_real)
             .select(querySelect); // We don't need the price so we can avoid checking the promos and therefore eliminate all the fields we don't need
     } else {
+        let filters;
+        if (!isAdmin) {
+            filters         = JSON.parse(JSON.stringify(PostBody.filter));
+            PostBody.filter = {
+                _visible : true,
+                active   : true
+            };
+        }
+        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
+
         prds = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
@@ -590,7 +603,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
                 return false;
             });
-            prds       = prds.filter((prd) => prdsPrices
+
+            prds = prds.filter((prd) => prdsPrices
                 .map((prdPri) => prdPri._id.toString())
                 .indexOf(prd._id.toString()) !== -1);
             if (PostBody.sort && PostBody.sort['price.ati.normal']) {
@@ -608,9 +622,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             }
         }
 
-        const arrayPrice        = {et: [], ati: []};
-        const arraySpecialPrice = {et: [], ati: []};
-        const arrayPriceSort    = {et: [], ati: []};
+        const arrayPrice               = {et: [], ati: []};
+        const arraySpecialPrice        = {et: [], ati: []};
+        const arrayUnfilteredPriceSort = {et: [], ati: []};
 
         for (const prd of prds) {
             if (prd.price) {
@@ -631,10 +645,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                     arraySpecialPrice.ati.push(prd.price.ati.special);
                 }
                 if (prd.price.priceSort.et) {
-                    arrayPriceSort.et.push(prd.price.priceSort.et);
+                    arrayUnfilteredPriceSort.et.push(prd.price.priceSort.et);
                 }
                 if (prd.price.priceSort.ati) {
-                    arrayPriceSort.ati.push(prd.price.priceSort.ati);
+                    arrayUnfilteredPriceSort.ati.push(prd.price.priceSort.ati);
                 }
             }
         }
@@ -642,8 +656,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
         specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
-        priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
-        priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
+        unfilteredPriceSortMin = {et: Math.min(...arrayUnfilteredPriceSort.et), ati: Math.min(...arrayUnfilteredPriceSort.ati)};
+        unfilteredPriceSortMax = {et: Math.max(...arrayUnfilteredPriceSort.et), ati: Math.max(...arrayUnfilteredPriceSort.ati)};
 
         if (reqRes !== undefined && PostBody.withPromos !== false) {
             reqRes.res.locals.datas  = prds;
@@ -666,6 +680,31 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         //         );
         //     });
         // }
+
+        if (!isAdmin) {
+            filters             = {
+                ...filters,
+                ...PostBody.filter
+            };
+            const filteredPrdId = await Products.find(filters).lean().select('_id');
+            const filteredId    = filteredPrdId.map((res) => res._id.toString());
+            prds                = prds.filter((item) => filteredId.includes(item._id.toString()));
+
+            const arrayPriceSort = {et: [], ati: []};
+            for (const prd of prds) {
+                if (prd.price) {
+                    if (prd.price.priceSort.et) {
+                        arrayPriceSort.et.push(prd.price.priceSort.et);
+                    }
+                    if (prd.price.priceSort.ati) {
+                        arrayPriceSort.ati.push(prd.price.priceSort.ati);
+                    }
+                }
+            }
+
+            priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
+            priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
+        }
     }
 
     prds = sortProductList(prds, PostBody.sort, menu);
@@ -685,7 +724,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         specialPriceMin,
         specialPriceMax,
         priceSortMin,
-        priceSortMax
+        priceSortMax,
+        unfilteredPriceSortMin,
+        unfilteredPriceSortMax
     };
 };
 
