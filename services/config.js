@@ -129,10 +129,8 @@ const saveEnvFile = async (body, files) => {
     }
 };
 
-const saveEnvConfig = async (body) => {
-    const oldConfig = await Configuration.findOne({});
-    // convert formdata to JS object (to convert string bool to real bool)
-    let newConfig                   = convertBoolValues(body);
+const saveEnvConfig = async (newConfig) => {
+    const oldConfig                 = await Configuration.findOne({});
     const {environment, stockOrder} = newConfig;
     // environment
     if (environment) {
@@ -211,8 +209,6 @@ const updateProductsStockOrder = async (stockOrder, oldStockOrder) => {
     }
 };
 
-const convertBoolValues = (body) => JSON.parse(JSON.stringify(body), (key, value) => ((value === 'true' || value === 'false') ?  value === 'true' : value));
-
 const updateConfig = async (newConfig, oldConfig) => {
     // Content security policy
     if (typeof newConfig?.environment?.contentSecurityPolicy !== 'undefined' && typeof newConfig.environment.contentSecurityPolicy.values === 'undefined') {
@@ -241,12 +237,16 @@ const updateConfig = async (newConfig, oldConfig) => {
     // specific treatment (seo)
     if (oldConfig.environment.demoMode !== newConfig.environment.demoMode) {
         const seoService = require('./seo');
-        if (newConfig.environment.demoMode) {
+        if (!newConfig.environment.demoMode) {
             console.log('DemoMode : removing sitemap.xml');
             await seoService.removeSitemap(); // Remove the sitemap.xml
         }
         console.log('DemoMode : changing robots.txt');
-        await seoService.manageRobotsTxt(false); // Ban robots.txt
+        /*
+         * de Oui a Non (donc newConfig.environment.demoMode = false)  -> manageRobotsTxt(false)
+         * de Non a Oui (donc newConfig.environment.demoMode = true)  -> manageRobotsTxt(true)
+         */
+        await seoService.manageRobotsTxt(newConfig.environment.demoMode); // Ban robots.txt
     }
     return newConfig;
 };

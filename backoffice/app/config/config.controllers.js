@@ -107,17 +107,13 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldConfig) {
                 $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
-                Upload.upload({
-                    url: 'v2/config',
-                    method: 'PUT',
-                    data: {
-                        ...file,
-                        ...$scope.config
-                    }
-                }).then((response) => {
+                ConfigV2.save({
+                    ...file,
+                    ...$scope.config
+                }, (response) => {
                     $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
                     toastService.toast("success", $translate.instant("config.storefront.saveSuccess"));
-                    if (response.data.data.needRestart) {
+                    if (response.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
@@ -128,14 +124,14 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     }
                     if (oldConfig.environment.adminPrefix !== $scope.config.environment.adminPrefix) {
                         $scope.showThemeLoading = false;
-                    } else {
+                    } else if(!$scope.showLoading) {
                         window.location.reload();
                     }
                 }, (err) => {
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", $translate.instant("global.standardError"));
                     console.error(err);
-                });
+                })
             });
         };
 
