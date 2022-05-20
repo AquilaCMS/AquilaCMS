@@ -59,11 +59,12 @@ const getCartById = async (id, PostBody = null, user = null) => {
     // let cart = await queryBuilder.findById(id, PostBody);
     let cart = await queryBuilder.findOne(PostBody);
 
-    // if the cart belongs to a customer and none is login
-    if (cart.customer.email !== undefined && user == null) {
-        return null;
-    }
     if (cart) {
+        // if the cart belongs to a customer and none is login
+        if (cart.customer?.email && !user) {
+            return null;
+        }
+
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
