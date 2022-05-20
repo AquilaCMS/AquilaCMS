@@ -265,7 +265,8 @@ const addItem = async (postBody, userInfo) => {
                 }
             }
         }
-    } else if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
+    }
+    if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
     } else if (_product.hasVariantsValue(_product) && typeof !postBody.item.selected_variant) {
         // we set variant in the cart !

@@ -735,6 +735,7 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
+    if (cart.items[cartPrdIndex].type === 'bundle') return cart;
     const prdIndex = productsCatalog.findIndex((_prd) => {
         const idProduct = cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id;
         return _prd._id && ((_prd._id).toString() === idProduct.toString());
