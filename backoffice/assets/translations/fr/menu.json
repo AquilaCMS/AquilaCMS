@@ -4,7 +4,6 @@
     "paiements": "Paiements",
     "factures": "Factures en ligne",
     "carts": "Paniers",
-
     "catalogue": "Catalogue",
     "produits": "Produits",
     "avis": "Avis",
@@ -13,9 +12,9 @@
     "familles": "Familles",
     "jeuxAttributs": "Jeux d'Attributs",
     "attributs": "Attributs",
+    "optionsSet": "Jeux d'options",
     "options": "Options",
     "picto": "Pictogramme",
-
     "clients": "Clients",
     "site": "Site",
     "pages": "Pages",
@@ -23,13 +22,10 @@
     "categories": "Catégories",
     "medias": "Medias",
     "article": "Blog",
-
     "galerie": "Galerie",
     "carousel": "Carrousel",
     "agenda": "Agenda",
-
     "promotion": "Promotion",
-
     "configuration": "Configuration",
     "mails": "Mails",
     "modesExpedition": "Transporteurs",
@@ -37,14 +33,11 @@
     "langues": "Langues",
     "modesPaiement": "Modes paiement",
     "frontSetting": "Boutique",
-
     "pointsVente": "Points de vente",
-
     "themes": "Thèmes",
     "design": "Apparence",
     "css": "CSS",
     "translate": "Traduction",
-
     "settings": "Paramètrages",
     "environnement": "Serveur",
     "stock&commandes": "Commande",
@@ -52,8 +45,6 @@
     "system": "Système",
     "update": "Mise à jour",
     "admin": "Administrateurs",
-
     "modules": "Modules",
-
     "newsletter": "Newsletter"
 }

@@ -174,5 +174,12 @@
         "activateAllVariants": "Activate all variants",
         "disableAllVariants": "Disable all variants"
     },
-    "beforeConfigCat": "Save product before adding it to categories"
+    "beforeConfigCat": "Save product before adding it to categories",
+    "optionsSet": {
+        "title": "Options set and product options",
+        "edit": "Edit options set",
+        "optionsSet": "Options set of the product",
+        "void": "No options set",
+        "goTo": "Go to options set"
+    }
 }

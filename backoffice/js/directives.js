@@ -663,6 +663,7 @@ adminCatagenDirectives.directive("nsButtons", function ()
             form: "=?",
             remove: "&remove",
             saveAndQuit: "&saveAndQuit",
+            save: "&save",
             hideSaveAndQuit: "=",
             hideSave: "=",
             disableSave: "=?",

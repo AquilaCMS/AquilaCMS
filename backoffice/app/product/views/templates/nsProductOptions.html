@@ -1,0 +1,32 @@
+<h3 style="display: inline" translate>product.optionsSet.title</h3>
+<div class="form-group" ng-show="product.code != null">
+    <div class="col-sm-11" ng-show="listOptionsSet && listOptionsSet.length > 0">
+        <label for="optionsSet" class="col-sm-2 control-label" translate>product.optionsSet.optionsSet</label>
+        <div class="col-sm-6 flowRoot">
+            <select id="set_attributes" name="optionsSet" class="form-control" ng-model="optionsSet._id"
+                ng-change="changeOptionsSet()">
+                <option value=""> </option>
+                <option ng-repeat="oneOptionsSet in listOptionsSet" value="{{oneOptionsSet._id}}">
+                    {{oneOptionsSet.name[lang]}}
+                    ({{oneOptionsSet.code}})
+                </option>
+            </select>
+        </div>
+        <div class="col-sm-6 flowRoot" ng-show="optionsSet && optionsSet.code">
+            <br />
+            <button type="button" class="btn btn-default" ng-click="goToOptionsSet()" translate>
+                product.optionsSet.edit
+            </button>
+        </div>
+    </div>
+</div>
+<div class="form-group" style="margin-top: 20px;" ng-show="product.code != null">
+    <p ng-show="!listOptionsSet || listOptionsSet.length == 0" class="col-sm-11" style="margin-top: 20px;">
+        <em translate>product.optionsSet.void</em>
+        <br />
+        <br />
+        <a href="#/optionsSet" class="linkToSmthg " translate>
+            product.optionsSet.goTo
+        </a>
+    </p>
+</div>

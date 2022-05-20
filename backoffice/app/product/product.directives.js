@@ -210,6 +210,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 const f         = (a, b) => [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
                 const cartesian = (a, b, ...c) => (b ? cartesian(f(a, b), ...c) : a);
                 const result    = cartesian(...variantNames);
+                if (!result) return
                 for (const [index, variantName] of result.entries()) {
                     const variant = {
                         code        : `${$scope.product.code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
@@ -238,12 +239,12 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
                 }
-                if($scope.product?.variants?.length > 0) {
+                //if($scope.product?.variants?.length > 0) {
                     $scope.createPrds()
-                } else {
+                /*} else {
                     delete $scope.product.variants_values
                     delete $scope.product.variants
-                }
+                }*/
             }
 
             $scope.selectVariantValue = function (variantValue, index) {
@@ -652,5 +653,17 @@ ProductDirectives.directive("nsProductCategories", function () {
         },
         templateUrl : "app/product/views/templates/nsProductCategories.html",
         controller  : 'nsProductCategories'
+    };
+});
+
+ProductDirectives.directive("nsProductOptions", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=",
+            lang        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductOptions.html",
+        controller  : 'nsProductOptions'
     };
 });

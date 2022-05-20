@@ -45,5 +45,10 @@
     "feedback": "Votre avis",
     "reviewNickname": "Votre surnom",
     "review_successfully_sent": "Votre commentaire a bien été enregistré et sera affiché après validation",
+    "choose_option": "Vous devez séletionner une option à ce produit pour le commander",
+    "mandatory": "Obligatoire",
+    "optional": "Optionnel",
+    "mandatoryOptionsNotSelected": "Une options obligatoire n'a pas de valeur !",
+    "optionsIncorrectValue": "Une des options n'a pas de valeur correct",
     "variantUnavailable": "Cette déclinaison n'est pas disponible"
 }

@@ -65,6 +65,57 @@ function listModulePage(type, props = {}) {
     });
 }
 
+/**
+ * Return the currency symbol
+ * @returns {string}
+ */
+ function getCurrencySymbol() {
+    return "€";
+}
+
+/**
+ * Return the currency symbol
+ * @param {*} product
+ * @param {*} options = options selected by the user
+ * @returns {Float} total modifier
+ */
+function caculateNewPrice(product, options, tax = "ati") {
+    let optionsModifier = 0;
+    let productPrix = 0;
+    if (product.price && product.price[tax]) {
+        if (typeof product.price[tax].special !== 'undefined') {
+            productPrix = product.price[tax].special;
+        } else {
+            productPrix = product.price[tax].normal;
+        }
+    }
+    if (product && product.type === "simple") {
+        if (options && product && product.options) {
+            for (const oneOptions of options) {
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp1 = product.options.find(element => element._id === oneOptions._id);
+                    const valueTemp = valueTemp1.values.find(element => element._id === oneValue._id);
+                    if (typeof valueTemp !== "undefined" && typeof valueTemp.modifier !== "undefined" && typeof valueTemp.modifier.price !== "undefined") {
+                        if (valueTemp.modifier.price.typePrice === "price") {
+                            optionsModifier += valueTemp.modifier.price.value;
+                        } else {
+                            // need to calculate the percent
+                            const pourcentage = valueTemp.modifier.price.value;
+                            const finalModifier = pourcentage * productPrix / 100;
+                            optionsModifier += finalModifier;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
+}
+
 export {
-    countProductInCartByCategory, countProductInCartByProduct, listModulePage
+    countProductInCartByCategory, 
+    countProductInCartByProduct, 
+    listModulePage,
+    getCurrencySymbol,
+    caculateNewPrice
 };

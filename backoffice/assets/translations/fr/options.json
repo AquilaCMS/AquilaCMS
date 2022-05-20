@@ -1,0 +1,57 @@
+{
+    "detail": {
+        "t1": "Détails de l'option",
+        "mandatory": "Obligatoire",
+        "sameName": "Même nom",
+        "errorNoValues": "L'option doit avoir une valeur",
+        "errorNoName": "L'option doit avoir un nom",
+        "errorNoValueName": "La valeur doit avoir un nom",
+        "errorNoCode": "L'option doit avoir un code",
+        "errorNoType": "L'option doit avoir un type",
+        "errorMinMax": "Le minimum et le maximun ne sont pas cohérent"
+    },
+    "new": {
+        "createOptions": "Créer une nouvelle option"
+    },
+    "list": {
+        "t1": "Liste des options",
+        "addOptions": "Ajouter une option",
+        "optionsTitle": "Options créés",
+        "loadOptionsSet": "Afficher"
+    },
+    "choice": {
+        "choixTypeoption": "Choisissez le type de cet option",
+        "champTexte": "Champ texte",
+        "zoneTexte": "Zone de texte",
+        "date": "Date",
+        "boolean": "Booléen (oui/non)",
+        "listeDeroulante": "Liste déroulante",
+        "selectionMultiple": "Sélection multiple",
+        "intervalle": "Intervalle",
+        "image": "Image",
+        "video": "Vidéo",
+        "fichierPDF": "Fichier PDF",
+        "nombre": "Nombre",
+        "color": "Couleur",
+        "checkbox": "Cases à cocher (multiple)",
+        "radio": "Case à cocher"
+    },
+    "addValue": "Ajouter une valeur",
+    "type": "Type",
+    "values": {
+        "isDefault": "Valeur par défault",
+        "name": "Nom",
+        "list": "Liste des valeurs",
+        "weight": "Poid supplémentaire",
+        "price": "prix supplémentaire",
+        "typePrice": "Type de prix",
+        "minLen": "Longueur minimum",
+        "min": "Valeur minimum",
+        "maxLen": "Longueur maximum",
+        "max": "Valeur maximum",
+        "typePriceChoice": {
+            "pourcent": "Pourcentage",
+            "price": "Prix"
+        }
+    }
+}

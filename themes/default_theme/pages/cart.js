@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { Link, Router } from 'routes';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
-import { listModulePage } from 'lib/utils';
+import { listModulePage, getCurrencySymbol } from 'lib/utils';
 
 /**
  * PageCart - Page panier (surcharge NSPageCart)
@@ -15,6 +15,7 @@ import { listModulePage } from 'lib/utils';
 
 class PageCart extends NSPageCart {
     render() {
+        const currencySymbol = getCurrencySymbol();
         const {
             lang, oCmsHeader, oCmsFooter, routerLang, sitename, t
         } = this.props;
@@ -70,8 +71,8 @@ class PageCart extends NSPageCart {
                                                         {
                                                             cart && cart.items && cart.items.filter(item => !item.typeDisplay).map((item, index) => {
                                                                 let basePriceATI = null;
-                                                                let descPromo    = '';
-                                                                let descPromoT   = '';
+                                                                let descPromo = '';
+                                                                let descPromoT = '';
                                                                 if (cart.quantityBreaks && cart.quantityBreaks.productsId && cart.quantityBreaks.productsId.length) {
                                                                     // On check si le produit courant a recu une promo
                                                                     const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
@@ -110,7 +111,7 @@ class PageCart extends NSPageCart {
                                                                                 <h2 style={{ overflow: 'hidden' }}>
                                                                                     <button
                                                                                         style={{
-                                                                                            border : '0', background : 'transparent', overflow : 'hidden', textAlign : 'left'
+                                                                                            border: '0', background: 'transparent', overflow: 'hidden', textAlign: 'left'
                                                                                         }} type="button"
                                                                                     >
                                                                                         {item.name}
@@ -139,6 +140,72 @@ class PageCart extends NSPageCart {
                                                                                                     ))
                                                                                                 }
                                                                                             </ul> 
+                                                                                        </div>
+                                                                                    )
+                                                                                }
+                                                                                {
+                                                                                    item.options && item.options.length > 0 && (
+                                                                                        <div className="menu-product">
+                                                                                            {t('cart:page.cart.options')}
+                                                                                            <ul style={{ marginBottom: "10px" }}>
+                                                                                                {
+                                                                                                    item.options.map((oneOptions) => {
+                                                                                                        const optionsName = oneOptions.name && typeof oneOptions.name[lang] !== "undefined" ? oneOptions.name[lang] : oneOptions.code;
+                                                                                                        let productPrix;
+                                                                                                        if (item.price && item.price[taxDisplay]) {
+                                                                                                            if (typeof item.price[taxDisplay].special !== 'undefined') {
+                                                                                                                productPrix = item.price[taxDisplay].special;
+                                                                                                            } else {
+                                                                                                                productPrix = item.price[taxDisplay].normal;
+                                                                                                            }
+                                                                                                        }
+                                                                                                        const calculatePriceModifier = (priceModifier) => {
+                                                                                                            let modiferText = "";
+                                                                                                            let totalPrice = 0;
+                                                                                                            if (typeof priceModifier !== "undefined" && priceModifier !== null) {
+                                                                                                                if (priceModifier.typePrice === "pourcent") {
+                                                                                                                    totalPrice = priceModifier.value * productPrix / 100;
+                                                                                                                } else if (priceModifier.typePrice === "price") {
+                                                                                                                    totalPrice = priceModifier.value;
+                                                                                                                }
+                                                                                                            }
+                                                                                                            if (totalPrice > 0) {
+                                                                                                                modiferText = `(${totalPrice} ${currencySymbol})`
+                                                                                                            }
+                                                                                                            return modiferText;
+                                                                                                        }
+                                                                                                        if (oneOptions.values && oneOptions.values.length > 0) {
+                                                                                                            if (oneOptions.type === "checkbox") {
+                                                                                                                return (<>
+                                                                                                                    <li key={oneOptions.code}>{optionsName} :
+                                                                                                                        <ul style={{ marginLeft: "20px" }}>
+                                                                                                                            {oneOptions.values && oneOptions.values.length > 0 && oneOptions.values.map((element, index) => {
+                                                                                                                                let name = `Value ${index + 1}`;
+                                                                                                                                if (element.name && typeof element.name[lang] !== "undefined") {
+                                                                                                                                    name = element.name[lang];
+                                                                                                                                }
+                                                                                                                                let modiferText = "";
+                                                                                                                                if (element.modifier && element.modifier.price) {
+                                                                                                                                    modiferText = calculatePriceModifier(element.modifier.price);
+                                                                                                                                }
+                                                                                                                                return <li>{`${name} : ${element.values.toString()}`} {modiferText}</li>;
+                                                                                                                            })}
+                                                                                                                        </ul>
+                                                                                                                    </li>
+                                                                                                                </>)
+                                                                                                            } else {
+                                                                                                                let modiferText = "";
+                                                                                                                if (oneOptions.values && oneOptions.values[0].modifier && oneOptions.values[0].modifier.price) {
+                                                                                                                    modiferText = calculatePriceModifier(oneOptions.values[0].modifier.price);
+                                                                                                                }
+                                                                                                                return (<li key={oneOptions.code}>{optionsName} : {oneOptions.values.map(element => element.values).toString()} {modiferText}</li>)
+                                                                                                            }
+                                                                                                        } else {
+                                                                                                            return '';
+                                                                                                        }
+                                                                                                    })
+                                                                                                }
+                                                                                            </ul>
                                                                                         </div>
                                                                                     )
                                                                                 }
@@ -291,10 +358,10 @@ class PageCart extends NSPageCart {
                                                                         </div>
                                                                         {/* <!-- /.form__controls --> */}
                                                                         <div style={{
-                                                                            fontSize     : '14px',
-                                                                            height       : '16px',
-                                                                            marginBottom : '10px',
-                                                                            color        : '#576fa1'
+                                                                            fontSize: '14px',
+                                                                            height: '16px',
+                                                                            marginBottom: '10px',
+                                                                            color: '#576fa1'
                                                                         }}
                                                                         >
                                                                             {
@@ -333,7 +400,7 @@ class PageCart extends NSPageCart {
                                                                         cart.quantityBreaks && cart.quantityBreaks.discountATI
                                                                             ? (
                                                                                 <div style={{
-                                                                                    fontSize : '15px', marginBottom : '15px', height : '16px'
+                                                                                    fontSize: '15px', marginBottom: '15px', height: '16px'
                                                                                 }}
                                                                                 >
                                                                                     <span style={{ float: 'left' }}>{t('cart:page.cart.cart_discount')}</span>
@@ -360,7 +427,7 @@ class PageCart extends NSPageCart {
                         </div>
                     </div>
                 </Layout>
-            </NSContext.Provider>
+            </NSContext.Provider >
         );
     }
 }

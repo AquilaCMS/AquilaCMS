@@ -174,5 +174,12 @@
         "activateAllVariants": "Activer toutes les déclinaisons",
         "disableAllVariants": "Désactiver toutes les déclinaisons"
     },
-    "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories"
+    "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories",
+    "optionsSet": {
+        "title": "Jeu d'options et options du produit",
+        "edit": "Editer le jeu d'options",
+        "optionsSet": "Jeu d'options du produit",
+        "void": "Pas de jeu d'options",
+        "goTo": "Aller aux jeux d'options"
+    }
 }

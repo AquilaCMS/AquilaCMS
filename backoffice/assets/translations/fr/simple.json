@@ -14,6 +14,8 @@
     "cs": "Produits associés",
     "specAttr": "Attributs spécifiques",
     "linkedCat": "Catégories liées",
+    "options": "Options produits",
+    "noAttr": "Pas d'attributs",
     "stock": {
         "title": "Stock",
         "qt": "Quantité",

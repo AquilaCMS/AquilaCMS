@@ -9,6 +9,7 @@
             "products": "produits",
             "description": "Livraison à domicile ou en magasin",
             "quantity": "Quantité",
+            "options": "Options",
             "more_infos": "+ d'infos",
             "add": "AJOUTER",
             "cancel": "Annuler",

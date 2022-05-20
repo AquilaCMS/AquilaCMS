@@ -116,6 +116,7 @@ OrderControllers.controller("OrderDetailCtrl", [
     "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants", "OrderDeliveryFields", "OrderDeliveryDate",
     function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants, OrderDeliveryFields, OrderDeliveryDate)
     {
+        $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
         const orderStatuses = {};
         NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};

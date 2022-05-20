@@ -40,7 +40,15 @@
                         <tbody>
                             <tr ng-repeat="item in cart.items">
                                 <td data-label="Description :" width="300">
-                                    {{item.name}}
+                                    <p>{{item.name}}</p>
+                                    <div ng-if="item.options && item.options.length > 0">
+                                        <p translate>order.detail.options</p>
+                                        <p ng-repeat="oneOptions in item.options">
+                                            <span>{{oneOptions.name[defaultLang] || oneOptions.code}}</span>
+                                            <span>:</span>
+                                            <span ng-repeat="oneValue in oneOptions.values">{{oneValue.values.toString()}}</span>
+                                        </p>
+                                    </div>
                                 </td>
                                 <td data-label="Quantité :" class="text-center order-text-big">
                                     {{item.quantity}}

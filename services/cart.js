@@ -205,7 +205,67 @@ const addItem = async (postBody, userInfo) => {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
-
+    if (typeof postBody.item.options !== 'undefined' && postBody.item.options.length > 0) {
+        // we set options in the cart !
+        // quick check if all mandatory options are present
+        for (const oneProductOptions of _product.options) {
+            if (oneProductOptions && oneProductOptions.mandatory === true) {
+                const isPresent = postBody.item.options.findIndex((oneOptionsInBody) => oneOptionsInBody._id.toString() === oneProductOptions._id.toString());
+                if (isPresent === -1 ) {
+                    throw NSErrors.InvalidOptions;
+                }
+            }
+        }
+        // add to item
+        // add code, add name, add modifier, add control
+        for (const oneOptionsInReq of postBody.item.options) {
+            const optionInProduct     = _product.options.find(((oneOptions) => oneOptions.code === oneOptionsInReq.code));
+            oneOptionsInReq.mandatory = optionInProduct.mandatory;
+            oneOptionsInReq.type      = optionInProduct.type;
+            oneOptionsInReq.name      = optionInProduct.name;
+            if (oneOptionsInReq.values.length > 1 &&  optionInProduct.type !== 'checkbox') {
+                // only checkbox has multiple values
+                throw NSErrors.InvalidOptions;
+            }
+            for (const oneValue of oneOptionsInReq.values) {
+                const valueInProduct = optionInProduct.values.find((element) => element._id.toString() === oneValue._id);
+                if (typeof valueInProduct === 'undefined') {
+                    throw NSErrors.InvalidOptions;
+                }
+                oneValue.control  = valueInProduct.control;
+                oneValue.modifier = valueInProduct.modifier;
+                if (optionInProduct.type === 'textfield' || optionInProduct.type === 'number') {
+                    const valueToCheck = oneValue.values[0];
+                    if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck.length && valueToCheck.length < oneValue.control.max) {
+                        continue;
+                    } else if (optionInProduct.type === 'number' && oneValue.control.min < valueToCheck && valueToCheck < oneValue.control.max) {
+                        continue;
+                    } else {
+                        throw NSErrors.InvalidOptions;
+                    }
+                } else if (optionInProduct.type === 'checkbox') {
+                    // multiple value are accepted
+                } else {
+                    const valueToCheck = oneValue.values[0];
+                    let checked        = true;
+                    /* eslint-disable no-labels */
+                    loopOfValue:
+                    for (const oneValueValues of optionInProduct.values) {
+                        for (const oneLang in oneValueValues.name) {
+                            if (valueToCheck === oneValueValues.name[oneLang]) {
+                                checked = true;
+                                break loopOfValue;
+                            }
+                        }
+                    }
+                    /* eslint-enable no-labels */
+                    if (checked !== true) {
+                        throw NSErrors.InvalidOptions;
+                    }
+                }
+            }
+        }
+    }
     if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
     } else if (_product.hasVariantsValue(_product) && typeof !postBody.item.selected_variant) {
@@ -234,7 +294,52 @@ const addItem = async (postBody, userInfo) => {
             ) {
                 continue;
             } else {
-                if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
+                if (typeof postBody.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
+                    // check if same options
+                    const optionsOfItemInCart = cart.items[index].options;
+                    if (postBody.item.options.length === optionsOfItemInCart.length) {
+                        // eslint-disable-next-line no-labels
+                        loopCheckOptions:
+                        for (const oneOptions of postBody.item.options) {
+                            const indexOptions = optionsOfItemInCart.findIndex((element) => element.code === oneOptions.code);
+                            if (indexOptions === -1) {
+                                isANewProduct = true;
+                                break;
+                            } else {
+                                if (optionsOfItemInCart[indexOptions].values.length === oneOptions.values.length) {
+                                    for (const oneOptionsValue of optionsOfItemInCart[indexOptions].values) {
+                                        const valueAlreadyPresent = oneOptionsValue._id.toString();
+                                        const indexInValues       = oneOptions.values.findIndex((element) => element._id === valueAlreadyPresent);
+                                        if (indexInValues > -1) {
+                                            if (oneOptions.values[indexInValues].values === oneOptionsValue.values) {
+                                                isANewProduct = false;
+                                                continue;
+                                            } else {
+                                                isANewProduct = true;
+                                                // eslint-disable-next-line no-labels
+                                                break loopCheckOptions;
+                                            }
+                                        } else {
+                                            isANewProduct = true;
+                                            // eslint-disable-next-line no-labels
+                                            break loopCheckOptions;
+                                        }
+                                    }
+                                    // need to check other options
+                                } else {
+                                    isANewProduct = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (typeof isANewProduct === 'boolean' && isANewProduct === false) {
+                            isANewProduct = index;
+                            break;
+                        }
+                    } else {
+                        isANewProduct = true;
+                    }
+                } else if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
                     // check if same variant
                     const variantOfItemInCart = cart.items[index].selected_variant;
                     if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
@@ -244,10 +349,10 @@ const addItem = async (postBody, userInfo) => {
                         isANewProduct = true;
                     }
                 } else {
-                    if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
+                    if ((typeof postBody.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') || (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined')) {
                         isANewProduct = index;
                         break;
-                    } else  if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
+                    } else  if ((typeof postBody.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) || (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined')) {
                         isANewProduct = index;
                         break;
                     }
@@ -255,14 +360,10 @@ const addItem = async (postBody, userInfo) => {
             }
         }
         if (typeof isANewProduct === 'number') {
-            postBody.item._id = cart.items[isANewProduct]._id.toString();
-
+            postBody.item._id       = cart.items[isANewProduct]._id.toString();
             postBody.item.quantity += cart.items[isANewProduct].quantity;
-
             delete postBody.item.id;
-
             delete postBody.item.weight;
-
             return updateQty(postBody, userInfo);
         }
     }
@@ -286,6 +387,10 @@ const addItem = async (postBody, userInfo) => {
         canonical    : _product.translation[_lang.code].canonical,
         attributes   : _product.attributes
     };
+    if (postBody.item.options) {
+        item.weight += await mongoose.model('products').getOptionsWeight(postBody.item.options, postBody.item.id);
+        item.options = postBody.item.options;
+    }
 
     if (_product.type !== 'virtual') item.stock = _product.stock;
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
@@ -295,6 +400,7 @@ const addItem = async (postBody, userInfo) => {
     item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
     const data = await _product.addToCart(cart, item, userInfo, _lang.code);
+
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }

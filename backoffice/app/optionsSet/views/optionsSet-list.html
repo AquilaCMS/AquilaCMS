@@ -1,0 +1,46 @@
+<ns-box data-title="optionsSet.list.t1" title-icon="fa fa-align-justify fa-lg" new-click="createNew()">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+
+        <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+            <thead>
+                <tr role="row" class="pointer">
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                        style="width: 200px;" aria-sort="ascending"
+                        aria-label="Username: activate to sort column descending" translate>
+                        optionsSet.list.code
+                    </th>
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                        style="width: 200px;" aria-sort="ascending"
+                        aria-label="Username: activate to sort column descending">
+                        <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
+                            optionsSet.list.nom
+                            <span ng-show="sortType == 'name' && !sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="sortType == 'name' && sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <!--<th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                        style="width: 200px;" aria-label="Date registered: activate to sort column ascending">
+                        Actions
+                    </th>-->
+                </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()"
+                infinite-scroll-distance="1" infinite-scroll-immediate-check="true"
+                infinite-scroll-disabled='scroller.busy'>
+                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-click="gotToDetail(oneOptionsSet.code)"
+                    ng-repeat="oneOptionsSet in optionsSet | orderBy:sortType:sortReverse">
+                    <td data-label="Code :" class="sorting_1">{{oneOptionsSet.code}}</td>
+                    <td data-label="Nom :" class="sorting_1">{{oneOptionsSet.name[lang]}}</td>
+                    <!--<td class=" ">
+                        <a href="#/optionsSets/{{optionsSet.code}}" class="btn btn-blue btn-with-icon">
+                            <i class="ico-magnifier-primary"></i>
+                            <span class="text">Modifier</span>
+                        </a>
+                    </td>-->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ns-box>

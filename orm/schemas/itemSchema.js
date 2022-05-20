@@ -10,6 +10,7 @@ const mongoose       = require('mongoose');
 const {aquilaEvents} = require('aql-utils');
 const Schema         = mongoose.Schema;
 const {ObjectId}     = Schema.Types;
+const OptionsSchema  = require('./optionsSchema');
 
 const itemsSchema = new Schema({
     id     : {type: ObjectId, ref: 'products', required: true},
@@ -36,6 +37,7 @@ const itemsSchema = new Schema({
         text  : String
     },
     canonical          : String,
+    options            : [OptionsSchema],
     parent             : {type: ObjectId, ref: 'products'},
     children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},

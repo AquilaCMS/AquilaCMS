@@ -31,6 +31,7 @@ class NSErrors {
     static get CategoryParentMissing() { return this.makeErrorAlias(NSErrors.BadRequest, 'CategoryParentMissing'); }
     static get InvalidFile() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidFile'); }
     static get InvalidParameters() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidParameters'); }
+    static get InvalidOptions() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidOptions'); }
     static get InvalidRequest() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidRequest'); }
     static get LoginSubscribeEmailInvalid() { return this.makeErrorAlias(NSErrors.BadRequest, 'LoginSubscribeEmailInvalid'); }
     static get LoginSubscribePasswordInvalid() { return this.makeErrorAlias(NSErrors.BadRequest, 'LoginSubscribePasswordInvalid', undefined, 'none'); }

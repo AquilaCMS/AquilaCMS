@@ -735,20 +735,27 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
+    if (cart.items[cartPrdIndex].type === 'bundle') return cart;
     const prdIndex = productsCatalog.findIndex((_prd) => {
         const idProduct = cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id;
         return _prd._id && ((_prd._id).toString() === idProduct.toString());
     });
     if (prdIndex > -1) {
+        if (cart.items[cartPrdIndex].selected_variant) {
+            productsCatalog[prdIndex].price = cart.items[cartPrdIndex].selected_variant.price;
+        }
         if (!cart.items[cartPrdIndex].noRecalculatePrice) {
+            const options                       = cart.items[cartPrdIndex].options;
+            const idOfProduct                   = cart.items[cartPrdIndex].id._id.toString();
+            const optionsModifier               = await mongoose.model('products').getOptionsPrice(options, idOfProduct);
             cart.items[cartPrdIndex].price.unit = {
-                et  : productsCatalog[prdIndex].price.et.normal,
-                ati : productsCatalog[prdIndex].price.ati.normal
+                et  : productsCatalog[prdIndex].price.et.normal + optionsModifier,
+                ati : productsCatalog[prdIndex].price.ati.normal + optionsModifier
             };
             if (productsCatalog[prdIndex].price.et.special !== undefined) {
                 cart.items[cartPrdIndex].price.special      = {
-                    et  : productsCatalog[prdIndex].price.et.special,
-                    ati : productsCatalog[prdIndex].price.ati.special
+                    et  : productsCatalog[prdIndex].price.et.special + optionsModifier,
+                    ati : productsCatalog[prdIndex].price.ati.special + optionsModifier
                 };
                 cart.items[cartPrdIndex].noRecalculatePrice = true;
             } else if (cart.items[cartPrdIndex].price.special) {
@@ -788,7 +795,7 @@ function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
 }
 
 async function resetCartProductPrice(cart, j) {
-    if (cart.items[j].noRecalculatePrice || cart.items[j].type === 'bundle') {
+    if (cart.items[j].noRecalculatePrice || cart.items[j].type === 'bundle' || cart.items[j].selected_variant || cart.items[j].options ) {
         return cart;
     }
     // we recover the product in base and we reapply its value (price)

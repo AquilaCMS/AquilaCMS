@@ -1,0 +1,57 @@
+{
+    "detail": {
+        "t1": "Option details",
+        "mandatory": "mandatory",
+        "sameName": "Same name",
+        "errorNoValues": "The option needs a value",
+        "errorNoName": "The options needs a name",
+        "errorNoValueName": "The value needs a name",
+        "errorNoCode": "The options needs a code",
+        "errorNoType": "The options needs a type",
+        "errorMinMax": "The min and the max are not coherent"
+    },
+    "new": {
+        "createOptions": "Create a new option"
+    },
+    "list": {
+        "t1": "Options list",
+        "addOptions": "Add add option",
+        "optionsTitle": "Options created",
+        "loadOptionsSet": "Display"
+    },
+    "choice": {
+        "choixTypeOption": "Choose this option's type",
+        "champTexte": "Text field",
+        "zoneTexte": "Text zone",
+        "date": "Date",
+        "boolean": "Boolean (yes/no)",
+        "listeDeroulante": "Drop-down list",
+        "selectionMultiple": "Multiple selection",
+        "intervalle": "Interval",
+        "image": "Image",
+        "video": "Video",
+        "fichierPDF": "PDF File",
+        "nombre": "Number",
+        "color": "Color",
+        "checkbox": "Checkbox (multiple)",
+        "radio": "Checkbox"
+    },
+    "addValue": "Add a value",
+    "type": "Type",
+    "values": {
+        "isDefault": "Default value",
+        "name": "Name",
+        "list": "List of values",
+        "weight": "Weight modifier",
+        "price": "Price modifier",
+        "typePrice": "Type of the modifier",
+        "minLen": "Minimum length",
+        "min": "Minimum value",
+        "maxLen": "Maximum length",
+        "max": "Maximum value",
+        "typePriceChoice": {
+            "pourcent": "Pourcent",
+            "price": "Prix"
+        }
+    }
+}

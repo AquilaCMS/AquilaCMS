@@ -1,0 +1,29 @@
+{
+    "list": {
+        "t1": "Jeux d'options",
+        "attrClasses": "Options classés",
+        "code": "Code",
+        "nom": "Nom",
+        "type": "Type",
+        "attrOrph": "Options orphelines",
+        "jeuxAttrib": "Jeux d'attributs",
+        "afficher": "Afficher"
+    },
+    "detail": {
+        "t1": "Detail du jeu d'options",
+        "code": "Code",
+        "name": "Nom",
+        "addOptions": "Ajouter une option",
+        "createOptions": "Créer une option",
+        "needSave": "N'oubliez pas de sauvegarder !",
+        "type": "Type",
+        "delete": "Supprimer l'option du jeu d'option"
+    },
+    "new": {
+        "code": "Code",
+        "name": "Nom",
+        "save": "Sauvegarder",
+        "cancel": "Annuler",
+        "title": "Créer un jeu d'option"
+    }
+}

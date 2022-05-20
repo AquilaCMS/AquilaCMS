@@ -65,6 +65,37 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
+    set_options : {type: ObjectId, ref: 'optionsSet', index: true},
+    options     : [
+        {
+            id        : {type: ObjectId, ref: 'options', index: true},
+            code      : {type: String, required: true},
+            mandatory : {type: Boolean},
+            name      : {},
+            type      : {
+                type : String,
+                enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
+            },
+            values : [{
+                name    : {},
+                control : {
+                    default : {type: Boolean},
+                    min     : {type: Number},
+                    max     : {type: Number}
+                },
+                modifier : {
+                    price : {
+                        value     : {type: Number},
+                        typePrice : {
+                            type : String,
+                            enum : ['pourcent', 'price']
+                        }
+                    },
+                    weight : {type: Number}
+                }
+            }]
+        }
+    ],
     images : [
         {
             url              : String,
@@ -151,7 +182,24 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        if (item.selected_variant) {
+
+        const optionsPrice = await this.model('products').getOptionsPrice(item.options, this._id.toString());
+        if (optionsPrice) {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal + optionsPrice,
+                    ati : this.price.ati.normal + optionsPrice
+                }
+            };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special + optionsPrice,
+                    ati : this.price.ati.special + optionsPrice
+                };
+            }
+        } else if (item.selected_variant) {
             item.price = {
                 unit : {
                     ati : item.selected_variant.price.ati.normal,
@@ -184,6 +232,59 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     return resp;
+};
+
+ProductsSchema.statics.getOptionsPrice = async function (options, idOfProduct,  tax = 'ati') {
+    const productInDB = await mongoose.model('products').findOne({_id: idOfProduct});
+    let productPrix   = 0;
+    if (productInDB.price && productInDB.price[tax]) {
+        if (typeof productInDB.price[tax].special !== 'undefined') {
+            productPrix = productInDB.price[tax].special;
+        } else {
+            productPrix = productInDB.price[tax].normal;
+        }
+    }
+    let optionsModifier = 0;
+    if (productInDB && productInDB.type === 'simple') {
+        if (options && productInDB && productInDB.options) {
+            for (const oneOptions of options) {
+                const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id.toString());
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp = valueTemp1.values.find((element) => element._id.toString() === oneValue._id.toString());
+                    if (typeof valueTemp !== 'undefined' && typeof valueTemp.modifier !== 'undefined' && typeof valueTemp.modifier.price !== 'undefined') {
+                        if (valueTemp.modifier.price.typePrice === 'price') {
+                            optionsModifier += valueTemp.modifier.price.value;
+                        } else if (valueTemp.modifier.price.typePrice === 'pourcent') {
+                            // need to calculate the percent
+                            const pourcentage   = valueTemp.modifier.price.value;
+                            const finalModifier = pourcentage * productPrix / 100;
+                            optionsModifier    += finalModifier;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
+};
+
+ProductsSchema.statics.getOptionsWeight = async function (options, idOfProduct) {
+    const productInDB   = await mongoose.model('products').findOne({_id: idOfProduct.toString()});
+    let optionsModifier = 0;
+    if (productInDB && productInDB.type === 'simple') {
+        if (options && productInDB && productInDB.options) {
+            for (const oneOptions of options) {
+                const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id.toString());
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp = valueTemp1.values.find((element) => element._id.toString() === oneValue._id.toString());
+                    if (typeof valueTemp !== 'undefined' && typeof valueTemp.modifier !== 'undefined' && typeof valueTemp.modifier.weight !== 'undefined') {
+                        optionsModifier += valueTemp.modifier.weight;
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
 };
 
 ProductsSchema.methods.updateData = async function (data) {

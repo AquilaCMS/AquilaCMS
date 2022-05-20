@@ -82,7 +82,7 @@ log
 !/backoffice/app/medias/
 !/backoffice/app/modules/
 !/backoffice/app/newsletter/
-!/backoffice/app/option/
+!/backoffice/app/options/
 !/backoffice/app/optionsSet/
 !/backoffice/app/order/
 !/backoffice/app/payment/
