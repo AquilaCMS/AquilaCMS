@@ -244,7 +244,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0) {
+    if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0 && withFilters) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
 
