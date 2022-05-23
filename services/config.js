@@ -237,7 +237,7 @@ const updateConfig = async (newConfig, oldConfig) => {
     // specific treatment (seo)
     if (oldConfig.environment.demoMode !== newConfig.environment.demoMode) {
         const seoService = require('./seo');
-        if (!newConfig.environment.demoMode) {
+        if (newConfig.environment.demoMode) {
             console.log('DemoMode : removing sitemap.xml');
             await seoService.removeSitemap(); // Remove the sitemap.xml
         }
@@ -246,7 +246,7 @@ const updateConfig = async (newConfig, oldConfig) => {
          * de Oui a Non (donc newConfig.environment.demoMode = false)  -> manageRobotsTxt(false)
          * de Non a Oui (donc newConfig.environment.demoMode = true)  -> manageRobotsTxt(true)
          */
-        await seoService.manageRobotsTxt(newConfig.environment.demoMode); // Ban robots.txt
+        await seoService.manageRobotsTxt(!newConfig.environment.demoMode); // Ban robots.txt
     }
     return newConfig;
 };
