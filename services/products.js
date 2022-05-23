@@ -133,7 +133,7 @@ const priceFilterFromPostBody = (PostBody) => {
 };
 
 // Returns all products found, the products on the current page and the total number of products found
-const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lang = global.defaultLang) => {
+const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaultLang) => {
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
@@ -160,19 +160,7 @@ const getProductsByOrderedSearch = async (pattern, filters, limit, page = 1, lan
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
     const fuseRes = fuse.search(pattern);
-    if (limit === 0) return {allProducts: fuseRes, currentPageProducts: fuseRes, count: fuseRes.length};
-    if (limit === 1) return {allProducts: fuseRes, currentPageProducts: fuseRes.slice(0, 1), count: fuseRes.length};
-    const res = [];
-
-    let i = 0;
-    if (page !== 1) {
-        i = (page - 1) * limit;
-    }
-    while (i < limit + (page - 1) * limit && i < fuseRes.length) {
-        res.push(fuseRes[i]);
-        i++;
-    }
-    return {allProducts: fuseRes, currentPageProducts: res, count: fuseRes.length};
+    return {allProducts: fuseRes, count: fuseRes.length};
 };
 
 /**
@@ -201,8 +189,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         queryBuilder.defaultFields = ['*'];
     }
 
-    let count;
-    let currentPageProductsIds;
+    let filter;
     const realLimit = PostBody.limit;
     const sort      = PostBody.sort;
     delete PostBody.sort;
@@ -212,16 +199,17 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         }
         const textSearch = PostBody.filter.$text.$search;
         delete PostBody.filter.$text;
+        filter          = JSON.parse(JSON.stringify(PostBody.filter));
+        PostBody.filter = {};
+
         if (!PostBody.filter.$and) PostBody.filter.$and = [];
         PostBody.filter.$and.push({active: true});
         PostBody.filter.$and.push({_visible: true});
 
-        const thisLimit        = (sort && !sort.sortWeight) ? 0 : PostBody.limit;
-        const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, thisLimit, PostBody.page, lang);
-        currentPageProductsIds = searchedProducts.currentPageProducts.map((res) => res.item._id.toString());
-        count                  = searchedProducts.count;
+        const searchedProducts = await getProductsByOrderedSearch(textSearch, PostBody.filter, lang);
         const allProducts      = searchedProducts.allProducts;
         PostBody.filter._id    = {$in: allProducts.map((res) => res.item._id.toString())};
+        filter._id             = {$in: allProducts.map((res) => res.item._id.toString())};
         PostBody.limit         = 0;
     }
 
@@ -237,6 +225,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     // Fetch all products
     let allProductsRes;
     if (withFilters) {
+        // Fetch all products found by the fuzzy search
         const allProducts = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
@@ -248,14 +237,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     }
     queryBuilder.defaultFields = defaultFields;
 
-    // If there is a page management, we retrieve the products on the current page
     let result = JSON.parse(JSON.stringify(allProductsRes));
-    if (PostBody.page) {
-        // With the fuzzy search pagination
-        if (currentPageProductsIds) {
-            result.datas = allProductsRes.datas.filter((item) => currentPageProductsIds.includes(item._id.toString()));
-        }
-    }
 
     // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
@@ -265,6 +247,29 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+
+        // Filtered products
+        const filteredProductsRes  = await Products
+            .find(filter)
+            .select('_id')
+            .lean();
+        const filteredId           = filteredProductsRes.map((res) => res._id.toString());
+        const filteredProductsData = result.datas.filter((item) => filteredId.includes(item._id.toString()));
+        const allFilteredProducts  = {datas: filteredProductsData, count: filteredProductsData.length};
+
+        const arrayUnfilteredPriceSort = {et: [], ati: []};
+        for (const prd of result.datas) {
+            if (prd.price) {
+                if (prd.price.priceSort.et) {
+                    arrayUnfilteredPriceSort.et.push(prd.price.priceSort.et);
+                }
+                if (prd.price.priceSort.ati) {
+                    arrayUnfilteredPriceSort.ati.push(prd.price.priceSort.ati);
+                }
+            }
+        }
+
+        result = JSON.parse(JSON.stringify(allFilteredProducts));
 
         const arrayPriceSort = {et: [], ati: []};
         for (const prd of result.datas) {
@@ -278,29 +283,19 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             }
         }
 
+        result.unfilteredPriceSortMin = {et: Math.min(...arrayUnfilteredPriceSort.et), ati: Math.min(...arrayUnfilteredPriceSort.ati)};
+        result.unfilteredPriceSortMax = {et: Math.max(...arrayUnfilteredPriceSort.et), ati: Math.max(...arrayUnfilteredPriceSort.ati)};
+
         result.priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
         result.priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
     }
 
     if (PostBody.filter?._id?.$in) {
-        result.count = count || result.count; // If a filter on the id was filled in but without going through the fuzzy search, we keep the current count
         delete PostBody.structure;
 
         if (sort && !sort.sortWeight) {
             result.datas = sortProductList(result.datas, sort);
             // To create the pagination
-            if (PostBody.page) {
-                const res = [];
-                let i     = 0;
-                if (PostBody.page !== 1) {
-                    i = (PostBody.page - 1) * realLimit;
-                }
-                while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
-                    res.push(result.datas[i]);
-                    i++;
-                }
-                result.datas = res;
-            }
         } else {
             // We order the products according to the order given by the fuzzy search just before
             result.datas.sort((a, b) => {
@@ -308,6 +303,20 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
                 const bIndex = PostBody.filter._id.$in.indexOf(b._id.toString());
                 return aIndex - bIndex;
             });
+        }
+
+        // To create the pagination
+        if (PostBody.page) {
+            const res = [];
+            let i     = 0;
+            if (PostBody.page !== 1) {
+                i = (PostBody.page - 1) * realLimit;
+            }
+            while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
+                res.push(result.datas[i]);
+                i++;
+            }
+            result.datas = res;
         }
         delete PostBody.filter._id;
     }
