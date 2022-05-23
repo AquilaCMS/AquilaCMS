@@ -227,7 +227,7 @@ const updateConfig = async (newConfig, oldConfig) => {
         newConfig.needRestart = true;
     }
     // images
-    if (newConfig.environment.defaultImage !== oldConfig.defaultImage) {
+    if (newConfig.environment.defaultImage !== oldConfig.environment.defaultImage) {
         await ServiceCache.flush();
         await ServiceCache.cleanCache();
     }
