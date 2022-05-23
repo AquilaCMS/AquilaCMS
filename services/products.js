@@ -74,8 +74,11 @@ const sortProductList = (products, PostBodySort, category) => {
     } else {
         const sortPropertyName = Object.getOwnPropertyNames(PostBodySort)[0];
         let sortArray          = sortPropertyName.split('.');
-        if (sortArray[0] === 'price' && sortArray[1] !== 'priceSort') {
+        if (sortArray[0] === 'price' && sortArray[1] !== 'priceSort') { // If theme send another price field to sort
             const taxes = sortArray[1];
+            sortArray   = ['price', 'priceSort', taxes];
+        } else if (sortArray[0] === 'price' && sortArray[1] === 'priceSort') { // If the theme doesn't send the ET/ATI info
+            const taxes = sortArray[2] ? sortArray[2] : 'ati';
             sortArray   = ['price', 'priceSort', taxes];
         }
 
@@ -571,56 +574,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         let prdsPrices = JSON.parse(JSON.stringify(prds));
 
         // We collect all the products belonging to this category in order to have the min and max
-        const priceFilter = priceFilterFromPostBody(PostBody);
-        prdsPrices        = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
-        if (priceFilter) {
-            prdsPrices = prdsPrices.filter((prd) => {
-                if (priceFilter.$or[1]['price.ati.special']) {
-                    if (prd.price.ati.special) {
-                        if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
-                            && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
-                            return true;
-                        }
-                    } else {
-                        if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
-                            && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
-                            return true;
-                        }
-                    }
-                } else if (priceFilter.$or[1]['price.et.special']) {
-                    if (prd.price.et.special) {
-                        if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
-                            && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
-                            return true;
-                        }
-                    } else {
-                        if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
-                            && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            });
-
-            prds = prds.filter((prd) => prdsPrices
-                .map((prdPri) => prdPri._id.toString())
-                .indexOf(prd._id.toString()) !== -1);
-            if (PostBody.sort && PostBody.sort['price.ati.normal']) {
-                prds = prds.sort((a, b) => {
-                    let priceA = a.price.ati.normal;
-                    let priceB = a.price.ati.normal;
-                    if (a.price.ati.special) priceA = a.price.ati.special;
-                    if (b.price.ati.special) priceB = b.price.ati.special;
-                    let result;
-                    const sort = Number(PostBody.sort['price.ati.normal']);
-                    if (sort === 1) result = priceA - priceB;
-                    if (sort === -1) result = priceB - priceA;
-                    return result;
-                });
-            }
-        }
+        prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
 
         const arrayPrice               = {et: [], ati: []};
         const arraySpecialPrice        = {et: [], ati: []};
@@ -667,28 +621,24 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
             // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
         }
-        // if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or && PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`]) {
-        //     prds = prds.filter((prd) =>  {
-        //         const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-        //         return pr >= (
-        //             PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
-        //             || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
-        //         )
-        //         && pr <= (
-        //             PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
-        //             || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
-        //         );
-        //     });
-        // }
 
         if (!isAdmin) {
+            const priceFilter         = priceFilterFromPostBody({filter: filters}); // Remove the $or field from filters
+            const formatedPriceFilter = {
+                gte : priceFilter?.$or[0]['price.ati.normal']?.$gte ? priceFilter?.$or[0]['price.ati.normal']?.$gte : unfilteredPriceSortMin.ati, // TODO : with theme modifications, change price.ati.normal to price.priceSort.ati in priceFilter
+                lte : priceFilter?.$or[0]['price.ati.normal']?.$lte ? priceFilter?.$or[0]['price.ati.normal']?.$lte : unfilteredPriceSortMax.ati
+            };
+
             filters             = {
                 ...filters,
                 ...PostBody.filter
             };
             const filteredPrdId = await Products.find(filters).lean().select('_id');
             const filteredId    = filteredPrdId.map((res) => res._id.toString());
-            prds                = prds.filter((item) => filteredId.includes(item._id.toString()));
+            prds                = prds.filter((item) => {
+                const res = filteredId.includes(item._id.toString()) && (item.price.priceSort.ati >= formatedPriceFilter.gte && item.price.priceSort.ati <= formatedPriceFilter.lte);
+                return res;
+            });
 
             const arrayPriceSort = {et: [], ati: []};
             for (const prd of prds) {
