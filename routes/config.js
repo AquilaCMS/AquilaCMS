@@ -69,7 +69,7 @@ async function saveEnvFile(req, res, next) {
 async function saveEnvConfig(req, res, next) {
     try {
         await serviceConfig.saveEnvConfig(req.body);
-        if (req.body.environment.needRestart) {
+        if (req.body?.environment?.needRestart || global.envConfig.environment.needRestart) {
             setTimeout(() => {
                 packageManager.restart();
             }, 5000);
@@ -77,7 +77,7 @@ async function saveEnvConfig(req, res, next) {
         res.json({
             status : 'success',
             data   : {
-                needRestart : req.body.environment.needRestart
+                needRestart : req.body?.environment?.needRestart || global.envConfig.environment.needRestart
             }
         });
     } catch (err) {
