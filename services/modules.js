@@ -865,7 +865,7 @@ const removeModuleAddon = async (_module) => {
             try {
                 await require('./job').deleteModuleJobByName(cronName);
             } catch (err) {
-                console.error(err);
+                console.error(`Unable to delete the job '${cronName}'`);
             }
         }
     }

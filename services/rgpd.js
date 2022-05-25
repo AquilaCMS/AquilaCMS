@@ -443,7 +443,7 @@ const generateFakeAddresses = async (options) => {
     return addr;
 };
 
-const dumpAnonymizedDatabase = async (res) => {
+const dumpAnonymizedDatabase = async () => {
     try {
         await copyDatabase();
         let uri = global.envFile.db;
