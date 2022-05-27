@@ -26,7 +26,7 @@ const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultF
 
 const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const generateFilters = async (res, lang = '') => {
+const generateFilters = async (res, lang = '', selectedAttributes = []) => {
     lang = ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
         const attributes = [];
@@ -110,8 +110,15 @@ const generateFilters = async (res, lang = '') => {
                 }
             });
             values[key] = tValuesValid;
-            // If the filter has less than two we will not display the values
-            if (values[key].length < 2) {
+
+            // If a filter has no value selected and has less than two different values it is not displayed
+            let isSelected = false;
+            for (let i = 0; i < selectedAttributes.length; i++) {
+                if (selectedAttributes[i].id === key) {
+                    isSelected = true;
+                }
+            }
+            if (values[key].length < 2 && !isSelected) {
                 delete values[key];
                 const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
                 if (idx >= 0) {

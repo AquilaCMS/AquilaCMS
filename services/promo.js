@@ -344,7 +344,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
     if (!cart) throw NSErrors.CartInactiveNotFound;
     // Looking for promos of type cart (type: "1") and quantitybreak
-    const promos = await Promo.find({discountType: 'QtyB', actif: true, type: '1'}, null, {sort: {priority: -1}});
+    const promos = await Promo.find({discountType: 'QtyB', actif: true, type: '1'}, null, {sort: {priority: -1}}).populate('actions');
     if (!promos || !promos.length) {
         return cart;
     }
@@ -369,7 +369,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
     let promoIndex     = 0;
     const promosLen    = promos.length;
     while (applyNextRules && promoIndex < promosLen) {
-        let promo                  = promos[promoIndex];
+        const promo                = promos[promoIndex];
         const {dateStart, dateEnd} = promo;
 
         // Validation of the quantity break
@@ -377,7 +377,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
             // promo = await promo.populate("rules_id").execPopulate();
 
             if (promo.actions.length > 0) {
-                promo = await promo.populate('actions').execPopulate();
+                // promo = await promo.populate('actions').execPopulate();
 
                 await utilsDatabase.populateItems(copyCart.items);
 
@@ -387,7 +387,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
                     for (let j = 0, lenj = copyCart.items.length; j < lenj; j++) {
                         const itemId      = copyCart.items[j].id._id;
                         const baseProduct = await ProductSimple.findOne({_id: itemId}).lean();
-                        const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j]]});
+                        const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j].id]});
 
                         try {
                             // We test if the eval can return an error
@@ -769,7 +769,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
 function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
     let discountET  = 0;
     let discountATI = 0;
-    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(2));
+    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(5));
 
     if (discountValueET) {
         discountET  = prices.et - discountValueET;

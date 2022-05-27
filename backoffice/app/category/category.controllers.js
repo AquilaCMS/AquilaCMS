@@ -191,6 +191,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         var initValues = {start: 0, limit: 15};
         $scope.getProducts = function (forceQueryProducts = false) {
+            $scope.loadPrds = true;
             var params = {
                 page: $scope.currentPage,
                 limit: $scope.itemPerPage,
@@ -273,43 +274,43 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     };
                     paramsV2.PostBody.limit = $scope.category.productsList.length;
                     delete paramsV2.PostBody.page;
-                }
+                } 
             }else{
                 paramsV2.PostBody.filter = {_id: {$nin: arrayListOfProducts}, ...paramsV2.PostBody.filter};
             }
-            if ($scope.searchObj.productInCategory !== "true" || forceQueryProducts) {
-                ProductsV2.list(paramsV2, function (res) {
+            if($scope.searchObj.productInCategory !== "true" || (forceQueryProducts && $scope.category.productsList.length > 0)) {
+                ProductsV2.list($scope.searchObj.productInCategory !== "true" ? paramsV2 : {lang: paramsV2.lang, PostBody: {...paramsV2.PostBody, filter: {_id: paramsV2.PostBody.filter._id}}}, function (res) {
                     if(angular.isArray(res.datas)) {
                         $scope.totalItems = res.count;
                         $scope.dlProducts = res.datas;
     
-                        if($scope.category.productsList && $scope.category.productsList.length > 0) {
-                            for(var i = 0; i < $scope.dlProducts.length; i++) {
-                                var prd = $scope.category.productsList.find(function (item) {
-                                    return item.id == $scope.dlProducts[i]._id;
-                                });
-                                if(prd) {
-                                    $scope.dlProducts[i].sortWeight = prd.sortWeight;
-                                    $scope.dlProducts[i].checked = true;
+                        for(var i = 0; i < $scope.dlProducts.length; i++) {
+                            var prd = $scope.category.productsList.find(function (item) {
+                                return item.id == $scope.dlProducts[i]._id;
+                            });
+                            if(prd) {
+                                $scope.dlProducts[i].sortWeight = prd.sortWeight;
+                                $scope.dlProducts[i].checked = true;
+                            }
+                        } 
+                        $scope.dlProducts = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
+                        $scope.products = $scope.filterLocalProducts($scope.dlProducts, paramsV2);
+                        if($scope.searchObj.productInCategory == "true"){
+                            // we only take 15 products, with the correct page (index sort)
+                            $scope.products = $scope.products.filter(function(value, index) {
+                                const page = $scope.currentPage;
+                                const indexMin = (page-1)*15;
+                                const indexMax = page*15;
+                                if(indexMin <= index && index <= indexMax) {
+                                    return true;
                                 }
-                            }
-                            $scope.products = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
-                            if($scope.searchObj.productInCategory == "true"){
-                                // we only take 15 products, with the correct page (index sort)
-                                $scope.products = $scope.products.filter(function(value, index) {
-                                    const page = $scope.currentPage;
-                                    const indexMin = (page-1)*15;
-                                    const indexMax = page*15;
-                                    if(indexMin <= index && index <= indexMax) {
-                                        return true;
-                                    }
-    
-                                });
-                            }
+
+                            });
                         }
                     } else {
                         $scope.products = null;
                     }
+                    $scope.loadPrds = false;
                 });
             } else {
                 if($scope.category.productsList && $scope.category.productsList.length > 0) {
@@ -322,7 +323,9 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                             $scope.dlProducts[i].checked = true;
                         }
                     }
-                    $scope.products = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
+                    $scope.dlProducts = filterProducts($scope.dlProducts); // filter product by "sortWeight" and "checked" 
+                    $scope.products = $scope.filterLocalProducts($scope.dlProducts, paramsV2);
+                    $scope.totalItems = $scope.products.length;
                     $scope.products = $scope.products.filter(function(value, index) {
                         const page = $scope.currentPage;
                         const indexMin = (page-1)*15;
@@ -330,11 +333,13 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                         if(indexMin <= index && index <= indexMax) {
                             return true;
                         }
-
                     });
+                } else {
+                    $scope.products = null;
+                    $scope.totalItems = 0;
                 }
+                $scope.loadPrds = false;
             }
-            $scope.loadPrds = false;
         };
 
         function filterProducts(products) {
@@ -371,7 +376,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 }
                 $scope.category.productsList.push({
                     checked: false,
-                    id: {_id: id},
+                    id,
                     sortWeight: pos
                 });
             }else{
@@ -387,11 +392,11 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
         };
 
-        $scope.pageChanged = function (newPage)
+        $scope.pageChanged = function (newPage, forceQueryProducts = false)
         {
             $scope.currentPage = newPage;
 
-            $scope.getProducts();
+            $scope.getProducts(forceQueryProducts);
         };
 
         $scope.changeTri = function ()
@@ -401,6 +406,38 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 $scope.products = productsList;
             });
         };
+
+        $scope.filterLocalProducts = function (products, paramsV2) {
+            return products.filter(function(value, index) {
+                const filterKeys = Object.keys(paramsV2.PostBody.filter).filter((key) => (key !== '_id' && key !== 'productInCategory'));
+                if(filterKeys.length > 0) {
+                    for(const filterKey of filterKeys) {
+                        if(filterKey === 'code'){
+                            if(!value[filterKey].match(new RegExp(paramsV2.PostBody.filter[filterKey].$regex, 'i'))) {
+                                return false;
+                            }
+                        } else if(filterKey === `translation.${$scope.lang}.name`) {
+                            if(!value.translation[$scope.lang]?.name?.match(new RegExp(paramsV2.PostBody.filter[filterKey].$regex, 'i'))) {
+                                return false;
+                            }
+                        } else if(filterKey === `stock.qty`) {
+                            if(Number(value?.stock?.qty) < Number(paramsV2.PostBody.filter[filterKey]?.$gte) || Number(value?.stock?.qty) > Number(paramsV2.PostBody.filter[filterKey]?.$lt)){
+                                return false;
+                            }
+                        } else if(filterKey === 'price.ati.normal') {
+                            if(Number(value?.price?.ati?.normal) < Number(paramsV2.PostBody.filter[filterKey]?.$gte) || Number(value?.price?.ati?.normal) > Number(paramsV2.PostBody.filter[filterKey]?.$lt)){
+                                return false;
+                            }
+                        } else if(paramsV2.PostBody.filter[filterKey].$regex && value[filterKey] !== paramsV2.PostBody.filter[filterKey].$regex){
+                            return false;
+                        } else if (value[filterKey] !== paramsV2.PostBody.filter[filterKey]) {
+                            return false;
+                        }
+                    }
+                };
+                return true
+            });
+        }
 
         $scope.search = function () {
             $scope.pagination.minPrice = undefined;
@@ -582,7 +619,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 if(checked == true || typeof checked === "undefined"){
                     // not in the list
                     $scope.category.productsList.push({
-                        id: {_id: id},
+                        id,
                         sortWeight: 0,
                         checked: true
                     });
@@ -600,7 +637,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 _id: newCat._id,
                 productsList: newCat.productsList
             }, function (response) {
-
+                $scope.category.productsList = response.productsList
             });
         };
 

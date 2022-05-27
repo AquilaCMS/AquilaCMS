@@ -94,15 +94,15 @@ OrderControllers.controller("OrderListCtrl", [
         }
         init();
 
-        $("#query-date").datepicker({
-            dateFormat: "dd/mm/yy", onClose: function (date)
-            {
-                $scope.$apply(function ()
-                {
-                    $scope.queryDate = new Date(date.substr(6, 4), date.substr(3, 2) - 1, date.substr(0, 2)).toISOString();
-                });
-            }
-        });
+        // $("#query-date").datepicker({
+        //     dateFormat: "dd/mm/yy", onClose: function (date)
+        //     {
+        //         $scope.$apply(function ()
+        //         {
+        //             $scope.queryDate = new Date(date.substr(6, 4), date.substr(3, 2) - 1, date.substr(0, 2)).toISOString();
+        //         });
+        //     }
+        // });
 
         $scope.goToOrderDetails = function (orderId)
         {

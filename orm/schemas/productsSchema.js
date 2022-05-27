@@ -203,7 +203,11 @@ ProductsSchema.methods.updateData = async function (data) {
                 await require('../../services/cache').deleteCacheImage('products', this);
                 // puis on delete l'image original
                 const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
-                await fs.unlinkSync(joindPath);
+                try {
+                    await fs.unlinkSync(joindPath);
+                } catch {
+                    console.warn(`Unable to remove ${joindPath}`);
+                }
             }
         }
     }
