@@ -1,5 +1,5 @@
 import React from 'react';
-import 'aql-utils';
+import 'aql-utils/themeIndex.js';
 import axios from 'axios';
 import App from 'next/app';
 import Head from 'next/head';
