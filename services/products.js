@@ -171,7 +171,7 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
  */
 // eslint-disable-next-line no-unused-vars
 const getProducts = async (PostBody, reqRes, lang, withFilters) => {
-    let structure;
+    let structure = {};
     if (PostBody && PostBody.structure) {
         // required to have all fields for promo rules
         PostBody.structure = {
