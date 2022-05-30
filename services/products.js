@@ -288,6 +288,16 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
 
         result.priceSortMin = {et: Math.min(...arrayPriceSort.et), ati: Math.min(...arrayPriceSort.ati)};
         result.priceSortMax = {et: Math.max(...arrayPriceSort.et), ati: Math.max(...arrayPriceSort.ati)};
+    } else if (structure.price === 0 && withFilters) { // For themes that don't want to manage prices
+        // Filtered products
+        const filteredProductsRes  = await Products
+            .find(filter)
+            .select('_id')
+            .lean();
+        const filteredId           = filteredProductsRes.map((res) => res._id.toString());
+        const filteredProductsData = result.datas.filter((item) => filteredId.includes(item._id.toString()));
+        const allFilteredProducts  = {datas: filteredProductsData, count: filteredProductsData.length};
+        result                     = JSON.parse(JSON.stringify(allFilteredProducts));
     }
 
     if (PostBody.filter?._id?.$in) {

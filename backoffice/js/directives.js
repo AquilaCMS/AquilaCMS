@@ -411,6 +411,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 insertDBMediaUpload: true,
                                 search: ""
                             };
+                            $scope.media = {};
 
                                 $scope.generateFilter = function () {
                                     const filter = {};
@@ -482,7 +483,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $modalInstance.close(url);
                             };
 
-                            $scope.media = {};
 
                         }],
                         resolve: {
@@ -2607,8 +2607,8 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/${$scope.media.type}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                    return $scope.link
+                    $scope.link = `${window.location.origin}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    return $scope.link;
                 }
             };
     
@@ -2626,18 +2626,19 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 const img = new Image();
                 img.src = url;
                 img.onload = function() { 
-                    $scope.info.ratio = this.width / this.height;
-                    $scope.info.width = this.width;
-                    $scope.info.height = this.height;
-                    $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
-                    $scope.$apply()
+                    const that = this;
+                    $scope.$apply(function () {
+                        $scope.info.ratio = that.width / that.height;
+                        $scope.info.width = that.width;
+                        $scope.info.height = that.height;
+                        $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
+                    })
                 }
             }
 
-            $scope.$watch(function (scp) {return scp.media}, function(oldValue, newValue) {
-                if (newValue)
-                    $scope.getMeta(newValue.link)
-            }, true);
+            $scope.$watch(function (scp) {return scp.media}, function(newValue, oldValue) {
+                if (newValue?.link)  $scope.getMeta(newValue.link)
+            });
 
         }]
     }
