@@ -238,7 +238,12 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
                 }
-                $scope.createPrds()
+                if($scope.product?.variants?.length > 0) {
+                    $scope.createPrds()
+                } else {
+                    delete $scope.product.variants_values
+                    delete $scope.product.variants
+                }
             }
 
             $scope.selectVariantValue = function (variantValue, index) {
