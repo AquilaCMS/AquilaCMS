@@ -124,7 +124,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
             }
             // Move file to / medias
             try {
-                await fsp.moveFile(init_file, target_file, {mkdirp: true});
+                await fsp.copyRecursive(init_file, target_file);
+                await fsp.deleteRecursive(init_file);
             } catch (e) {
                 console.error(e);
                 throw NSErrors.MediaNotFound;
