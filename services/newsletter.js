@@ -52,7 +52,7 @@ exports.setStatusNewsletterByEmail = async function (email, params) {
     ).lean();
     // No segment exists
     if (!oNewsletter || !oNewsletter.segment.length) {
-        const update = {name: params.name, optin: true, date_subscribe: new Date()};
+        const update = {name: params.name, optin: params.optin, date_subscribe: new Date()};
         return Newsletters.findOneAndUpdate({email}, {$push: {segment: update}}, {new: true, upsert: true});
     }
     return Newsletters.findOneAndUpdate({
