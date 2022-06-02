@@ -84,17 +84,17 @@ const uploadAllMedias = async (reqFile, insertDB) => {
     const target_path = `./${server.getUploadDirectory()}/medias`;
 
     const zip = new AdmZip(path_init);
+    // Extract files from zip to 'temp' folder
     zip.extractAllTo(path_unzip);
-    // Browse all the files to add them to the medias table
     let filenames = '';
-    // check if zip is empty || use of try/catch to avoid fsp native error when the zip is empty and throw NSErrors
+    // check if zip is totaly empty
     try {
         filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
     } catch (e) {
         deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotFound;
     }
-    // if zip have folder but no file
+    // check if zip have folder but no file
     if (filenames.length === 0) {
         deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotInRoot;
@@ -122,7 +122,7 @@ const uploadAllMedias = async (reqFile, insertDB) => {
             if (fsp.existsSync(target_file)) {
                 target_file = target_file_duplicated;
             }
-            // Move file to / medias
+            // Copy files to /medias and delete the original files from 'temp' folder
             try {
                 await fsp.copyRecursive(init_file, target_file);
                 await fsp.deleteRecursive(init_file);
