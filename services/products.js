@@ -125,6 +125,13 @@ const priceFilterFromPostBody = (PostBody) => {
                         }
                     }
                 }
+            } else {
+                const thisSubFieldArray = Object.keys(thisField)[0].split('.');
+                if (thisSubFieldArray[0] === 'price') {
+                    priceFilter = thisField;
+                    PostBody.filter.$and.splice(i, 1);
+                    break;
+                }
             }
         }
         if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
@@ -248,18 +255,18 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
 
-        const priceFilter = priceFilterFromPostBody({filter}); // Remove the $or field from filter
+        let priceFilter = priceFilterFromPostBody({filter}) || undefined; // Remove the $or field from filter
 
         // Temporary solution to avoid having to wait for changes on the theme side
-        if (priceFilter?.$or[0]['price.ati.normal']) {
-            priceFilter.$or[0] = {
+        if (priceFilter && priceFilter.$or && priceFilter.$or[0]['price.ati.normal']) {
+            priceFilter = {
                 'price.priceSort.ati' : priceFilter.$or[0]['price.ati.normal']
             };
         }
 
         const formatedPriceFilter = {
-            gte : priceFilter?.$or[0]['price.priceSort.ati']?.$gte ? priceFilter?.$or[0]['price.priceSort.ati']?.$gte : 0,
-            lte : priceFilter?.$or[0]['price.priceSort.ati']?.$lte ? priceFilter?.$or[0]['price.priceSort.ati']?.$lte : 9999999
+            gte : priceFilter && priceFilter['price.priceSort.ati']?.$gte ? priceFilter['price.priceSort.ati']?.$gte : 0,
+            lte : priceFilter && priceFilter['price.priceSort.ati']?.$lte ? priceFilter['price.priceSort.ati']?.$lte : 9999999
         };
 
         // Filtered products (without filter on prices)
@@ -661,18 +668,18 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
 
         if (!isAdmin) {
-            const priceFilter = priceFilterFromPostBody({filter: filters}); // Remove the $or field from filters
+            let priceFilter = priceFilterFromPostBody({filter: filters}) || undefined; // Remove the $or field from filters
 
             // Temporary solution to avoid having to wait for changes on the theme side
-            if (priceFilter?.$or[0]['price.ati.normal']) {
-                priceFilter.$or[0] = {
+            if (priceFilter && priceFilter.$or && priceFilter.$or[0]['price.ati.normal']) {
+                priceFilter = {
                     'price.priceSort.ati' : priceFilter.$or[0]['price.ati.normal']
                 };
             }
 
             const formatedPriceFilter = {
-                gte : priceFilter?.$or[0]['price.priceSort.ati']?.$gte ? priceFilter?.$or[0]['price.priceSort.ati']?.$gte : unfilteredPriceSortMin.ati,
-                lte : priceFilter?.$or[0]['price.priceSort.ati']?.$lte ? priceFilter?.$or[0]['price.priceSort.ati']?.$lte : unfilteredPriceSortMax.ati
+                gte : priceFilter && priceFilter['price.priceSort.ati']?.$gte ? priceFilter['price.priceSort.ati']?.$gte : unfilteredPriceSortMin.ati,
+                lte : priceFilter && priceFilter['price.priceSort.ati']?.$lte ? priceFilter['price.priceSort.ati']?.$lte : unfilteredPriceSortMax.ati
             };
 
             filters             = {
