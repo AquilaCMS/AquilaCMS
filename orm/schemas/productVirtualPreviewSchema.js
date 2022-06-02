@@ -6,10 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose             = require('mongoose');
-const ProductVirtualSchema = require('./productVirtualSchema');
-const Schema               = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
 
-const ProductVirtualPreviewSchema = new Schema(ProductVirtualSchema);
+const ProductVirtualPreviewSchema = new Schema({
+    downloadLink  : {type: String, default: null},
+    downloadInfos : {type: String, default: null}
+}, {
+    discriminatorKey : 'type',
+    toObject         : {virtuals: true},
+    toJSON           : {virtuals: true},
+    id               : false
+});
 
 module.exports = ProductVirtualPreviewSchema;

@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose         = require('mongoose');
-const {ProductsSchema} = require('../schemas');
+const mongoose                = require('mongoose');
+const {ProductsPreviewSchema} = require('../schemas');
 /**
  * For preview products
  */
-module.exports = mongoose.model('productsPreview', ProductsSchema);
+module.exports = mongoose.model('productsPreview', ProductsPreviewSchema);

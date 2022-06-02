@@ -44,10 +44,12 @@ const {
 }                             = require('../orm/models');
 
 const preview = async (body) => {
-    let preview = {};
-    if (await ProductsPreview.findOne({code: body.code})) {
+    let preview      = {};
+    const oldPreview = await ProductsPreview.findOne({code: body.code});
+    if (oldPreview) {
         body.updatedAt = new Date();
-        preview        = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+        delete body._id;
+        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
     } else {
         let newPreview;
         switch (body.type) {
