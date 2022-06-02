@@ -224,7 +224,7 @@ const updateConfig = async (newConfig, oldConfig) => {
         || isSame === false
         || oldConfig.environment.contentSecurityPolicy.active !== newConfig.environment.contentSecurityPolicy.active
     ) {
-        newConfig.needRestart = true;
+        newConfig.environment.needRestart = true;
     }
     // images
     if (newConfig.environment.defaultImage !== oldConfig.environment.defaultImage) {
