@@ -296,7 +296,7 @@ ProductControllers.controller("nsProductGeneral", [
                 let isGoodCanonicalForAllLang = true;
                 for (let index = 0; index < $rootScope.languages.length; index++) {
                     const aLang = $rootScope.languages[index];
-                    if(!($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                    if(aLang.status === "visible" && !($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
                         isGoodCanonicalForAllLang = false;
                     }
                 }
