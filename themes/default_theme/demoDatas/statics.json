@@ -23,8 +23,8 @@
           "slug": "home"
         }
       },
-      "updatedAt": "2020-05-13T09:07:33.926Z",
-      "createdAt": "2020-05-13T09:07:33.926Z"
+      "updatedAt": "2022-05-13T09:07:33.926Z",
+      "createdAt": "2022-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -48,8 +48,8 @@
           "name": "Contact"
         }
       },
-      "updatedAt": "2020-05-13T09:07:33.926Z",
-      "createdAt": "2020-05-13T09:07:33.926Z"
+      "updatedAt": "2022-05-13T09:07:33.926Z",
+      "createdAt": "2022-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -74,8 +74,8 @@
           "content": "<div class=\"shell\">\n<h1>Blog</h1>\n        <ns-blog-articles limit=\"4\"></ns-blog-article>\n</div>"
         }
       },
-      "createdAt": "2020-05-13T09:07:33.926Z",
-      "updatedAt": "2020-05-13T09:07:33.926Z"
+      "createdAt": "2022-05-13T09:07:33.926Z",
+      "updatedAt": "2022-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -100,8 +100,8 @@
           "content": "<div class=\"shell\">\n<h1>Gallerie</h1>\n        <ns-gallery ns-code=\"gallery1\"></ns-gallery>\n</div>"
         }
       },
-      "createdAt": "2020-05-13T09:07:33.926Z",
-      "updatedAt": "2020-05-13T09:07:33.926Z"
+      "createdAt": "2022-05-13T09:07:33.926Z",
+      "updatedAt": "2022-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -124,8 +124,8 @@
           "slug": "legal-notice"
         }
       },
-      "createdAt": "2020-05-20T09:34:42.608Z",
-      "updatedAt": "2020-05-20T09:34:42.638Z"
+      "createdAt": "2022-05-20T09:34:42.608Z",
+      "updatedAt": "2022-05-20T09:34:42.638Z"
     },
     {
       "active": true,
@@ -148,8 +148,8 @@
           "content": "<div class=\"shell\">\n<h1>Terms</h1>\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</div>"
         }
       },
-      "createdAt": "2020-05-20T09:41:02.575Z",
-      "updatedAt": "2020-05-20T09:41:02.599Z"
+      "createdAt": "2022-05-20T09:41:02.575Z",
+      "updatedAt": "2022-05-20T09:41:02.599Z"
     }
   ]
 }
