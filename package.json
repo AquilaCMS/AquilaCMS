@@ -28,7 +28,7 @@
   "dependencies": {
     "adm-zip": "0.5.5",
     "agenda": "4.2.1",
-    "aql-utils": "latest",
+    "aql-utils": "^1.4.5",
     "axios": "0.26.1",
     "bcrypt": "5.0.1",
     "cookie-parser": "1.4.5",

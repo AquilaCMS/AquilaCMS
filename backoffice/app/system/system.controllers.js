@@ -251,16 +251,12 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.showThemeLoading = true;
                 $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
 
-                Upload.upload({
-                    url: 'v2/config',
-                    method: 'PUT',
-                    data: {
-                        ...file,
-                        ...$scope.system
-                    }
-                }).then((response) => {
+                ConfigV2.save({
+                    ...file,
+                    ...$scope.system
+                }, (response) => {
                     toastService.toast("success", $translate.instant("global.saveDone"));
-                    if (response.data.data.needRestart) {
+                    if (response.data.needRestart) {
                         $scope.showLoading = true;
                         $scope.showThemeLoading = false;
                         $interval(() => {
