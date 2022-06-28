@@ -147,9 +147,13 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
+    for (let index = 0; index < searchSettings.keys.length; index++) {
+        searchSettings.keys[index].name = searchSettings.keys[index].name.replace('{lang}', lang);
+    }
+
     const selectedFieldsArray = [
-        {name: `translation.${lang}.name`, weight: 100},
-        {name: 'code', weight: 5},
+        {name: `translation.${lang}.name`, weight: 10},
+        {name: 'code', weight: 20},
         {name: `translation.${lang}.description1.title`, weight: 3},
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
@@ -164,7 +168,7 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
         ignoreFieldNorm    : searchSettings.ignoreFieldNorm !== undefined ? searchSettings.ignoreFieldNorm : true,
         useExtendedSearch  : searchSettings.useExtendedSearch !== undefined ? searchSettings.useExtendedSearch : true,
         minMatchCharLength : searchSettings.minMatchCharLength !== undefined ? searchSettings.minMatchCharLength : 2,
-        threshold          : searchSettings.threshold !== undefined ? searchSettings.threshold : 0.3, // 0.2 and 0.3 are the recommended values
+        threshold          : searchSettings.threshold !== undefined ? searchSettings.threshold : 0.2, // 0.2 and 0.3 are the recommended values
         keys               : (searchSettings.keys !== undefined && searchSettings.keys.length !== 0) ? searchSettings.keys : selectedFieldsArray
     };
 

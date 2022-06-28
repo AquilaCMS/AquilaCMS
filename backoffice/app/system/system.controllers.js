@@ -74,17 +74,17 @@ SystemControllers.controller("systemGeneralController", [
                     includeScore       : true,
                     useExtendedSearch  : true,
                     minMatchCharLength : 2,
-                    threshold          : 0.3
+                    threshold          : 0.2
                 }
             }
             if(!$scope.system.environment.searchSettings.keys) {
                 $scope.system.environment.searchSettings.keys = [
-                    {key: 'code', label: 'Code', weight: 5},
-                    {key: 'name', label: 'Nom', weight: 100},
-                    {key: 'description1.title', label: 'Titre description 1', weight: 3},
-                    {key: 'description1.text', label: 'Texte description 1', weight: 2.5},
-                    {key: 'description2.title', label: 'Titre description 2', weight: 2},
-                    {key: 'description2.text', label: 'Texte description 2', weight: 1.5}
+                    {name: 'code', label: 'Code', weight: 20},
+                    {name: 'translation.{lang}.name', label: 'Nom', weight: 10},
+                    {name: 'description1.{lang}.title', label: 'Titre description 1', weight: 3},
+                    {name: 'description1.{lang}.text', label: 'Texte description 1', weight: 2.5},
+                    {name: 'description2.{lang}.title', label: 'Titre description 2', weight: 2},
+                    {name: 'description2.{lang}.text', label: 'Texte description 2', weight: 1.5}
                 ]
             }
             delete $scope.system.$promise;
