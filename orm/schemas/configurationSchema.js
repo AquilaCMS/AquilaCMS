@@ -64,10 +64,10 @@ const ConfigurationSchema = new Schema({
             includeScore       : {type: Boolean, default: true},
             useExtendedSearch  : {type: Boolean, default: true},
             minMatchCharLength : {type: Number, default: 2},
-            threshold          : {type: Number, default: 0.3},
+            threshold          : {type: Number, default: 0.2},
             keys               : [
                 {
-                    key    : String,
+                    name   : String,
                     label  : String,
                     weight : Number
                 }

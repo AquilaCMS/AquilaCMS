@@ -141,12 +141,19 @@ const priceFilterFromPostBody = (PostBody) => {
 
 // Returns all products found, the products on the current page and the total number of products found
 const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaultLang) => {
+    const config         = await Configuration.findOne({}, {'environment.searchSettings': 1}).lean();
+    const searchSettings = config?.environment?.searchSettings;
+
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
+    for (let index = 0; index < searchSettings.keys.length; index++) {
+        searchSettings.keys[index].name = searchSettings.keys[index].name.replace('{lang}', lang);
+    }
+
     const selectedFieldsArray = [
-        {name: `translation.${lang}.name`, weight: 100},
-        {name: 'code', weight: 5},
+        {name: `translation.${lang}.name`, weight: 10},
+        {name: 'code', weight: 20},
         {name: `translation.${lang}.description1.title`, weight: 3},
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
@@ -154,15 +161,15 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
 
     // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
     const options = {
-        shouldSort         : true,
-        findAllMatches     : true,
-        includeScore       : true,
-        ignoreLocation     : true,
-        ignoreFieldNorm    : true,
-        useExtendedSearch  : true,
-        minMatchCharLength : 2,
-        threshold          : 0.3, // 0.2 and 0.3 are the recommended values
-        keys               : selectedFieldsArray
+        shouldSort         : searchSettings.shouldSort !== undefined ? searchSettings.shouldSort : true,
+        findAllMatches     : searchSettings.findAllMatches !== undefined ? searchSettings.findAllMatches : true,
+        includeScore       : searchSettings.includeScore !== undefined ? searchSettings.includeScore : true,
+        ignoreLocation     : searchSettings.ignoreLocation !== undefined ? searchSettings.ignoreLocation : true,
+        ignoreFieldNorm    : searchSettings.ignoreFieldNorm !== undefined ? searchSettings.ignoreFieldNorm : true,
+        useExtendedSearch  : searchSettings.useExtendedSearch !== undefined ? searchSettings.useExtendedSearch : true,
+        minMatchCharLength : searchSettings.minMatchCharLength !== undefined ? searchSettings.minMatchCharLength : 2,
+        threshold          : searchSettings.threshold !== undefined ? searchSettings.threshold : 0.2, // 0.2 and 0.3 are the recommended values
+        keys               : (searchSettings.keys !== undefined && searchSettings.keys.length !== 0) ? searchSettings.keys : selectedFieldsArray
     };
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
