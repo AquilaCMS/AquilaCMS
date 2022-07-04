@@ -742,6 +742,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
 const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
+/**
+ * DEPRECATED old function
+ * @deprecated
+ */
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
     const attributes            = req.body.attributes;
@@ -1197,6 +1201,7 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
+    const filter    = JSON.parse(JSON.stringify(req.body.PostBody.filter));
 
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, req.params.withFilters);
 
@@ -1216,15 +1221,21 @@ const getProductsListing = async (req, res) => {
             translation : attr.translation
         }));
 
-        // We put all products without any pagination in datas to generate filters
-        const datas  = JSON.parse(JSON.stringify(result.datas));
-        result.datas = result.allProductsRes.datas;
+        /* If we want dynamic filters, we generate them from the remaining products,
+        * otherwise we generate them from all the products found after the search and before the filters are applied
+        */
+        const datas = JSON.parse(JSON.stringify(result.datas));
+        if (!req.body.dynamicFilters) {
+            result.datas = result.allProductsRes.datas;
+        }
         delete result.allProductsRes;
 
         const selectedAttributes = [];
-        const filtersArray       = req.body.PostBody.filter.$and;
-        for (let i = 0; i < filtersArray.length; i++) {
-            if (Object.keys(filtersArray[i])[0] === 'attributes') selectedAttributes.push(filtersArray[i].attributes.$elemMatch);
+        if (filter.$and) {
+            const filterArray = filter.$and;
+            for (let i = 0; i < filterArray.length; i++) {
+                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+            }
         }
         await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
         result.datas = datas;
