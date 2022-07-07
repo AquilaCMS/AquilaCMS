@@ -3552,7 +3552,7 @@ figure.product__image {text-align: center;}
 
 .socials a { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -ms-flex-align: center; align-items: center; width: 67px; height: 67px; text-decoration: none; border: 1px solid #9B9B9B; border-radius: 50%; -webkit-transition: opacity .4s; -o-transition: opacity .4s; transition: opacity .4s; }
 
-.socials a:hover { opacity: .8; }
+/* .socials a:hover { opacity: .8; } */
 
 /* Mobile */
 

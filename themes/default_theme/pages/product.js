@@ -145,7 +145,7 @@ class PageProduct extends NSPageProduct {
                         <meta property="og:image" content={`${appurl}${imgDefault}`} />
                     </Head>
                     <div className="main">
-                        <div className="shell">
+                        <div className="shell shell-padding">
                             {
                                 listModulePage('select-date')
                             }

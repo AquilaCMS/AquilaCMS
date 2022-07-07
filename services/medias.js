@@ -324,6 +324,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
 
 const uploadFiles = async (body, files) => {
     const pathFinal = `${server.getUploadDirectory()}/`;
+    console.log(pathFinal);
     const tmp_path  = slash(files[0].path);
     const extension = body.extension;
     let target_path = `medias/${body.type}/`;

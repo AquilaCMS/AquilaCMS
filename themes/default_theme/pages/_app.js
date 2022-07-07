@@ -18,6 +18,7 @@ import {
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
 import 'styles/global.css';
+import 'styles/newstyle.css';
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
 import 'lightbox-react/style.css';

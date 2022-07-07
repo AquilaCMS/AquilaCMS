@@ -168,26 +168,28 @@ class PageCategory extends NSPageCategory {
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        className="btn"
+                                                        className="btn btn-grid"
                                                         onClick={() => this.setState({ gridDisplay: true }, () => {
                                                             window.localStorage.setItem('gridDisplay', 'true');
                                                         })}
                                                         aria-label={t('category:grid')}
                                                     >
-                                                        <i className={`ico-grid${gridDisplay ? ' active' : ''}`} />
+                                                        {/* <i className={`ico-grid${gridDisplay ? ' active' : ''}`} /> */}
+                                                        <span class="material-symbols-outlined gridview">apps</span>
                                                     </button>
                                                 </li>
 
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        className="btn"
+                                                        className="btn btn-grid"
                                                         onClick={() => this.setState({ gridDisplay: false }, () => {
                                                             window.localStorage.setItem('gridDisplay', 'false');
                                                         })}
                                                         aria-label={t('category:list')}
                                                     >
-                                                        <i className={`ico-list${!gridDisplay ? '-active' : ''}`} />
+                                                        <span class="material-symbols-outlined gridview">format_list_bulleted</span>
+                                                        {/* <i className={`ico-list${!gridDisplay ? '-active' : ''}`} /> */}
                                                     </button>
                                                 </li>
                                             </ul>
