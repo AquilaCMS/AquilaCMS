@@ -56,7 +56,7 @@ const generateFilters = async (res, lang = '', selectedAttributes = []) => {
                     prd = productsList[i];
                 }
             } else {
-                prd = await Products.findOne({_id: productsList[i].id, active: true, _visible: true}).lean();
+                prd = await Products.findOne({_id: productsList[i].id || productsList[i]._id, active: true, _visible: true}).lean();
             }
 
             if (prd && prd.attributes) {
