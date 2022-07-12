@@ -188,13 +188,13 @@ class PageAccount extends NSPageAccount {
                     <Head>
                         <title>{sitename} | {t('account:account.title')}</title>
                     </Head>
-                    <div className="main">
+                    <div className="main header-padding">
                         <div className="shell">
                             <div className="container container--flex align-top">
                                 <div className="content content--alt content--left">
                                     <section className="section-client-area">
                                         <header className="section__head">
-                                            <h2 className="section__title"><i className="ico-profile-large" />{t('account:account.page.title')}</h2>{/* <!-- /.section__title --> */}
+                                            <h2 className="section__title"><span class="material-symbols-outlined client_account">account_circle</span>{t('account:account.page.title')}</h2>{/* <!-- /.section__title --> */}
                                         </header>{/* <!-- /.section__head --> */}
                                         <h6>{t('account:account.sub_title')}</h6>
                                         <div className="section__content">
