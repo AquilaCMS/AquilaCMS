@@ -3,55 +3,57 @@
   "datas": [
     {
       "isVisible": true,
-      "img": "photos/article/20190802/blog1.jpg",
+      "img": "photos/article/20220713/shooting-model-summer.jpg",
       "extension": ".jpg",
-      "_id": "5c91faf3b8a46740e46c8046",
+      "_id": "ff5a522cf07db353b118d640",
       "translation": {
-        "en": {
-          "slug": "first-post",
-          "title": "Launch of the brand",
-          "content": {
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a"
-          }
-        },
         "fr": {
-          "slug": "premier-post",
-          "title": "Lancement de la marque",
+          "title": "Un shooting d'exception",
           "content": {
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a"
-          }
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ligula lacus, rutrum non mi gravida, posuere volutpat purus. Vestibulum posuere tortor id vestibulum elementum. Curabitur sagittis et dui at pulvinar. Morbi pretium sapien eu quam eleifend, at luctus ante tristique. Fusce nec rutrum ligula. Pellentesque dapibus nisl eget porta dapibus. Proin semper nec ipsum quis ullamcorper. Sed semper consequat libero, id dapibus libero volutpat vel. Nunc commodo auctor risus, sit amet fermentum enim porttitor in. Nunc ligula risus, cursus sed vehicula ac, euismod ut neque. Aenean a dictum nibh.</span>",
+            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ligula lacus, rutrum non mi gravida, posuere volutpat purus. Vestibulum posuere tortor id vestibulum elementum. Curabitur sagittis et dui"
+          },
+          "slug": "un-shooting-dexception"
         }
       },
-      "createdAt": "2022-01-23T09:07:33.985Z",
-      "updatedAt": "2022-01-23T09:07:33.985Z"
+      "createdAt": "2022-07-13T12:58:25.054Z",
+      "updatedAt": "2022-07-13T14:15:54.326Z"
     },
     {
       "isVisible": true,
-      "img": "photos/article/20190802/blog2.jpg",
+      "img": "photos/article/20220713/new_bag_BlackPearl.jpg",
       "extension": ".jpg",
-      "_id": "5d2604544aa9c1692db052f7",
+      "_id": "ff1cebc98d149d4a01953602",
       "translation": {
         "fr": {
-          "title": "Showroom Nice",
+          "title": "Nouveau sac Helen Cooper en édition limité",
           "content": {
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a"
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, ipsum vitae luctus rhoncus, mauris ante ornare purus, ut faucibus lectus quam vitae tellus. Praesent non mauris ac orci mattis congue. Morbi pharetra metus tellus, id venenatis turpis bibendum et. Nam mattis aliquet arcu ut varius. Morbi sed vulputate massa. Pellentesque convallis, mi nec maximus finibus, quam metus eleifend nibh, ac venenatis elit elit sed nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse sodales leo id nulla pellentesque, sed porta neque vestibulum. Nulla convallis, odio ut rutrum mattis, sapien elit blandit erat, quis euismod nisi quam sit amet risus.</span>",
+            "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
           },
-          "slug": "showroom-nice"
-        },
-        "en": {
-          "title": "Showroom Nice",
-          "content": {
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a"
-          },
-          "slug": "showroom-nice"
+          "slug": "nouveau-sac-helen-cooper-en-edition-limite"
         }
       },
-      "createdAt": "2022-01-10T15:29:24.635Z",
-      "updatedAt": "2022-01-10T15:29:24.635Z"
+      "createdAt": "2022-07-13T13:00:04.582Z",
+      "updatedAt": "2022-07-13T14:16:05.992Z"
+    },
+    {
+      "isVisible": true,
+      "img": "photos/article/20220713/new-collection-summer.jpg",
+      "extension": ".jpg",
+      "_id": "ff69fb571460e183481375e4",
+      "translation": {
+        "fr": {
+          "title": "Nouvelle collection Été",
+          "content": {
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, ipsum vitae luctus rhoncus, mauris ante ornare purus, ut faucibus lectus quam vitae tellus. Praesent non mauris ac orci mattis congue. Morbi pharetra metus tellus, id venenatis turpis bibendum et. Nam mattis aliquet arcu ut varius. Morbi sed vulputate massa. Pellentesque convallis, mi nec maximus finibus, quam metus eleifend nibh, ac venenatis elit elit sed nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse sodales leo id nulla pellentesque, sed porta neque vestibulum. Nulla convallis, odio ut rutrum mattis, sapien elit blandit erat, quis euismod nisi quam sit amet risus.</span>",
+            "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
+          },
+          "slug": "nouvelle-collection-ete"
+        }
+      },
+      "createdAt": "2022-07-13T13:01:46.829Z",
+      "updatedAt": "2022-07-13T14:12:02.217Z"
     }
   ]
 }

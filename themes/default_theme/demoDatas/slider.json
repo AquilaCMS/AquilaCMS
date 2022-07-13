@@ -20,21 +20,21 @@
       "items": [
         {
           "order": 1,
-          "src": "medias/slider/believe_197091_1920.jpg",
-          "text": "believe",
-          "name": "believe",
+          "src": "medias/slider/nouveau-sac-hellen-cooper.jpg",
+          "text": "nouveau-sac-hellen-cooper",
+          "name": "nouveau-sac-hellen-cooper",
           "href": "",
           "extension": ".jpg",
-          "_id": "5d26fabd4aa9c1692db052fc"
+          "_id": "62ced263da98c60c0c3e21be"
         },
         {
           "order": 2,
-          "src": "medias/slider/clothes_1834650_1920.jpg",
-          "text": "clothes",
-          "name": "clothes",
+          "src": "medias/slider/collection-ete.jpg",
+          "text": "collection-ete",
+          "name": "collection-ete",
           "href": "",
           "extension": ".jpg",
-          "_id": "5d27004d4aa9c1692db05304"
+          "_id": "62ced267da98c60c0c3e21bf"
         }
       ]
     }
