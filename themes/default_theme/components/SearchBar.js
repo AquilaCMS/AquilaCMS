@@ -22,10 +22,10 @@ class SearchBar extends NSSearchBar {
             <> 
                 {
                     !mode ? (
-                        <span className="material-symbols-outlined search-icon" onClick={() => this.setState({mode: true})}>search</span>
+                        <span className="material-symbols-outlined search-icon" onBlur={() => this.setState({mode: false})} onClick={() => this.setState({mode: true})}>search</span>
                     ) : (
                         <div className="search">
-                            <form onSubmit={((e) => this.searchProducts(e)) && (() => this.setState({mode: false}))}>
+                            <form onSubmit={((e) => this.searchProducts(e))}>
                                 <div className="search__controls">
                                     <label htmlFor="search" className="hidden">{t('common:search')}</label>
                                     <input id="search" type="text" ref={this.search} name="search" placeholder={placeholder || t('common:search')} className="search__field" onChange={(e) => this.setState({ query: e.target.value })} value={query} />
@@ -34,8 +34,6 @@ class SearchBar extends NSSearchBar {
                                         <span className="material-symbols-outlined" style={{color: '#424242'}}>search</span>
                                     </button>
                                 </div>
-
-                                <button type="submit" className="search__btn btn hidden-xs">{button || t('common:search')}</button>
                             </form>
                         </div>
                     )
