@@ -38,17 +38,15 @@ export default class LanguageChange extends NSLanguageChange {
         const { props } = this.context;
         if (!props) { return null; }
         const { langs } = props;
-
-        console.log('currentLanguage', currentLanguage);
-
+        
         return (
             <div hidden={langs.length < 2} className="nav-lang" id="toggle-lang">
-              <select className='select-lang' onChange={(e) => this.switchLang(e.target.value)}>
+              <select className="select-lang" value={currentLanguage} onChange={(e) => this.switchLang(e.target.value)}>
                 {
                     langs.map((lang) => {
                         if (lang.status === 'invisible') return;
                         return (
-                            <option key={lang._id} value={lang.code} selected={lang.code === currentLanguage ? 'selected' : ''}>{lang.code.toUpperCase()}</option>
+                            <option key={lang._id} value={lang.code}>{lang.code.toUpperCase()}</option>
                         );
                     }
                 )}   

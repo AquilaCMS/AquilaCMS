@@ -13,7 +13,6 @@ export default class BlogArticles extends NSBlogArticles {
         const { props } = this.context;
         const { lang, nsBlogArticles } = props;
         const Link = (gNext && gNext.Link) || undefined;
-        console.log(nsBlogArticles.length);
 
         return (
             <div className="blog-container">
