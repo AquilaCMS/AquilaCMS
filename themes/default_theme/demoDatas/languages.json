@@ -1,0 +1,23 @@
+{
+  "collection": "languages",
+  "datas": [
+    {
+      "position": 1,
+      "defaultLanguage": true,
+      "status": "visible",
+      "_id": "62b062b6171ee223fcae55d9",
+      "code": "fr",
+      "name": "Français",
+      "img": "language/france.png"
+    },
+    {
+      "position": 1,
+      "defaultLanguage": false,
+      "status": "visible",
+      "_id": "ff67c251e5a7230d7d5b2722",
+      "code": "en",
+      "name": "anglais",
+      "img": "language/royaume-uni.png"
+    }
+  ]
+}

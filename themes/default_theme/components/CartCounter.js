@@ -29,12 +29,12 @@ class CartCounter extends NSCartProductCounter {
                         ? (
                             <Link route="cart" params={{ lang: routerLang }}>
                                 <a style={{ position: 'relative' }}>
-                                <span class="material-symbols-outlined">shopping_cart</span>
+                                <span className="material-symbols-outlined">shopping_cart</span>
                                 </a>
                             </Link>
                         ) : (
                             <a href={`${urlLang}/cart`} style={{ position: 'relative' }}>
-                                <span class="material-symbols-outlined">shopping_cart</span>
+                                <span className="material-symbols-outlined">shopping_cart</span>
                             </a>
                         )
                 }

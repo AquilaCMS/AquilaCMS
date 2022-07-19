@@ -25,10 +25,10 @@ class ButtonLogin extends NSButtonLoginAccount {
                     Link !== undefined
                         ? (
                             <Link route={user ? 'account' : 'auth'} params={{ lang: routerLang }}>
-                                <a><span class="material-symbols-outlined">account_circle</span></a>
+                                <a><span className="material-symbols-outlined">account_circle</span></a>
                             </Link>
                         )
-                        : <a href={`${urlLang}/${user ? 'account' : 'login'}`}><span class="material-symbols-outlined">account_circle</span> <span>{user ? t('common:monCompte') : t('common:connecter')}</span></a>
+                        : <a href={`${urlLang}/${user ? 'account' : 'login'}`}><span className="material-symbols-outlined">account_circle</span> <span>{user ? t('common:monCompte') : t('common:connecter')}</span></a>
                 }
             </span>
         );

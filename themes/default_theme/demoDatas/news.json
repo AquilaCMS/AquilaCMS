@@ -14,10 +14,18 @@
             "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ligula lacus, rutrum non mi gravida, posuere volutpat purus. Vestibulum posuere tortor id vestibulum elementum. Curabitur sagittis et dui"
           },
           "slug": "un-shooting-dexception"
+        },
+        "en": {
+          "title": "An Amazing Photoshoot",
+          "content": {
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ligula lacus, rutrum non mi gravida, posuere volutpat purus. Vestibulum posuere tortor id vestibulum elementum. Curabitur sagittis et dui at pulvinar. Morbi pretium sapien eu quam eleifend, at luctus ante tristique. Fusce nec rutrum ligula. Pellentesque dapibus nisl eget porta dapibus. Proin semper nec ipsum quis ullamcorper. Sed semper consequat libero, id dapibus libero volutpat vel. Nunc commodo auctor risus, sit amet fermentum enim porttitor in. Nunc ligula risus, cursus sed vehicula ac, euismod ut neque. Aenean a dictum nibh.</span>",
+            "resume": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ligula lacus, rutrum non mi gravida, posuere volutpat purus. Vestibulum posuere tortor id vestibulum elementum. Curabitur sagittis et dui"
+          },
+          "slug": "an-amazing-photoshoot"
         }
       },
       "createdAt": "2022-07-13T12:58:25.054Z",
-      "updatedAt": "2022-07-13T14:15:54.326Z"
+      "updatedAt": "2022-07-19T08:59:47.875Z"
     },
     {
       "isVisible": true,
@@ -32,10 +40,18 @@
             "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
           },
           "slug": "nouveau-sac-helen-cooper-en-edition-limite"
+        },
+        "en": {
+          "content": {
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, ipsum vitae luctus rhoncus, mauris ante ornare purus, ut faucibus lectus quam vitae tellus. Praesent non mauris ac orci mattis congue. Morbi pharetra metus tellus, id venenatis turpis bibendum et. Nam mattis aliquet arcu ut varius. Morbi sed vulputate massa. Pellentesque convallis, mi nec maximus finibus, quam metus eleifend nibh, ac venenatis elit elit sed nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse sodales leo id nulla pellentesque, sed porta neque vestibulum. Nulla convallis, odio ut rutrum mattis, sapien elit blandit erat, quis euismod nisi quam sit amet risus.</span>",
+            "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
+          },
+          "title": "New limited edition Helen Cooper's bag",
+          "slug": "helen-cooper-bag-limited-edition"
         }
       },
       "createdAt": "2022-07-13T13:00:04.582Z",
-      "updatedAt": "2022-07-13T14:16:05.992Z"
+      "updatedAt": "2022-07-19T09:00:52.261Z"
     },
     {
       "isVisible": true,
@@ -50,10 +66,18 @@
             "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
           },
           "slug": "nouvelle-collection-ete"
+        },
+        "en": {
+          "slug": "new-summer-collection",
+          "title": "New summer collection",
+          "content": {
+            "text": "<span style=\"font-family: 'Open Sans', Arial, sans-serif; font-size: 14px; text-align: justify; background-color: #ffffff;\">Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, ipsum vitae luctus rhoncus, mauris ante ornare purus, ut faucibus lectus quam vitae tellus. Praesent non mauris ac orci mattis congue. Morbi pharetra metus tellus, id venenatis turpis bibendum et. Nam mattis aliquet arcu ut varius. Morbi sed vulputate massa. Pellentesque convallis, mi nec maximus finibus, quam metus eleifend nibh, ac venenatis elit elit sed nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse sodales leo id nulla pellentesque, sed porta neque vestibulum. Nulla convallis, odio ut rutrum mattis, sapien elit blandit erat, quis euismod nisi quam sit amet risus.</span>",
+            "resume": "Pellentesque odio lectus, porttitor at tempor a, pellentesque nec nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc sodales est a massa consequat elementum. Vivamus vulputate, "
+          }
         }
       },
       "createdAt": "2022-07-13T13:01:46.829Z",
-      "updatedAt": "2022-07-13T14:12:02.217Z"
+      "updatedAt": "2022-07-19T09:02:29.259Z"
     }
   ]
 }

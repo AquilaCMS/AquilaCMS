@@ -20,7 +20,7 @@
       "items": [
         {
           "order": 1,
-          "src": "medias/slider/nouveau-sac-hellen-cooper.jpg",
+          "src": "medias/slider/sac-helle-cooper.jpg",
           "text": "nouveau-sac-hellen-cooper",
           "name": "nouveau-sac-hellen-cooper",
           "href": "",
@@ -29,7 +29,7 @@
         },
         {
           "order": 2,
-          "src": "medias/slider/collection-ete.jpg",
+          "src": "medias/slider/shooting-photo.jpg",
           "text": "collection-ete",
           "name": "collection-ete",
           "href": "",

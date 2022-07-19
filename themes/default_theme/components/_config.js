@@ -7,6 +7,7 @@ import SearchBar from './SearchBar';
 import ButtonLogin from './ButtonLogin';
 import CartCounter from './CartCounter';
 import BlogArticles from './BlogArticles';
+import LanguageChange from './LanguageChange';
 
 // On surcharge la config par défaut de AQLRC si besoin
 // A noter que <Link> et <CMS> sont déjà gérés directement dans le composant CMS, il faut utiliser respectivement "ns-link" et "ns-cms"
@@ -17,5 +18,6 @@ export default {
     'ns-block-slider' : <BlockSlider />,
     'ns-search' : <SearchBar />,
     'ns-btn-login' : <ButtonLogin />,
-    'ns-cart-counter' : <CartCounter />
+    'ns-cart-counter' : <CartCounter />,
+    'ns-lang' : <LanguageChange />
 };
