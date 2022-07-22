@@ -46,8 +46,8 @@ class PageAddresses extends NSPageAccount {
                     <Head>
                         <title>{sitename} | {t('addresses.title')}</title>
                     </Head>
-                    <div className="main">
-                        <div className="shell header-padding">
+                    <div className="main page_content">
+                        <div className="shell">
                             <div className="container container--flex align-top">
                                 <div className="content content--alt content--left">
                                     <section className="section-client-area">

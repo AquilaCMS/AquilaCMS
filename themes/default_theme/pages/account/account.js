@@ -188,7 +188,7 @@ class PageAccount extends NSPageAccount {
                     <Head>
                         <title>{sitename} | {t('account:account.title')}</title>
                     </Head>
-                    <div className="main header-padding">
+                    <div className="main page-content">
                         <div className="shell">
                             <div className="container container--flex align-top">
                                 <div className="content content--alt content--left">

@@ -46,7 +46,7 @@
       "group": "",
       "extension": ".jpg",
       "_id": "5d444fa2ede1945f6602892f",
-      "link": "medias/banniere1.jpg",
+      "link": "medias/t-shirts.jpg",
       "name": "banniere tshirt"
     },
     {
@@ -60,7 +60,7 @@
       "group": "",
       "extension": ".jpg",
       "_id": "5d4a5011edd1c15f16018b85",
-      "link": "medias/banniere_1_tshirt.jpg",
+      "link": "medias/produits_1658481707751.jpg",
       "name": "banniere produits"
     },
     {
@@ -132,13 +132,6 @@
       "_id": "ffe11093cdb4e860388ea59e",
       "link": "",
       "name": "new-327"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "ff24e1be66edfd31d5fed70f",
-      "link": "medias/photos-fashion-background_1_.jpg",
-      "name": "Image de fond footer"
     }
   ]
 }

@@ -4037,13 +4037,21 @@ body {
   background-color: #f05423;
 }
 
+
 .intro {
   height: 60px;
-  background-image: linear-gradient(90deg, rgba(252,180,76,0.99) 0%, rgba(240,84,35,0.99) 100%) !important;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-blend-mode: hue;
+  background-image: linear-gradient(90deg, rgba(252, 180, 76, 1), rgba(240, 84, 35, 1));
+  display: flex;
+  padding: 40px 3%;
+  justify-content: center;
+  align-items: center;
+  background-color: #191b22;
+  background-position: top;
+  background-size: auto,cover;
+}
+
+.intro-image {
+  height: 280px !important;
 }
 
 .shell > h1 {

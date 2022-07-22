@@ -36,8 +36,8 @@ class PageBlogArticle extends NSPageBlogArticle {
                         <title>{sitename} | Blog</title>
                         <meta property="og:type" content="website" />
                     </Head>
-                    <div className="main__inner">
-                        <div className="shell shell-padding blog">
+                    <div className="main__inner page-content">
+                        <div className="shell blog">
                             <NSBreadcrumb gNext={{ routes, Link }} />
                             <section className="section section--table ns-article" itemScope="" itemType="http://schema.org/Article">
                                 <div className="shell">

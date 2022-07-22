@@ -65,6 +65,7 @@ class PageCategory extends NSPageCategory {
 
                     <div className="page-content">
                         {nsCms_extraText && nsCms_extraText.content !== '' && <CMS content={nsCms_extraText.content} hide_error="1" />}
+                        {nsCms_extraText && nsCms_extraText.content == '' ? <div class="intro" style={{maxHeight: '60px'}}><div class="intro__content"><div class="shell"><h1>{category.name.toUpperCase()}</h1></div></div></div> : null}
 
                         <div className="main">
                             <div className="shell">
