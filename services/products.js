@@ -719,6 +719,37 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     prds = sortProductList(prds, PostBody.sort, menu);
 
+    // Selected attributes
+    const selectedAttributes = [];
+    if (PostBody.filter.$and) {
+        const filterArray = PostBody.filter.$and;
+        for (let i = 0; i < filterArray.length; i++) {
+            if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+        }
+    }
+
+    // Re-generate filters after the new products list has been calculated
+    const attributes = [];
+    const menuAttr   = menu.filters.attributes;
+    for (let i = 0; i < menuAttr.length; i++) {
+        const attr      = menuAttr[i];
+        const attribute = {
+            code        : attr.code,
+            id_attribut : attr.id_attribut,
+            name        : attr.translation[lang].name,
+            position    : attr.position,
+            type        : attr.type,
+            values      : attr.translation[lang].values
+        };
+        attributes.push(attribute);
+    }
+    const res = {
+        count   : prds.length,
+        datas   : JSON.parse(JSON.stringify(prds)),
+        filters : {attributes}
+    };
+    await servicesCategory.generateFilters(res, lang, selectedAttributes);
+
     const products = prds.slice(skip, limit + skip);
 
     // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
@@ -727,8 +758,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     return {
-        count : prds.length,
-        datas : products,
+        count   : prds.length,
+        datas   : products,
+        filters : res.filters,
         priceMin,
         priceMax,
         specialPriceMin,
