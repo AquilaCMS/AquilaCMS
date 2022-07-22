@@ -34,14 +34,14 @@ const getSliders = async (PostBody, user = null) => {
 };
 const getSlider = async (PostBody, user = null) => {
     const result = await queryBuilder.findOne(PostBody, true);
-    if (!user || !user.isAdmin) {
+    if (result && (!user || !user.isAdmin)) {
         result.items = result.items.filter(filterByDate);
     }
     return result;
 };
 const getSliderById = async (id, PostBody = null, user = null) => {
     const result = await queryBuilder.findById(id, PostBody, true);
-    if (!user || !user.isAdmin) {
+    if (result && (!user || !user.isAdmin)) {
         result.items = result.items.filter(filterByDate);
     }
     return result;

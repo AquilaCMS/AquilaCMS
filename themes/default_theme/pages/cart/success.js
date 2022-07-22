@@ -114,7 +114,7 @@ class CartSuccess extends React.Component {
         const { order, taxDisplay } = this.state;
         const priceBefore = [];
         let messageOrder = '';
-        if (order.status === 'PAID') {
+        if (order.status === 'PAID' || order.status === 'BILLED') {
             messageOrder = (
                 <div className="shell">
                     <h5>
