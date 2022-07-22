@@ -363,6 +363,9 @@ const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang
         for (let iLang = 0; iLang < tabLang.length; iLang++) {
             const currentLang = tabLang[iLang];
             const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (current_category.translation[currentLang] === undefined) {
+                current_category.translation[currentLang] = {slug: 'NA'};
+            }
             if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
                 current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
             } else {
