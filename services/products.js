@@ -719,6 +719,37 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     prds = sortProductList(prds, PostBody.sort, menu);
 
+    // Selected attributes
+    const selectedAttributes = [];
+    if (PostBody.filter.$and) {
+        const filterArray = PostBody.filter.$and;
+        for (let i = 0; i < filterArray.length; i++) {
+            if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+        }
+    }
+
+    // Re-generate filters after the new products list has been calculated
+    const attributes = [];
+    const menuAttr   = menu.filters.attributes;
+    for (let i = 0; i < menuAttr.length; i++) {
+        const attr      = menuAttr[i];
+        const attribute = {
+            code        : attr.code,
+            id_attribut : attr.id_attribut,
+            name        : attr.translation[lang].name,
+            position    : attr.position,
+            type        : attr.type,
+            values      : attr.translation[lang].values
+        };
+        attributes.push(attribute);
+    }
+    const res = {
+        count   : prds.length,
+        datas   : JSON.parse(JSON.stringify(prds)),
+        filters : {attributes}
+    };
+    await servicesCategory.generateFilters(res, lang, selectedAttributes);
+
     const products = prds.slice(skip, limit + skip);
 
     // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
@@ -727,8 +758,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     return {
-        count : prds.length,
-        datas : products,
+        count   : prds.length,
+        datas   : products,
+        filters : res.filters,
         priceMin,
         priceMax,
         specialPriceMin,
@@ -742,6 +774,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
 const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
+/**
+ * DEPRECATED old function
+ * @deprecated
+ */
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
     const attributes            = req.body.attributes;
@@ -1197,6 +1233,7 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
+    const filter    = JSON.parse(JSON.stringify(req.body.PostBody.filter));
 
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, req.params.withFilters);
 
@@ -1216,15 +1253,21 @@ const getProductsListing = async (req, res) => {
             translation : attr.translation
         }));
 
-        // We put all products without any pagination in datas to generate filters
-        const datas  = JSON.parse(JSON.stringify(result.datas));
-        result.datas = result.allProductsRes.datas;
+        /* If we want dynamic filters, we generate them from the remaining products,
+        * otherwise we generate them from all the products found after the search and before the filters are applied
+        */
+        const datas = JSON.parse(JSON.stringify(result.datas));
+        if (!req.body.dynamicFilters) {
+            result.datas = result.allProductsRes.datas;
+        }
         delete result.allProductsRes;
 
         const selectedAttributes = [];
-        const filtersArray       = req.body.PostBody.filter.$and;
-        for (let i = 0; i < filtersArray.length; i++) {
-            if (Object.keys(filtersArray[i])[0] === 'attributes') selectedAttributes.push(filtersArray[i].attributes.$elemMatch);
+        if (filter.$and) {
+            const filterArray = filter.$and;
+            for (let i = 0; i < filterArray.length; i++) {
+                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+            }
         }
         await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
         result.datas = datas;
