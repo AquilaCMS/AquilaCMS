@@ -174,8 +174,7 @@ class PageCategory extends NSPageCategory {
                                                         })}
                                                         aria-label={t('category:grid')}
                                                     >
-                                                        {/* <i className={`ico-grid${gridDisplay ? ' active' : ''}`} /> */}
-                                                        <span class="material-symbols-outlined gridview">apps</span>
+                                                        <span className="material-symbols-outlined gridview">apps</span>
                                                     </button>
                                                 </li>
 
@@ -188,8 +187,7 @@ class PageCategory extends NSPageCategory {
                                                         })}
                                                         aria-label={t('category:list')}
                                                     >
-                                                        <span class="material-symbols-outlined gridview">format_list_bulleted</span>
-                                                        {/* <i className={`ico-list${!gridDisplay ? '-active' : ''}`} /> */}
+                                                        <span className="material-symbols-outlined gridview">format_list_bulleted</span>
                                                     </button>
                                                 </li>
                                             </ul>

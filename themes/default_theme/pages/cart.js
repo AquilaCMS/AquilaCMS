@@ -29,9 +29,9 @@ class PageCart extends NSPageCart {
                         <meta property="og:type" content="website" />
                     </Head>
                     <div className="page-content">
-                    <div class="intro">
-                                        <div class="intro__content">
-                                            <div class="shell">
+                    <div className="intro">
+                                        <div className="intro__content">
+                                            <div className="shell">
                                                 <h1 style={{textTransform: 'uppercase'}}>{t('cart:page.header.title')}</h1>
                                             </div>
                                         </div>

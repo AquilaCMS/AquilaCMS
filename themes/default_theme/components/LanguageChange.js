@@ -14,13 +14,7 @@ export default class LanguageChange extends NSLanguageChange {
         moment.locale(props.i18n.language);
     }
 
-    componentDidMount = () => {
-        // if (typeof window !== 'undefined' && document.querySelector('#toggle-lang')) {
-           
-        //     };
-        // }
-
-    }
+    componentDidMount = () => {}
 
     switchLang = (code) => {
         const { i18n } = this.props;
