@@ -17,7 +17,7 @@
         "5c91f90fb8a46740e46c7ff1",
         "5c920856ff724742a0922257"
       ],
-      "displayOrder": 99,
+      "displayOrder": 0,
       "canonical_weight": 0,
       "_id": "5b7ea55c09c72307ffb3c7dd",
       "code": "menu-header",
@@ -33,7 +33,8 @@
       },
       "productsList": [],
       "createdAt": "2022-05-13T09:07:33.482Z",
-      "openDate": "2022-05-13T09:07:33.482Z"
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "updatedAt": "2022-07-22T09:44:24.816Z"
     },
     {
       "filters": {
@@ -101,13 +102,13 @@
           "name": "MY PRODUCTS",
           "slug": "my-products",
           "metaDescription": "My products meta description",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/medias/banniere_1_tshirt.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n        <h1>My products</h1>\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUCTS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "fr": {
           "name": "PRODUITS",
           "metaDescription": "Mes produits meta description",
           "slug": "mes-produits",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/medias/banniere_1_tshirt.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>MES PRODUITS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUITS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-13T09:07:33.482Z",
@@ -172,8 +173,9 @@
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a6",
           "id": "5eb2cfdb6cdf0b436c831f23"
-        }        
-      ]
+        }
+      ],
+      "updatedAt": "2022-07-22T09:44:24.822Z"
     },
     {
       "filters": {
@@ -208,7 +210,8 @@
       },
       "openDate": "2022-05-13T09:07:33.482Z",
       "createdAt": "2022-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2022-07-22T09:44:24.827Z"
     },
     {
       "filters": {
@@ -241,7 +244,8 @@
       },
       "openDate": "2022-05-13T09:07:33.482Z",
       "createdAt": "2022-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2022-07-22T09:44:24.830Z"
     },
     {
       "filters": {
@@ -274,7 +278,8 @@
       },
       "openDate": "2022-05-13T09:07:33.482Z",
       "createdAt": "2022-05-13T09:07:33.482Z",
-      "productsList": []
+      "productsList": [],
+      "updatedAt": "2022-07-22T09:44:24.833Z"
     },
     {
       "filters": {
@@ -337,12 +342,12 @@
         "fr": {
           "name": "T-SHIRT",
           "slug": "t-shirt",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444fa2ede1945f6602892f/banniere1.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>T-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444fa2ede1945f6602892f/t-shirts.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>T-SHIRTS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "T-SHIRT",
           "slug": "t-shirt",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444fa2ede1945f6602892f/banniere1.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>TEE-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444fa2ede1945f6602892f/t-shirts.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>T-SHIRTS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:10.806Z",
@@ -379,7 +384,8 @@
           "id": "5d24a4844aa9c1692db04ae4"
         }
       ],
-      "colorName": ""
+      "colorName": "",
+      "updatedAt": "2022-07-22T09:44:24.836Z"
     },
     {
       "filters": {
@@ -442,12 +448,12 @@
         "fr": {
           "name": "SWEAT",
           "slug": "sweat",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444efbede1945f660288d7/banniere2.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SWEAT-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444efbede1945f660288d7/banniere2.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SWEATS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "SWEAT",
           "slug": "sweat",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444efbede1945f660288d7/banniere2.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SWEAT-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444efbede1945f660288d7/banniere2.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SWEATS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:21.458Z",
@@ -465,7 +471,8 @@
           "_id": "5da57915de6bed65e1d2a8b3",
           "id": "5d307a164aa9c1692db054a4"
         }
-      ]
+      ],
+      "updatedAt": "2022-07-22T09:44:24.840Z"
     },
     {
       "filters": {
@@ -528,12 +535,12 @@
         "fr": {
           "name": "CHAUSSETTES",
           "slug": "chaussettes",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d445012ede1945f6602898b/banniere3.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>CHAUSSETTES</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d445012ede1945f6602898b/banniere3.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>CHAUSSETTES</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "SOCKS",
           "slug": "socks",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d445012ede1945f6602898b/banniere3.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SOCKS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d445012ede1945f6602898b/banniere3.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SOCKS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:37.465Z",
@@ -551,7 +558,8 @@
           "_id": "5da57915de6bed65e1d2a8b5",
           "id": "5d3078aa4aa9c1692db05498"
         }
-      ]
+      ],
+      "updatedAt": "2022-07-22T09:44:24.846Z"
     }
   ]
 }
