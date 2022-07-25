@@ -102,13 +102,13 @@
           "name": "MY PRODUCTS",
           "slug": "my-products",
           "metaDescription": "My products meta description",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/medias/banniere_1_tshirt.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n        <h1>My products</h1>\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUCTS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "fr": {
           "name": "PRODUITS",
           "metaDescription": "Mes produits meta description",
           "slug": "mes-produits",
-          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/produits_1658481707751.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUITS</h1>\n</div>\n</div>\n</div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUITS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-13T09:07:33.482Z",
@@ -347,7 +347,7 @@
         "en": {
           "name": "T-SHIRT",
           "slug": "t-shirt",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444fa2ede1945f6602892f/banniere1.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>TEE-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444fa2ede1945f6602892f/t-shirts.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>T-SHIRTS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:10.806Z",
@@ -453,7 +453,7 @@
         "en": {
           "name": "SWEAT",
           "slug": "sweat",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444efbede1945f660288d7/banniere2.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SWEAT-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444efbede1945f660288d7/banniere2.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SWEATS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:21.458Z",
@@ -540,7 +540,7 @@
         "en": {
           "name": "SOCKS",
           "slug": "socks",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d445012ede1945f6602898b/banniere3.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SOCKS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d445012ede1945f6602898b/banniere3.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SOCKS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
       "openDate": "2022-05-10T14:05:37.465Z",
