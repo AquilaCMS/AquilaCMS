@@ -481,10 +481,11 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             for (let i = 0; i < splittedRulesKeys.length; i++) {
                 // Apply rules
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
-                    const productsIds = await Products.find(
+                    const productsObj = await Products.find(
                         await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {}),
                         {_id: 1}
-                    ).lean().map((prd) => prd._id);
+                    ).lean();
+                    const productsIds = productsObj.map((prd) => prd._id);
 
                     // Segmentation Categories
                     if (splittedRulesKeys[i] === 'category') {
