@@ -459,7 +459,6 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
         const _rules            = await Rules.find(owner_type ? {owner_type} : {});
         const splittedRules     = {};
         const noConditionsRules = {};
-        const productsPromise   = [];
 
         // Sort the rules according to their type (picto, category ...)
         for (let i = 0; i < _rules.length; i++) {
@@ -476,25 +475,17 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
 
         const splittedRulesKeys = Object.keys(splittedRules);
 
-        for (let i = 0; i < splittedRulesKeys.length; i++) {
-            for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
-                // prepare the query to retrieve all the products that will be affected by the rules
-                productsPromise.push(Products.find(await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {})));
-            }
-        }
         try {
             if (owner_type === 'picto') {await Products.updateMany({}, {$set: {pictos: []}});}
-            const _products = await Promise.all(productsPromise);
-            if (_products.length <= 0) {
-                inSegment[owner_type] = false;
-                logValue              = `\x1b[1m\x1b[32m${new Date()}) No automatic categorization(${owner_type}) to do\x1b[0m`;
-                console.log(logValue);
-                result.push(logValue);
-            }
+
             for (let i = 0; i < splittedRulesKeys.length; i++) {
                 // Apply rules
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
-                    const productsIds = _products[j].map((prd) => prd._id);
+                    const productsObj = await Products.find(
+                        await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {}),
+                        {_id: 1}
+                    ).lean();
+                    const productsIds = productsObj.map((prd) => prd._id);
 
                     // Segmentation Categories
                     if (splittedRulesKeys[i] === 'category') {
