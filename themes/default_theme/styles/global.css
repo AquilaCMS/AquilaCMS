@@ -3976,7 +3976,11 @@ body {
 }
 
 .page-content {
-  padding-top: 100px;;
+  padding-top: 100px;
+}
+
+.page-padding-bottom {
+  padding-bottom: 100px;
 }
 
 .shell.shell-padding {
@@ -4778,11 +4782,6 @@ header.header img {
 
 .address .link-edit {
   right: 13px;
-}
-
-.jsx-1217826215.main, .jsx-3774418467.main {
-  padding-top: 100px;
-  padding-bottom: 100px;
 }
 
 .shipping-steps .active ~ li .icon span[class$="-active"] {

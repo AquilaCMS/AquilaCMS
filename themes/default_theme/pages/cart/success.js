@@ -432,7 +432,7 @@ class CartSuccess extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <button className="btn btn--grey btn-retour" onClick={() => Router.pushRoute('orders', { lang: routerLang })} type="button">
+                        <button className="btn btn--grey btn-retour" style={{marginBottom: '60px'}} onClick={() => Router.pushRoute('orders', { lang: routerLang })} type="button">
                             {t('common:retour')}
                         </button>
                     </div>

@@ -25,7 +25,7 @@ class CartStructure extends React.Component {
         return (
             <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
                 <Head />
-                <div className="main">
+                <div className="main page-content">
                     <div className="shell">
                         <div className="shipping-progress hidden-xs">
                             <ul className="shipping-steps">
