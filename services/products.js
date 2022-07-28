@@ -1274,7 +1274,7 @@ const getProductsListing = async (req, res) => {
                 if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
             }
         }
-        await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
+        await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes, true);
         result.datas = datas;
     } else {
         delete result.allProductsRes;

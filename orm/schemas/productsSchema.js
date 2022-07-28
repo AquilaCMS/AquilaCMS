@@ -56,13 +56,14 @@ const ProductsSchema = new Schema({
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
         {
-            id          : {type: ObjectId, ref: 'attributes', index: true},
-            code        : String,
-            param       : String,
-            type        : {type: String, default: 'unset'},
-            translation : {},
-            position    : {type: Number, default: 1},
-            visible     : {type: Boolean, default: true}
+            id           : {type: ObjectId, ref: 'attributes', index: true},
+            code         : String,
+            param        : String,
+            type         : {type: String, default: 'unset'},
+            translation  : {},
+            position     : {type: Number, default: 1},
+            visible      : {type: Boolean, default: true},
+            usedInSearch : {type: Boolean, default: false}
         }
     ], // Module Options
     images : [

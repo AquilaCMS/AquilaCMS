@@ -26,7 +26,7 @@ const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultF
 
 const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const generateFilters = async (res, lang = '', selectedAttributes = []) => {
+const generateFilters = async (res, lang = '', selectedAttributes = [], isInSearchContext = false) => {
     lang = ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
         const attributes = [];
@@ -67,7 +67,13 @@ const generateFilters = async (res, lang = '', selectedAttributes = []) => {
                 }
 
                 for (const attr of prd.attributes) {
-                    if (attributes.includes(attr.id.toString())) {
+                    let usedAttr = false;
+                    if (!isInSearchContext) {
+                        usedAttr = true;
+                    } else if (attr.usedInSearch) { // If we are in a search context and the attribute can be used in search
+                        usedAttr = true;
+                    }
+                    if (usedAttr && attributes.includes(attr.id.toString())) {
                         if (attr.translation && attr.translation[lang]) {
                             const value = attr.translation[lang].value;
 

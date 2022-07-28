@@ -28,6 +28,7 @@
         "presJeuxAttr": "Présent dans les jeux d'attributs suivants :",
         "dispoCatAuto": "Disponible dans la catégorisation automatique :",
         "dispoFiltresAuto": "Disponible dans les filtres automatiques :",
+        "dispoSearchPage": "Disponible dans les pages de recherche :",
         "valeurs": "Valeurs",
         "addValeur": "Ajouter une valeur",
         "color": "Couleur",
@@ -38,7 +39,8 @@
         "errorList": "Il y a des valeurs en double dans la liste !",
         "error": "Erreur",
         "deleteAttribute": "Attribut supprimé",
-        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres",
+        "infoDispoFiltres": "Permet à une categories de selectionner l'attribut pour qu'il soit visible dans les filtres",
+        "infoDispoSearchPage": "Permet à un attribut d'être visible dans les pages de recherche",
         "allowDeclinaison": "Utiliser comme declinaisons de produit",
         "listcolor": "Liste de couleur"
     },

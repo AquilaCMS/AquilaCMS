@@ -28,6 +28,7 @@ const AttributesSchema = new Schema({
     visible        : {type: Boolean, default: true},
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
+    usedInSearch   : {type: Boolean, default: false},
     translation    : {},
     isVariantable  : Boolean
 }, {

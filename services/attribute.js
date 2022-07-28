@@ -73,6 +73,11 @@ const setAttribute = async (body) => {
         // Then we delete the categories.filters whose _id is the _id of the modified attribute
             await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
         }
+        // If the usedInSearchPage is changed
+        if (attribute.usedInSearchPage !== body.usedInSearchPage) {
+            // Then we change this value in every products that have this attribute
+            
+        }
         await updateProductsVariants(body, attribute);
         const code = body.code;
         delete body.code;
