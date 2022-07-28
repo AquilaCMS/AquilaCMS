@@ -73,11 +73,6 @@ const setAttribute = async (body) => {
         // Then we delete the categories.filters whose _id is the _id of the modified attribute
             await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
         }
-        // If the usedInSearchPage is changed
-        if (attribute.usedInSearchPage !== body.usedInSearchPage) {
-            // Then we change this value in every products that have this attribute
-            
-        }
         await updateProductsVariants(body, attribute);
         const code = body.code;
         delete body.code;
@@ -85,8 +80,8 @@ const setAttribute = async (body) => {
         await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
         await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
         for (let i = 0; i < body.set_attributes.length; i++) {
-            const {code, param, position, _id: id, type, visible, translation} = att;
-            const product_attributes                                           = {id, code, param, position, translation, type, visible};
+            const {code, param, position, _id: id, type, visible, translation, usedInSearch} = att;
+            const product_attributes                                           = {id, code, param, position, translation, type, visible, usedInSearch};
             if (attribute.default_value !== undefined) {
                 product_attributes.value    = att.default_value;
                 product_attributes.position = position;
@@ -198,13 +193,14 @@ const regenerateProductsVariants = async (body) => {
 const updateObjectAttribute = async (list, attr, path) => {
     try {
         for (let j = 0; j < list.length; j++) {
-            const obj                                         = list[j].toObject();
-            const attrIndex                                   = getAttribsFromPath(obj, path).findIndex((_attr) => _attr.code === attr.code);
-            getAttribsFromPath(obj, path)[attrIndex].code     = attr.code;
-            getAttribsFromPath(obj, path)[attrIndex].param    = attr.param;
-            getAttribsFromPath(obj, path)[attrIndex].type     = attr.type;
-            getAttribsFromPath(obj, path)[attrIndex].visible  = attr.visible;
-            getAttribsFromPath(obj, path)[attrIndex].position = attr.position;
+            const obj                                             = list[j].toObject();
+            const attrIndex                                       = getAttribsFromPath(obj, path).findIndex((_attr) => _attr.code === attr.code);
+            getAttribsFromPath(obj, path)[attrIndex].code         = attr.code;
+            getAttribsFromPath(obj, path)[attrIndex].param        = attr.param;
+            getAttribsFromPath(obj, path)[attrIndex].type         = attr.type;
+            getAttribsFromPath(obj, path)[attrIndex].visible      = attr.visible;
+            getAttribsFromPath(obj, path)[attrIndex].usedInSearch = attr.usedInSearch;
+            getAttribsFromPath(obj, path)[attrIndex].position     = attr.position;
             for (let k = 0; k < Object.keys(attr.translation).length; k++) {
                 const lng = Object.keys(attr.translation)[k];
                 if (getAttribsFromPath(obj, path)[attrIndex].translation[lng] === undefined) {
