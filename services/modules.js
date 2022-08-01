@@ -772,6 +772,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         fs.copyFileSync(pathModule + file, copyTo);
         console.log(`Copy module's files front : ${pathModule + file} -> ${copyTo}`);
     }
+
+    // Add translations files in the theme
+    const translationsFolder = path.join(pathModule, 'translations');
+    if (fs.existsSync(translationsFolder)) {
+        await fs.copyRecursive(translationsFolder, path.join(moduleFolderInTheme, 'translations'));
+    }
 };
 
 /**
