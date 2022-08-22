@@ -99,7 +99,6 @@ AttributesSchema.pre('findOneAndUpdate', async function (next) {
  * @deprecated seem like it's not used, because the service setAttribute handle all modifications
  */
 AttributesSchema.post('updateOne', async function ({next}) {
-    console.warn("If you see that, AttributesSchema.post('updateOne') is not deprecated. Please remove this message");
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {
