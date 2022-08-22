@@ -273,69 +273,71 @@ ClientControllers.controller("ClientDetailCtrl", [
             $scope.rules.$promise.then(function (result) {
                 $scope.rules = result;
             });
+            $scope.getClient = function () {
+                $scope.client = {};
 
-            $scope.client = {};
-
-            ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
-                if (response._id === undefined) {
-                    toastService.toast("danger", $translate.instant("client.detail.customerNotExist"));
-                    $location.path("/clients");
-                }
-                $scope.client = response;
-                $scope.civilities.find(function (element) {
-                    if($scope.client.addresses.length !== 0){
-                        if ($scope.client.addresses[0].civility == element.code) {
-                            element.active = true;
-                            // $scope.address.civility = $scope.client.addresses[0].civility;
-                        }
+                ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
+                    if (response._id === undefined) {
+                        toastService.toast("danger", $translate.instant("client.detail.customerNotExist"));
+                        $location.path("/clients");
                     }
-                });
+                    $scope.client = response;
+                    $scope.civilities.find(function (element) {
+                        if($scope.client.addresses.length !== 0){
+                            if ($scope.client.addresses[0].civility == element.code) {
+                                element.active = true;
+                                // $scope.address.civility = $scope.client.addresses[0].civility;
+                            }
+                        }
+                    });
 
-                {
-                    //On récupére le nom des pays des adresses
-                    for(let i = 0; i < $scope.client.addresses.length; i++)
                     {
-                        var isoCountryCode = $scope.client.addresses[i].isoCountryCode;
-                        if(isoCountryCode){
-                            ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
-                            {
-                                // On récupére le nom du pays
-                                $scope.client.addresses[i].country = response.name;
-                            }, function (error) {
-                                console.error("Impossible de récupérer le pays des clients", error);
-                                // si une erreur se produit on met le code iso du pays dans country
-                                $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
-                            });
+                        //On récupére le nom des pays des adresses
+                        for(let i = 0; i < $scope.client.addresses.length; i++)
+                        {
+                            var isoCountryCode = $scope.client.addresses[i].isoCountryCode;
+                            if(isoCountryCode){
+                                ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
+                                {
+                                    // On récupére le nom du pays
+                                    $scope.client.addresses[i].country = response.name;
+                                }, function (error) {
+                                    console.error("Impossible de récupérer le pays des clients", error);
+                                    // si une erreur se produit on met le code iso du pays dans country
+                                    $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
+                                });
+                            }
                         }
                     }
-                }
 
-                // recup les attributs (tous les attr users en gros)
-                genAttributes();
+                    // recup les attributs (tous les attr users en gros)
+                    genAttributes();
 
-                $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
+                    $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
 
-                Newsletter.list({email: $scope.client.email}, function (response) {
-                    $scope.newsletter = response;
+                    Newsletter.list({email: $scope.client.email}, function (response) {
+                        $scope.newsletter = response;
+                    });
+
+                    $scope.client.oldEmail = response.email;
+                    $scope.isEditMode = true;
+
+                    // on recup ceux lié a cet user
+                    getAttributesClient();
+
+                    $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
+                    $scope.downloadHistoryQueryKey =`product.translation.${$rootScope.adminLang}.name`
+
+                    $scope.getDownloadHistory = function (page = 1) {
+                        ProductsV2.getDownloadHistory({PostBody: {filter: $scope.downloadHistoryFilters, limit: $scope.downloadHistoryItemsPerPage, page: page, structure: '*'}}, function (response) {
+                            $scope.downloadHistory = response.datas
+                            $scope.downloadHistoryCount = response.count
+                            $scope.downloadHistoryPage = response.page
+                        })
+                    }
                 });
-
-                $scope.client.oldEmail = response.email;
-                $scope.isEditMode = true;
-
-                // on recup ceux lié a cet user
-                getAttributesClient();
-
-                $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
-                $scope.downloadHistoryQueryKey =`product.translation.${$rootScope.adminLang}.name`
-
-                $scope.getDownloadHistory = function (page = 1) {
-                    ProductsV2.getDownloadHistory({PostBody: {filter: $scope.downloadHistoryFilters, limit: $scope.downloadHistoryItemsPerPage, page: page, structure: '*'}}, function (response) {
-                        $scope.downloadHistory = response.datas
-                        $scope.downloadHistoryCount = response.count
-                        $scope.downloadHistoryPage = response.page
-                    })
-                }
-            });
+            }
+            $scope.getClient()
         } else {
             $scope.client = {};
         }
