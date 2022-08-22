@@ -719,7 +719,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     prds = sortProductList(prds, PostBody.sort, menu);
 
-
     const res = {
         count   : prds.length,
         datas   : JSON.parse(JSON.stringify(prds)),
