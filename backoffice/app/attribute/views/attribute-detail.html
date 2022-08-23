@@ -97,6 +97,16 @@
                     </div>
                 </div>
                 <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" style="margin-left: -15px"
+                        translate>attribute.detail.dispoSearchPage</label>
+                    <i style="float:left" class="fa fa-question-circle"
+                        popover="{{'attribute.detail.infoDispoSearchPage' | translate}}" popover-trigger="mouseenter"
+                        aria-hidden="true"></i>
+                    <div class="col-sm-6">
+                        <ns-switch name="used_in_search_page" ng-model="attribute.usedInSearch"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
                     <label class="col-sm-3 control-label" translate>attribute.detail.visible</label>
                     <div class="col-sm-6">
                         <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
