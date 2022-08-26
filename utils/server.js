@@ -233,7 +233,7 @@ const getAppUrl = async (req) => {
     }
 
     return {
-        appUrl      : `${req.protocol}://${req.host}/`,
+        appUrl      : `${req.protocol}://${req.hostname}/`,
         adminPrefix : config.adminPrefix
     };
 };
