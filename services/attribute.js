@@ -81,7 +81,7 @@ const setAttribute = async (body) => {
         await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
         for (let i = 0; i < body.set_attributes.length; i++) {
             const {code, param, position, _id: id, type, visible, translation, usedInSearch} = att;
-            const product_attributes                                           = {id, code, param, position, translation, type, visible, usedInSearch};
+            const product_attributes                                                         = {id, code, param, position, translation, type, visible, usedInSearch};
             if (attribute.default_value !== undefined) {
                 product_attributes.value    = att.default_value;
                 product_attributes.position = position;
@@ -91,13 +91,13 @@ const setAttribute = async (body) => {
             if (body._type === 'products') {
                 // update of the name and values for the products already having this attribute
                 const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                updateObjectAttribute(prdList, product_attributes, 'attributes');
+                await updateObjectAttribute(prdList, product_attributes, 'attributes');
                 const cats = await Categories.find({'filters.attributes.id_attribut': id});
-                updateObjectAttribute(cats, product_attributes, 'filters.attributes');
+                await updateObjectAttribute(cats, product_attributes, 'filters.attributes');
             } else {
                 // update name and values for users who already have this attribute
                 const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                updateObjectAttribute(usrList, product_attributes, 'attributes');
+                await updateObjectAttribute(usrList, product_attributes, 'attributes');
             }
         }
         await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
@@ -193,21 +193,25 @@ const regenerateProductsVariants = async (body) => {
 const updateObjectAttribute = async (list, attr, path) => {
     try {
         for (let j = 0; j < list.length; j++) {
-            const obj                                             = list[j].toObject();
-            const attrIndex                                       = getAttribsFromPath(obj, path).findIndex((_attr) => _attr.code === attr.code);
-            getAttribsFromPath(obj, path)[attrIndex].code         = attr.code;
-            getAttribsFromPath(obj, path)[attrIndex].param        = attr.param;
-            getAttribsFromPath(obj, path)[attrIndex].type         = attr.type;
-            getAttribsFromPath(obj, path)[attrIndex].visible      = attr.visible;
-            getAttribsFromPath(obj, path)[attrIndex].usedInSearch = attr.usedInSearch;
-            getAttribsFromPath(obj, path)[attrIndex].position     = attr.position;
+            const obj       = list[j].toObject();
+            const attributs = getAttribsFromPath(obj, path);
+            const attrIndex = attributs.findIndex((_attr) => _attr.code === attr.code);
+            const attribut  = attributs[attrIndex];
+
+            attribut.code         = attr.code;
+            attribut.param        = attr.param;
+            attribut.type         = attr.type;
+            attribut.visible      = attr.visible;
+            attribut.usedInSearch = attr.usedInSearch;
+            attribut.position     = attr.position;
+
             for (let k = 0; k < Object.keys(attr.translation).length; k++) {
                 const lng = Object.keys(attr.translation)[k];
-                if (getAttribsFromPath(obj, path)[attrIndex].translation[lng] === undefined) {
-                    getAttribsFromPath(obj, path)[attrIndex].translation[lng] = {};
+                if (attribut.translation[lng] === undefined) {
+                    attribut.translation[lng] = {};
                 }
-                getAttribsFromPath(obj, path)[attrIndex].translation[lng].name   = attr.translation[lng].name;
-                getAttribsFromPath(obj, path)[attrIndex].translation[lng].values = attr.translation[lng].values;
+                attribut.translation[lng].name   = attr.translation[lng].name;
+                attribut.translation[lng].values = attr.translation[lng].values;
             }
             switch (list[j].collection.collectionName) {
             case 'products':
