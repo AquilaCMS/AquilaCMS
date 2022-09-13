@@ -456,7 +456,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
         console.log('\x1b[1m\x1b[33m', logValue, '\x1b[0m');
         result.push(logValue);
         inSegment[owner_type]   = true;
-        const _rules            = await Rules.find(owner_type ? {owner_type} : {});
+        const _rules            = await Rules.find(owner_type ? {owner_type} : {}).lean();
         const splittedRules     = {};
         const noConditionsRules = {};
 
@@ -481,21 +481,21 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             for (let i = 0; i < splittedRulesKeys.length; i++) {
                 // Apply rules
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
-                    const productsObj = await Products.find(
-                        await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {}),
-                        {_id: 1}
-                    ).lean();
-                    const productsIds = productsObj.map((prd) => prd._id);
-
                     // Segmentation Categories
                     if (splittedRulesKeys[i] === 'category') {
-                        const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id});
+                        const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id}).lean();
                         const cat    = await Categories.findOneAndUpdate(
                             {_id: splittedRules[splittedRulesKeys[i]][j].owner_id},
                             {$set: {productsList: []}},
                             {new: true}
                         );
                         if (cat) {
+                            const productsObj = await Products.find(
+                                await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {}),
+                                {_id: 1}
+                            ).lean();
+                            const productsIds = productsObj.map((prd) => prd._id);
+
                             // Get product setted manually
                             if (oldCat) {
                                 cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
@@ -538,6 +538,12 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                                 $and    : [{$or: [{startDate: undefined}, {startDate: {$lte: new Date(Date.now())}}]}, {$or: [{endDate: undefined}, {endDate: {$gte: new Date(Date.now())}}]}]});
                         }
                         if (picto) {
+                            const productsObj = await Products.find(
+                                await applyRecursiveRules([splittedRules[splittedRulesKeys[i]][j]], {}),
+                                {_id: 1}
+                            ).lean();
+                            const productsIds = productsObj.map((prd) => prd._id);
+
                             const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};
                             await Products.updateMany({_id: {$in: productsIds}, pictos: {$ne: pictoData}}, {$push: {pictos: pictoData}});
                         }

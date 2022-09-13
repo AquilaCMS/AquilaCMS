@@ -317,11 +317,15 @@ const execCanonical = async () => {
                         )
                         && typeof product.translation[currentLang] !== 'undefined'
                         && typeof product.translation[currentLang].slug !== 'undefined'
-                    ) { // Le produit existe et on l'a pas déjà traité pour cette langue
-                        await Products.updateOne(
-                            {_id: product._id},
-                            {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
-                        );
+                    ) { // The product exists and we haven't already processed for this language
+                        const finalCanonical = `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`;
+                        // Check if the canonical is not the same
+                        if (product.translation[currentLang]?.canonical !== finalCanonical) {
+                            await Products.updateOne(
+                                {_id: product._id},
+                                {$set: {[`translation.${currentLang}.canonical`]: finalCanonical}}
+                            );
+                        }
                         products_canonicalised.push(product._id.toString());
                         bForceForOtherLang = true; // We passed once, we pass for other languages
                     }
@@ -330,7 +334,7 @@ const execCanonical = async () => {
         }
 
         // Set the canonical to empty for all untreated products
-        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
+        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}}).lean();
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
