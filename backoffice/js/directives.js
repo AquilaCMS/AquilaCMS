@@ -864,6 +864,26 @@ adminCatagenDirectives.directive("numericbinding", function ()
         }
     };
 });
+adminCatagenDirectives.directive("restrictInput", function ()
+{
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attr, ctrl) {
+          ctrl.$parsers.unshift(function(viewValue) {
+            var options = scope.$eval(attr.restrictInput);
+            var reg = new RegExp(options.regex);
+            if (reg.test(viewValue)) { //if valid view value, return it
+              return viewValue;
+            } else { //if not valid view value, use the model value (or empty string if that's also invalid)
+              var overrideValue = (reg.test(ctrl.$modelValue) ? ctrl.$modelValue : '');
+              element.val(overrideValue);
+              return overrideValue;
+            }
+          });
+        }
+      };
+});
 adminCatagenDirectives.directive("nsAttributes", function ($compile)
 {
     return {
