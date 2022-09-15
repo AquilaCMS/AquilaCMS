@@ -17,7 +17,7 @@ import {
     NSProductVariants
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
-import { listModulePage } from 'lib/utils';
+import { slugify, listModulePage } from 'lib/utils';
 import CMS from 'components/CMS';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
@@ -87,10 +87,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${foundImg.name}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${foundImg._id}/${slugify(foundImg.title)}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${product.images[0].name}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${product.selected_variant ? 'productsVariant' : 'products'}/516x400/${product.images[0]._id}/${slugify(product.images[0].title)}${product.images[0].extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -127,7 +127,7 @@ class PageProduct extends NSPageProduct {
 
         const lightboxImages = product.images.sort((a, b) => a.position - b.position).map((item) => {
             if (item.content) return { content: <Video content={item.content} />, alt: item.alt };
-            return { content: `/images/${product.selected_variant ? 'productsVariant' : 'products'}/max/${item._id}/${item.title}${item.extension}`, alt: item.alt };
+            return { content: `/images/${product.selected_variant ? 'productsVariant' : 'products'}/max/${item._id}/${slugify(item.title)}${item.extension}`, alt: item.alt };
         });
 
         return (
