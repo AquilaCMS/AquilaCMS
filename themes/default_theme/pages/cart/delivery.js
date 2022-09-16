@@ -217,7 +217,7 @@ class CartDelivery extends React.Component {
                                                                     <input hidden type="radio" name="delivery-option" onChange={(e) => this.onChangeSelect(e, index)} id={`checkbox_${ship._id}_pickup`} checked={(this.state.index === -1 && cart && cart.delivery && cart.delivery.method === ship._id) || (this.state.index === index)} />
 
                                                                     <label htmlFor={`checkbox_${ship._id}_pickup`}>
-                                                                        <img src={ship.url_logo} alt="" style={{ display: 'inline-block' }} />
+                                                                        {ship.url_logo && <img src={ship.url_logo} alt="" style={{ display: 'inline-block' }} />}
                                                                         <strong>{ship.name}</strong>
                                                                         <em>{t('delivery:livraisonApartir')} {ship ? moment(ship.dateDelivery).format('DD/MM/YYYY') : '-'}
                                                                         </em>
