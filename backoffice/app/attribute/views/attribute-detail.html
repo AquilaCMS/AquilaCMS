@@ -73,7 +73,7 @@
                     <label class="col-sm-3 control-label" translate>attribute.detail.presJeuxAttr</label>
                     <div class="col-sm-6">
                         <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" multiple>
-                            <option ng-repeat="setAtt in setAttributes" value="{{setAtt._id}}"
+                            <option ng-repeat="setAtt in setAttributes track by setAtt.code" value="{{setAtt._id}}"
                                 ng-selected="attribute.set_attributes.indexOf(setAtt._id) > -1">{{setAtt.name}}
                                 (Code : {{setAtt.code}})
                             </option>
