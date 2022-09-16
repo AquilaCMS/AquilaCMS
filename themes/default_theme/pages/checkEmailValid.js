@@ -54,13 +54,13 @@ class CheckEmailValid extends React.Component {
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
-                    <section style={{ textAlign: 'center', margin: '150px 0 150px 0' }}>
-                        <Head>
-                            <title>{sitename} | {message}</title>
-                            <meta property="og:type" content="website" />
-                        </Head>
+                    <Head>
+                        <title>{sitename} | {message}</title>
+                        <meta property="og:type" content="website" />
+                    </Head>
+                    <div className="page-content" style={{ textAlign: 'center' }}>
                         <h1>{message}</h1>
-                    </section>
+                    </div>
                 </Layout>
             </NSContext.Provider>
         );
