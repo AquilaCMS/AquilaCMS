@@ -53,9 +53,14 @@ ProductControllers.controller("ProductListCtrl", [
                 return '';
             }
         };
-        $scope.collapse = function () {
+        $scope.collapseAdvancedSearch = function () {
             if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
                 document.getElementById('collapseIcon').className = "ico-arrow-up";
+                setTimeout(function () {
+                    $scope.$apply(function () {
+                        $scope.advancedSearchDisplay = true;
+                    });
+                }, 300); 
             }else {
                 document.getElementById('collapseIcon').className = "ico-arrow-down";
             }

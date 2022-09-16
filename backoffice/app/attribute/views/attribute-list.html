@@ -28,10 +28,10 @@
                             style="width: 200px;" translate>
                             attribute.list.type
                         </th>
-                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                        <!-- <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
                             style="width: 200px;" translate>
                             attribute.list.jeuxAttrib
-                        </th>
+                        </th> -->
                         <!--<th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
                             style="width: 200px;">
                             Actions
@@ -66,17 +66,17 @@
                            infinite-scroll-disabled='scroller.busy'>
                     <tr class="pointer"
                         ng-class-odd="'odd'" ng-class-even="'even'"
-                        ng-repeat="attribute in attributesClassed | orderBy:sortType:sortReverse">
+                        ng-repeat="attribute in attributesClassed track by attribute.code | orderBy:sortType:sortReverse">
                         <td data-label="Code :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.code}}</td>
                         <td data-label="Nom :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.translation[adminLang].name}}</td>
                         <td data-label="Type :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.type}}</td>
-                        <td data-label="Jeux d'attributs :" class=" ">
+                        <!-- <td data-label="Jeux d'attributs :" class=" ">
                             <button popover-ns type="button" class="btn btn-default" data-toggle="popover"
                                     data-placement="right" data-html="true" title="Jeux d'Attributs (à trad)" data-content=
-                                        '<table class="table table-condensed"><tbody><tr ng-repeat="setAtt in attribute.set_attributes"><td ng-bind="setAtt.name"></td></tr></tbody></table>' translate>
+                                        '<table class="table table-condensed"><tbody><tr ng-repeat="setAtt in ::attribute.set_attributes"><td ng-bind="setAtt.name"></td></tr></tbody></table>' translate>
                                 attribute.list.afficher
                             </button>
-                        </td>
+                        </td> -->
                         <!--<td class=" ">
                             <a href="#/attributes/{{attribute.code}}" class="btn btn-blue btn-with-icon">
                                 <i class="ico-magnifier-primary"></i>
@@ -130,7 +130,7 @@
                            infinite-scroll-disabled='scroller.busy'>
                     <tr ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-click="goToAttributeDetails(attribute.code)"
-                        ng-repeat="attribute in attributesOrphans | orderBy:sortType:sortReverse">
+                        ng-repeat="attribute in attributesOrphans track by attribute.code | orderBy:sortType:sortReverse">
                         <td class="  sorting_1">{{attribute.code}}</td>
                         <td class="  sorting_1">{{attribute.translation[adminLang].name}}</td>
                         <td class="  sorting_1">{{attribute.type}}</td>
