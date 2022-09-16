@@ -896,7 +896,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 scope.att.translation[scope.lang].value = colorString
             }
 
-            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+            /* scope.$watch('att.type', function(newValue, oldValue, elScope) { */
                 el = angular.element("<span/>");
                 scope.optionColor = {
                     format: "hexString",
@@ -991,7 +991,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 $compile(el)(scope);
                 element.append(el);
                 
-            })
+            /* }) */
         }
     };
 });
