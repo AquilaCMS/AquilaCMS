@@ -46,9 +46,11 @@ exports.execSh = async function (cde, param = [], path = global.appRoot) {
         let stdout = '';
         let stderr = '';
         cmd.stdout.on('data', (data) => {
+            console.log(data.toString());
             stdout += data.toString();
         });
         cmd.stderr.on('data', (data) => {
+            console.error(data.toString());
             stderr += data.toString();
         });
         cmd.on('error', (err) => {

@@ -146,7 +146,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
         if ($routeParams.attributeCode === 'new' || $routeParams.attributeCode === undefined) {
             $scope.isEditMode = false;
             $scope.attribute  = {
-                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false
+                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false, usedInSearch : false
             };
 
             if ($routeParams.code) {

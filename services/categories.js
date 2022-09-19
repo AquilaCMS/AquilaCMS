@@ -26,7 +26,7 @@ const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultF
 
 const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const generateFilters = async (res, lang = '', selectedAttributes = []) => {
+const generateFilters = async (res, lang = '', selectedAttributes = [], isInSearchContext = false) => {
     lang = ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
         const attributes = [];
@@ -56,7 +56,7 @@ const generateFilters = async (res, lang = '', selectedAttributes = []) => {
                     prd = productsList[i];
                 }
             } else {
-                prd = await Products.findOne({_id: productsList[i].id, active: true, _visible: true}).lean();
+                prd = await Products.findOne({_id: productsList[i].id || productsList[i]._id, active: true, _visible: true}).lean();
             }
 
             if (prd && prd.attributes) {
@@ -67,7 +67,13 @@ const generateFilters = async (res, lang = '', selectedAttributes = []) => {
                 }
 
                 for (const attr of prd.attributes) {
-                    if (attributes.includes(attr.id.toString())) {
+                    let usedAttr = false;
+                    if (!isInSearchContext) {
+                        usedAttr = true;
+                    } else if (attr.usedInSearch) { // If we are in a search context and the attribute can be used in search
+                        usedAttr = true;
+                    }
+                    if (usedAttr && attributes.includes(attr.id.toString())) {
                         if (attr.translation && attr.translation[lang]) {
                             const value = attr.translation[lang].value;
 
@@ -311,11 +317,15 @@ const execCanonical = async () => {
                         )
                         && typeof product.translation[currentLang] !== 'undefined'
                         && typeof product.translation[currentLang].slug !== 'undefined'
-                    ) { // Le produit existe et on l'a pas déjà traité pour cette langue
-                        await Products.updateOne(
-                            {_id: product._id},
-                            {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
-                        );
+                    ) { // The product exists and we haven't already processed for this language
+                        const finalCanonical = `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`;
+                        // Check if the canonical is not the same
+                        if (product.translation[currentLang]?.canonical !== finalCanonical) {
+                            await Products.updateOne(
+                                {_id: product._id},
+                                {$set: {[`translation.${currentLang}.canonical`]: finalCanonical}}
+                            );
+                        }
                         products_canonicalised.push(product._id.toString());
                         bForceForOtherLang = true; // We passed once, we pass for other languages
                     }
@@ -324,7 +334,7 @@ const execCanonical = async () => {
         }
 
         // Set the canonical to empty for all untreated products
-        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
+        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}}).lean();
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
@@ -363,6 +373,9 @@ const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang
         for (let iLang = 0; iLang < tabLang.length; iLang++) {
             const currentLang = tabLang[iLang];
             const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (current_category.translation[currentLang] === undefined) {
+                current_category.translation[currentLang] = {slug: 'NA'};
+            }
             if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
                 current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
             } else {

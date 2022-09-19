@@ -58,10 +58,13 @@ async function getProductsListing(req, res, next) {
         ];
         const result               = await ServiceProduct.getProductsListing(req, res);
 
+        /* DEPRECATED
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat, req.body.keepOriginalAttribs);
         }
+        */
+
         // If it is a product visualization, we modify these view stats
         if (req.body.countviews && result.datas.length > 0) {
             require('../services/statistics').setProductViews(result.datas[0]._id);
@@ -139,10 +142,14 @@ async function getProductsByCategoryId(req, res, next) {
         if (req.info) isAdmin = req.info.isAdmin;
 
         const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, req.info, {req, res});
+
+        /* DEPRECATED
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat);
         }
+        */
+
         res.json(result);
     } catch (error) {
         return next(error);

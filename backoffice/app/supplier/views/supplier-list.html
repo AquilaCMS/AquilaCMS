@@ -38,7 +38,7 @@
             <tr class="pointer"
                 ng-class-odd="'odd'" ng-class-even="'even'"
                 ng-click="goToSupplierDetails(supplier.code)"
-                ng-repeat="supplier in suppliers | orderBy:sortType:sortReverse">
+                ng-repeat="supplier in suppliers track by supplier.code | orderBy:sortType:sortReverse">
                 <td data-label="Nom :" class="  sorting_1">{{supplier.name}}</td>
                 <td data-label="Etat :" class=" ">
                     <span ng-bind-html='supplier.active | checked'></span>

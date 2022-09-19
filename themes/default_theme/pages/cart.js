@@ -28,13 +28,21 @@ class PageCart extends NSPageCart {
                         <title>{sitename} | {t('cart:page.title')}</title>
                         <meta property="og:type" content="website" />
                     </Head>
+                    <div className="page-content">
+                    <div className="intro">
+                                        <div className="intro__content">
+                                            <div className="shell">
+                                                <h1 style={{textTransform: 'uppercase'}}>{t('cart:page.header.title')}</h1>
+                                            </div>
+                                        </div>
+                                    </div>
                     <div className="main">
                         <div className="shell">
                             <section className="section-shopping-cart">
                                 <header className="section__head section__head--mobile-flex">
-                                    <h1>
+                                    {/* <h1>
                                         <i className="ico-shopping-cart-large hidden-xs" />{t('cart:page.header.title')}
-                                    </h1>
+                                    </h1> */}
                                     <button type="submit" className="btn btn--red visible-xs-block" onClick={() => this.validateCart(Router)}>{t('cart:page.header.link')}</button>
                                 </header>
                                 {/* <!-- /.section__head --> */}
@@ -359,6 +367,7 @@ class PageCart extends NSPageCart {
                             </section>
                         </div>
                     </div>
+                </div>
                 </Layout>
             </NSContext.Provider>
         );

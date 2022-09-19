@@ -117,6 +117,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             && !checkForValidMongoDbID.test(value)
             && value
             && value !== {}
+            && !(data[key] instanceof Date)
         ) {
             // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);

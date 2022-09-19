@@ -125,14 +125,14 @@ class PageRgpd extends NSPageAccount {
                     <Head>
                         <title>{sitename} | {t('account:rgpd.title')}</title>
                     </Head>
-                    <div className="main">
+                    <div className="main page-content">
                         <div className="shell">
                             <div className="container container--flex align-top">
                                 <div className="content content--alt content--left">
                                     <section className="section-client-area">
                                         <header className="section__head">
                                             <h2 className="section__title">
-                                                <i className="ico-profile-large" />
+                                            <span className="material-symbols-outlined client_account">account_circle</span>
                                                 {t('account.page.title')}
                                             </h2>{/* <!-- /.section__title --> */}
                                         </header>{/* <!-- /.section__head --> */}

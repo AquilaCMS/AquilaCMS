@@ -81,7 +81,7 @@
                             <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
                             <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
                             <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
-                            <td data-label="Login :" class="tdSize">{{client.lastConnexion | date:"dd/MM/yy - hh:mm"}}</td>
+                            <td data-label="Login :" class="tdSize">{{client.lastConnexion | date:"dd/MM/yy - HH:mm"}}</td>
                             <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                             <!--<td style="width: 25%">
                                 <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">

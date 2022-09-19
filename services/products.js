@@ -141,12 +141,19 @@ const priceFilterFromPostBody = (PostBody) => {
 
 // Returns all products found, the products on the current page and the total number of products found
 const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaultLang) => {
+    const config         = await Configuration.findOne({}, {'environment.searchSettings': 1}).lean();
+    const searchSettings = config?.environment?.searchSettings;
+
     const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
     const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
+    for (let index = 0; index < searchSettings.keys.length; index++) {
+        searchSettings.keys[index].name = searchSettings.keys[index].name.replace('{lang}', lang);
+    }
+
     const selectedFieldsArray = [
-        {name: `translation.${lang}.name`, weight: 100},
-        {name: 'code', weight: 5},
+        {name: `translation.${lang}.name`, weight: 10},
+        {name: 'code', weight: 20},
         {name: `translation.${lang}.description1.title`, weight: 3},
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
@@ -154,15 +161,15 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
 
     // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
     const options = {
-        shouldSort         : true,
-        findAllMatches     : true,
-        includeScore       : true,
-        ignoreLocation     : true,
-        ignoreFieldNorm    : true,
-        useExtendedSearch  : true,
-        minMatchCharLength : 2,
-        threshold          : 0.3, // 0.2 and 0.3 are the recommended values
-        keys               : selectedFieldsArray
+        shouldSort         : searchSettings.shouldSort !== undefined ? searchSettings.shouldSort : true,
+        findAllMatches     : searchSettings.findAllMatches !== undefined ? searchSettings.findAllMatches : true,
+        includeScore       : searchSettings.includeScore !== undefined ? searchSettings.includeScore : true,
+        ignoreLocation     : searchSettings.ignoreLocation !== undefined ? searchSettings.ignoreLocation : true,
+        ignoreFieldNorm    : searchSettings.ignoreFieldNorm !== undefined ? searchSettings.ignoreFieldNorm : true,
+        useExtendedSearch  : searchSettings.useExtendedSearch !== undefined ? searchSettings.useExtendedSearch : true,
+        minMatchCharLength : searchSettings.minMatchCharLength !== undefined ? searchSettings.minMatchCharLength : 2,
+        threshold          : searchSettings.threshold !== undefined ? searchSettings.threshold : 0.2, // 0.2 and 0.3 are the recommended values
+        keys               : (searchSettings.keys !== undefined && searchSettings.keys.length !== 0) ? searchSettings.keys : selectedFieldsArray
     };
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
@@ -712,6 +719,41 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     prds = sortProductList(prds, PostBody.sort, menu);
 
+    const res = {
+        count   : prds.length,
+        datas   : JSON.parse(JSON.stringify(prds)),
+        filters : {}
+    };
+    if (reqRes.req.body.dynamicFilters) {
+        // Selected attributes
+        const selectedAttributes = [];
+        if (PostBody.filter.$and) {
+            const filterArray = PostBody.filter.$and;
+            for (let i = 0; i < filterArray.length; i++) {
+                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+            }
+        }
+
+        // Re-generate filters after the new products list has been calculated
+        const attributes = [];
+        const menuAttr   = menu.filters.attributes;
+        for (let i = 0; i < menuAttr.length; i++) {
+            const attr      = menuAttr[i];
+            const attribute = {
+                code        : attr.code,
+                id_attribut : attr.id_attribut,
+                name        : attr.translation[lang].name,
+                position    : attr.position,
+                type        : attr.type,
+                values      : attr.translation[lang].values
+            };
+            attributes.push(attribute);
+        }
+
+        res.filters = {attributes};
+        await servicesCategory.generateFilters(res, lang, selectedAttributes);
+    }
+
     const products = prds.slice(skip, limit + skip);
 
     // The code below allows to return the structure that we send in the PostBody because currently it returns all the fields
@@ -720,8 +762,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     return {
-        count : prds.length,
-        datas : products,
+        count   : prds.length,
+        datas   : products,
+        filters : res.filters,
         priceMin,
         priceMax,
         specialPriceMin,
@@ -735,6 +778,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
 const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
+/**
+ * DEPRECATED old function
+ * @deprecated
+ */
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
     const attributes            = req.body.attributes;
@@ -1190,6 +1237,7 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     const structure = req.body.PostBody.structure || {};
+    const filter    = JSON.parse(JSON.stringify(req.body.PostBody.filter));
 
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, req.params.withFilters);
 
@@ -1209,17 +1257,23 @@ const getProductsListing = async (req, res) => {
             translation : attr.translation
         }));
 
-        // We put all products without any pagination in datas to generate filters
-        const datas  = JSON.parse(JSON.stringify(result.datas));
-        result.datas = result.allProductsRes.datas;
+        /* If we want dynamic filters, we generate them from the remaining products,
+        * otherwise we generate them from all the products found after the search and before the filters are applied
+        */
+        const datas = JSON.parse(JSON.stringify(result.datas));
+        if (!req.body.dynamicFilters) {
+            result.datas = result.allProductsRes.datas;
+        }
         delete result.allProductsRes;
 
         const selectedAttributes = [];
-        const filtersArray       = req.body.PostBody.filter.$and;
-        for (let i = 0; i < filtersArray.length; i++) {
-            if (Object.keys(filtersArray[i])[0] === 'attributes') selectedAttributes.push(filtersArray[i].attributes.$elemMatch);
+        if (filter.$and) {
+            const filterArray = filter.$and;
+            for (let i = 0; i < filterArray.length; i++) {
+                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
+            }
         }
-        await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes);
+        await servicesCategory.generateFilters(result, req.body.lang, selectedAttributes, true);
         result.datas = datas;
     } else {
         delete result.allProductsRes;

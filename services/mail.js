@@ -679,6 +679,10 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailFromContact
         } = global.envConfig.environment;
 
+        if (!mailTo || mailTo.length === 0) {
+            console.error('sendMail() : mailTo is empty !!');
+        }
+
         // Check that there is no recipient overload in the config
         if (overrideSendTo) {
             mailTo = overrideSendTo;
