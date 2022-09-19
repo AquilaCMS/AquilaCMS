@@ -232,11 +232,11 @@
 
                     <!-- ------------- Emplacement pour module --------------- -->
                     <br />
-                    <div class="row" ng-if="isEditMode && blocks.length > 0">
+                    <div class="row" ng-if="blocks.length > 0" ng-show="isEditMode">
                         <div class="col-md-12">
                             <div class="box subbox">
                                 <div class="box-content">
-                                    <table ng-if="isEditMode" class="col-md-12 table table-bordered" style="clear: both" ng-repeat="block in blocks">
+                                    <table ng-show="isEditMode" class="col-md-12 table table-bordered" style="clear: both" ng-repeat="block in blocks">
                                         <thead>
                                             <tr>
                                                 <th>{{block.label}}</th>

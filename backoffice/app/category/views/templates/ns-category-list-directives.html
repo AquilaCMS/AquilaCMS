@@ -15,12 +15,12 @@
         <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
     </div>
     <ol ui-tree-nodes="" ng-if="node.children.length > 0" ng-model="node.nodes" ng-class="{'hidden': node.collapsed}">
-        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder" data-nodrag></li>
+        <li ng-repeat="node in node.nodes track by $index" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder" data-nodrag></li>
     </ol>
 </script>
 <div ui-tree="treeOptions" ng-if="categories.length > 0" data-drag-delay="300" class="cleanBorder">
     <ol ui-tree-nodes="" ng-model="categories" id="tree-root">
-        <li ng-repeat="node in categories" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+        <li ng-repeat="node in categories track by $index" ui-tree-node ng-include="'nodes_renderer.html'"></li>
     </ol>
 </div>
 <div ng-if="categories.length == 0" translate>category.list.noCatCreated</div>

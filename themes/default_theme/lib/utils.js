@@ -5,6 +5,18 @@ import nsModules from '../modules/list_modules';
 import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
 
+/* string to slug */
+function slugify(string) {
+    return string
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+        .replace(/\-\-+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, ''); // Trim - from end of text
+}
+
 /**
  * Si le produit est dans la categorie printer alors on va compter le nombre de printer dans le panier
  * @param {*} category category du produit qui vient d'être ajouté
@@ -65,6 +77,23 @@ function listModulePage(type, props = {}) {
     });
 }
 
+function formatDate(date, lang = 'fr', options = { year: 'numeric', month: 'numeric', day: 'numeric' }) {
+    let timestamp = Date.parse(date);
+    let d         = new Date(timestamp).toLocaleDateString(lang, options);
+    return d.toString().charAt(0).toUpperCase() + d.toString().slice(1);
+};
+
+async function getBlogArticles(lang) {
+    try {
+        const res = await axios.get(`${getAPIUrl()}v2/blog/articles?lang=${lang}`);
+        const { data: articles } = res;
+        return articles;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
 export {
-    countProductInCartByCategory, countProductInCartByProduct, listModulePage
+    slugify, countProductInCartByCategory, countProductInCartByProduct, listModulePage, formatDate, getBlogArticles
 };

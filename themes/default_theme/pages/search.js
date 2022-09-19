@@ -119,13 +119,13 @@ class PageSearch extends NSPageSearch {
                                             <ul>
                                                 <li>
                                                     <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: true }, () => { window.localStorage.setItem('gridDisplay', 'true'); })}>
-                                                        <i className={`ico-grid${gridDisplay ? ' active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">apps</span>
                                                     </button>
                                                 </li>
 
                                                 <li>
                                                     <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: false }, () => { window.localStorage.setItem('gridDisplay', 'false'); })}>
-                                                        <i className={`ico-list${!gridDisplay ? '-active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">format_list_bulleted</span>
                                                     </button>
                                                 </li>
                                             </ul>

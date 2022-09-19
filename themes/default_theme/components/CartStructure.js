@@ -25,7 +25,7 @@ class CartStructure extends React.Component {
         return (
             <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
                 <Head />
-                <div className="main">
+                <div className="main page-content">
                     <div className="shell">
                         <div className="shipping-progress hidden-xs">
                             <ul className="shipping-steps">
@@ -33,8 +33,8 @@ class CartStructure extends React.Component {
                                     className={`shipping-step${step === 1 ? ' active' : ''}`}
                                     onClick={() => (step >= 2 && isClickable ? Router.pushRoute('cartLogin', { lang: routerLang }) : console.warn('non passed step'))}>
                                     <span className="icon">
-                                        <i className="ico-profile-card" />
-                                        <i className="ico-profile-card-active" />
+                                        <span className="material-symbols-outlined">badge</span>
+                                        <span className="material-symbols-outlined mso-active">badge</span>
                                     </span>
 
                                     <strong>{t('steps.connexion')}</strong>
@@ -45,8 +45,8 @@ class CartStructure extends React.Component {
                                     style={{ cursor: step >= 3 && isClickable ? 'pointer' : 'unset' }}
                                     onClick={() => (step >= 3 && isClickable ? Router.pushRoute('cartAddress', { lang: routerLang }) : console.warn('non passed step'))}>
                                     <span className="icon">
-                                        <i className="ico-location" />
-                                        <i className="ico-location-active" />
+                                        <span className="material-symbols-outlined">pin_drop</span>
+                                        <span className="material-symbols-outlined mso-active">pin_drop</span>
                                     </span>
 
                                     <strong>{t('steps.coordonnees')}</strong>
@@ -57,8 +57,8 @@ class CartStructure extends React.Component {
                                     style={{ cursor: step >= 4 && isClickable ? 'pointer' : 'unset' }}
                                     onClick={() => (step >= 4 && isClickable ? Router.pushRoute('cartDelivery', { lang: routerLang }) : console.warn('non passed step'))}>
                                     <span className="icon">
-                                        <i className="ico-truck" />
-                                        <i className="ico-truck-active" />
+                                        <span className="material-symbols-outlined">local_shipping</span>
+                                        <span className="material-symbols-outlined mso-active">local_shipping</span>
                                     </span>
 
                                     <strong>{t('steps.livraison')}</strong>
@@ -69,8 +69,8 @@ class CartStructure extends React.Component {
                                     style={{ cursor: step >= 5 && isClickable ? 'pointer' : 'unset' }}
                                     onClick={() => (step >= 5 && isClickable ? Router.pushRoute('cartPayment', { lang: routerLang }) : console.warn('non passed step'))}>
                                     <span className="icon">
-                                        <i className="ico-payment" />
-                                        <i className="ico-payment-active" />
+                                    <span className="material-symbols-outlined">payments</span>
+                                    <span className="material-symbols-outlined mso-active">payments</span>
                                     </span>
 
                                     <strong>{t('steps.paiement')}</strong>
@@ -78,8 +78,8 @@ class CartStructure extends React.Component {
 
                                 <li className={`shipping-step${step === 5 ? ' active' : ''}`}>
                                     <span className="icon">
-                                        <i className="ico-confirm" />
-                                        <i className="ico-confirm-active" />
+                                    <span className="material-symbols-outlined">task_alt</span>
+                                    <span className="material-symbols-outlined mso-active">task_alt</span>
                                     </span>
 
                                     <strong>{t('steps.confirmation')}</strong>
