@@ -181,11 +181,13 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
 
 /**
  * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
+ * List A: set of products returned by the fuzzy search
+ * List B: all previous products found in list A after application of the filters
+ * List C: all previous products found in list B after the pagination
  * @param {PostBody} PostBody
  * @param {Express.Request} reqRes
  * @param {string} lang
  */
-// eslint-disable-next-line no-unused-vars
 const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     let structure = {};
     if (PostBody && PostBody.structure) {
@@ -247,9 +249,9 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             .populate(PostBody.populate)
             .select(querySelect)
             .lean();
-        allProductsRes    = {datas: allProducts, count: allProducts.length};
+        allProductsRes    = {datas: allProducts, count: allProducts.length}; // List A
     } else {
-        allProductsRes = await queryBuilder.find(PostBody);
+        allProductsRes = await queryBuilder.find(PostBody); // List A
     }
     queryBuilder.defaultFields = defaultFields;
 
@@ -260,6 +262,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
+    let allFilteredProducts;
     if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0 && withFilters) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
@@ -290,7 +293,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             const res = filteredId.includes(item._id.toString()) && (item.price.priceSort.ati >= formatedPriceFilter.gte && item.price.priceSort.ati <= formatedPriceFilter.lte);
             return res;
         });
-        const allFilteredProducts = {datas: filteredProductsData, count: filteredProductsData.length};
+        allFilteredProducts = {datas: filteredProductsData, count: filteredProductsData.length};
 
         const arrayUnfilteredPriceSort = {et: [], ati: []};
         for (const prd of result.datas) {
@@ -304,7 +307,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             }
         }
 
-        result = JSON.parse(JSON.stringify(allFilteredProducts));
+        result = JSON.parse(JSON.stringify(allFilteredProducts)); // List B
 
         const arrayPriceSort = {et: [], ati: []};
         for (const prd of result.datas) {
@@ -331,8 +334,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             .lean();
         const filteredId           = filteredProductsRes.map((res) => res._id.toString());
         const filteredProductsData = result.datas.filter((item) => filteredId.includes(item._id.toString()));
-        const allFilteredProducts  = {datas: filteredProductsData, count: filteredProductsData.length};
-        result                     = JSON.parse(JSON.stringify(allFilteredProducts));
+        allFilteredProducts        = {datas: filteredProductsData, count: filteredProductsData.length};
+        result                     = JSON.parse(JSON.stringify(allFilteredProducts)); // List B
     }
 
     if (PostBody.filter?._id?.$in) {
@@ -361,7 +364,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
                 res.push(result.datas[i]);
                 i++;
             }
-            result.datas = res;
+            result.datas = res; // List C
         }
         delete PostBody.filter._id;
     }
@@ -404,7 +407,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         };
     }
 
-    result.allProductsRes = allProductsRes;
+    result.allProductsRes          = allProductsRes; // List A
+    result.allProductsAfterFilters = allFilteredProducts; // List B
 
     return result;
 };
@@ -1265,8 +1269,11 @@ const getProductsListing = async (req, res) => {
         const datas = JSON.parse(JSON.stringify(result.datas));
         if (!req.body.dynamicFilters) {
             result.datas = result.allProductsRes.datas;
+        } else {
+            result.datas = result.allProductsAfterFilters.datas;
         }
         delete result.allProductsRes;
+        delete result.allProductsAfterFilters;
 
         const selectedAttributes = [];
         if (filter.$and) {
@@ -1279,6 +1286,7 @@ const getProductsListing = async (req, res) => {
         result.datas = datas;
     } else {
         delete result.allProductsRes;
+        delete result.allProductsAfterFilters;
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
