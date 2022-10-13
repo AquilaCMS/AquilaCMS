@@ -1001,15 +1001,15 @@ const controlAllProducts = async (option) => {
     try {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
-        const _config     = await Configuration.findOne({}, {stockOrder: 1});
+        const _config     = await Configuration.findOne({}, {stockOrder: 1}).lean();
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
         let productsList;
         if (option) {
-            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)})];
+            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)}).lean()];
         } else {
-            productsList = await Products.find({});
+            productsList = await Products.find({}).lean();
         }
         for (const oneProduct of productsList) {
             // Code control
@@ -1113,11 +1113,10 @@ const controlAllProducts = async (option) => {
             }
 
             // Control of the categorization
-            await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
-                if (typeof categories === 'undefined' || categories.length === 0) {
-                    returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
-                }
-            });
+            const categoriesId = await Categories.find({'productsList.id': oneProduct._id.toString()}).lean();
+            if (typeof categoriesId === 'undefined' || categoriesId.length === 0) {
+                returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
+            }
         }
 
         // Displaying the summary

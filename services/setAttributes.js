@@ -15,10 +15,10 @@ const defaultFields    = ['_id', 'code', 'name'];
 const queryBuilder     = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
 
 exports.addAttributesToProduct = async function (product, code = 'defaut') {
-    product.attributes          = [];
-    const setAtt                = await SetAttributes.findOne({code});
-    product.set_attributes_name = setAtt.name;
-    product.set_attributes      = setAtt._id;
+    product.attributes = [];
+    const setAtt       = await SetAttributes.findOne({code});
+    // product.set_attributes_name = setAtt.name;
+    product.set_attributes = setAtt._id;
     for (const attrs of setAtt.attributes) {
         const attr = await Attributes.findOne({_id: attrs});
         if (attr != null) {

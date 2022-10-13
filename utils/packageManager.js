@@ -43,16 +43,16 @@ exports.execSh = async function (cde, param = [], path = global.appRoot) {
             cmd = spawn(cde, [...param], {cwd: path, shell: true});
         }
 
-        let stdout = '';
-        let stderr = '';
-        cmd.stdout.on('data', (data) => {
-            console.log(data.toString());
-            stdout += data.toString();
-        });
-        cmd.stderr.on('data', (data) => {
-            console.error(data.toString());
-            stderr += data.toString();
-        });
+        const stdout = '';
+        const stderr = '';
+        // cmd.stdout.on('data', (data) => {
+        //     console.log(data.toString());
+        //     stdout += data.toString();
+        // });
+        // cmd.stderr.on('data', (data) => {
+        //     console.error(data.toString());
+        //     stderr += data.toString();
+        // });
         cmd.on('error', (err) => {
             reject(err);
         });
