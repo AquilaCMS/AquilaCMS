@@ -29,6 +29,7 @@ const AttributesSchema = new Schema({
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
     usedInSearch   : {type: Boolean, default: false},
+    parents        : [{type: ObjectId, ref: 'attributes'}],
     translation    : {},
     isVariantable  : Boolean
 }, {
