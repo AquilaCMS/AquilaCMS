@@ -86,7 +86,7 @@ sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAt
             }
         }
 
-        if ((parentsOfEachAttr && !isAParentSelected) || (values[key].length < 2 && !isSelected)) {
+        if ((parentsOfEachAttr && !isAParentSelected && !isSelected) || (values[key].length < 2 && !isSelected)) {
             delete values[key];
             const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
             if (idx >= 0) {
