@@ -78,7 +78,7 @@ sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAt
                 isSelected = true;
                 isValueSelected = true;
             }
-            if (parentsOfEachAttr && parentsOfEachAttr[key]) {
+            if (parentsOfEachAttr && Object.keys(parentsOfEachAttr).length !== 0 && parentsOfEachAttr[key]) {
                 const parents = parentsOfEachAttr[key];
                 for (let j = 0; j < parents.length; j++) {
                     if (parents[j] === selectedAttributes[i].id) isAParentSelected = true;
@@ -86,7 +86,7 @@ sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAt
             }
         }
 
-        if ((parentsOfEachAttr && !isAParentSelected && !isSelected) || (values[key].length < 2 && !isSelected)) {
+        if ((parentsOfEachAttr && Object.keys(parentsOfEachAttr).length !== 0 && !isAParentSelected && !isSelected) || (values[key].length < 2 && !isSelected)) {
             delete values[key];
             const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
             if (idx >= 0) {
@@ -115,10 +115,11 @@ const calculateAttributeDisplay = (attrWithoutParents, attrWithParents, parentsO
     // If no parents are available we will also display all children
     let values = attrWithoutParents;
     if (resParents.isValueSelected || (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object)) {
+        if (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object) parentsOfEachAttr = {}
         const resChilds = sortAndCleanAttributesValues(attrWithParents, selectedAttributes, res, parentsOfEachAttr)
         values = {...attrWithoutParents, ...attrWithParents};
 
-        if(!emptyValues) emptyValues = resChilds.isEmpty;
+        if (!emptyValues) emptyValues = resChilds.isEmpty;
     }
 
     return { emptyValues, values }
