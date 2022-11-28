@@ -37,34 +37,6 @@
     },
     {
       "group": "",
-      "extension": ".jpg",
-      "_id": "5d444efbede1945f660288d7",
-      "link": "medias/banniere2.jpg",
-      "name": "banniere sweat"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "5d444fa2ede1945f6602892f",
-      "link": "medias/t-shirts.jpg",
-      "name": "banniere tshirt"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "5d445012ede1945f6602898b",
-      "link": "medias/banniere3.jpg",
-      "name": "banniere chaussettes"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "5d4a5011edd1c15f16018b85",
-      "link": "medias/banniere_produits.jpg",
-      "name": "banniere produits"
-    },
-    {
-      "group": "",
       "extension": ".png",
       "_id": "5d4b5021ef01c34126038c90",
       "link": "medias/no-image.png",
@@ -118,20 +90,6 @@
       "_id": "ffcdd77e851f52715c820477",
       "link": "medias/Visa.png",
       "name": "VISA"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "ffe5f4b24f39945b49e8cd15",
-      "link": "",
-      "name": "new-917"
-    },
-    {
-      "group": "",
-      "extension": ".jpg",
-      "_id": "ffe11093cdb4e860388ea59e",
-      "link": "",
-      "name": "new-327"
     }
   ]
 }

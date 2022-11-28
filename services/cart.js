@@ -728,8 +728,12 @@ const mailPendingCarts = async () => {
             let nbMails = 0;
             for (const cart of carts) {
                 try {
-                    await servicesMail.sendMailPendingCarts(cart);
-                    nbMails++;
+                    // Verify that an order has not already been generated after the creation of the cart
+                    const orders = await Orders.find({createdAt: {$gte: cart.createdAt}, 'customer.id': cart.customer.id});
+                    if (!orders || orders.length === 0) {
+                        await servicesMail.sendMailPendingCarts(cart);
+                        nbMails++;
+                    }
                 } catch (error) {
                     console.error(error);
                     throw error;

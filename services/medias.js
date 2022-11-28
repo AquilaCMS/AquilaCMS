@@ -302,6 +302,10 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         try {
             sharpOptions.width  = Number(size.split('x')[0]);
             sharpOptions.height = Number(size.split('x')[1]);
+
+            if (!filePath || !filePathCache) {
+                return;
+            }
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
             console.error('Image not resized : ', exc);
