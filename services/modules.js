@@ -744,7 +744,10 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         const file = filesList[i].name;
         let type   = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
-            type = parsedInfo.info.types.find((t) => t.component === file).type;
+            type = parsedInfo.info.types.find((t) => t.component === file)?.type;
+        }
+        if (type === undefined) {
+            continue;
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
@@ -887,7 +890,7 @@ const removeModuleAddon = async (_module) => {
 };
 
 const initComponentTemplate = async (model, component, moduleName) => {
-    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'gm'}}, {component_template: undefined}]}).select('_id component_template').lean();
+    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'm'}}, {component_template: undefined}]}).select('_id component_template').lean();
     for (const elem of elements) {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';
