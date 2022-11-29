@@ -8,7 +8,6 @@
   },
   "scripts": {
     "build": "next build",
-    "cypress": "cypress open",
     "lint:check": "eslint . --ext js,jsx,ts,tsx .",
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix"
   },
@@ -35,11 +34,9 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
-    "cypress": "^6.5.0",
     "eslint-config-import": "^0.13.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-module-utils": "^2.7.4",
-    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0"
