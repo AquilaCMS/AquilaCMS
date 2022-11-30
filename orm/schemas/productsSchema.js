@@ -63,7 +63,8 @@ const ProductsSchema = new Schema({
             translation  : {},
             position     : {type: Number, default: 1},
             visible      : {type: Boolean, default: true},
-            usedInSearch : {type: Boolean, default: false}
+            usedInSearch : {type: Boolean, default: false},
+            parents      : [{type: ObjectId, ref: 'attributes'}],
         }
     ], // Module Options
     images : [
