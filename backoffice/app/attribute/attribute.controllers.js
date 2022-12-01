@@ -140,6 +140,18 @@ AttributeControllers.controller('AttributeDetailCtrl', [
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
                 $scope.attribute.update = true;
+
+                $scope.getParentsAttr();
+            });
+        };
+
+        $scope.getParentsAttr = function () {
+            AttributesV2.list({
+                PostBody: { filter: { code: { $ne: $scope.attribute.code || '' }, set_attributes: { $in: $scope.attribute.set_attributes } }, structure: '*', limit: 0 }
+            }, function (attributesList) {
+                $scope.parentsAttributesList = attributesList.datas;
+            }, function (error) {
+                // deal with error here
             });
         };
 
@@ -176,6 +188,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                         }
                     }
                 });
+                $scope.getParentsAttr();
             }
         });
 
@@ -191,6 +204,11 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.attribute.translation[$scope.lang].values = [];
             }
             $scope.attribute.translation[$scope.lang].values.push('');
+        };
+
+        $scope.changeSetAttributes = function () {
+            $scope.attribute.parents = [];
+            $scope.getParentsAttr();
         };
 
         $scope.removeValue = function (index) {
