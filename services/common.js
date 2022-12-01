@@ -98,7 +98,7 @@ const getBreadcrumb = async (url) => {
     return parts;
 };
 
-const exportData = async (model, PostBody) => {
+const exportData = async (model, PostBody, noCSV = false) => {
     const fsp    = require('../utils/fsp');
     const server = require('../utils/server');
     const buffer = require('buffer');
@@ -119,8 +119,10 @@ const exportData = async (model, PostBody) => {
         } else if (model === 'products') {
             structure.push('-reviews');
         }
-        const datas           = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
-        const csvFields       = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+        const datas     = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
+        const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+
+        if (noCSV) return {datas, csvFields};
         const uploadDirectory = server.getUploadDirectory();
         if (!fsp.existsSync(path.resolve(uploadDirectory, 'temp'))) {
             fsp.mkdirSync(path.resolve(uploadDirectory, 'temp'));
