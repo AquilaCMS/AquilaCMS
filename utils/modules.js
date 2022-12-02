@@ -216,7 +216,7 @@ const modulesLoadInit = async (server, runInit = true) => {
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
         if (fs.existsSync(initModuleFile)) {
-            process.stdout.write(`- ${loadedModules[i].name}`);
+            console.log(`- ${loadedModules[i].name}`);
             try {
                 const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
                 if (!isValid) {
@@ -226,10 +226,10 @@ const modulesLoadInit = async (server, runInit = true) => {
                 if (runInit) {
                     require(initModuleFile)(server);
                 }
-                process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
+                console.log('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
+                console.log('\x1b[31m \u274C An error has occurred \x1b[0m\n');
                 console.error(err);
                 return false;
             }
@@ -258,7 +258,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                 await new Promise(async (resolve, reject) => {
                     try {
                         if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
-                            process.stdout.write(`- ${mod.name}`);
+                            console.log(`- ${mod.name}`);
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);
                                 if (!isValid) {
@@ -267,15 +267,15 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                             }
                             require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         } else {
-                            process.stdout.write(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
+                            console.error(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
                         }
                         resolve();
                     } catch (err) {
-                        process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
+                        console.error('\x1b[31m \u274C \x1b[0m\n');
                         reject(err);
                     }
                 });
-                process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
+                console.log('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 console.error(err);
             }
