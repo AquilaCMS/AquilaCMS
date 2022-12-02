@@ -152,6 +152,25 @@ const middlewarePromoCatalog = async (req, res) => {
             }
 
             const datas = await checkPromoCatalog([res.locals], req.info, req.body.lang, false, populate, false, res.keepPromos);
+
+            // Just for product variants
+            for (let i = 0; i < datas.length; i++) {
+                const data = datas[i];
+                if (data.variants_values) {
+                    for (let j = 0; j < data.variants_values.length; j++) {
+                        const variantsValues           = data.variants_values[j];
+                        variantsValues.price.priceSort = {
+                            et  : variantsValues.price.et.special || variantsValues.price.et.normal,
+                            ati : variantsValues.price.ati.special || variantsValues.price.ati.normal
+                        };
+
+                        const resVariantValues  = await checkPromoCatalog([variantsValues], req.info, req.body.lang, false, populate, false, res.keepPromos);
+                        data.variants_values[j] = resVariantValues[0];
+                    }
+                }
+                datas[i] = data;
+            }
+
             if (res.keepPromos) {
                 return {datas};
             }
@@ -189,7 +208,8 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             ],
             actif : true,
             type  : '2'
-        }, null,
+        },
+        null,
         {sort: {priority: -1}}
     ).populate('rules_id').lean();
     if (!promos.length) {
