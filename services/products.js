@@ -537,7 +537,7 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    lang = servicesLanguages.getDefaultLang(lang);
+    lang = await servicesLanguages.getDefaultLang(lang);
 
     // Set PostBody.filter and PostBody.structure
     if (!PostBody.filter) PostBody.filter = {};
