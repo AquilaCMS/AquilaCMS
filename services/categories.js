@@ -46,18 +46,18 @@ const populateAttributesValues = (attr, lang, valuesArray) => {
             }
         }
     }
-}
+};
 
 // Sort and clean the array (distinct and sort)
-sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAttr) => {
-    let isEmpty = true;
+const sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAttr) => {
+    let isEmpty         = true;
     let isValueSelected = false;
 
     for (const key in values) {
         if (!values.hasOwnProperty(key)) continue;
-        isEmpty     = false;
-        const obj   = values[key];
-        values[key] = obj.sort((a, b) => {
+        isEmpty            = false;
+        const obj          = values[key];
+        values[key]        = obj.sort((a, b) => {
             if (a > b) return 1;
             if (a < b) return -1;
             return 0;
@@ -71,11 +71,11 @@ sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAt
         values[key] = tValuesValid;
 
         // If a filter has no value selected and has less than two different values it is not displayed
-        let isSelected = false;
+        let isSelected        = false;
         let isAParentSelected = false;
         for (let i = 0; i < selectedAttributes.length; i++) {
             if (selectedAttributes[i].id === key) {
-                isSelected = true;
+                isSelected      = true;
                 isValueSelected = true;
             }
             if (parentsOfEachAttr && Object.keys(parentsOfEachAttr).length !== 0 && parentsOfEachAttr[key]) {
@@ -104,29 +104,29 @@ sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAt
         }
     }
 
-    return { isEmpty, isValueSelected }
-}
+    return {isEmpty, isValueSelected};
+};
 
 const calculateAttributeDisplay = (attrWithoutParents, attrWithParents, parentsOfEachAttr, selectedAttributes, res) => {
-    const resParents = sortAndCleanAttributesValues(attrWithoutParents, selectedAttributes, res)
-    let emptyValues = resParents.isEmpty;
+    const resParents = sortAndCleanAttributesValues(attrWithoutParents, selectedAttributes, res);
+    let emptyValues  = resParents.isEmpty;
 
     // If an attribute has parents, at least one of its parents must have a checked value otherwise it will not appear
     // If no parents are available we will also display all children
     let values = attrWithoutParents;
     if (resParents.isValueSelected || (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object)) {
-        if (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object) parentsOfEachAttr = {}
-        const resChilds = sortAndCleanAttributesValues(attrWithParents, selectedAttributes, res, parentsOfEachAttr)
-        values = {...attrWithoutParents, ...attrWithParents};
+        if (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object) parentsOfEachAttr = {};
+        const resChilds = sortAndCleanAttributesValues(attrWithParents, selectedAttributes, res, parentsOfEachAttr);
+        values          = {...attrWithoutParents, ...attrWithParents};
 
         if (!emptyValues) emptyValues = resChilds.isEmpty;
     }
 
-    return { emptyValues, values }
-}
+    return {emptyValues, values};
+};
 
 const generateFilters = async (res, lang = '', selectedAttributes = [], isInSearchContext = false) => {
-    lang = ServiceLanguages.getDefaultLang(lang);
+    lang = await ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
         const attributes         = [];
         const attrWithoutParents = {};
@@ -187,7 +187,7 @@ const generateFilters = async (res, lang = '', selectedAttributes = [], isInSear
             }
         }
 
-        const { emptyValues, values } = calculateAttributeDisplay(attrWithoutParents, attrWithParents, parentsOfEachAttr, selectedAttributes, res);
+        const {emptyValues, values} = calculateAttributeDisplay(attrWithoutParents, attrWithParents, parentsOfEachAttr, selectedAttributes, res);
 
         // If emptyValues then we remove the labels of the filters
         if (emptyValues) {
@@ -206,7 +206,7 @@ const generateFilters = async (res, lang = '', selectedAttributes = [], isInSear
 };
 
 const getCategory = async (PostBody, withFilter = null, lang = '') => {
-    lang      = ServiceLanguages.getDefaultLang(lang);
+    lang      = await ServiceLanguages.getDefaultLang(lang);
     const res =  await queryBuilder.findOne(PostBody, true);
     return withFilter ? generateFilters(res, lang) : res;
 };
@@ -408,7 +408,7 @@ const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang
     const current_category       = await Categories.findOne({_id: categorie_id}).lean();
 
     if (!defaultLang) {
-        defaultLang = ServiceLanguages.getDefaultLang();
+        defaultLang = await ServiceLanguages.getDefaultLang();
     }
 
     if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated

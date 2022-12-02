@@ -100,7 +100,7 @@ const addItem = async (req, res, next) => {
     // YES : add product
     // NO : create and add
     try {
-        const result = await ServiceCart.addItem(req.body, req.info);
+        const result = await ServiceCart.addItem(req.body, req.info, req.headers.lang);
         if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }

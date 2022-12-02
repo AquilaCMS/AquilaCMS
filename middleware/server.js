@@ -48,7 +48,9 @@ const serverUseRequest = async (req, res, next) => {
 
         if (json) {
             let lang = global.defaultLang;
-            if (req.body && req.body.lang) {
+            if (req.headers && req.headers.lang) {
+                lang = req.headers.lang;
+            } else if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
             json = translation.translateDocument(json, lang, keepOriginalAttribs);

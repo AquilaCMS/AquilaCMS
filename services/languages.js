@@ -51,10 +51,13 @@ const removeLang = async (_id) => {
  * @description Return the default lang code
  * @param {string} language - Requested language
  */
-const getDefaultLang = (language) => {
-    // If the language requested is the default one, we will recover the "real" default language
-    if (language === undefined || language === null || language === '') return global.defaultLang;
-    return language;
+const getDefaultLang = async (language) => {
+    if (language) {
+        // Check if language exists
+        const lang = await Languages.find({code: language}).lean();
+        if (lang) return language;
+    }
+    return global.defaultLang;
 };
 
 /**

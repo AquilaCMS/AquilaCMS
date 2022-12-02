@@ -56,7 +56,7 @@ const getMail = async (_id) => {
  * @param {string} [lang] (ie: df, us, uk etc...) (optionnal)
  */
 const getMailByTypeAndLang = async (type, lang = '') => {
-    lang         = ServiceLanguages.getDefaultLang(lang);
+    lang         = await ServiceLanguages.getDefaultLang(lang);
     const query  = {type, [`translation.${lang}`]: {$exists: true}};
     const result = await Mail.findOne(query).lean();
     if (!result) {
@@ -199,7 +199,7 @@ const sendMailTest = async (mail, values = [], lang = 'fr') => {
  * @returns {{content: string, subject: string, fromName: string, attachments: Array}}
  */
 async function getMailDataByTypeAndLang(type, lang = 'fr') {
-    lang               = ServiceLanguages.getDefaultLang(lang);
+    lang               = await ServiceLanguages.getDefaultLang(lang);
     const mailRegister = await getMailByTypeAndLang(type, lang);
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
@@ -222,7 +222,7 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    lang                                                  = await determineLanguage(lang, _user.preferredLanguage);
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('activationAccount', lang);
     const oDataMail                                       = {
         '{{activate_account_token}}' : `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`,
@@ -250,7 +250,7 @@ const sendRegister = async (user_id, lang = '') => {
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang = determineLanguage(lang, _user.preferredLanguage);
+    lang = await determineLanguage(lang, _user.preferredLanguage);
 
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('register', lang);
     const oDataMail                                       = {
@@ -276,7 +276,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    lang                                                  = await determineLanguage(lang, _user.preferredLanguage);
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
     const oDataMail                                       = {
         '{{name}}'      : _user.fullname,
@@ -298,7 +298,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
  */
 const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
-    lang               = determineLanguage(lang, _user.preferredLanguage);
+    lang               = await determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
@@ -343,7 +343,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    lang                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    lang                                         = await determineLanguage(lang, order.customer.id.preferredLanguage);
     const taxDisplay                             = order.priceTotal.paidTax ? 'ati' : 'et';
     const mailDatas                              = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
     const {subject, from, fromName, attachments} = mailDatas;
@@ -356,7 +356,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = order.addresses.delivery;
     // Create from order's details (the table that will be displayed in the email)
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of order.items) {
@@ -477,7 +477,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         throw NSErrors.OrderNotPaid;
     }
 
-    lang                                                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    lang                                                                         = await determineLanguage(lang, order.customer.id.preferredLanguage);
     const taxDisplay                                                             = order.priceTotal.paidTax ? 'ati' : 'et';
     const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = order.addresses.delivery;
 
@@ -557,7 +557,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     let {content}                                = mailByType;
     // Create from the order the items ordered (the table that will be displayed in the email)
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of order.items) {
@@ -605,7 +605,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         }
         content = content.replace(htmlItem, templateItems);
     }
-    const discountTemplate = content.match(new RegExp(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/, 'g'));
+    const discountTemplate = content.match(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/g);
     if (discountTemplate && discountTemplate[0]) {
         const htmlDiscount = discountTemplate[0].replace('<!--startshowpromo-->', '').replace('<!--endshowpromo-->', '');
         if (order.promos.length === 0) {
@@ -628,7 +628,7 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
-    lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    lang = await determineLanguage(lang, _order.customer.id.preferredLanguage);
     if (_order.status === orderStatuses.PAID || _order.status === orderStatuses.FINISHED) {
         return sendMailOrderToClient(order_id, lang);
     }
@@ -801,7 +801,7 @@ function replaceMultiple(html, obj = {}) {
  * @param {string} lang - Language of subject and content
  */
 const sendGeneric = async (type, to, datas, lang = '') => {
-    lang            = ServiceLanguages.getDefaultLang(lang);
+    lang            = await ServiceLanguages.getDefaultLang(lang);
     const body      = {};
     const datasKeys = Object.keys(datas);
 
@@ -836,7 +836,7 @@ const sendGeneric = async (type, to, datas, lang = '') => {
  */
 const sendContact = async (datas, lang = '') => {
     await modulesUtils.modulesLoadFunctions('sendContact', {datas, lang}, async function () {
-        lang              = determineLanguage(lang, datas.lang);
+        lang              = await determineLanguage(lang, datas.lang);
         const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
         const contactMail = await Mail.findOne(query).lean();
 
@@ -883,12 +883,12 @@ const generateHTML = (html, datas = {}) => {
  * @param {string} lang lang
  * @param {string} preferredLanguage preferredLanguage
  */
-function determineLanguage(lang, preferredLanguage) {
+async function determineLanguage(lang, preferredLanguage) {
     if (lang == null || typeof lang === 'undefined' || lang === 'undefined') {
         lang = '';
     }
     if (lang === '' && typeof preferredLanguage !== 'undefined' && preferredLanguage !== '') lang = preferredLanguage;
-    if (lang === '') lang = ServiceLanguages.getDefaultLang(lang);
+    if (lang === '') lang = await ServiceLanguages.getDefaultLang(lang);
     return lang;
 }
 
@@ -917,7 +917,7 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
-    lang           = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    lang           = await determineLanguage(lang, _order.customer.id.preferredLanguage);
     const {
         content,
         subject,
@@ -948,7 +948,7 @@ async function sendMailPendingCarts(cart) {
     const {subject, from, fromName, attachments} = mailDatas;
 
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of cart.items) {
@@ -1022,7 +1022,7 @@ const sendErrorMail = async (error) => {
         return; // We don't want to generate an error
     }
 
-    const lang     = determineLanguage();
+    const lang     = await determineLanguage();
     const content  = errorMail.translation[lang].content ? errorMail.translation[lang].content : '';
     const subject  = errorMail.translation[lang].subject ? errorMail.translation[lang].subject : 'Error';
     const htmlBody = generateHTML(content, {'{{error}}': JSON.stringify(error)});

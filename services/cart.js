@@ -13,7 +13,6 @@ const {
     Cart,
     Orders,
     Products,
-    Languages,
     Configuration
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -185,7 +184,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
-const addItem = async (postBody, userInfo) => {
+const addItem = async (postBody, userInfo, lang = '') => {
     // Force matching current user and the cart's customer
     const filter = {
         status : 'IN_PROGRESS',
@@ -205,7 +204,8 @@ const addItem = async (postBody, userInfo) => {
     if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
-    const _lang = await Languages.findOne({defaultLanguage: true});
+
+    const _lang = await servicesLanguages.getDefaultLang(lang);
 
     if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
@@ -267,9 +267,9 @@ const addItem = async (postBody, userInfo) => {
             return updateQty(postBody, userInfo);
         }
     }
-    if (_product.translation[_lang.code]) {
-        postBody.item.name = _product.translation[_lang.code].name;
-        postBody.item.slug = _product.translation[_lang.code].slug;
+    if (_product.translation[_lang]) {
+        postBody.item.name = _product.translation[_lang].name;
+        postBody.item.slug = _product.translation[_lang].slug;
     }
     postBody.item.code  = _product.code;
     postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
@@ -282,9 +282,9 @@ const addItem = async (postBody, userInfo) => {
         ...postBody.item,
         weight       : _product.weight,
         price        : _product.price,
-        description1 : _product.translation[_lang.code].description1,
-        description2 : _product.translation[_lang.code].description2,
-        canonical    : _product.translation[_lang.code].canonical,
+        description1 : _product.translation[_lang].description1,
+        description2 : _product.translation[_lang].description2,
+        canonical    : _product.translation[_lang].canonical,
         attributes   : _product.attributes
     };
 
@@ -295,14 +295,14 @@ const addItem = async (postBody, userInfo) => {
     // Here you can change any information of a product before adding it to the user's cart
     item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
-    const data = await _product.addToCart(cart, item, userInfo, _lang.code);
+    const data = await _product.addToCart(cart, item, userInfo, _lang);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart = data;
     await utilsDatabase.populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
-    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang.code, false);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang, false);
     if (productsCatalog) {
         for (let i = 0; i < cart.items.length; i++) {
             let itemCart = cart.items[i];
@@ -310,9 +310,9 @@ const addItem = async (postBody, userInfo) => {
             itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
             cart.items[i] = itemCart;
         }
-        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang.code, false);
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang, false);
     }
-    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
+    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang);
     const _newCart = await cart.save();
     if (postBody.item.parent) {
         _newCart.items.find((item) => item._id.toString() === postBody.item.parent).children.push(idGift);
@@ -439,7 +439,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             throw NSErrors.CartInactive;
         }
         aquilaEvents.emit('cartToOrder', _cart);
-        lang = servicesLanguages.getDefaultLang(lang);
+        lang = await servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
         const result = validateForCheckout(_cart);
         if (result.code !== 'VALID') {
