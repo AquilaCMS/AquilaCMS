@@ -21,7 +21,8 @@ const FamiliesSchema = new Schema({
     slug      : {type: String, unique: true},
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
-    details   : {}
+    details   : {},
+    order     : {type: Number}
 }, {
     timestamps : true,
     id         : false

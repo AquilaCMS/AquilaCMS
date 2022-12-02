@@ -52,8 +52,8 @@
     </style>
     <div class="row">
         <div class="col-lg-10">
-            <ul ui-sortable="sortableCategory" class="list-group custom-listgroup-linked" ng-model="menusUniverse">
-                <li ng-repeat="universe in universes | filter:{type:'universe'}">
+            <ul ui-sortable="sortableUniverses" class="list-group custom-listgroup-linked" ng-model="universes">
+                <li ng-repeat="universe in universes">
                     <div class="barre list-group-item" ng-class="{ 'active': universe._id == selectedUniverse, 'droppable': universe.children.length, 'dropped': (universe._id == selectedFamily && universe.children.length)}"  style="cursor:pointer;">
                         <div class="row" ng-click="updateFromUnivers(universe._id);">
                             <div class="col-md-9">
@@ -71,18 +71,18 @@
                             
                             </div>
                             <div class="col-md-3">
-                                <span class="btn btn-primary littleBlueButton pull-right" ng-click="updateFromUnivers(universe._id);editFamilies(universe._id);">
-                                    <a href="">
+                                <span class="btn btn-primary littleBlueButton pull-right">
+                                    <a href=""  ng-click="updateFromUnivers(universe._id);editFamilies(universe._id);">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
                                 </span>
-                                <span class="btn btn-primary littleBlueButton pull-right" ng-click="updateFromUnivers(universe._id);removeFamily(universe._id);">
-                                    <a href="">
+                                <span class="btn btn-primary littleBlueButton pull-right"">
+                                    <a href=""  ng-click="updateFromUnivers(universe._id);removeFamily(universe._id);">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </a>
                                 </span>
-                                <span class="btn btn-primary littleBlueButton pull-right" ng-click="newFamilies('family',universe._id)">
-                                    <a href="">
+                                <span class="btn btn-primary littleBlueButton pull-right">
+                                    <a href="" ng-click="newFamilies('family',universe._id)">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </a>
                                 </span>
@@ -93,7 +93,7 @@
                         
                     </div>
                     <div ng-hide="selectedUniverse != universe._id">
-                        <ul ui-sortable="sortableMenu" class="list-group custom-listgroup-linked" style="padding-left: 20px;" ng-model="menusMenu">
+                        <ul ui-sortable="sortableFamilies" class="list-group custom-listgroup-linked" style="padding-left: 20px;" ng-model="families">
                             <li ng-if="selectedUniverse == universe._id" ng-repeat="family in families">
                                 <div class="list-group-item barre" ng-class="{ 'active': family._id == selectedFamily, 'droppable': family.children.length, 'dropped': (family._id == selectedFamily && family.children.length)}"  style="cursor:pointer">
                                     <div class="row">
@@ -124,7 +124,7 @@
                                     </div>
                                 </div>
                                 <div ng-hide="selectedFamily != family._id">
-                                    <ul ui-sortable="sortableSubmenu" class="list-group custom-listgroup-linked" style="padding-left: 20px;" ng-model="menusSubmenu">
+                                    <ul ui-sortable="sortableSubFamilies" class="list-group custom-listgroup-linked" style="padding-left: 20px;" ng-model="subFamilies">
                                         <li class="barre list-group-item" ng-if="selectedFamily == family._id" ng-repeat="subFamily in subFamilies" ng-click="updateFromSubFamily(subFamily._id)" style="cursor:pointer">
                                             <span class="label label-info">Sous famille</span>
                                             <span class="titleTree">{{subFamily.name}}</span>
