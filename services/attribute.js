@@ -285,9 +285,11 @@ const remove = async (_id) => {
     }
     await Promise.all([
         await Products.updateMany({}, {$pull: {attributes: {id: _id}}}),
+        await ProductSimple.updateMany({'variants.code': attribute.code}, {$set: {variants_values: []}}),
         await Users.updateMany({}, {$pull: {attributes: {id: _id}}}),
         await SetAttributes.updateMany({_id: {$in: attribute.set_attributes}}, {$pull: {attributes: _id}})
     ]);
+    await ProductSimple.updateMany({}, {$pull: {variants: {_id}}});
 
     await attribute.remove();
     await utilsMedia.deleteFile(`medias/attributes/${_id}`);
