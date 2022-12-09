@@ -241,8 +241,8 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 if($scope.product?.variants?.length > 0) {
                     $scope.createPrds()
                 } else {
-                    delete $scope.product.variants_values
-                    delete $scope.product.variants
+                    $scope.product.variants_values = []
+                    $scope.product.variants = []
                 }
             }
 
