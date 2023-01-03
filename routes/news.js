@@ -105,11 +105,9 @@ async function previewNew(req, res, next) {
         }
         const _config = (await require('../orm/models/configuration').find({}))[0];
         if (req.body.lang) {
-            // console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}`));
             return res.json({url: URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}?preview=${preview._id}`)});
         }
         const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-        // console.log(URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
         return res.json({url: URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
     } catch (err) {
         next(err);

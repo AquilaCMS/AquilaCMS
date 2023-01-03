@@ -36,23 +36,9 @@ exports.execCmd = async function (cde, path = global.appRoot) {
 exports.execSh = async function (cde, param = [], path = global.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
-        let cmd;
-        if (process.platform === 'win64' || process.platform === 'win32') {
-            cmd = spawn(cde, [...param], {cwd: path, shell: true});
-        } else {
-            cmd = spawn(cde, [...param], {cwd: path, shell: true});
-        }
-
+        const cmd    = spawn(cde, [...param], {cwd: path, shell: true});
         const stdout = '';
         const stderr = '';
-        // cmd.stdout.on('data', (data) => {
-        //     console.log(data.toString());
-        //     stdout += data.toString();
-        // });
-        // cmd.stderr.on('data', (data) => {
-        //     console.error(data.toString());
-        //     stderr += data.toString();
-        // });
         cmd.on('error', (err) => {
             reject(err);
         });

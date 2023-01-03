@@ -51,7 +51,7 @@ const getUserByAccountToken = async (activateAccountToken) => {
     return {isActiveAccount: user?.isActiveAccount};
 };
 
-const setUser = async (id, info, isAdmin = false, lang) => {
+const setUser = async (id, info, isAdmin, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -232,7 +232,6 @@ const changePassword = async (email, password) => {
         user.password = password;
         await user.save();
         await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-        // await Users.updateOne({_id: user._id}, {password, $unset: {resetPassToken: 1}}, {runValidators: true});
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
             throw NSErrors.LoginSubscribePasswordInvalid;

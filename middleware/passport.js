@@ -93,7 +93,7 @@ const authenticate = (req, res) => new Promise((resolve, reject) => {
     const _res = res;
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if (err) reject(err);
-        else if (!user) _res.clearCookie('jwt'); // reject(NSErrors.Unauthorized);
+        else if (!user) _res.clearCookie('jwt');
         resolve(user);
     })(req, res);
 });

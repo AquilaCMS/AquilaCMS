@@ -80,9 +80,7 @@ const initModule = async (files) => {
 
     // move the file from the temporary location to the intended location
     await fs.mkdir(moduleFolderAbsPath, {recursive: true});
-    await fs.copyFile(
-        path.resolve(global.appRoot, filepath), zipFilePath
-    );
+    await fs.copyFile(path.resolve(global.appRoot, filepath), zipFilePath);
     await fs.unlink(path.resolve(global.appRoot, filepath));
 
     try {
@@ -111,8 +109,7 @@ const initModule = async (files) => {
             }
         }
         if (!found) {
-            throw NSErrors.ModuleMainFolder;
-            // throw new Error('missing main folder in zip');
+            throw NSErrors.ModuleMainFolder; // missing main folder in zip
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
@@ -532,10 +529,12 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         for (let i = 0; i < _module.files.length; i++) {
             if (await fs.hasAccess(_module.files[i])) {
                 if ((await fs.lstat(_module.files[i])).isDirectory()) {
-                    await new Promise((resolve) => rimraf(_module.files[i], (err) => {
-                        if (err) console.error(err);
-                        resolve();
-                    }));
+                    await new Promise((resolve) => {
+                        rimraf(_module.files[i], (err) => {
+                            if (err) console.error(err);
+                            resolve();
+                        });
+                    });
                 } else {
                     try {
                         await fs.unlink(_module.files[i]);
@@ -755,6 +754,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
+            // eslint-disable-next-line prefer-regex-literals
             const regexArray            = new RegExp(/\[[^]*?\]/, 'gm');
             let exportDefaultListModule = '';
             const match                 = result.match(regexArray);

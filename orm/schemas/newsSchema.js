@@ -24,15 +24,6 @@ const NewsSchema = new Schema({
     id         : false
 });
 
-/* translation:
- slug: unique
- title
- content: {
- resume
- text
- }
- */
-
 NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 

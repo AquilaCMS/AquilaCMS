@@ -375,13 +375,6 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 '{{product.sumSpecialPrice}}'  : ''
             };
 
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).aqlRound(2);
-                prdData['{{product.specialUnitPriceWithPromo}}']    = getUnitPrice(item, order).aqlRound(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}']  = (item.price.unit[taxDisplay] * item.quantity).aqlRound(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}']     = (getUnitPrice(item, order) * item.quantity).aqlRound(2);
-            } */
-
             if (item.parent && translation[lang]) {
                 prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).name;
             }
@@ -574,13 +567,6 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 '{{product.descPromoT}}'       : '',
                 '{{product.sumSpecialPrice}}'  : ''
             };
-
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).aqlRound(2);
-                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).aqlRound(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).aqlRound(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).aqlRound(2);
-            } */
 
             if (item.parent && translation[lang]) {
                 prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
@@ -891,26 +877,6 @@ async function determineLanguage(lang, preferredLanguage) {
     if (lang === '') lang = await ServiceLanguages.getDefaultLang(lang);
     return lang;
 }
-
-/**
- * Allows you to recover the unit price of the product with promo applied if necessary
- * @param {*} item item pour lequel on calcul le prix unitaire
- * @returns {number} prix unitaire
- */
-/* function getUnitPrice(item, order) {
-    const taxDisplay = order.priceTotal.paidTax ? 'ati' : 'et';
-    let price        = item.price.unit[taxDisplay];
-    if (item.price && item.price.special && item.price.special[taxDisplay] >= 0) {
-        price = item.price.special[taxDisplay];
-    }
-    if (order.quantityBreaks && order.quantityBreaks.productsId && order.quantityBreaks.productsId.length) {
-        const qtyBreakFound = order.quantityBreaks.productsId.find((prdId) => prdId.productId.toString() === item.id._id.toString());
-        if (qtyBreakFound) {
-            price -= qtyBreakFound[`discount${taxDisplay.toUpperCase()}`];
-        }
-    }
-    return price;
-} */
 
 async function sendMailOrderRequestCancel(_id, lang = '') {
     const _order = await Orders.findOne({_id}).populate('customer.id');

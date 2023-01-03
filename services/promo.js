@@ -312,7 +312,7 @@ const applyRelevantDiscount = (product, discount) => {
     };
 };
 
-const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
+const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo = null) => {
     let oCart;
     try {
         let user = null;
@@ -394,11 +394,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
         // Validation of the quantity break
         if ((dateStart === null || dateStart < currentDate) && (dateEnd === null || dateEnd > currentDate) && promo.actions.length > 0) {
-            // promo = await promo.populate("rules_id").execPopulate();
-
             if (promo.actions.length > 0) {
-                // promo = await promo.populate('actions').execPopulate();
-
                 await utilsDatabase.populateItems(copyCart.items);
 
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {

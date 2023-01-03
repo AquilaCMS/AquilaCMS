@@ -77,9 +77,11 @@ module.exports = class QueryBuilder {
                 postBodyChecked.skip = (postBodyChecked.page - 1) * postBodyChecked.limit;
             }
             return postBodyChecked;
-        } if (request === 'findOne') {
+        }
+        if (request === 'findOne') {
             return PostBody ? new PostBodyCheck(PostBody.filter, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
-        } if (request === 'findById') {
+        }
+        if (request === 'findById') {
             return PostBody ? new PostBodyCheck({}, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
         }
     }

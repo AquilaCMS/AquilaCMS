@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-// const isEmail  = require('validator').isEmail;
 const mongoose            = require('mongoose');
 const {aquilaEvents}      = require('aql-utils');
 const {checkCustomFields} = require('../../utils/translation');

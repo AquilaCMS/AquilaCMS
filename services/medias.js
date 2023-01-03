@@ -147,7 +147,6 @@ const uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - file extension (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-// const getImagePathCache = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
 const getImagePathCache = async (type, _id, size, extension, quality = 80, options = {}) => {
     const sharpOptions = {};
 
@@ -186,9 +185,8 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = options.position.replace(/ /g, '_');
     } else if (options.background) {
         fileNameOption = options.background;
-    } else {
-        fileNameOption = '';
     }
+
     if (ObjectID.isValid(_id)) {
         try {
             switch (type) {
@@ -333,12 +331,8 @@ const uploadFiles = async (body, files) => {
     let target_path = `medias/${body.type}/`;
 
     switch (body.type) {
+    case 'productsVariant':
     case 'products': {
-        const code  = body.code.substring(0, 2);
-        target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
-        break;
-    }
-    case 'productsVariant': {
         const code  = body.code.substring(0, 2);
         target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
         break;
@@ -577,21 +571,7 @@ const uploadFiles = async (body, files) => {
 
         return {name: name + extension, path: target_path_full};
     }
-    // case 'option': {
-    //     const values = body.entity.values;
-    //     for (let i = 0; i < values.length; i++) {
-    //         delete values[i].$hashKey;
-    //     }
 
-    //     const path = body.entity.value[body.entity.line];
-    //     await utilsMedias.deleteFile(path);
-
-    //     values[body.entity.lineIndex][body.entity.line] = target_path_full;
-
-    //     await Opts.updateOne({_id: body._id}, {$set: {values}});
-
-    //     return {name: name + extension, path: target_path_full};
-    // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         if (result.img) await deleteFileAndCacheFile(result.img, 'category');

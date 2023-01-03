@@ -79,8 +79,7 @@ itemsSchema.set('toObject', {virtuals: true});
 
 itemsSchema.virtual('price.total').get(function () {
     const self = this;
-    // const isChildKart = self.name && self.name.indexOf("enfant") > -1;
-    let price = self.price.unit.ati;
+    let price  = self.price.unit.ati;
 
     if (self.price.special && self.price.special.ati !== undefined) {
         price = self.price.special.ati;

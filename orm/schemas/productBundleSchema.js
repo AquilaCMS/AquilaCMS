@@ -163,6 +163,7 @@ function validateBySection(bundle_section, item) {
 
     switch (bundle_section.type) {
     case 'SINGLE':
+    case 'VIRTUAL':
         // On vérifie que le client n'a sélectionné qu'un produit et que ce produit est dans la liste des choix
         return selection.products.length === 1 && bundle_section.products.find(function (product) {
             return product.id.toString() === selection.products[0];
@@ -186,11 +187,6 @@ function validateBySection(bundle_section, item) {
         }
 
         return i === selection.products.length;
-    case 'VIRTUAL':
-        // On vérifie que le client n'a sélectionné qu'un produit et que ce produit est dans la liste des choix
-        return selection.products.length === 1 && bundle_section.products.find(function (product) {
-            return product.id.toString() === selection.products[0];
-        }) !== undefined;
     default:
         break;
     }

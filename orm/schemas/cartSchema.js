@@ -85,10 +85,6 @@ const CartSchema = new Schema({
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
 
-/* CartSchema.pre('findOneAndUpdate', function () {
- this.findOneAndUpdate({},{ $set: { updated: Date.now() } });
- }); */
-
 const itemsSchema = CartSchema.path('items');
 
 itemsSchema.discriminator('simple', ItemSimpleSchema);
@@ -133,7 +129,6 @@ CartSchema.virtual('delivery.price').get(function () {
 });
 
 CartSchema.virtual('additionnalFees').get(function () {
-    // const self = this;
     const {et, tax} = global.envConfig.stockOrder.additionnalFees;
     return {
         ati : Number(et + (et * (tax / 100))),
@@ -189,7 +184,6 @@ CartSchema.virtual('priceTotal').get(function () {
 });
 
 CartSchema.virtual('priceSubTotal').get(function () {
-    // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;

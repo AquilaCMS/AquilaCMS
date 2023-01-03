@@ -28,8 +28,6 @@ const FamiliesSchema = new Schema({
     id         : false
 });
 
-// FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
-
 FamiliesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
     if (!this.slug) this.slug = `${helper.slugify(this.name)}-${this.code}`;
@@ -58,12 +56,6 @@ FamiliesSchema.pre('findOneAndDelete', async function (next) {
     await Products.updateMany(where, action);
     return next();
 });
-
-/*
-FamiliesSchema.post('save', function () {
-  helper.create_ancestors(this._id, this.parent);
-});
-*/
 
 // Add menu in a family, and add this menu to all products assigned to this universe
 // familyCode : families.code

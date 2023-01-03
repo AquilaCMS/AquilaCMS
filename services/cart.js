@@ -55,7 +55,6 @@ const getCartById = async (id, PostBody = null, user = null) => {
         _id : mongoose.Types.ObjectId(id)
     };
 
-    // let cart = await queryBuilder.findById(id, PostBody);
     let cart = await queryBuilder.findOne(PostBody);
 
     if (cart) {
@@ -221,7 +220,6 @@ const addItem = async (postBody, userInfo, lang = '') => {
         }
     }
     if (cart.items && cart.items.length) {
-        // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
         const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())

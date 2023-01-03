@@ -64,7 +64,7 @@ const ProductsSchema = new Schema({
             position     : {type: Number, default: 1},
             visible      : {type: Boolean, default: true},
             usedInSearch : {type: Boolean, default: false},
-            parents      : [{type: ObjectId, ref: 'attributes'}],
+            parents      : [{type: ObjectId, ref: 'attributes'}]
         }
     ], // Module Options
     images : [
@@ -130,11 +130,6 @@ const ProductsSchema = new Schema({
     id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
-// ProductsSchema.index({
-//     code        : 'text',
-//     trademark   : 'text',
-//     code_ean    : 'text',
-// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
     /** Quantity <= 0 not allowed on creation * */
@@ -237,7 +232,6 @@ ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkN
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    // if (self._collection && !self._collection.collectionName.includes('preview')) {
     if (updateQuery) {
         if (updateQuery.translation === undefined) return errors; // No translation
         const languages       = await mongoose.model('languages').find({});

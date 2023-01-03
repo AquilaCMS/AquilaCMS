@@ -27,7 +27,8 @@ const savePicto = async (picto) => {
     } catch (error) {
         if (error && error.codeName === 'NotFound') {
             throw NSErrors.PictoNotFound;
-        } if (error && error.codeName === 'DuplicateKey') {
+        }
+        if (error && error.codeName === 'DuplicateKey') {
             throw NSErrors.DuplicateKey;
         }
         throw error;

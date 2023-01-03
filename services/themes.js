@@ -43,7 +43,8 @@ const changeTheme = async (selectedTheme, type) => {
             await updateService.setMaintenance(true);
             await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
-        } if (type === 'after') {
+        }
+        if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             await updateService.setMaintenance(false);
             returnObject.msg = 'OK';
@@ -239,7 +240,6 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
                         await model.deleteMany({});
                     }
                     const result = await model.insertMany(file.datas, null, null);
-                    // console.log(`insertion of ${file.collection} in database`);
                     data.push({
                         collection : `${file.collection}`,
                         data       : [...result]

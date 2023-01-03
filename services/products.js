@@ -379,7 +379,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             {$match: PostBody.filter},
             {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
         ]);
-        if (normalET.length > 0 & normalATI.length > 0) {
+        if (normalET.length > 0 && normalATI.length > 0) {
             result.min = {et: normalET[0].min, ati: normalATI[0].min};
             if (!result.priceSortMin) result.priceSortMin = {et: normalET[0].min, ati: normalATI[0].min};
             result.max = {et: normalET[0].max, ati: normalATI[0].max};
@@ -521,9 +521,9 @@ const duplicateProduct = async (idProduct, newCode) => {
     return doc;
 };
 
-const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => global.cache.get(
+const _getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = false, reqRes = undefined) => global.cache.get(
     `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
-    async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
+    async () => getProductsByCategoryId(id, user, lang, PostBody, isAdmin, reqRes)
 );
 
 /**
@@ -535,7 +535,7 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  * @param user
  * @param reqRes
  */
-const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
+const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = false, reqRes = undefined) => {
     moment.locale(global.defaultLang);
     lang = await servicesLanguages.getDefaultLang(lang);
 
@@ -1289,8 +1289,7 @@ const getProductsListing = async (req, res) => {
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
-        /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
-        result.datas = productsDiscount.datas; */
+
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
         if (structure.price !== 0) {
             const priceFilter = priceFilterFromPostBody(req.body.PostBody);
@@ -1314,7 +1313,7 @@ const getProductsListing = async (req, res) => {
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant = null) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
 
     if (selected_variant) {
@@ -1346,7 +1345,7 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_varia
     }
 };
 
-const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
+const updateVariantsStock = async (prd, qty1, qty2, selected_variant) => {
     const selectedVariantIndex = prd.variants_values.findIndex((prdVariant) => prdVariant._id.toString() === selected_variant.id);
     if (selectedVariantIndex > -1) {
         if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {

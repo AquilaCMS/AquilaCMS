@@ -204,7 +204,7 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     const htmlToGenerate = html.translation[bill.lang].html ? html.translation[bill.lang].html : html.translation[bill.lang].content;
     let content          = generateHTML( htmlToGenerate, newData);
     let items            = '';
-    // eslint-disable-next-line no-useless-escape
+    // eslint-disable-next-line no-useless-escape, prefer-regex-literals
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
