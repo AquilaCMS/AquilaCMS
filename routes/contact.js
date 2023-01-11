@@ -12,11 +12,12 @@ const ServiceContacts              = require('../services/contacts');
 const {getUploadDirectory}         = require('../utils/server');
 const {adminAuthRight}             = require('../middleware/authentication');
 const {fsp, modules: modulesUtils} = require('../utils');
+const {multerUpload}               = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/contacts', adminAuthRight('contacts'), getContacts);
     app.delete('/v2/contact/:id', adminAuthRight('contacts'), deleteContact);
-    app.post('/v2/contact/:mode', setContact);
+    app.post('/v2/contact/:mode', multerUpload.any(), setContact);
 };
 
 /**

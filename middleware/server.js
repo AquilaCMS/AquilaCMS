@@ -12,8 +12,8 @@ const cors                            = require('cors');
 const express                         = require('express');
 const helmet                          = require('helmet');
 const morgan                          = require('morgan');
-const multer                          = require('multer');
 const path                            = require('path');
+const multer                          = require('multer');
 const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
@@ -179,14 +179,6 @@ const initExpress = async (server, passport) => {
         next();
     });
 
-    const storage = multer.diskStorage({
-        destination : path.resolve(photoPath, 'temp'),
-        filename(req, file, cb) {
-            cb(null, uuidv1() + path.extname(file.originalname));
-        }
-    });
-
-    server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
         require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
         JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
