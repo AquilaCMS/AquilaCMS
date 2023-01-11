@@ -296,7 +296,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm($translate.instant('confirm.removeAttribute'))) {
+            if (confirm($translate.instant(attr.isVariantable ? 'confirm.removeVariantAttribute' : 'confirm.removeAttribute'))) {
                 AttributesV2.delete({id: attr._id}, function () {
                     toastService.toast('success', $translate.instant('attribute.detail.deleteAttribute'));
                     $location.path(`/${$scope._type}/attributes`);
