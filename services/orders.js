@@ -549,7 +549,7 @@ const cancelOrderRequest = async (_id, user) => {
     const order = await Orders.findOne({_id, 'customer.email': user.email});
     if (order) {
         await setStatus(_id, orderStatuses.ASK_CANCEL);
-        return order.status = orderStatuses.ASK_CANCEL;
+        return true;
     }
     throw NSErrors.AccessUnauthorized;
 };

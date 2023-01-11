@@ -801,7 +801,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
 
     if (toRemove) {
         for (const file of listOfFile) {
-            await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
+            await removeFromListModule(file, currentTheme);
             let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
             if (fs.existsSync(filePath)) {

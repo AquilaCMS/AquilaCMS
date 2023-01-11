@@ -139,13 +139,12 @@ const genSitemap = async () => {
             for (let i = 0, leni = products.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
                     const _product = products[i].translation[languages[j].code];
-                    const lang     = _languages[languages[j].code];
 
                     if (_product !== undefined && _product.canonical) {
                         const xhtml        = [];
                         _product.canonical = _product.canonical[0] === '/' ? _product.canonical.slice(1) : _product.canonical;
                         const url          = {
-                            loc        : appUrl + (lang && lang.defaultLanguage === false ? '' : '') + _product.canonical,
+                            loc        : appUrl + _product.canonical,
                             lastmod    : moment().format('YYYY-MM-DD'),
                             changefreq : sitemapConf.product.frequency,
                             priority   : sitemapConf.product.priority
@@ -155,7 +154,7 @@ const genSitemap = async () => {
                                 let canonical = '';
                                 if (products[i].translation[languages[k].code] !== undefined && products[i].translation[languages[k].code].canonical !== undefined) {
                                     canonical  = products[i].translation[languages[k].code].canonical[0] === '/' ? products[i].translation[languages[k].code].canonical.slice(1) : products[i].translation[languages[k].code].canonical;
-                                    const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? '' : ''}${canonical}`;
+                                    const link = `${appUrl}${canonical}`;
                                     xhtml.push({
                                         '@' : {
                                             rel      : 'alternate',
