@@ -101,7 +101,6 @@ const getBreadcrumb = async (url) => {
 const exportData = async (model, PostBody, noCSV = false) => {
     const fsp    = require('../utils/fsp');
     const server = require('../utils/server');
-    const buffer = require('buffer');
 
     moment.locale(global.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
@@ -130,7 +129,7 @@ const exportData = async (model, PostBody, noCSV = false) => {
 
         const date   = Date.now();
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), `\ufeff${result.csv}`, {encoding: 'utf8'});
         result.url = date;
         return result;
     }
