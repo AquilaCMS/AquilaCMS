@@ -166,7 +166,7 @@ const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunc
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
-    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+    servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
     aquilaEvents.emit('aqUserCreated', newUser);
