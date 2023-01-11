@@ -392,8 +392,19 @@ async function languageInitExec(theme = global.envConfig.environment.currentThem
         const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
         const isExist            = await fs.existsSync(pathToLanguageInit);
         if (isExist) {
-            const langs       = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
-            const tabLang     = langs.datas.map((_lang) => _lang.code);
+            const langs = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100, structure: {code: 1, position: 1}});
+
+            const sortedLangs = langs.datas.sort((a, b) => {
+                if (a.position < b.position) {
+                    return -1;
+                }
+                if (a.position > b.position) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            const tabLang     = sortedLangs.map((_lang) => _lang.code);
             const defaultLang = await ServiceLanguages.getDefaultLang();
             returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
             if (returnValues.stderr === '') {
