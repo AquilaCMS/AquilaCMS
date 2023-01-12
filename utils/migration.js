@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -162,6 +162,68 @@ const migration_9_adminRights = async () => {
     // Deprecated
 };
 
+const migration_10_clearSetAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_10_clearSetAttributesIndexes"...');
+    await mongoose.connection.collection('setattributes').dropIndex('code_1');
+    console.log('End migration script "migration_10_clearSetAttributesIndexes"...');
+};
+
+const migration_11_clearAttributesIndexes = async () => {
+    console.log('Applying migration script "migration_11_clearAttributesIndexes"...');
+    await mongoose.connection.collection('attributes').dropIndex('code_1');
+    console.log('End migration script "migration_11_clearAttributesIndexes"...');
+};
+
+const migration_12_searchSettings = async () => {
+    console.log('Applying migration script "migration_12_searchSettings"...');
+    const config = await mongoose.connection.collection('configurations').findOne({});
+    if (config && config.environment) {
+        const searchSettings = {
+            findAllMatches  : true,
+            ignoreFieldNorm : true,
+            ignoreLocation  : true,
+            includeScore    : true,
+            keys            : [
+                {
+                    name   : 'code',
+                    label  : 'Code',
+                    weight : 20
+                },
+                {
+                    name   : 'translation.{lang}.name',
+                    label  : 'Nom',
+                    weight : 10
+                },
+                {
+                    name   : 'translation.{lang}.description1.title',
+                    label  : 'Titre description 1',
+                    weight : 3
+                },
+                {
+                    name   : 'translation.{lang}.description1.text',
+                    label  : 'Texte description 1',
+                    weight : 2.5
+                },
+                {
+                    name   : 'translation.{lang}.description2.title',
+                    label  : 'Titre description 2',
+                    weight : 2
+                },
+                {
+                    name   : 'translation.{lang}.description2.text',
+                    label  : 'Texte description 2',
+                    weight : 1.5
+                }
+            ],
+            minMatchCharLength : 2,
+            shouldSort         : true,
+            threshold          : 0.2,
+            useExtendedSearch  : true
+        };
+        await mongoose.connection.collection('configurations').updateOne({}, {$set: {'environment.searchSettings': searchSettings}});
+    }
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -172,7 +234,10 @@ const migrationScripts = [
     migration_6_contentSecurityPolicy,
     migration_7_Job_Translations,
     migration_8_CmsBlocks,
-    migration_9_adminRights
+    migration_9_adminRights,
+    migration_10_clearSetAttributesIndexes,
+    migration_11_clearAttributesIndexes,
+    migration_12_searchSettings
     // sample
 ];
 

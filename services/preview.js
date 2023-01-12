@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -44,28 +44,30 @@ const {
 }                             = require('../orm/models');
 
 const preview = async (body) => {
-    let preview = {};
-    if (await ProductsPreview.findOne({code: body.code})) {
+    let preview      = {};
+    const oldPreview = await ProductsPreview.findOne({code: body.code});
+    if (oldPreview) {
         body.updatedAt = new Date();
-        preview        = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+        delete body._id;
+        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
     } else {
         let newPreview;
         switch (body.type) {
         case 'simple':
             newPreview           = new ProductSimplePreview(body);
-            newPreview.type      = 'SimpleProductPreview';
+            newPreview.type      = 'simplePreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;
         case 'bundle':
             newPreview           = new ProductBundlePreview(body);
-            newPreview.type      = 'BundleProductPreview';
+            newPreview.type      = 'bundlePreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;
         case 'virtual':
             newPreview           = new ProductVirtualPreview(body);
-            newPreview.type      = 'VirtualProductPreview';
+            newPreview.type      = 'virtualPreview';
             newPreview.updatedAt = new Date(); // updateAt is not updated
             preview              = await newPreview.save();
             break;

@@ -15,5 +15,6 @@
     "emailType": "Veuillez sélectionner un type de mail",
     "infoSaved": "Informations sauvegardées !",
     "emailSent": "Un email a été envoyé à cette adresse.",
-    "invalidMail": "L'email n'est pas valide"
+    "invalidMail": "L'email n'est pas valide",
+    "installDeps": "Installer les dependences"
 }

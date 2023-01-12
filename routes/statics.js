@@ -1,26 +1,27 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const URL                  = require('url');
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const {StaticsPreview}     = require('../orm/models');
 const ServiceStatic        = require('../services/statics');
 const ServiceStaticPreview = require('../services/preview');
 const {isAdmin}            = require('../utils/utils');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
     app.post('/v2/static', securityForceActif(['active']), getStatic);
-    app.post('/v2/static/preview', adminAuth, previewStatic);
+    app.post('/v2/static/preview', adminAuthRight('staticPage'), previewStatic);
     app.post('/v2/static/:id', getStaticById);
-    app.put('/v2/static', adminAuth, setStatic);
-    app.delete('/v2/static/:id', adminAuth, deleteStatic);
+    app.put('/v2/static', adminAuthRight('staticPage'), autoFillCode, setStatic);
+    app.delete('/v2/static/:id', adminAuthRight('staticPage'), deleteStatic);
 };
 
 /**
@@ -128,7 +129,7 @@ async function setStatic(req, res, next) {
         } else {
             await ServiceStatic.createStatic(req.body);
         }
-
+        console.log('deletePreview', req.body.code);
         await ServiceStaticPreview.deletePreview(req.body.code);
 
         res.end();
@@ -155,8 +156,11 @@ async function deleteStatic(req, res, next) {
  */
 async function previewStatic(req, res, next) {
     try {
-        let preview = {};
-        if (await StaticsPreview.findOne({code: req.body.code})) {
+        let preview      = {};
+        const oldPreview = await StaticsPreview.findOne({code: req.body.code});
+
+        if (oldPreview) {
+            delete req.body._id;
             preview = await StaticsPreview.findOneAndUpdate({code: req.body.code}, req.body, {new: true});
         } else {
             const newPreview = new StaticsPreview(req.body);

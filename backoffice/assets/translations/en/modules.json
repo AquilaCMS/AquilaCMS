@@ -5,8 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Active ?",
-    "activate": "Activate",
-    "deactivate": "Deactivate",
+    "activate": "Oui",
+    "deactivate": "Non",
     "actions": "ACTIONS",
     "config": "Configure",
     "delete": "Delete",
@@ -32,5 +32,8 @@
     },
     "toast": {
         "errGetPlugins": "Can't get the list of plugins"
-    }
+    },
+    "installDepsStart": "Install start ...",
+    "installDepsSuccess":"Install finished successfully",
+    "installDepsFailed":"Install finished with errors"
 }

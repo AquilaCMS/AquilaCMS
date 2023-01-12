@@ -128,8 +128,7 @@ describe('Users', () => {
                 .set('authorization', credentials.token)
                 .send({activateAccountToken});
             expect(res).to.have.status(200);
-            expect(res.body).have.property('email');
-            expect(res.body.email).to.be.equal(credentials.user.email);
+            expect(res.body.isActiveAccount).to.be.equal(true);
         });
     });
 

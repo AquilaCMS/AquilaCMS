@@ -5,7 +5,7 @@
             "security": [],
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "Get all the cmsBlocks",
                     "content": {
                         "application/json": {
                             "schema": {

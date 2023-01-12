@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -39,7 +39,6 @@ exports.getNewsletterByEmail = async function (email) {
 
 /**
  * params :
- * "isNew": true, // If it is a new registration to a new segment
  * "name": "test", // Segment name
  * "optin": true // true for subscription, false for unsubscription
  */
@@ -53,7 +52,7 @@ exports.setStatusNewsletterByEmail = async function (email, params) {
     ).lean();
     // No segment exists
     if (!oNewsletter || !oNewsletter.segment.length) {
-        const update = {name: params.name, optin: true, date_subscribe: new Date()};
+        const update = {name: params.name, optin: params.optin, date_subscribe: new Date()};
         return Newsletters.findOneAndUpdate({email}, {$push: {segment: update}}, {new: true, upsert: true});
     }
     return Newsletters.findOneAndUpdate({

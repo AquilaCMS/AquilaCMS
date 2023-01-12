@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -43,7 +43,7 @@ const connect = async () => {
         await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
-
+    mongoose.plugin(require('../orm/plugins/generateID'));
     return mongoose;
 };
 
@@ -101,10 +101,10 @@ const checkSlugExist = async (doc, modelName) => {
     }
 };
 
-const checkCode = async (modelName, id, code) => {
+const checkCode = async (modelName, id, code, moreFilters = {}) => {
     if (!code) return;
 
-    const query = {code};
+    const query = {code, ...moreFilters};
     if (id) {
         query._id = {$ne: id};
     }
@@ -1302,8 +1302,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'URL du site'
+                            value       : 'URL_SITE',
+                            description : 'URL du site'
                         },
                         {
                             value       : 'token',
@@ -1328,8 +1328,8 @@ const initDBValues = async () => {
                             description : 'Nom de la société'
                         },
                         {
-                            value      : 'URL_SITE',
-                            descripton : 'App URL'
+                            value       : 'URL_SITE',
+                            description : 'App URL'
                         },
                         {
                             value       : 'token',

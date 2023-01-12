@@ -1,11 +1,16 @@
-FROM node:14-alpine
+FROM almalinux:latest
 WORKDIR /src
 EXPOSE 3010
 COPY . /src
 
-RUN apk update
-RUN apk add --no-cache g++ gcc libgcc libstdc++ linux-headers make python3 libtool automake autoconf nasm wkhtmltopdf vips vips-dev libjpeg-turbo libjpeg-turbo-dev
-RUN apk add --no-cache ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-freefont
+RUN dnf update -y
+RUN dnf module install nodejs:16 -y
+
+RUN yum -y install wget
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.x86_64.rpm
+RUN dnf install ./wkhtmltox-0.12.6-1.centos8.x86_64.rpm -y
+
+RUN npm install -g yarn
 RUN yarn install
 
 CMD ["npm", "start"]

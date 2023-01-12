@@ -1,22 +1,22 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth} = require('../middleware/authentication');
-const ServiceJob  = require('../services/job');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceJob       = require('../services/job');
 
 module.exports = function (app) {
-    app.get('/v2/jobs', adminAuth, getJobs);
-    app.get('/v2/job/:_id', adminAuth, getJobById);
-    app.get('/v2/job/play/:_id', adminAuth, getPlayJob);
-    app.get('/v2/job/play/immediate/:_id', adminAuth, getPlayImmediateJob);
-    app.get('/v2/job/pause/:_id', adminAuth, getPauseJob);
-    app.put('/v2/job', adminAuth, setJob);
-    app.delete('/v2/job/:_id', adminAuth, deleteJob);
+    app.get('/v2/jobs', adminAuthRight('jobs'), getJobs);
+    app.get('/v2/job/:_id', adminAuthRight('jobs'), getJobById);
+    app.get('/v2/job/play/:_id', adminAuthRight('jobs'), getPlayJob);
+    app.get('/v2/job/play/immediate/:_id', adminAuthRight('jobs'), getPlayImmediateJob);
+    app.get('/v2/job/pause/:_id', adminAuthRight('jobs'), getPauseJob);
+    app.put('/v2/job', adminAuthRight('jobs'), setJob);
+    app.delete('/v2/job/:_id', adminAuthRight('jobs'), deleteJob);
 };
 
 /**

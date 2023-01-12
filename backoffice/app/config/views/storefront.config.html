@@ -2,7 +2,7 @@
     <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading" role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
 
-            <div id="general" class="tab-pane fade in active" style="width:50%;margin-left:10%">
+            <div id="general" class="tab-pane fade in active" style="width:50%;margin-left:10%" hook-config-store data="config.environment">
                 <h3 translate>config.environment.menu.general</h3>
                 <br/>
                 <div class="form-group">

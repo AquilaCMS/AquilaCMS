@@ -1,0 +1,86 @@
+<div class="form-group">
+    <label class="control-label col-md-5" translate>tinymce.modal.maxSize</label>
+    <div class="col-md-7">
+        <ns-switch id="maxSize" ng-model="info.max" name="maxSize" ng-click="getMeta(media.link)"></ns-switch>
+    </div>
+    <!-- <ns-switch id="maxSize" ng-model="false" name="active"></ns-switch> -->
+</div>
+<div ng-if="!info.max">
+    <div class="form-group">
+        <label class="control-label col-md-5" translate>tinymce.modal.width</label>
+        <div class="col-md-7">
+            <input type="number" class="form-control" name="width" ng-model="info.width" ng-change="sizeChange('width', info.width)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-5" translate>tinymce.modal.height </label>
+        <div class="col-md-7">
+            <input style="float:left" type="number" class="form-control" name="height" ng-model="info.height" ng-change="sizeChange('height', info.height)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-5" translate>tinymce.modal.ratio</label>
+        <div class="col-md-7">
+            <ns-switch id="keepRatio" ng-model="info.keepRatio" name="keepRatio"></ns-switch>
+        </div>
+    </div>
+    <div class="form-group" ng-show="!info.keepRatio">
+        <label class="control-label col-sm-5" translate>medias.modal.crop</label>
+        <div class="col-sm-7">
+            <ns-switch name="crop" ng-model="info.crop" ng-change="info.crop ? false : true;info.background = false">
+            </ns-switch>
+        </div>
+    </div>
+</div>
+
+<div class="form-group" ng-if="info.crop">
+    <label class="control-label col-sm-5" translate>medias.modal.position</label>
+    <div class="col-sm-7">
+        <select class="form-control" name="repeatSelect" id="repeatSelect" ng-model="info.position">
+            <option ng-repeat="pos in positions" value="{{pos.pos}}" translate>{{getTranslation(pos.id)}}</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-5" translate>medias.modal.quality</label>
+    <div class="col-sm-7">
+        <input type="number" min="0" max="100" class="form-control" name="code" ng-model="info.quality" ng-required="true">
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-5" translate>medias.modal.name</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" name="code" ng-model="info.name" ng-required="true">
+    </div>
+</div>
+<div class="form-group" ng-if="!info.max">
+    <label class="control-label col-sm-5" translate>medias.modal.background</label>
+    <div class="col-sm-7">
+        <ns-switch name="default_value" ng-model="info.background" ng-change="info.background ? false : true;info.crop = false"></ns-switch>
+    </div>
+</div>
+<div ng-if="info.background === true" class="form-group">
+    <label class="control-label col-sm-5">Red :</label>
+    <div class="col-sm-7">
+        <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.r" ng-required="true">
+    </div>
+    <label class="control-label col-sm-5">Green :</label>
+    <div class="col-sm-7">
+        <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.g" ng-required="true">
+    </div>
+    <label class="control-label col-sm-5">Blue :</label>
+    <div class="col-sm-7">
+        <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.b" ng-required="true">
+    </div>
+    <label class="control-label col-sm-5">Alpha :</label>
+    <div class="col-sm-7">
+        <input type="number" max="1" min="0" step="0,1" class="form-control" name="code" ng-model="info.alpha" ng-required="true">
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label col-md-5" translate>tinymce.modal.relativeLink</label>
+    <div class="col-md-7">
+        <ns-switch ng-model="info.relativeLink" name="relativeLink"></ns-switch>
+    </div>
+</div>

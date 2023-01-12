@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -68,7 +68,7 @@ const loginAdminAsClient = async (req, res, next) => {
         if (!param) {
             throw NSErrors.NotFound;
         }
-        const token = generateJWTToken(res, user, user.isAdmin);
+        const token = await generateJWTToken(res, user, user.isAdmin);
         return res.status(200).send({
             code : 'LOGIN_SUCCESS',
             data : token

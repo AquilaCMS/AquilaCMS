@@ -1,17 +1,17 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose         = require('mongoose');
+const {aquilaEvents}   = require('aql-utils');
 const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const aquilaEvents     = require('../../utils/aquilaEvents');
 const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
@@ -19,7 +19,7 @@ const CategoriesSchema = new Schema({
     active       : {type: Boolean, default: false},
     clickable    : {type: Boolean, default: true},
     isDisplayed  : {type: Boolean, default: true},
-    action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container']},
+    action       : {type: String, default: 'container', enum: ['catalog', 'url', 'page', 'container', 'categorylist']},
     // thumbnailUrl : {type: String},
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
@@ -56,6 +56,7 @@ const CategoriesSchema = new Schema({
 });
 
 CategoriesSchema.index({displayOrder: 1});
+CategoriesSchema.index({'productsList.sortWeight': -1});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -42,7 +42,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            await fsp.rename(pathIn, filePathOut);
+            if (pathIn !== filePathOut) await fsp.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
@@ -53,9 +53,20 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     }
 };
 
-const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
+const getProductImageUrl = (product) => {
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default).url : '';
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
+};
 
-const getProductImageId = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : 'no-image');
+const getProductImageId = (product) => {
+    const defaultImage = global.envConfig.environment.defaultImage ? 'no-image' : '';
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : defaultImage;
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : defaultImage;
+};
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {
@@ -124,10 +135,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
-                return true;
-            }
-            return false;
+            return !!(pathToCheck && fsp.existsSync(pathToCheck) && !(fsp.lstatSync(pathToCheck)).isDirectory());
         });
     }
 };

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -53,6 +53,25 @@ const ConfigurationSchema = new Schema({
         contentSecurityPolicy : {
             values : {type: [String]},
             active : {type: Boolean, default: false}
+        },
+        needRestart    : {type: Boolean, default: false},
+        needRebuild    : {type: Boolean, default: false},
+        searchSettings : {
+            shouldSort         : {type: Boolean, default: true},
+            ignoreLocation     : {type: Boolean, default: true},
+            findAllMatches     : {type: Boolean, default: true},
+            ignoreFieldNorm    : {type: Boolean, default: true},
+            includeScore       : {type: Boolean, default: true},
+            useExtendedSearch  : {type: Boolean, default: true},
+            minMatchCharLength : {type: Number, default: 2},
+            threshold          : {type: Number, default: 0.2},
+            keys               : [
+                {
+                    name   : String,
+                    label  : String,
+                    weight : Number
+                }
+            ]
         }
 
     },
@@ -63,11 +82,12 @@ const ConfigurationSchema = new Schema({
         default : [{rate: 5.5}, {rate: 10}, {rate: 20}]
     },
     stockOrder : {
-        cartExpireTimeout         : {type: Number, required: true, default: 48},
-        pendingOrderCancelTimeout : {type: Number, required: true, default: 48},
-        requestMailPendingCarts   : {type: Number, required: true, default: 24},
-        bookingStock              : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
-        labels                    : {
+        cartExpireTimeout                : {type: Number, required: true, default: 48},
+        pendingOrderCancelTimeout        : {type: Number, required: true, default: 48},
+        nbDaysToDeleteOlderFailedPayment : {type: Number, default: 30},
+        requestMailPendingCarts          : {type: Number, required: true, default: 24},
+        bookingStock                     : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
+        labels                           : {
             type    : [{code: {type: String, required: true}, translation: {}}],
             default : [
                 {

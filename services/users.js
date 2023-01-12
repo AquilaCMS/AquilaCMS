@@ -1,18 +1,20 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const crypto                 = require('crypto');
-const mongoose               = require('mongoose');
-const {Users, SetAttributes} = require('../orm/models');
-const servicesMail           = require('./mail');
-const QueryBuilder           = require('../utils/QueryBuilder');
-const aquilaEvents           = require('../utils/aquilaEvents');
-const NSErrors               = require('../utils/errors/NSErrors');
+const crypto                             = require('crypto');
+const mongoose                           = require('mongoose');
+const {aquilaEvents}                     = require('aql-utils');
+const {Users, SetAttributes, Attributes} = require('../orm/models');
+const servicesMail                       = require('./mail');
+const QueryBuilder                       = require('../utils/QueryBuilder');
+const utilsModules                       = require('../utils/modules');
+const NSErrors                           = require('../utils/errors/NSErrors');
+const modulesUtils                       = require('../utils/modules');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -36,12 +38,20 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody, true);
+    const user = await queryBuilder.findOne(PostBody, true);
+
+    return modulesUtils.modulesLoadFunctions('postGetUserById', {user}, async function () {
+        return user;
+    });
 };
 
-const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+const getUserByAccountToken = async (activateAccountToken) => {
+    if (!activateAccountToken) throw NSErrors.Unauthorized;
+    const user = await Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+    return {isActiveAccount: user?.isActiveAccount};
+};
 
-const setUser = async (id, info, isAdmin = false) => {
+const setUser = async (id, info, isAdmin, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -51,6 +61,15 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.isAdmin;
         }
         const userBase = await Users.findOne({_id: id});
+        if (info.attributes) {
+            for (let i = 0; i < info.attributes.length; i++) {
+                const usrAttr = userBase.attributes.find((attr) => attr.code === info.attributes[i].code);
+                if (usrAttr && lang) {
+                    info.attributes[i].translation             = usrAttr.translation;
+                    info.attributes[i].translation[lang].value = info.attributes[i].value;
+                }
+            }
+        }
         if (userBase.email !== info.email) {
             info.isActiveAccount = false;
         }
@@ -90,7 +109,7 @@ const setUserAddresses = async (body) => {
     return userUpdated;
 };
 
-const createUser = async (body, isAdmin = false) => {
+const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunctions('createUser', {body, isAdmin}, async () => {
     // Control password
     body.activateAccountToken = crypto.randomBytes(26).toString('hex');
     body.isActiveAccount      = false;
@@ -122,6 +141,17 @@ const createUser = async (body, isAdmin = false) => {
                 }
                 return attr;
             });
+        } else {
+            for (let i = 0; i < body.attributes.length; i++) {
+                const attribute                = await Attributes.findOne({code: body.attributes[i].code});
+                body.attributes[i].translation = attribute.translation;
+                if (attribute.type) body.attributes[i].type = attribute.type;
+                if (attribute.type === 'multiselect') {
+                    body.attributes[i].translation[body.lang].values = body.attributes[i].values;
+                } else {
+                    body.attributes[i].translation[body.lang].value = body.attributes[i].value;
+                }
+            }
         }
         newUser = await (new Users(body)).save();
     } catch (err) {
@@ -136,12 +166,12 @@ const createUser = async (body, isAdmin = false) => {
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
-    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+    servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
-};
+});
 
 const deleteUser = async (id) => {
     const query = {_id: id};
@@ -170,7 +200,8 @@ const getUserTypes = async (query) => {
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
-    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
+    const emailRegex     = new RegExp(`^${email}$`, 'i');
+    const user           = await Users.findOneAndUpdate({email: emailRegex}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
@@ -201,7 +232,6 @@ const changePassword = async (email, password) => {
         user.password = password;
         await user.save();
         await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-        // await Users.updateOne({_id: user._id}, {password, $unset: {resetPassToken: 1}}, {runValidators: true});
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
             throw NSErrors.LoginSubscribePasswordInvalid;

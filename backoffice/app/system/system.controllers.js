@@ -7,8 +7,16 @@ SystemControllers.controller("systemGeneralController", [
         $scope.showModuleLoading = false;
         $scope.log = {
             log: "",
-            error: ""
+            error: "",
+            displayedLinesLogs: 300,
+            displayedLinesErrors: 300
         };
+        let numberLogPage = {
+            pageNbr: 1,
+            pageNbrLog: 1,
+            pageNbrError: 1
+        };
+        $scope.isSelected = false
 
         $scope.contentPolicy = {
             // active: true,
@@ -57,12 +65,51 @@ SystemControllers.controller("systemGeneralController", [
                 key: $scope.system.environment.ssl.key || '',
                 active: $scope.system.environment.ssl.active || false
             }
+            if(!$scope.system.environment.searchSettings) {
+                $scope.system.environment.searchSettings = {
+                    shouldSort         : true,
+                    ignoreLocation     : true,
+                    findAllMatches     : true,
+                    ignoreFieldNorm    : true,
+                    includeScore       : true,
+                    useExtendedSearch  : true,
+                    minMatchCharLength : 2,
+                    threshold          : 0.2
+                }
+            }
+            if(!$scope.system.environment.searchSettings.keys) {
+                $scope.system.environment.searchSettings.keys = [
+                    {name: 'code', label: 'Code', weight: 20},
+                    {name: 'translation.{lang}.name', label: 'Nom', weight: 10},
+                    {name: 'description1.{lang}.title', label: 'Titre description 1', weight: 3},
+                    {name: 'description1.{lang}.text', label: 'Texte description 1', weight: 2.5},
+                    {name: 'description2.{lang}.title', label: 'Titre description 2', weight: 2},
+                    {name: 'description2.{lang}.text', label: 'Texte description 2', weight: 1.5}
+                ]
+            }
             delete $scope.system.$promise;
         });
 
         $scope.refreshLog = function () {
+            numberLogPage.pageNbr = numberLogPage.pageNbrLog;
             $scope.getFilesLogAndError('log');
+            numberLogPage.pageNbr = numberLogPage.pageNbrError;
             $scope.getFilesLogAndError('error');
+        };
+
+        $scope.pageIncrease = function (logOrError) {
+            if(logOrError === 'log') {
+                numberLogPage.pageNbrLog ++;
+                $scope.log.displayedLinesLogs = 300 * numberLogPage.pageNbrLog;
+                numberLogPage.pageNbr = numberLogPage.pageNbrLog;
+                $scope.getFilesLogAndError('log');
+            }
+            else if(logOrError === 'error') {
+                numberLogPage.pageNbrError ++;
+                $scope.log.displayedLinesErrors = 300 * numberLogPage.pageNbrError;
+                numberLogPage.pageNbr = numberLogPage.pageNbrError;
+                $scope.getFilesLogAndError('error');
+            }
         };
 
         function buildAdminUrl(appUrl, adminPrefix) {
@@ -88,7 +135,7 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.environment[attribut] == ''; //if it's undefined
                 $scope.log[variable] = 'No file "' + variable + '"';
             } else {
-                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut] }, function (response) {
+                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut], pageNbr : numberLogPage.pageNbr }, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
                 }, function (err) {
@@ -204,16 +251,12 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.showThemeLoading = true;
                 $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
 
-                Upload.upload({
-                    url: 'v2/config',
-                    method: 'PUT',
-                    data: {
-                        ...file,
-                        ...$scope.system
-                    }
-                }).then((response) => {
+                ConfigV2.save({
+                    ...file,
+                    ...$scope.system
+                }, (response) => {
                     toastService.toast("success", $translate.instant("global.saveDone"));
-                    if (response.data.data.needRestart) {
+                    if (response.data.needRestart) {
                         $scope.showLoading = true;
                         $scope.showThemeLoading = false;
                         $interval(() => {

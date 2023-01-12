@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -13,11 +13,12 @@ const {Products}   = require('../orm/models');
 const utilsModules = require('../utils/modules');
 
 const createModelData = async () => {
-    const schemas     = [];
-    const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+    const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
+    const schemas        = [];
+    const themeFolder    = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
-        if (['configuration', 'modules', 'BundleProduct', 'SimpleProduct'].indexOf(modelName) === -1) {
+        if (forbidenModels.indexOf(modelName) === -1) {
             schemas.push({collection: modelName, datas: model});
         }
     }

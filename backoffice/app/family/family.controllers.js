@@ -63,9 +63,42 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
     function ($scope, $modal, $filter, $http, $q, FamilyV2, CategoryV2, childrenfamily, $translate)     {
         $scope.universes = [];
 
-        FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 0}}, function({datas}) {
+        FamilyV2.list({PostBody: {filter: {type: 'universe'}, sort: {order: 1}, structure: '*', limit: 0}}, function({datas}) {
             $scope.universes = datas
         });
+
+        $scope.sortableUniverses = {
+            update: (e, ui) => $scope.updateOrder(e, ui, $scope.universes)
+        }
+        $scope.sortableFamilies = {
+            update: (e, ui) => $scope.updateOrder(e, ui, $scope.families)
+        }
+        $scope.sortableSubFamilies = {
+            update: (e, ui) => $scope.updateOrder(e, ui, $scope.subFamilies)
+        }
+
+        $scope.updateOrder = function (e, ui, list) {
+            if(ui.item.sortable.dropindex === ui.item.sortable.index) return;
+            if(ui.item.sortable.dropindex > ui.item.sortable.index) {
+                list[ui.item.sortable.index].order = ui.item.sortable.dropindex
+                $scope.saveFamily(list[ui.item.sortable.index] )
+                for(let i = ui.item.sortable.index + 1; i <= ui.item.sortable.dropindex; i++) {
+                    list[i].order = i - 1;
+                    $scope.saveFamily(list[i] )
+                }
+            } else {
+                list[ui.item.sortable.index].order = ui.item.sortable.dropindex
+                $scope.saveFamily(list[ui.item.sortable.index] )
+                for(let i = ui.item.sortable.dropindex; i < ui.item.sortable.index; i++) {
+                    list[i].order = i + 1;
+                    $scope.saveFamily(list[i] )
+                }
+            }
+        }
+
+        $scope.saveFamily = async function (family) {
+            await FamilyV2.save({_id: family._id, order: family.order, code: family.code})
+        }
 
         $scope.selectedUniverse = "";
         $scope.selectedFamily = "";
@@ -143,14 +176,14 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         };
 
         function updateMenu() {
-            FamilyV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function({datas}) {
+            FamilyV2.list({PostBody: {filter: {type:'universe'}, sort: {order: 1}, limit: 0, structure: '*'}}, function({datas}) {
                 $scope.universes = datas
                 if ($scope.selectedUniverse) {
-                    FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedUniverse}, limit: 0, structure: '*' }}, function (result) {
-                        $scope.families = result.datas;
+                    FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedUniverse}, sort: {order: 1}, limit: 0, structure: '*' }}, function (result) {
+                        $scope.families = result.datas?.sort((a, b) => a.order - b.order);
                         if ($scope.selectedFamily) {
-                            FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedFamily }, limit: 0, structure: '*' } }, function (result) {
-                                $scope.subFamilies = result.datas;
+                            FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedFamily }, sort: {order: 1}, limit: 0, structure: '*' } }, function (result) {
+                                $scope.subFamilies = result.datas?.sort((a, b) => a.order - b.order);
                             });
                         }
                     });
@@ -213,7 +246,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
                 $scope.families = [];
     
                 FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 0, populate:'children'}}, function (result) {
-                    $scope.families = result.children;
+                    $scope.families = result.children?.sort((a, b) => a.order - b.order);
                 });
             }else{
                 $scope.selectedUniverse = 0;
@@ -226,7 +259,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
                 $scope.subFamilies = [];
                 FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 0, populate: 'children'}}, function (result) {
                     if(result.datas[0] != undefined){
-                        $scope.subFamilies = result.datas[0].children;
+                        $scope.subFamilies = result.datas[0].children?.sort((a, b) => a.order - b.order);;
                     }
                 });
             }else{

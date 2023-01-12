@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -36,21 +36,9 @@ exports.execCmd = async function (cde, path = global.appRoot) {
 exports.execSh = async function (cde, param = [], path = global.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
-        let cmd;
-        if (process.platform === 'win64' || process.platform === 'win32') {
-            cmd = spawn(cde, [...param], {cwd: path, shell: true});
-        } else {
-            cmd = spawn(cde, [...param], {cwd: path, shell: true});
-        }
-
-        let stdout = '';
-        let stderr = '';
-        cmd.stdout.on('data', (data) => {
-            stdout += data.toString();
-        });
-        cmd.stderr.on('data', (data) => {
-            stderr += data.toString();
-        });
+        const cmd    = spawn(cde, [...param], {cwd: path, shell: true});
+        const stdout = '';
+        const stderr = '';
         cmd.on('error', (err) => {
             reject(err);
         });

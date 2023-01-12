@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -56,6 +56,7 @@ class NSErrors {
     static get OperatorRestricted() { return this.makeErrorAlias(NSErrors.Forbidden, 'OperatorRestricted'); }
     static get PromoCodePromoNotAuthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'PromoCodePromoNotAuthorized'); }
     static get ComponentNotAllowed() { return this.makeErrorAlias(NSErrors.Forbidden, 'ComponentNotAllowed'); }
+    static get ProductTypeInvalid() { return this.makeErrorAlias(NSErrors.Forbidden, 'ProductTypeInvalid'); }
 
     static get NotFound() { return new NSError(404, 'NotFound'); }
     static get AccountUserNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'AccountUserNotFound'); }

@@ -1,27 +1,28 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const {adminAuth}    = require('../middleware/authentication');
-const mediasServices = require('../services/medias');
-const NSErrors       = require('../utils/errors/NSErrors');
+const path             = require('path');
+const {adminAuthRight} = require('../middleware/authentication');
+const mediasServices   = require('../services/medias');
+const NSErrors         = require('../utils/errors/NSErrors');
+const {multerUpload}   = require('../middleware/multer');
 
 module.exports = function (app) {
-    app.post('/v2/medias', adminAuth, listMedias);
+    app.post('/v2/medias', adminAuthRight('medias'), listMedias);
     app.post('/v2/media', getMedia);
-    app.put('/v2/media', adminAuth, saveMedia);
-    app.delete('/v2/media/:_id', adminAuth, removeMedia);
-    app.post('/v2/medias/upload', adminAuth, uploadFiles);
+    app.put('/v2/media',  adminAuthRight('medias'), saveMedia);
+    app.delete('/v2/media/:_id', adminAuthRight('medias'), removeMedia);
+    app.post('/v2/medias/upload', adminAuthRight('medias'), multerUpload.any(), uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
-    app.get('/v2/medias/download/documents', adminAuth, downloadAllDocuments);
-    app.post('/v2/medias/download/documents', adminAuth, uploadAllDocuments);
-    app.post('/v2/medias/download/medias', adminAuth, uploadAllMedias);
+    app.get('/v2/medias/download/documents', adminAuthRight('medias'), downloadAllDocuments);
+    app.post('/v2/medias/download/documents', adminAuthRight('medias'), multerUpload.any(), uploadAllDocuments);
+    app.post('/v2/medias/download/medias', adminAuthRight('medias'), multerUpload.any(), uploadAllMedias);
 };
 
 /**
@@ -149,12 +150,15 @@ async function uploadAllMedias(req, res, next) {
  */
 async function downloadAllDocuments(req, res, next) {
     try {
-        const result = await mediasServices.downloadAllDocuments(req.body);
-
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
-        res.write(result, 'binary');
-        res.end();
+        const path = await mediasServices.downloadAllDocuments();
+        return res.download(path, 'documents.zip', function (err) {
+            if (err) {
+                console.log(err);
+            }
+            require('../utils/fsp').unlink(path, function () {
+                console.log('File was deleted'); // Callback
+            });
+        });
     } catch (error) {
         return next(error);
     }

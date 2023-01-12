@@ -39,7 +39,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                         <section className="section-client-area">
                                             <header className="section__head">
                                                 <h2 className="section__title">
-                                                    <i className="ico-profile-large" />
+                                                <span className="material-symbols-outlined client_account">account_circle</span>
                                                     {t('account:account.page.title')}
                                                 </h2>
                                             </header>
@@ -103,7 +103,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                     <td>
                                                                                                                         <div className="product-small">
                                                                                                                             <div className="product__image">
-                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
+                                                                                                                                <img src={`/images/${item.selected_variant ? 'productsVariant' : 'products'}/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
                                                                                                                                 <h6>{item ? item.name : 'NO NAME'} x {item.quantity}</h6>
@@ -114,7 +114,8 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
-                                                                                                                                {item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
+                                                                                                                                {
+                                                                                                                                item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
                                                                                                                                             section.products.map((productSection, indexSel) => (
@@ -131,7 +132,8 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             ))
                                                                                                                                         ))
                                                                                                                                     }
-                                                                                                                                </ul>}
+                                                                                                                                </ul>
+                                                                                                                                }
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </td>
@@ -269,6 +271,10 @@ class PageAccountOrders extends NSPageAccountOrders {
                     }
                     .accordion__body{
                         cursor: auto;
+                    }
+                    .variant p {
+                        font-size: 14px;
+                        color: gray;
                     }
                 `}
                     </style>

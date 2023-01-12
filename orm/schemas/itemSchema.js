@@ -1,15 +1,15 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const Schema       = mongoose.Schema;
-const {ObjectId}   = Schema.Types;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const itemsSchema = new Schema({
     id     : {type: ObjectId, ref: 'products', required: true},
@@ -79,8 +79,7 @@ itemsSchema.set('toObject', {virtuals: true});
 
 itemsSchema.virtual('price.total').get(function () {
     const self = this;
-    // const isChildKart = self.name && self.name.indexOf("enfant") > -1;
-    let price = self.price.unit.ati;
+    let price  = self.price.unit.ati;
 
     if (self.price.special && self.price.special.ati !== undefined) {
         price = self.price.special.ati;
@@ -92,7 +91,15 @@ itemsSchema.virtual('price.total').get(function () {
 itemsSchema.virtual('stock').get(function () {
     const self = this;
     if (self.id._id) {
-        return self.id.stock;
+        const originalPrd = self.id;
+        if (self.selected_variant) {
+            const variantValue = originalPrd.variants_values.find((vv) => vv._id.toString() === self.selected_variant.id.toString());
+            if (variantValue) {
+                return variantValue.stock;
+            }
+            return {};
+        }
+        return originalPrd.stock;
     }
     return {};
 });

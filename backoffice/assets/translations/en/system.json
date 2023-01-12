@@ -23,7 +23,10 @@
             "errorTitle": "Errors overview:",
             "logFileTitle": "File link to logs :",
             "errorFileTitle": "File link to Errors :",
-            "refreshLog" : "Refresh logs"
+            "refreshLog": "Refresh logs and errors",
+            "seeMoreLogs": "See more logs",
+            "seeMoreErrors": "See more errors",
+            "linesDisplayed": " lines displayed"
         },
         "other":{
             "title" : "Others",
@@ -39,6 +42,11 @@
             "takeTime": "It may take a while, please wait ...",
             "errorOccurred": "An error has occurred",
             "uploadAllDocumentInfo": "* Only .zip is accepted, and must contain good folders (available in download). No entry in the database."
+        },
+        "searchSettings": {
+            "title": "Search settings",
+            "findDoc": "You can find the documentation here ",
+            "keysWeight": "Keys weight"
         }
     }
 }

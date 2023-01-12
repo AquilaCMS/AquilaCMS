@@ -179,6 +179,153 @@ ProductDirectives.directive("nsProductGeneral", function () {
         controller  : 'nsProductGeneral'
     };
 });
+
+ProductDirectives.directive("nsProductDeclinaisons", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=", lang        : "=", isEditMode  : "=", form        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductDeclinaisons.html",
+        controller  : ['$scope', 'AttributesV2', '$modal', function($scope, AttributesV2, $modal) {
+            $scope.declinaisons = []
+            $scope.selectedVariant = -1;
+            $scope.selectedVariantValue = {}
+
+            AttributesV2.list({PostBody: {
+                filter: {
+                    isVariantable: true
+                },
+                limit: 99
+            }}, function(data) {
+                $scope.declinaisons = data.datas;
+            });
+
+            $scope.createPrds = function () {
+                $scope.product.variants_values = []
+                const variantNames                                       = [];
+                for (const variant of $scope.product.variants) {
+                    variantNames.push(variant.translation[$scope.lang].values);
+                }
+                const f         = (a, b) => [].concat(...a.map((d) => b.map((e) => [].concat(d, e))));
+                const cartesian = (a, b, ...c) => (b ? cartesian(f(a, b), ...c) : a);
+                const result    = cartesian(...variantNames);
+                for (const [index, variantName] of result.entries()) {
+                    const variant = {
+                        code        : `${$scope.product.code}-${(typeof variantName === 'string' ? variantName : variantName.join('-')).replace(' ', '-').toLowerCase()}`,
+                        active      : false,
+                        weight      : $scope.product.weight,
+                        default     : index === 0,
+                        price       : $scope.product.price,
+                        stock       : $scope.product.stock,
+                        images      : $scope.product.images,
+                        variant_codes: (typeof variantName === 'string' ? variantName : variantName.join('--')).toLowerCase(),
+                        translation : {}
+                    };
+                    variant.translation[$scope.lang] = {name: `${$scope.product.translation[$scope.lang].name} ${typeof variantName === 'string' ? variantName : variantName.join('/')}`};
+                    $scope.product.variants_values.push(variant);
+                }
+            }
+
+            $scope.toggleVariant = function (e, variant) {
+                e.stopPropagation()
+                if(e.target.checked) {
+                    if(!$scope.product.variants) $scope.product.variants = []
+                    $scope.product.variants.push({
+                        ...variant,
+                        type: 'image'
+                    })
+                } else {
+                    $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
+                }
+                if($scope.product?.variants?.length > 0) {
+                    $scope.createPrds()
+                } else {
+                    $scope.product.variants_values = []
+                    $scope.product.variants = []
+                }
+            }
+
+            $scope.selectVariantValue = function (variantValue, index) {
+                $scope.selectedVariantValue = variantValue
+                const ogSelectedVariantValue = angular.copy(variantValue)
+                $modal.open({
+                    windowClass: "modal-large",
+                    templateUrl: "app/product/views/modals/modalVariantValue.html",
+                    controller: [
+                        "$scope", "$filter", "$modalInstance",
+                        function ($scope, $filter, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close()
+                            }
+                            $scope.cancel = function() {
+                                $scope.product.variants_values[index] = ogSelectedVariantValue
+                                $scope.close();
+                            }
+                        }
+                    ],
+                    scope: $scope
+                })
+            }
+
+            $scope.vartiantValueDetails = function (variant) {
+                $scope.selectedIndex = $scope.product.variants.findIndex( v => v.code === variant.code)
+            }
+
+            $scope.isVariantSelected = function (variant) {
+                return $scope.product.variants && $scope.product.variants.find(v => v.code === variant.code) ? true : false
+            }
+
+            $scope.setDeclinaisonType = function (code, type) {
+                const index = $scope.product.variants.findIndex(v => v.code === code)
+                if(index > -1) {
+                    $scope.product.variants[index].type = type
+                }
+            }
+
+            $scope.setDefaultVariantValue = function (value, e) {
+                e.stopPropagation()
+                $scope.product.variants_values.map((val) => {
+                    val.default = false
+                    return val
+                })
+                value.default = true;
+            }
+
+            $scope.getProductVariantIndex = function (code) {
+                return $scope.product.variants.findIndex(v => v.code === code)
+            }
+
+            $scope.updateVariantType = function (value) {
+                if (value === 'list2') {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        $scope.product.variants[i].type = value;
+                    }
+                } else {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        if ($scope.product.variants[i].type === 'list2') {
+                            $scope.product.variants[i].type = value;
+                        }
+                    }
+                }
+            }
+
+            $scope.getImageUrl = function (variant) {
+                let defaultImage = variant.images.find(img => img.default)
+                if(!defaultImage) defaultImage = variant.images[0] || {}
+                return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.title || 'img'}${defaultImage.extension || '.jpg'}`;
+            };
+
+            $scope.activateAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = true; return vv})
+            }
+
+            $scope.disableAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = false; return vv})
+            }
+        }]
+    };
+});
 // product: Objet contenant les informations du produits
 // form: Formulaire
 // init: permet d'initialiser les valeurs (dans ce cas lorsque le produit est bien entierement chargé, on peut charger les données du fournisseur de cet article)
@@ -343,7 +490,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
         restrict : "E",
         scope    : {
             form : "=",
-            isSelected: "="
+            isSelected: "=", variantId: "="
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",
@@ -351,11 +498,17 @@ ProductDirectives.directive("nsProductPhoto", function () {
             ngModel.$render = function () {
                 if (ngModel.$modelValue) {
                     scope.product = ngModel.$modelValue;
+                    scope.product.images = scope.product.images.map((img) => {
+                        return {
+                            ...img,
+                            isYoutube: !!img.content
+                        }
+                    })
                 }
             };
         },
         controller : [
-            "$scope", function ($scope) {
+            "$scope", "$modal", function ($scope, $modal) {
                 $scope.switchDefaultImage = function (image, product) {
                     if (image.default) {
                         for (var i = 0, leni = product.images.length; i < leni; i++) {
@@ -377,17 +530,62 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     }
                 };
 
-                $scope.removeImage = function (index) {
+                $scope.removeImage = function (imgUrl) {
+                    const index = $scope.product.images.findIndex(img => img.url === imgUrl)
                     let defaultImage = $scope.product.images[index].default;
-                    $scope.product.images.sort((a, b) => a.position - b.position).splice(index, 1);
+                    $scope.product.images.splice(index, 1);
                     if ($scope.product.images.length > 0 && defaultImage) {
                         $scope.product.images[0].default = true;
                     }
                 };
 
-                $scope.getImageUrl = function (image) {
-                    return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
+                $scope.getImageUrl = function (image, variantImageId) {
+                    const imageName = image.title ? image.title : image.name;
+                    return `images/${variantImageId ? 'productsVariant' : 'products'}/300x300-50/${variantImageId ? variantImageId : image._id}/${imageName}${image.extension}`;
                 };
+
+                $scope.switchType = function (image) {
+                    if(image.content) {
+                        image.content = undefined
+                    } else {
+                        image.url = undefined
+                    }
+                }
+
+                $scope.addMovie = function () {
+                    const modalInstance = $modal.open({
+                        templateUrl : "app/product/views/modals/add-youtube-video.html",
+                        backdrop: 'static',
+                        scope       : $scope,
+                        controller  : ['$scope', '$modalInstance', function($scope, $modalInstance) {
+                            $scope.item = {
+                                name: '',
+                                content: ''
+                            }
+                            $scope.saveVideo = function () {
+                                $modalInstance.close($scope.item)
+                            }
+                            $scope.close = function () {
+                                $modalInstance.dismiss()
+                            }
+                        }],
+                        resolve     : {
+                            queryFilter() {
+                                return {
+                                    type : $scope.product.type
+                                };
+                            },
+                            productSelected(){
+                                return $scope.associatedPrds;
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function (item) {
+                        $scope.product.images.push({
+                            name: item.name, alt: item.name, isYoutube: true, content: item.content, title: item.name
+                        })
+                    });
+                }
             }
         ]
     };

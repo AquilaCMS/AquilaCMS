@@ -98,7 +98,7 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     };
     
     $scope.getImage = function(trademark) {
-        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo}`;
+        return `/images/trademark/200x180-70/${trademark._id}/${trademark.logo.split('\\').pop().split('/').pop()}`;
     }
 
     $scope.goToProductDetails = function (productType, productCode) {
@@ -136,7 +136,7 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
             }, function(error){
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
-                        toastService.toast("danger",  error.data.message);
+                        toastService.toast("danger",  $translate.instant("trademark.detail.errorName"));
                     }
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);

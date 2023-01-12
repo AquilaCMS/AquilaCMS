@@ -1,118 +1,167 @@
-<ns-box data-title="{{isEditMode ? 'attribute.detail.t1' : 'attribute.detail.t2'}}" title-icon="fa fa-align-center fa-lg" close-href="#/{{_type}}/attributes">
+<ns-box data-title="{{isEditMode ? 'attribute.detail.t1' : 'attribute.detail.t2'}}"
+    title-icon="fa fa-align-center fa-lg" close-href="#/{{_type}}/attributes">
     <form name="form" class="form-horizontal" role="form" ng-submit="save(attribute)">
-        <ns-buttons ng-show="backUrl" is-edit-mode="isEditMode" remove="removeAttribute(attribute)" save-and-quit="save(attribute, true)"
-                    disable-save="disableSave" return-path="/{{backUrl}}" form="form">
+        <ns-buttons ng-show="backUrl" is-edit-mode="isEditMode" remove="removeAttribute(attribute)"
+            save-and-quit="save(attribute, true)" disable-save="disableSave" return-path="/{{backUrl}}" form="form">
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-            <div class="form-group">
-                <label for="code" class="col-sm-3 control-label" translate>attribute.detail.code</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" id="code" translate translate-attr-placeholder='attribute.detail.ph1'
-                           ng-model="attribute.code" ng-disabled="isEditMode" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="name" class="col-sm-3 control-label" translate>attribute.detail.nom</label>
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" id="name" ng-model="attribute.translation[lang].name" required>
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label for="type" class="col-sm-3 control-label" translate>attribute.detail.type</label>
-                <div class="col-sm-6">
-                    <select class="form-control" name="type" id="type" ng-model="attribute.type" ng-disabled="isEditMode" ng-selected="attribute.type" required>
-                        <option value="" translate>attribute.detail.choixTypeAttribut</option>
-                        <option value="textfield" translate>attribute.detail.champTexte</option>
-                        <option value="textarea" translate>attribute.detail.zoneTexte</option>
-                        <option value="date" translate>attribute.detail.date</option>
-                        <option value="bool" translate>attribute.detail.booleen</option>
-                        <option value="list" translate>attribute.detail.listeDeroulante</option>
-                        <option value="multiselect" translate>attribute.detail.selectionMultiple</option>
-                        <option value="interval" translate>attribute.detail.intervalle</option>
-                        <option value="image" translate>attribute.detail.image</option>
-                        <option value="video" translate>attribute.detail.video</option>
-                        <option value="doc/pdf" translate>attribute.detail.fichierPDF</option>
-                        <option value="number" translate>attribute.detail.nombre</option>
-                        <option ng-show="_type === 'products'" value="color" translate>attribute.detail.color</option>
-                    </select>
+            <div hook-attribute-detail data="attribute">
+
+                <div class="form-group">
+                    <label for="code" class="col-sm-3 control-label" translate>attribute.detail.code</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="code" translate
+                            translate-attr-placeholder='attribute.detail.ph1' ng-model="attribute.code"
+                            ng-disabled="isEditMode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="col-sm-3 control-label" translate>attribute.detail.nom</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="name" ng-model="attribute.translation[lang].name"
+                            required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="type" class="col-sm-3 control-label" translate>attribute.detail.type</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" name="type" id="type" ng-model="attribute.type"
+                            ng-disabled="isEditMode" ng-selected="attribute.type" required>
+                            <option value="" translate>attribute.detail.choixTypeAttribut</option>
+                            <option value="textfield" ng-show="!attribute.isVariantable" translate>attribute.detail.champTexte</option>
+                            <option value="textarea" ng-show="!attribute.isVariantable" translate>attribute.detail.zoneTexte</option>
+                            <option value="date" ng-show="!attribute.isVariantable" translate>attribute.detail.date</option>
+                            <option value="bool" ng-show="!attribute.isVariantable" translate>attribute.detail.booleen</option>
+                            <option value="list" translate>attribute.detail.listeDeroulante</option>
+                            <option value="multiselect" translate>attribute.detail.selectionMultiple</option>
+                            <option value="interval" ng-show="!attribute.isVariantable" translate>attribute.detail.intervalle</option>
+                            <option value="image" ng-show="!attribute.isVariantable" translate>attribute.detail.image</option>
+                            <option value="video" ng-show="!attribute.isVariantable" translate>attribute.detail.video</option>
+                            <option value="doc/pdf" ng-show="!attribute.isVariantable" translate>attribute.detail.fichierPDF</option>
+                            <option value="number" ng-show="!attribute.isVariantable" translate>attribute.detail.nombre</option>
+                            <option ng-show="_type === 'products'" value="color" ng-hide="attribute.isVariantable" translate>attribute.detail.color</option>
+                            <option ng-show="_type === 'products'" value="listcolor" translate>attribute.detail.listcolor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label for="position" class="col-sm-3 control-label" translate>attribute.detail.posFichePdt</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" id="position" translate
+                            translate-attr-placeholder='attribute.detail.ph2' ng-model="attribute.position">
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'users'">
+                    <label for="param" class="col-sm-3 control-label" translate>attribute.detail.paramUser</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" name="param" id="param" ng-model="attribute.param"
+                            ng-selected="attribute.param">
+                            <option value="Non" translate>attribute.detail.non</option>
+                            <option value="Oui" translate>attribute.detail.oui</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="attribute.type === 'bool'">
+                    <label for="param" class="col-sm-3 control-label" translate>attribute.detail.valeurDefaut</label>
+                    <div class="col-sm-6">
+                        <ns-switch name="default_value" ng-model="attribute.default_value"></ns-switch>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.presJeuxAttr</label>
+                    <div class="col-sm-6">
+                        <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" ng-change="changeSetAttributes()" multiple>
+                            <option ng-repeat="setAtt in setAttributes track by setAtt.code" value="{{setAtt._id}}"
+                                ng-selected="attribute.set_attributes.indexOf(setAtt._id) > -1">{{setAtt.name}}
+                                (Code : {{setAtt.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.parentsAttr</label>
+                    <div class="col-sm-6">
+                        <select name="parents" class="form-control" ng-model="attribute.parents" multiple>
+                            <option ng-repeat="parentAtt in parentsAttributesList track by parentAtt.code" value="{{parentAtt._id}}"
+                                ng-selected="attribute.parents.indexOf(parentAtt._id) > -1">{{parentAtt.translation[lang].name}}
+                                (Code : {{parentAtt.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.dispoCatAuto</label>
+                    <div class="col-sm-6">
+                        <ns-switch name="used_in_rules" ng-model="attribute.usedInRules"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" style="margin-left: -15px"
+                        translate>attribute.detail.dispoFiltresAuto</label>
+                    <i style="float:left" class="fa fa-question-circle"
+                        popover="{{'attribute.detail.infoDispoFiltres' | translate}}" popover-trigger="mouseenter"
+                        aria-hidden="true"></i>
+                    <div class="col-sm-6">
+                        <ns-switch name="used_in_filters" ng-model="attribute.usedInFilters"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" style="margin-left: -15px"
+                        translate>attribute.detail.dispoSearchPage</label>
+                    <i style="float:left" class="fa fa-question-circle"
+                        popover="{{'attribute.detail.infoDispoSearchPage' | translate}}" popover-trigger="mouseenter"
+                        aria-hidden="true"></i>
+                    <div class="col-sm-6">
+                        <ns-switch name="used_in_search_page" ng-model="attribute.usedInSearch"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.visible</label>
+                    <div class="col-sm-6">
+                        <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
+                    </div>
                 </div>
             </div>
-            <div class="form-group" ng-show="_type === 'products'">
-                <label for="position" class="col-sm-3 control-label" translate>attribute.detail.posFichePdt</label>
+            <div class="form-group" ng-if="_type === 'products' && (['list', 'multiselect', 'listcolor']).includes(attribute.type)">
+                <label class="col-sm-3 control-label" translate>attribute.detail.allowDeclinaison</label>
                 <div class="col-sm-6">
-                    <input type="number" class="form-control" id="position"  translate translate-attr-placeholder='attribute.detail.ph2' ng-model="attribute.position">
-                </div>
-            </div>
-            <div class="form-group" ng-show="_type === 'products'">
-                <label for="param" class="col-sm-3 control-label" translate>attribute.detail.paramUser</label>
-                <div class="col-sm-6">
-                    <select class="form-control" name="param" id="param" ng-disabled="true" ng-model="attribute.param" ng-selected="attribute.param">
-                        <option value="Non" translate>attribute.detail.non</option>
-                        <option value="Oui" translate>attribute.detail.oui</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group" ng-if="attribute.type === 'bool'">
-                <label for="param" class="col-sm-3 control-label" translate>attribute.detail.valeurDefaut</label>
-                <div class="col-sm-6">
-                    <ns-switch name="default_value" ng-model="attribute.default_value"></ns-switch>
-                </div>
-            </div>
-            <!--<div class="form-group" ng-if="oneSetAttr">
-                <label class="col-sm-3 control-label" translate>attribute.detail.jeuAttrLie {{ setName }}</label>
-            </div>-->
-            <div class="form-group">
-                <label class="col-sm-3 control-label" translate>attribute.detail.presJeuxAttr</label>
-                <div class="col-sm-6">
-                    <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" multiple>
-                        <option ng-repeat="setAtt in setAttributes" value="{{setAtt._id}}" ng-selected="attribute.set_attributes.indexOf(setAtt._id) > -1">{{setAtt.name}} (Code : {{setAtt.code}})
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group" ng-show="_type === 'products'">
-                <label class="col-sm-3 control-label" translate>attribute.detail.dispoCatAuto</label>
-                <div class="col-sm-6">
-                    <ns-switch name="used_in_rules" ng-model="attribute.usedInRules"></ns-switch>
-                </div>
-            </div>
-            <div class="form-group" ng-show="_type === 'products'">
-                <label class="col-sm-3 control-label" style="margin-left: -15px" translate>attribute.detail.dispoFiltresAuto</label>
-                <i style="float:left" class="fa fa-question-circle" popover="{{'attribute.detail.infoDispoFiltres' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
-                <div class="col-sm-6">
-                    <ns-switch name="used_in_filters" ng-model="attribute.usedInFilters"></ns-switch>
-                </div>
-            </div>
-            <div class="form-group" ng-show="_type === 'products'">
-                <label class="col-sm-3 control-label" translate>attribute.detail.visible</label>
-                <div class="col-sm-6">
-                    <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
+                    <ns-switch name="isVariantable" ng-model="attribute.isVariantable"></ns-switch>
                 </div>
             </div>
             <div ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
-            <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
+            <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect' || attribute.type === 'listcolor'" class="form-group">
                 <label for="type" class="col-sm-3 control-label" translate>attribute.detail.valeurs</label>
                 <div class="col-sm-6">
                     <div class="row form-group" ng-repeat="value in attribute.translation[lang].values track by $index">
-                        <div class="col-sm-6">
-                            <input class="form-control" type="text" ng-model="attribute.translation[lang].values[$index]">
+                        <div class="col-sm-6" ng-show="attribute.type !== 'listcolor'">
+                            <input class="form-control" type="text"
+                                ng-model="attribute.translation[lang].values[$index]">
+                        </div>
+                        <div class="col-sm-6" ng-if="attribute.type === 'listcolor'">
+                            <color-picker name="value-color-{{$index}}" ng-model="attribute.translation[lang].values[$index]" options="{'format': 'hexString'}"></color-picker>
                         </div>
 
                         <div class="col-sm-2">
                             <button type="button"
-                                    style="background: #e34925; color: #ffffff; font-weight: bold; font-size: 21px; border: 0; padding: 4px 9px; line-height: 100%; vertical-align: middle;"
-                                    ng-click="removeValue($index)">-
+                                style="background: #e34925; color: #ffffff; font-weight: bold; font-size: 21px; border: 0; padding: 4px 9px; line-height: 100%; vertical-align: middle;"
+                                ng-click="removeValue($index)">-
                             </button>
                         </div>
                     </div>
 
                     <div class="row form-group">
                         <div class="col-sm-12">
-                            <button class="btn btn-default" type="button" ng-click="addValue()" translate>attribute.detail.addValeur</button>
-                            <label ng-show="valuesError" class="btn" style="cursor: default; color: #ff0000;">{{valuesError}}</label>
+                            <button class="btn btn-default" type="button" ng-click="addValue()"
+                                translate>attribute.detail.addValeur</button>
+                            <label ng-show="valuesError" class="btn"
+                                style="cursor: default; color: #ff0000;">{{valuesError}}</label>
                         </div>
                     </div>
                 </div>
+            </div>
+
             </div>
         </ns-buttons>
     </form>

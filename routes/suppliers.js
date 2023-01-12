@@ -1,20 +1,21 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const ServiceSuppliers = require('../services/suppliers');
-const {adminAuth}      = require('../middleware/authentication');
+const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 
 /* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/suppliers', adminAuth, listSuppliers);
-    app.post('/v2/supplier', adminAuth, getSupplier);
-    app.put('/v2/supplier', adminAuth, saveSupplier);
-    app.delete('/v2/supplier/:id', adminAuth, deleteSupplier);
+    app.post('/v2/suppliers', adminAuthRight('suppliers'), listSuppliers);
+    app.post('/v2/supplier', adminAuthRight('suppliers'), getSupplier);
+    app.put('/v2/supplier', adminAuthRight('suppliers'), autoFillCode, saveSupplier);
+    app.delete('/v2/supplier/:id', adminAuthRight('suppliers'), deleteSupplier);
 };
 /* eslint-enable no-use-before-define */
 

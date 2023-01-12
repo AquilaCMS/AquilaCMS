@@ -21,7 +21,7 @@
             </div>
             <br/>
             <div class="tab-content">
-                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'">
+                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'" hook-shipment-detail data="shipment">
 
                     <div class="form-group">
                         <label for="name" class="col-sm-2 control-label" translate>paymentMethod.detail.actif</label>
@@ -36,7 +36,7 @@
                             <input type="text" class="form-control" id="code" translate translate-attr-placeholder='shipment.detail.ph1'
                                 ng-model="shipment.code"
                                 name="code"
-                                required>
+                                >
                         </div>
                     </div>
                     <div class="form-group">
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="preparationtime" class="col-sm-2 control-label" translate>shipment.detail.trait</label>
+                        <label for="preparationtime" class="col-sm-2 control-label" translate>shipment.detail.traitement</label>
                         <div class="col-sm-6 col-lg-2">
                             <input name="delay" type="number" class="form-control" min="0" id="preparationtime" ng-model="shipment.preparation.delay">
                         </div>
@@ -99,7 +99,7 @@
                     <div bind-html-compile="shipment.component_template"></div>
                 </div>
 
-                <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">
+                <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'" hook-shipment-detail-country data="shipment">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -154,7 +154,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'">
+                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'" hook-shipment-detail-price data="shipment">
                     <table class="table table-striped">
                         <thead>
                             <tr>

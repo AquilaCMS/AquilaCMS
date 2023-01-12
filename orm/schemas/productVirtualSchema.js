@@ -1,15 +1,14 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
-const reviewService        = require('../../services/reviews');
-const aquilaEvents         = require('../../utils/aquilaEvents');
+const {aquilaEvents}       = require('aql-utils');
 const Schema               = mongoose.Schema;
 
 const ProductVirtualSchema = new Schema({
@@ -21,20 +20,6 @@ const ProductVirtualSchema = new Schema({
     toJSON           : {virtuals: true},
     id               : false
 });
-
-ProductVirtualSchema.methods.updateData = async function (data) {
-    data.price.priceSort = {
-        et  : data.price.et.special || data.price.et.normal,
-        ati : data.price.ati.special || data.price.ati.normal
-    };
-    reviewService.computeAverageRateAndCountReviews(data);
-    try {
-        const updPrd = await this.model('virtual').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-        return updPrd;
-    } catch (error) {
-        return error;
-    }
-};
 
 ProductVirtualSchema.methods.addToCart = async function (cart, item, user, lang) {
     item.type   = 'virtual';

@@ -28,13 +28,21 @@ class PageCart extends NSPageCart {
                         <title>{sitename} | {t('cart:page.title')}</title>
                         <meta property="og:type" content="website" />
                     </Head>
+                    <div className="page-content">
+                    <div className="intro">
+                                        <div className="intro__content">
+                                            <div className="shell">
+                                                <h1 style={{textTransform: 'uppercase'}}>{t('cart:page.header.title')}</h1>
+                                            </div>
+                                        </div>
+                                    </div>
                     <div className="main">
                         <div className="shell">
                             <section className="section-shopping-cart">
                                 <header className="section__head section__head--mobile-flex">
-                                    <h1>
+                                    {/* <h1>
                                         <i className="ico-shopping-cart-large hidden-xs" />{t('cart:page.header.title')}
-                                    </h1>
+                                    </h1> */}
                                     <button type="submit" className="btn btn--red visible-xs-block" onClick={() => this.validateCart(Router)}>{t('cart:page.header.link')}</button>
                                 </header>
                                 {/* <!-- /.section__head --> */}
@@ -91,7 +99,7 @@ class PageCart extends NSPageCart {
                                                                     <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.canonical)}>
                                                                         <div className="product__image">
                                                                             <button style={{ border: '0', background: 'transparent', height: '100%' }} type="button">
-                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
+                                                                                <img src={`/images/${item.selected_variant ? 'productsVariant' : 'products'}/196x173/${item.image}/${item.code}.jpg`} alt={imgAlt} />
                                                                             </button>
                                                                         </div>
                                                                         {/* <!-- /.product__image --> */}
@@ -359,6 +367,7 @@ class PageCart extends NSPageCart {
                             </section>
                         </div>
                     </div>
+                </div>
                 </Layout>
             </NSContext.Provider>
         );

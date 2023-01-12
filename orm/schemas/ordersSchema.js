@@ -1,13 +1,13 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose          = require('mongoose');
-const aquilaEvents      = require('../../utils/aquilaEvents');
+const {aquilaEvents}    = require('aql-utils');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
@@ -26,7 +26,8 @@ const DeliveryPackageSchema = new Schema({
         selections   : [{
             bundle_section_ref : {type: String},
             products           : [{type: ObjectId, ref: 'products'}]
-        }]
+        }],
+        selected_variant : {}
     }]
 });
 
@@ -215,15 +216,6 @@ OrdersSchema.index({'priceTotal.ati': 1});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
-
-/* OrdersSchema.virtual("delivery.date").get(function () {
-    if (this.delivery.dateDelivery !== undefined && this.delivery.dateDelivery.delayPreparation && this.delivery.dateDelivery.delayPreparation) {
-        const mDate = moment(new Date()).add(this.delivery.dateDelivery.delayPreparation, this.delivery.dateDelivery.unitPreparation);
-        mDate.add(this.delivery.dateDelivery.delayDelivery, this.delivery.dateDelivery.unitDelivery);
-        return mDate;
-    }
-    return null;
-}); */
 
 const docArray = OrdersSchema.path('items');
 

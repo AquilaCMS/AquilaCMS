@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -45,7 +45,10 @@ const initAgendaDB = async () => {
                 'Clean cache',
                 'Remove temp file',
                 'Remove previews',
-                'Mail to pending carts'
+                'Mail to pending carts',
+                'Delete orders\' failed payments',
+                'RGPD bills',
+                'RGPD users'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
             // If a "system" job does not exist in the database then it is created
@@ -80,6 +83,15 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
+                        } else if (tJobsSystem[i] === 'Delete orders\' failed payments') {
+                            await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/payments/deleteFailedPayment', {
+                                fr : 'Supprime les anciens paiements echoués des anciennes commandes',
+                                en : 'Remove failed payments from old orders'
+                            }, 'service', 'system', '', true, '');
+                        } else if (tJobsSystem[i] === 'RGPD bills') {
+                            await setJob(undefined, tJobsSystem[15], '* * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'RGPD users') {
+                            await setJob(undefined, tJobsSystem[16], '* * 1 * * *', '/services/rgpd/checkLastConnexion', {fr: 'Anonymise les utilisateurs inactifs de plus de 3 ans pour le RGPD', en: 'Anonymizes inactive users older than 3 years for RGPD'}, 'service', 'system', '', true);
                         }
                     } catch (error) {
                         console.error(error);

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -12,8 +12,8 @@ const cors                            = require('cors');
 const express                         = require('express');
 const helmet                          = require('helmet');
 const morgan                          = require('morgan');
-const multer                          = require('multer');
 const path                            = require('path');
+const multer                          = require('multer');
 const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
@@ -48,7 +48,9 @@ const serverUseRequest = async (req, res, next) => {
 
         if (json) {
             let lang = global.defaultLang;
-            if (req.body && req.body.lang) {
+            if (req.headers && req.headers.lang) {
+                lang = req.headers.lang;
+            } else if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
             json = translation.translateDocument(json, lang, keepOriginalAttribs);
@@ -177,14 +179,6 @@ const initExpress = async (server, passport) => {
         next();
     });
 
-    const storage = multer.diskStorage({
-        destination : path.resolve(photoPath, 'temp'),
-        filename(req, file, cb) {
-            cb(null, uuidv1() + path.extname(file.originalname));
-        }
-    });
-
-    server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
         require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
         JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
@@ -259,14 +253,35 @@ const restrictProductFields = (element, url) => {
             }
         }
     } else if (url.includes('v2/product')) {
-        for (const restrictedProductField of productsRestrictedFields) {
-            deletePropertyPath(element, restrictedProductField);
-        }
-        if (element.associated_prds && element.associated_prds.length && typeof element.associated_prds[0] !== 'string') {
-            for (const associated_prd of element.associated_prds) {
+        if (element.datas) {
+            for (const item of element.datas) {
                 for (const restrictedProductField of productsRestrictedFields) {
-                    deletePropertyPath(associated_prd, restrictedProductField);
+                    deletePropertyPath(item, restrictedProductField);
                 }
+                if (item.associated_prds && item.associated_prds.length && typeof item.associated_prds[0] !== 'string') {
+                    for (const associated_prd of item.associated_prds) {
+                        for (const restrictedProductField of productsRestrictedFields) {
+                            deletePropertyPath(associated_prd, restrictedProductField);
+                        }
+                    }
+                }
+                if (item.stats) {
+                    delete item.stats;
+                }
+            }
+        } else {
+            for (const restrictedProductField of productsRestrictedFields) {
+                deletePropertyPath(element, restrictedProductField);
+            }
+            if (element.associated_prds && element.associated_prds.length && typeof element.associated_prds[0] !== 'string') {
+                for (const associated_prd of element.associated_prds) {
+                    for (const restrictedProductField of productsRestrictedFields) {
+                        deletePropertyPath(associated_prd, restrictedProductField);
+                    }
+                }
+            }
+            if (element.stats) {
+                delete element.stats;
             }
         }
     }

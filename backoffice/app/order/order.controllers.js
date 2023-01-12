@@ -94,15 +94,15 @@ OrderControllers.controller("OrderListCtrl", [
         }
         init();
 
-        $("#query-date").datepicker({
-            dateFormat: "dd/mm/yy", onClose: function (date)
-            {
-                $scope.$apply(function ()
-                {
-                    $scope.queryDate = new Date(date.substr(6, 4), date.substr(3, 2) - 1, date.substr(0, 2)).toISOString();
-                });
-            }
-        });
+        // $("#query-date").datepicker({
+        //     dateFormat: "dd/mm/yy", onClose: function (date)
+        //     {
+        //         $scope.$apply(function ()
+        //         {
+        //             $scope.queryDate = new Date(date.substr(6, 4), date.substr(3, 2) - 1, date.substr(0, 2)).toISOString();
+        //         });
+        //     }
+        // });
 
         $scope.goToOrderDetails = function (orderId)
         {
@@ -806,6 +806,7 @@ OrderControllers.controller("PackagesNewCtrl", [
                 let productToPush = {
                     product_id: $scope.order.items[i].id,
                     product_code: $scope.order.items[i].code,
+                    selected_variant: $scope.order.items[i].selected_variant,
                     qty_returned: qty_returned,
                     qty_shipped: qty_shipped,
                     qty_delivered: $scope.order.items[i].quantity < qty_shipped ? 0 : $scope.order.items[i].quantity - qty_shipped

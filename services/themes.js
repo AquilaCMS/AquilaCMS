@@ -1,19 +1,22 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose                     = require('mongoose');
 const path                         = require('path');
+const slash                        = require('slash');
 const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
+const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
+const packageManager               = require('../utils/packageManager');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -38,9 +41,10 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
-            await require('./modules').setFrontModules(selectedTheme);
+            await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
-        } if (type === 'after') {
+        }
+        if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             await updateService.setMaintenance(false);
             returnObject.msg = 'OK';
@@ -199,15 +203,13 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     }
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
-    if (!(await fs.hasAccess(path.join(themeDemoData, 'files')))) {
-        throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
-    }
-    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
-        throw new Error(`"${photoPath}" is not writable`);
-    }
+
     for (const value of listOfFile) {
-        if ((await fs.lstat(value)).isDirectory()) {
+        if ((await fs.lstat(value)).isDirectory()) { // Only for the "files"
             if (value.endsWith('files') && override) {
+                if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
+                    throw new Error(`"${photoPath}" is not writable`);
+                }
                 await fs.copyRecursive(value, photoPath, override);
             }
             continue;
@@ -238,7 +240,6 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
                         await model.deleteMany({});
                     }
                     const result = await model.insertMany(file.datas, null, null);
-                    // console.log(`insertion of ${file.collection} in database`);
                     data.push({
                         collection : `${file.collection}`,
                         data       : [...result]
@@ -342,8 +343,14 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        const isDynamicFileHere = await generateDynamicLangFile(theme);
-        if (isDynamicFileHere === 'OK') {
+        // To let the theme manage the languages, it must come with a "languageInit.js" file
+        const isLanguageInitHere = await languageInitExec(theme);
+        // If there is no "languageInit.js" file, the language management will go through the "dynamic_lang.js" file which will be created at the root of the theme
+        let isDynamicFileHere = 'KO';
+        if (isLanguageInitHere !== 'OK') {
+            isDynamicFileHere = await generateDynamicLangFile(theme);
+        }
+        if (isDynamicFileHere === 'OK' || isLanguageInitHere === 'OK') {
             const returnValues = await themesUtils.yarnBuildCustom(theme);
             if (returnValues?.stdout === 'Build failed') {
                 return {
@@ -358,8 +365,57 @@ async function buildTheme(theme) {
         }
         return {
             msg    : 'KO',
-            result : 'No dynamic lang file'
+            result : 'No lang file'
         };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+}
+
+async function languageManagement(theme = global.envConfig.environment.currentTheme) {
+    const pathToTheme = path.join(global.appRoot, 'themes', theme, '/');
+    if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
+        await languageInitExec(theme);
+    } else {
+        await ServiceLanguages.createDynamicLangFile(theme);
+    }
+    return 'OK';
+}
+
+async function languageInitExec(theme = global.envConfig.environment.currentTheme) {
+    let returnValues;
+    try {
+        const pathToTheme        = path.join(global.appRoot, 'themes', theme);
+        const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
+        const isExist            = await fs.existsSync(pathToLanguageInit);
+        if (isExist) {
+            const langs = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100, structure: {code: 1, position: 1}});
+
+            const sortedLangs = langs.datas.sort((a, b) => {
+                if (a.position < b.position) {
+                    return -1;
+                }
+                if (a.position > b.position) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            const tabLang     = sortedLangs.map((_lang) => _lang.code);
+            const defaultLang = await ServiceLanguages.getDefaultLang();
+            returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
+            if (returnValues.stderr === '') {
+                console.log('Language init exec log : ', returnValues.stdout);
+            } else {
+                returnValues.stdout = 'Language init exec failed';
+                console.error(returnValues.stderr);
+            }
+            return 'OK';
+        }
+        return 'KO';
     } catch (err) {
         return {
             msg   : 'KO',
@@ -376,8 +432,7 @@ async function generateDynamicLangFile(theme) {
         const isExist            = await fs.existsSync(pathToDynamicLangs);
         if (!isExist) {
             // Create the file if not exist
-            const {createDynamicLangFile} = require('./languages');
-            await createDynamicLangFile(theme);
+            await ServiceLanguages.createDynamicLangFile(theme);
         }
         return 'OK';
     } catch (err) {
@@ -444,5 +499,6 @@ module.exports = {
     loadTranslation,
     listTheme,
     getDemoDatasFilesName,
-    installTheme
+    installTheme,
+    languageManagement
 };

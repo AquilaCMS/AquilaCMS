@@ -3,7 +3,7 @@
   "datas": [
     {
       "enabled": true,
-      "usedInFilters": true,
+      "usedInFilters": false,
       "_id": "5da09f77db0b3834cf91a506",
       "location": "TOP_LEFT",
       "code": "LoveIt",

@@ -1,6 +1,7 @@
 {
     "deleteCustomer": "Are you sure you want to delete this customer? His orders will not be deleted  !",
     "removeAttribute": "Are you sure you want to delete this attribute ?",
+    "removeVariantAttribute": "Are you sure you want to delete this attribute ? Please note that the variant lists of the products concerned will be deleted !",
     "removeSetAttribute": "Are you sure you want to remove this set of attributes ?",
     "fileAttachedNotSaved": "The attachment is not saved, are you sure you want to continue ?",
     "changesNotSaved": "Unsaved changes will be lost. Are you sure you want to leave this page ?",

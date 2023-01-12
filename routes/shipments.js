@@ -1,22 +1,23 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const ServiceShipment      = require('../services/shipment');
 const {middlewareServer}   = require('../middleware');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.put('/v2/shipment', adminAuth, setShipment);
-    app.delete('/v2/shipment/:id', adminAuth, deleteShipment);
+    app.put('/v2/shipment', adminAuthRight('shipments'), autoFillCode, setShipment);
+    app.delete('/v2/shipment/:id', adminAuthRight('shipments'), deleteShipment);
 
     // Deprecated
     app.post('/v2/shipments/fee', middlewareServer.deprecatedRoute, getEstimatedFee);

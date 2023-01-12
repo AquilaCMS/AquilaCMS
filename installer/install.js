@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -90,7 +90,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile('default_theme');
+        await require('../services/themes').languageManagement('default_theme');
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -174,6 +174,7 @@ const createConfiguration = async (datas, bOverride) => {
             bookingStock              : 'none'
         },
         taxerate : [
+            {rate: 0},
             {rate: 2.1},
             {rate: 5.5},
             {rate: 10.0},

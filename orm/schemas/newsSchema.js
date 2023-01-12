@@ -1,16 +1,16 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
 const utils               = require('../../utils/utils');
 const utilsDatabase       = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
-const aquilaEvents        = require('../../utils/aquilaEvents');
 const translation         = require('../../utils/translation');
 const Schema              = mongoose.Schema;
 
@@ -23,15 +23,6 @@ const NewsSchema = new Schema({
     timestamps : true,
     id         : false
 });
-
-/* translation:
- slug: unique
- title
- content: {
- resume
- text
- }
- */
 
 NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
@@ -99,5 +90,7 @@ NewsSchema.pre('save', async function (next) {
 NewsSchema.post('save', async function (doc) {
     aquilaEvents.emit('aqNewArticle', doc);
 });
+
+aquilaEvents.emit('newsSchemaInit', NewsSchema);
 
 module.exports = NewsSchema;

@@ -1,17 +1,16 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const helper       = require('../../utils/utils');
-const NSErrors     = require('../../utils/errors/NSErrors');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const Schema       = mongoose.Schema;
-const {ObjectId}   = Schema.Types;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const NSErrors       = require('../../utils/errors/NSErrors');
+const Schema         = mongoose.Schema;
+const {ObjectId}     = Schema.Types;
 
 const ProductBundleSchema = new Schema({
     qty             : {type: Number},
@@ -53,20 +52,6 @@ const ProductBundleSchema = new Schema({
     return this.stock.qty - this.stock.qty_booked;
 }); */
 
-ProductBundleSchema.methods.updateData = async function (data) {
-    const updatedData           = data;
-    updatedData.price.priceSort = {
-        et  : updatedData.price.et.special || updatedData.price.et.normal,
-        ati : updatedData.price.ati.special || updatedData.price.ati.normal
-    };
-    if (updatedData.autoSlug) {
-        // On met à jour le slug du produit
-        updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
-    }
-    const updPrd = await this.model('bundle').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
-    return updPrd;
-};
-
 ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) {
     if (!item.selections) {
         throw NSErrors.ProductInvalid;
@@ -94,10 +79,10 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
                 const selectionProduct = await this.model('products').findOne({_id: selectionProducts[j]});
                 if (selectionProduct.type === 'simple') {
                     if (
-                        !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, item.quantity)).ordering.orderable
-                        || !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, item.quantity))
+                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity, item.selected_variant)).ordering.orderable
+                        || !(await ServicesProducts.checkProductOrderable(item.stock, null, item.selected_variant))
                     ) throw NSErrors.ProductNotOrderable;
-                    await ServicesProducts.updateStock(selectionProduct._id, -item.quantity);
+                    await ServicesProducts.updateStock(selectionProducts[j], -item.quantity, undefined, item.selected_variant);
                 }
             }
         }
@@ -178,6 +163,7 @@ function validateBySection(bundle_section, item) {
 
     switch (bundle_section.type) {
     case 'SINGLE':
+    case 'VIRTUAL':
         // On vérifie que le client n'a sélectionné qu'un produit et que ce produit est dans la liste des choix
         return selection.products.length === 1 && bundle_section.products.find(function (product) {
             return product.id.toString() === selection.products[0];
@@ -201,11 +187,6 @@ function validateBySection(bundle_section, item) {
         }
 
         return i === selection.products.length;
-    case 'VIRTUAL':
-        // On vérifie que le client n'a sélectionné qu'un produit et que ce produit est dans la liste des choix
-        return selection.products.length === 1 && bundle_section.products.find(function (product) {
-            return product.id.toString() === selection.products[0];
-        }) !== undefined;
     default:
         break;
     }

@@ -1,12 +1,13 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
 const fs                = require('../../utils/fsp');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
@@ -14,7 +15,6 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 const utils             = require('../../utils/utils');
-const aquilaEvents      = require('../../utils/aquilaEvents');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -85,10 +85,6 @@ const CartSchema = new Schema({
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
 
-/* CartSchema.pre('findOneAndUpdate', function () {
- this.findOneAndUpdate({},{ $set: { updated: Date.now() } });
- }); */
-
 const itemsSchema = CartSchema.path('items');
 
 itemsSchema.discriminator('simple', ItemSimpleSchema);
@@ -101,7 +97,7 @@ CartSchema.methods.calculateBasicTotal = function () {
     for (let i = 0, l = cart.items.length; i < l; i++) {
         const item = cart.items[i];
 
-        if (item.get('price.special.ati') !== undefined) {
+        if ((item.get && item.get('price.special.ati') !== undefined) || (item.price.special && item.price.special.ati)) {
             if (item.price.special === undefined || item.price.special.ati === undefined) {
                 item.price.special = {
                     et  : item.id.price.et.special,
@@ -133,7 +129,6 @@ CartSchema.virtual('delivery.price').get(function () {
 });
 
 CartSchema.virtual('additionnalFees').get(function () {
-    // const self = this;
     const {et, tax} = global.envConfig.stockOrder.additionnalFees;
     return {
         ati : Number(et + (et * (tax / 100))),
@@ -189,7 +184,6 @@ CartSchema.virtual('priceTotal').get(function () {
 });
 
 CartSchema.virtual('priceSubTotal').get(function () {
-    // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;

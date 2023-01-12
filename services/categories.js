@@ -1,12 +1,13 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose         = require('mongoose');
+const path             = require('path');
 const {
     Categories,
     Products,
@@ -14,7 +15,9 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
+const fsp              = require('../utils/fsp');
 const ServiceRules     = require('./rules');
+const ServiceCache     = require('./cache');
 const ServiceLanguages = require('./languages');
 
 const restrictedFields = ['clickable'];
@@ -23,12 +26,113 @@ const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultF
 
 const getCategories = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const generateFilters = async (res, lang = '') => {
-    lang = ServiceLanguages.getDefaultLang(lang);
+const populateAttributesValues = (attr, lang, valuesArray) => {
+    if (attr.translation && attr.translation[lang]) {
+        const value = attr.translation[lang].value;
+
+        if (!valuesArray[attr.id]) {
+            valuesArray[attr.id] = [];
+        }
+
+        if (value && typeof value === 'object' && value.length > 0) {
+            for (let i = 0; i < value.length; i++) {
+                if (valuesArray[attr.id].includes(value[i]) === false) {
+                    valuesArray[attr.id].push(value[i]);
+                }
+            }
+        } else {
+            if (valuesArray[attr.id].includes(value) === false) {
+                valuesArray[attr.id].push(value);
+            }
+        }
+    }
+};
+
+// Sort and clean the array (distinct and sort)
+const sortAndCleanAttributesValues = (values, selectedAttributes, res, parentsOfEachAttr) => {
+    let isEmpty         = true;
+    let isValueSelected = false;
+
+    for (const key in values) {
+        if (!values.hasOwnProperty(key)) continue;
+        isEmpty            = false;
+        const obj          = values[key];
+        values[key]        = obj.sort((a, b) => {
+            if (a > b) return 1;
+            if (a < b) return -1;
+            return 0;
+        }).filter((value, index, self) => self.findIndex((o) => o === value) === index);
+        const tValuesValid = [];
+        values[key].forEach((value) => {
+            if (value !== '' && value !== undefined && value !== null && typeof value !== 'object') {
+                tValuesValid.push(value);
+            }
+        });
+        values[key] = tValuesValid;
+
+        // If a filter has no value selected and has less than two different values it is not displayed
+        let isSelected        = false;
+        let isAParentSelected = false;
+        for (let i = 0; i < selectedAttributes.length; i++) {
+            if (selectedAttributes[i].id === key) {
+                isSelected      = true;
+                isValueSelected = true;
+            }
+            if (parentsOfEachAttr && Object.keys(parentsOfEachAttr).length !== 0 && parentsOfEachAttr[key]) {
+                const parents = parentsOfEachAttr[key];
+                for (let j = 0; j < parents.length; j++) {
+                    if (parents[j] === selectedAttributes[i].id) isAParentSelected = true;
+                }
+            }
+        }
+
+        if ((parentsOfEachAttr && Object.keys(parentsOfEachAttr).length !== 0 && !isAParentSelected && !isSelected) || (values[key].length < 2 && !isSelected)) {
+            delete values[key];
+            const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
+            if (idx >= 0) {
+                res.filters.attributes.splice(idx, 1);
+            }
+        }
+
+        if (values[key] && values[key].length > 0) {
+            const attribute = res.filters.attributes.find((_attr) => _attr.id_attribut.toString() === key.toString());
+            if (attribute && attribute.type === 'Intervalle') {
+                const min   = Math.min(...values[key]);
+                const max   = Math.max(...values[key]);
+                values[key] = [min, max];
+            }
+        }
+    }
+
+    return {isEmpty, isValueSelected};
+};
+
+const calculateAttributeDisplay = (attrWithoutParents, attrWithParents, parentsOfEachAttr, selectedAttributes, res) => {
+    const resParents = sortAndCleanAttributesValues(attrWithoutParents, selectedAttributes, res);
+    let emptyValues  = resParents.isEmpty;
+
+    // If an attribute has parents, at least one of its parents must have a checked value otherwise it will not appear
+    // If no parents are available we will also display all children
+    let values = attrWithoutParents;
+    if (resParents.isValueSelected || (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object)) {
+        if (Object.keys(attrWithoutParents).length === 0 && attrWithoutParents.constructor === Object) parentsOfEachAttr = {};
+        const resChilds = sortAndCleanAttributesValues(attrWithParents, selectedAttributes, res, parentsOfEachAttr);
+        values          = {...attrWithoutParents, ...attrWithParents};
+
+        if (!emptyValues) emptyValues = resChilds.isEmpty;
+    }
+
+    return {emptyValues, values};
+};
+
+const generateFilters = async (res, lang = '', selectedAttributes = [], isInSearchContext = false) => {
+    lang = await ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
-        const attributes = [];
-        const values     = {};
-        const pictos     = [];
+        const attributes         = [];
+        const attrWithoutParents = {};
+        const attrWithParents    = {};
+        const parentsOfEachAttr  = {};
+        const pictos             = [];
         for (const filter of res.filters.attributes) {
             attributes.push(filter.id_attribut.toString());
         }
@@ -37,8 +141,9 @@ const generateFilters = async (res, lang = '') => {
         // productsList[i].id is an id or a Products : if it's not a Products we populate it
         if (!productsList || (productsList.length && typeof productsList[0] !== 'object')) {
             const category = await Categories.findById(res._id).populate({
-                path  : 'productsList.id',
-                match : {_visible: true, active: true}
+                path   : 'productsList.id',
+                match  : {_visible: true, active: true},
+                select : 'id attributes pictos' // Select minimum properties to improve performance
             }).lean();
             productsList   = category.productsList;
         }
@@ -52,7 +157,7 @@ const generateFilters = async (res, lang = '') => {
                     prd = productsList[i];
                 }
             } else {
-                prd = await Products.findOne({_id: productsList[i].id, active: true, _visible: true}).lean();
+                prd = await Products.findOne({_id: productsList[i].id || productsList[i]._id, active: true, _visible: true}).lean();
             }
 
             if (prd && prd.attributes) {
@@ -63,66 +168,28 @@ const generateFilters = async (res, lang = '') => {
                 }
 
                 for (const attr of prd.attributes) {
-                    if (attributes.includes(attr.id.toString())) {
-                        if (attr.translation && attr.translation[lang]) {
-                            const value = attr.translation[lang].value;
+                    let usedAttr = false;
+                    if (!isInSearchContext) {
+                        usedAttr = true;
+                    } else if (attr.usedInSearch) { // If we are in a search context and the attribute can be used in search
+                        usedAttr = true;
+                    }
 
-                            if (!values[attr.id]) {
-                                values[attr.id] = [];
-                            }
-
-                            if (value && typeof value === 'object' && value.length > 0) {
-                                for (let i = 0; i < value.length; i++) {
-                                    if (values[attr.id].includes(value[i]) === false) {
-                                        values[attr.id].push(value[i]);
-                                    }
-                                }
-                            } else {
-                                if (values[attr.id].includes(value) === false) {
-                                    values[attr.id].push(value);
-                                }
-                            }
+                    if (usedAttr && attributes.includes(attr.id.toString())) {
+                        if (!attr.parents || attr.parents.length === 0) {
+                            populateAttributesValues(attr, lang, attrWithoutParents);
+                        } else {
+                            populateAttributesValues(attr, lang, attrWithParents);
+                            parentsOfEachAttr[attr.id] = attr.parents;
                         }
                     }
                 }
             }
         }
+
+        const {emptyValues, values} = calculateAttributeDisplay(attrWithoutParents, attrWithParents, parentsOfEachAttr, selectedAttributes, res);
+
         // If emptyValues then we remove the labels of the filters
-        let emptyValues = true;
-        // Sort the array (distinct and sort)
-        for (const key in values) {
-            if (!values.hasOwnProperty(key)) continue;
-            emptyValues        = false;
-            const obj          = values[key];
-            values[key]        = obj.sort((a, b) => {
-                if (a > b) return 1;
-                if (a < b) return -1;
-                return 0;
-            }).filter((value, index, self) => self.findIndex((o) => o === value) === index);
-            const tValuesValid = [];
-            values[key].forEach((value) => {
-                if (value !== '' && value !== undefined && value !== null && typeof value !== 'object') {
-                    tValuesValid.push(value);
-                }
-            });
-            values[key] = tValuesValid;
-            // If the filter has less than two we will not display the values
-            if (values[key].length < 2) {
-                delete values[key];
-                const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
-                if (idx >= 0) {
-                    res.filters.attributes.splice(idx, 1);
-                }
-            }
-            if (values[key] && values[key].length > 0) {
-                const attribute = res.filters.attributes.find((_attr) => _attr.id_attribut.toString() === key.toString());
-                if (attribute && attribute.type === 'Intervalle') {
-                    const min   = Math.min(...values[key]);
-                    const max   = Math.max(...values[key]);
-                    values[key] = [min, max];
-                }
-            }
-        }
         if (emptyValues) {
             res.filters.attributes = [];
         }
@@ -139,13 +206,29 @@ const generateFilters = async (res, lang = '') => {
 };
 
 const getCategory = async (PostBody, withFilter = null, lang = '') => {
-    lang      = ServiceLanguages.getDefaultLang(lang);
+    lang      = await ServiceLanguages.getDefaultLang(lang);
     const res =  await queryBuilder.findOne(PostBody, true);
     return withFilter ? generateFilters(res, lang) : res;
 };
 
 const setCategory = async (postBody) => {
-    await Categories.updateOne({_id: postBody._id}, {$set: postBody});
+    if (postBody.productsList) {
+        for (let i = postBody.productsList.length - 1; i >= 0; i--) {
+            if (postBody.productsList[i].id == null) {
+                postBody.productsList.splice(i, 1);
+            }
+        }
+    }
+
+    const oldCat = await Categories.findOneAndUpdate({_id: postBody._id}, {$set: postBody}, {new: false});
+    // remove image properly
+    if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
+        const imgPath = path.join(require('../utils/server').getUploadDirectory(), oldCat.img);
+        ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
+        if (await fsp.existsSync(imgPath)) {
+            await fsp.unlinkSync(imgPath);
+        }
+    }
     return Categories.findOne({_id: postBody._id}).lean();
 };
 
@@ -185,56 +268,62 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, user = null) => {
-    const queryCondition = {
-        // ancestors : {$size: 0},
-        code
+const getCategoryTreeForMenu = async (code, user = null, levels = 3) => {
+    const projectionObj     = {
+        _id          : 1,
+        clickable    : 1,
+        action       : 1,
+        children     : 1,
+        displayOrder : 1,
+        code         : 1,
+        translation  : 1,
+        img          : 1,
+        colorName    : 1
     };
+    const projectionOptions = Object.keys(projectionObj).map((key) => `${key}`).join(' ');
 
-    let projectionOptions = {};
-    if (user && !user.isAdmin) {
-        const date          = new Date();
-        queryCondition.$and = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-        childConds.$and     = [
-            {openDate: {$lte: date}},
-            {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
-        ];
-
-        projectionOptions = {
-            canonical_weight : 0,
-            active           : 0,
-            createdAt        : 0,
-            openDate         : 0,
-            ancestors        : 0
+    let match = {};
+    if (!user || !user.isAdmin) {
+        const date = new Date();
+        match      = {
+            isDisplayed : true,
+            active      : true,
+            $and        : [
+                {$or: [{openDate: {$lte: date}}, {openDate: {$eq: undefined}}]},
+                {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
+            ]
         };
     }
 
-    // TODO P5 Manage populate recursion (currently only 3 levels)
+    // Construct query
+    const populatPatern = {
+        path    : 'children',
+        match,
+        options : {sort: {displayOrder: 'asc'}},
+        select  : projectionOptions
+    };
+
+    let queryPopulate = { // Start with the last level
+        ...populatPatern,
+        populate : {
+            path   : 'children',
+            match,
+            select : projectionOptions.replace('children', '') // don't take children in the last level
+        }
+    };
+
+    // Recurcive populate
+    for (let i = levels - 1; i >= 1; i--) { // Start at 1 because we already have the first level, and we already defined the last
+        const lastLevel = i === levels - 1;
+        if (!lastLevel) {
+            queryPopulate = {...populatPatern, populate: {...queryPopulate}};
+        }
+    }
+
     // the populate in the pre does not work
-    return Categories.findOne(queryCondition)
-        .select({productsList: 0, ...projectionOptions})
-        .populate({
-            path     : 'children',
-            match    : childConds,
-            options  : {sort: {displayOrder: 'asc'}},
-            select   : projectionOptions,
-            populate : {
-                path     : 'children',
-                match    : childConds,
-                options  : {sort: {displayOrder: 'asc'}},
-                select   : projectionOptions,
-                populate : {
-                    path     : 'children',
-                    match    : childConds,
-                    options  : {sort: {displayOrder: 'asc'}},
-                    populate : {path: 'children'},
-                    select   : projectionOptions
-                }
-            }
-        })
+    return Categories.findOne({code})
+        .select(projectionObj)
+        .populate(queryPopulate)
         .lean();
 };
 
@@ -246,7 +335,7 @@ const execRules = async () => ServiceRules.execRules('category');
 const execCanonical = async () => {
     try {
         // All active categories
-        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
@@ -258,10 +347,13 @@ const execCanonical = async () => {
             // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
             const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
+            // Don't do populate here, heap of memory on big categories
+            // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
+
             // For each product in this category
-            const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
-            for (let iProduct = 0; iProduct < cat_with_products.productsList.length; iProduct++) {
-                const product = cat_with_products.productsList[iProduct].id;
+            for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
+                const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
+                if (!product) continue;
 
                 // Construction of the slug
                 let bForceForOtherLang = false;
@@ -275,11 +367,15 @@ const execCanonical = async () => {
                         )
                         && typeof product.translation[currentLang] !== 'undefined'
                         && typeof product.translation[currentLang].slug !== 'undefined'
-                    ) { // Le produit existe et on l'a pas déjà traité pour cette langue
-                        await Products.updateOne(
-                            {_id: product._id},
-                            {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
-                        );
+                    ) { // The product exists and we haven't already processed for this language
+                        const finalCanonical = `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`;
+                        // Check if the canonical is not the same
+                        if (product.translation[currentLang]?.canonical !== finalCanonical) {
+                            await Products.updateOne(
+                                {_id: product._id},
+                                {$set: {[`translation.${currentLang}.canonical`]: finalCanonical}}
+                            );
+                        }
                         products_canonicalised.push(product._id.toString());
                         bForceForOtherLang = true; // We passed once, we pass for other languages
                     }
@@ -288,7 +384,7 @@ const execCanonical = async () => {
         }
 
         // Set the canonical to empty for all untreated products
-        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
+        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}}).lean();
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
@@ -306,24 +402,30 @@ const execCanonical = async () => {
     }
 };
 
-const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang) => {
+const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang = '') => {
     // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
     const current_category       = await Categories.findOne({_id: categorie_id}).lean();
-    const defaultLang            = ServiceLanguages.getDefaultLang();
+
+    if (!defaultLang) {
+        defaultLang = await ServiceLanguages.getDefaultLang();
+    }
 
     if (typeof current_category !== 'undefined' && current_category?.active && current_category?.action === 'catalog') { // Usually the root is not taken, so it must be deactivated
         let ancestorsSlug = [];
         if (current_category.ancestors.length > 0) {
             if (current_category.ancestors.length > 1) {
-                console.log('To many ancestors. Please fix it');
+                console.log(`To many ancestors in ${current_category.code}`);
             }
-            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang);
+            ancestorsSlug = await getSlugFromAncestorsRecurcivly(current_category.ancestors[0], tabLang, defaultLang);
         }
 
         for (let iLang = 0; iLang < tabLang.length; iLang++) {
             const currentLang = tabLang[iLang];
             const baseLang    = (defaultLang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
+            if (current_category.translation[currentLang] === undefined) {
+                current_category.translation[currentLang] = {slug: 'NA'};
+            }
             if (typeof ancestorsSlug[currentLang] !== 'undefined') { // we have an ancestor
                 current_category_slugs[currentLang] = `${ancestorsSlug[currentLang]}/${current_category.translation[currentLang].slug}`;
             } else {
@@ -422,7 +524,7 @@ module.exports = {
     getCategory,
     setCategory,
     createCategory,
-    getCategoryChild,
+    getCategoryTreeForMenu,
     execRules,
     execCanonical,
     applyTranslatedAttribs,

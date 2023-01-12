@@ -1,20 +1,20 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}   = require('../middleware/authentication');
-const updateService = require('../services/update');
+const {adminAuthRight} = require('../middleware/authentication');
+const updateService    = require('../services/update');
 
 module.exports = function (app) {
-    app.get('/v2/update/verifying', adminAuth, verifyingUpdate);
-    app.get('/v2/update', adminAuth, update);
-    app.get('/v2/checkChanges', adminAuth, checkChanges);
-    app.get('/v2/checkGithub', adminAuth, checkGithub);
-    app.post('/v2/updateGithub', adminAuth, updateGithub);
+    app.get('/v2/update/verifying', adminAuthRight('update'), verifyingUpdate);
+    app.get('/v2/update', adminAuthRight('update'), update);
+    app.get('/v2/checkChanges', adminAuthRight('update'), checkChanges);
+    app.get('/v2/checkGithub', adminAuthRight('update'), checkGithub);
+    app.post('/v2/updateGithub', adminAuthRight('update'), updateGithub);
 };
 
 /*

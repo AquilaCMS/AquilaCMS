@@ -68,13 +68,15 @@
 
 .nav ul:after { clear: both; }
 
+/* .nav.show { height: auto; max-height: 0px;} */
+
 @media (max-width: 1200px) {
     .nav > ul li a  { padding: 0 15px; }
 }
 
 @media (max-width: 1024px) {
     .nav { position: absolute; top: 0; right: 0; width: 232px; z-index: 2; -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,0.50); box-shadow: 0 0 10px 0 rgba(0,0,0,0.50); visibility: hidden; opacity: 0; -webkit-transition: opacity .4s, visibility .4s; -o-transition: opacity .4s, visibility .4s; transition: opacity .4s, visibility .4s; max-height: calc(100vh - 90px); overflow-y: auto; }
-    .nav.show { visibility: visible; opacity: 1; }
+    .nav.show { visibility: visible; opacity: 1;}
 
     .nav ul { display: block; }
     .nav > ul li a { font-size: 14px; line-height: 1.36; padding: 8px 16px; text-align: left; border-top: 1px solid white; }
