@@ -15,6 +15,7 @@
         "addMailVar": "Ajouter une variable de mail",
         "noParameters": "Ce Shortcode ne contient pas de paramètres.",
         "back": "Retour",
-        "ratio": "Garder le ratio original"
+        "ratio": "Garder le ratio original",
+        "relativeLink": "Lien relatif"
     }
 }

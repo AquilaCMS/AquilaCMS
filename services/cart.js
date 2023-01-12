@@ -270,7 +270,7 @@ const addItem = async (postBody, userInfo, lang = '') => {
         postBody.item.slug = _product.translation[_lang].slug;
     }
     postBody.item.code  = _product.code;
-    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
+    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product);
     const idGift        = mongoose.Types.ObjectId();
     if (postBody.item.parent) {
         postBody.item._id = idGift;

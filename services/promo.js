@@ -534,7 +534,6 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // -----------------------------------------------------------------------------
     // We need to apply the rules of this discount to know if the user
     // can use this promo code depending on what is in the cart
-    const validCartProduct = [];
     if (promo.rules_id) {
         const promoRules = await promo.populate('rules_id').execPopulate();
         if (promoRules.rules_id.conditions.length > 0 || promoRules.rules_id.other_rules.length > 0) {
@@ -554,17 +553,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             // }
         }
     }
-    // -----------------------------------------------------------------------------
-    // --------------------- Calculate and creat the promo code --------------------
-    // -----------------------------------------------------------------------------
-    // const oldProductsId = [];
-    // if (cart.promos && cart.promos.length && cart.promos[0].productsId && cart.promos[0].productsId.length && validCartProduct.length) {
-    //     for (let i = 0; i < validCartProduct.length; i++) {
-    //         const idx = cart.promos[0].productsId.findIndex(prd => prd.productId.toString() === validCartProduct[i].id);
-    //         if (idx === -1) continue;
-    //         oldPromo = [cart.promo[0].productsId];
-    //     }
-    // }
+
     // At the moment the user can enter only one promo code, so we force the promos to be an array of one element
     cart.promos = [{
         promoId     : promo._id,
@@ -592,38 +581,13 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             cart.promos[0].gifts.push({id: _id, name: translation[lang].name, price, quantity: 1, atts: attributes, opts: []});
         });
     } else {
-        // If validCartProduct contains products then we must apply the discount
-        // on these products and not on the total amount of the cart
-        if (validCartProduct.length > 0) {
-            // We set the discountATI and discountET to 0 because there is no discount on the cart total
-            cart.promos[0].discountATI = 0;
-            cart.promos[0].discountET  = 0;
-            for (let i = 0; i < validCartProduct.length; i++) {
-                const {discountATI, discountET, basePriceATI, basePriceET} = calculCartDiscountItem(validCartProduct[i], promo, cart);
-                cart.promos[0].productsId.push({productId: validCartProduct[i].id.id, discountATI, discountET, basePriceATI, basePriceET});
-            }
-        } else {
-            // If validCartProduct contains products then we must apply the discount
-            // on these products and not on the total amount of the cart
-            if (validCartProduct.length > 0) {
-                // We set the discountATI and discountET to 0 because there is no discount on the cart total
-                cart.promos[0].discountATI = 0;
-                cart.promos[0].discountET  = 0;
-                for (let i = 0; i < validCartProduct.length; i++) {
-                    const baseProduct                                          = await ProductSimple.findOne({code: validCartProduct[i].code}).lean();
-                    const {discountATI, discountET, basePriceATI, basePriceET} = await calculDiscountItem(baseProduct, promo);
-                    cart.promos[0].productsId.push({productId: validCartProduct[i].id.id, discountATI, discountET, basePriceATI, basePriceET});
-                }
-            } else {
-                // The user can use this code, so we must register the promo code in his cart
-                const {discountATI, discountET} = await calculCartDiscount(cart, promo);
-                if (discountATI !== null) {
-                    cart.promos[0].discountATI = discountATI;
-                }
-                if (discountET !== null) {
-                    cart.promos[0].discountET = discountET;
-                }
-            }
+        // The user can use this code, so we must register the promo code in his cart
+        const {discountATI, discountET} = await calculCartDiscount(cart, promo);
+        if (discountATI !== null) {
+            cart.promos[0].discountATI = discountATI;
+        }
+        if (discountET !== null) {
+            cart.promos[0].discountET = discountET;
         }
     }
     const resultCart = await cart.save();

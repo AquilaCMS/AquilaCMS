@@ -264,7 +264,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
 async function testRulesOnUser(rule, user, cart = undefined) {
     try {
         const tCondition = [rule.operand];
-        const validRules = [];
+        // const validRules = [];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
             const target    = condition.target.replace('attr.', 'attributes.');
@@ -282,9 +282,9 @@ async function testRulesOnUser(rule, user, cart = undefined) {
                     } else {
                         // If the user is logged in we check if the field matches the value
                         isTrue = conditionOperator(condition.operator, user, key, value);
-                        if (isTrue) {
-                            validRules.push(rule);
-                        }
+                        // if (isTrue) {
+                        //     validRules.push(rule);
+                        // }
                     }
                 } else if (target.startsWith('categorie.') && cart !== undefined) {
                     isTrue = await checkCartPrdInCategory(cart, target, value, isTrue);
