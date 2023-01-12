@@ -2575,6 +2575,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 max: true,
                 keepRatio: true,
                 ratio: 1,
+                relativeLink: true,
     
                 crop:false,
                 position:"center",
@@ -2627,7 +2628,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    $scope.link = `${!$scope.info.relativeLink ? window.location.origin : ''}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                     return $scope.link;
                 }
             };
