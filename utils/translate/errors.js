@@ -39,6 +39,14 @@ module.exports = {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },
+    GlobalNotFound : {
+        fr : 'Variable globale non trouvée',
+        en : 'Global variable not found'
+    },
+    JobErrorInChildNode : {
+        fr : 'Erreur dans le job',
+        en : 'Job error'
+    },
     NotFound : {
         fr : 'Item non trouvé',
         en : 'Item not found'
@@ -414,6 +422,10 @@ module.exports = {
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',
         en : 'A format error occurred while creating the condition'
+    },
+    CannotConnectDBFromChildNode : {
+        fr : 'Impossible de se connecter à la base de données depuis un noeud enfant',
+        en : 'Cannot connect to database from child node'
     },
     OrderNotCancelable : {
         fr : 'Impossible d\'annuler la commande',

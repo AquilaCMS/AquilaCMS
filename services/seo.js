@@ -18,7 +18,7 @@ const {
     Categories,
     Products,
     News
-}                   = require('../orm/models');
+} = require('../orm/models');
 
 let inCrawl       = false;
 const sitemapConf = {
@@ -29,11 +29,9 @@ const sitemapConf = {
     other    : {frequency: 'weekly', priority: '0.2'}
 };
 
+// Check that we are not in "demoMode"
 const genSitemap = async () => {
-    // Check that we are not in "demoMode"
-    if (await isDemoMode()) {
-        throw NSErrors.DemoMode;
-    }
+    if (await isDemoMode()) throw NSErrors.DemoMode;
 
     await manageRobotsTxt(true);
 
@@ -57,7 +55,10 @@ const genSitemap = async () => {
                 url : []
             };
 
-            const statics = await Statics.find({active: true}).lean();
+            const statics    = await Statics.find({active: true}).lean();
+            const categories = await Categories.find({active: true, action: 'catalog'}).lean();
+            const products   = await Products.find({active: true, _visible: true}).lean();
+            const articles   = await News.find({isVisible: true}).lean();
 
             // Loop static page
             for (let i = 0, leni = statics.length; i < leni; i++) {
@@ -99,8 +100,6 @@ const genSitemap = async () => {
                 }
             }
 
-            const categories = await Categories.find({active: true, action: 'catalog'}).lean();
-
             for (let i = 0, leni = categories.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
                     const _category = categories[i].translation[languages[j].code];
@@ -133,8 +132,6 @@ const genSitemap = async () => {
                     }
                 }
             }
-
-            const products = await Products.find({active: true, _visible: true}).lean();
 
             for (let i = 0, leni = products.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -171,8 +168,6 @@ const genSitemap = async () => {
                     }
                 }
             }
-
-            const articles = await News.find({isVisible: true}).lean();
 
             for (let i = 0, leni = articles.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -226,7 +221,7 @@ const genSitemap = async () => {
 * Remove sitemap.xml
 */
 const removeSitemap = async () => {
-    const filePath = path.join( getUploadDirectory(), 'sitemap.xml');
+    const filePath = path.join(getUploadDirectory(), 'sitemap.xml');
     if (await fs.hasAccess(filePath)) {
         await fs.unlink(filePath);
     }

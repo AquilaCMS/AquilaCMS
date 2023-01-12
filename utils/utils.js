@@ -12,6 +12,7 @@ const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
 const fs                      = require('./fsp');
+const NSErrors                = require('./errors/NSErrors');
 
 /**
  *
@@ -273,12 +274,12 @@ const isEqual = (value, other) => {
  * @returns {boolean}
  */
 let compare = (item1, item2) => {
-// Get the object type
+    // Get the object type
     const itemType = Object.prototype.toString.call(item1);
     // If an object or array, compare recursively
     if (['[object Array]', '[object Object]'].indexOf(itemType) >= 0) {
         if (!isEqual(item1, item2)) return false;
-    // Otherwise, do a simple comparison
+        // Otherwise, do a simple comparison
     } else {
         // If the two items are not the same type, return false
         if (itemType !== Object.prototype.toString.call(item2)) return false;
@@ -313,6 +314,26 @@ const isJsonString = (str) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Init child process Globals and Database
+ */
+const initDBandGlobalInChildProcess = async () => {
+    try {
+        global.appRoot   = process.cwd();
+        global.envConfig = global.envConfig ? global.envConfig : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
+        global.envFile   = global.envFile ? global.envFile : JSON.parse(Buffer.from(process.argv[4], 'base64').toString('utf8'));
+    } catch (err) {
+        throw NSErrors.GlobalNotFound;
+    }
+
+    try {
+        const utilsDB = require('./database');
+        await utilsDB.connect();
+    } catch (err) {
+        throw NSErrors.CannotConnectDBFromChildNode;
+    }
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -324,5 +345,6 @@ module.exports = {
     checkOrCreateAquilaRegistryKey,
     isEqual,
     isJsonString,
-    isAdmin
+    isAdmin,
+    initDBandGlobalInChildProcess
 };
