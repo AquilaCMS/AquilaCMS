@@ -246,6 +246,7 @@ const addItem = async (postBody, userInfo, lang = '') => {
                 } else {
                     // else, it's a new product in the cart
                     isANewProduct = true;
+                }
             }
         }
         if (typeof isANewProduct === 'number') {
