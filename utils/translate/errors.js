@@ -47,6 +47,10 @@ module.exports = {
         fr : 'Média introuvable',
         en : 'Media not found'
     },
+    MediaNotInRoot : {
+        fr : 'Aucun média à la racine du zip',
+        en : 'No media in root zip'
+    },
     UserNotFound : {
         fr : 'Utilisateur non trouvé',
         en : 'User not found'

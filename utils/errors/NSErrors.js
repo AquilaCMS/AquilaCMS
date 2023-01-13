@@ -98,6 +98,7 @@ class NSErrors {
     static get MailUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateError'); }
     static get MailUpdateNoTypeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateNoTypeError'); }
     static get MediaNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotFound'); }
+    static get MediaNotInRoot() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotInRoot'); }
     static get MissingConfiguration() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingConfiguration'); }
     static get ModuleNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleNotFound'); }
     static get OrderNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'OrderNotFound'); }

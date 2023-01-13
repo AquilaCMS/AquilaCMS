@@ -74,7 +74,7 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB, group = '') => {
+const uploadAllMedias = async (reqFile, insertDB) => {
     console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
@@ -84,41 +84,79 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     const target_path = `./${server.getUploadDirectory()}/medias`;
 
     const zip = new AdmZip(path_init);
+    // Extract files from zip to 'temp' folder
     zip.extractAllTo(path_unzip);
-    // Browse all the files to add them to the medias table
-    const filenames = fsp.readdirSync(path_unzip);
-
+    let filenames = '';
+    // check if zip is totaly empty
+    try {
+        filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
+    } catch (e) {
+        deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotFound;
+    }
+    // check if zip have folder but no file
+    if (filenames.length === 0) {
+        deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotInRoot;
+    }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
-        const filename    = filenames[index];
-        const init_file   = path.resolve(path_unzip, filename);
-        const target_file = path.resolve(target_path, filename);
-        const name_file   = filename.split('.')
-            .slice(0, -1)
-            .join('.');
+        try {
+            let filename                 = filenames[index];
+            const init_file              = path.resolve(path_unzip, filename);
+            let target_file              = path.resolve(target_path, filename);
+            let name_file                = filename.split('.').slice(0, -1).join('.');
+            const now                    = Date.now();
+            const ext_file               = filename.split('.').pop();
+            const filename_duplicated    = `${name_file + now}.${ext_file}`;
+            const name_file_duplicated   = filename_duplicated.split('.').slice(0, -1).join('.');
+            const target_file_duplicated = path.resolve(target_path, filename_duplicated);
 
-        // Check if folder
-        if (fsp.lstatSync(init_file)
-            .isDirectory()) {
-            return;
-        }
+            // Check if folder
+            if (fsp.lstatSync(init_file)
+                .isDirectory()) {
+                return;
+            }
 
-        // Move file to / medias
-        require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
-            if (err) console.error(err);
-        });
+            // if target_file exists use the target_file_duplicated variable
+            if (fsp.existsSync(target_file)) {
+                target_file = target_file_duplicated;
+            }
+            // Copy files to /medias and delete the original files from 'temp' folder
+            try {
+                await fsp.copyRecursive(init_file, target_file);
+                await fsp.deleteRecursive(init_file);
+            } catch (e) {
+                console.error(e);
+                throw NSErrors.MediaNotFound;
+            }
 
-        // Insert it in the database
-        if (insertDB) {
-            await Medias.updateOne({name: name_file}, {
-                link : `medias/${filename}`,
-                name : name_file,
-                group
-            }, {upsert: true});
+            // Insert it in the database
+            if (insertDB) {
+                // check if filename already exist in the database OR if link already exist in the database
+                if (await Medias.findOne({$or: [{name: name_file}, {link: `medias/${filename}`}]})) {
+                    name_file = name_file_duplicated;
+                    filename  = filename_duplicated;
+                }
+                await Medias.updateOne({name: name_file}, {
+                    link  : `medias/${filename}`,
+                    name  : name_file,
+                    group : path.parse(reqFile.originalname).name
+                }, {upsert: true});
+            }
+        } catch (e) {
+            console.error(e);
+            throw NSErrors.InvalidFile;
         }
     }
 
+    deleteTempFiles(path_unzip, path_init);
     console.log('Upload medias done !');
+};
+
+const deleteTempFiles = async (path_unzip, path_init) => {
+    fsp.deleteRecursive(path_unzip);
+    fsp.deleteRecursive(path_init);
 };
 
 /* **************** Documents **************** *
