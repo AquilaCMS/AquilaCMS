@@ -9,6 +9,8 @@
 const Agenda   = require('agenda');
 const axios    = require('axios');
 const mongoose = require('mongoose');
+const {fork}   = require('child_process');
+const slash    = require('slash');
 const NSErrors = require('../utils/errors/NSErrors');
 const utils    = require('../utils/utils');
 
@@ -317,23 +319,24 @@ const getPlayJob = async (_id) => {
  */
 const getPlayImmediateJob = async (_id, option) => {
     const foundJobs = await agenda.jobs({_id: mongoose.Types.ObjectId(_id)});
+    const job       = foundJobs[0];
     try {
         if (foundJobs.length !== 1) throw NSErrors.JobNotFound;
-        console.log(`${new Date()} -> Immediate - Start job ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
-        const start                       = new Date();
-        foundJobs[0].attrs.lastRunAt      = start;
-        foundJobs[0].attrs.lastFinishedAt = start;
+        console.log(`${new Date()} -> Immediate - Start job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
+        const start              = new Date();
+        job.attrs.lastRunAt      = start;
+        job.attrs.lastFinishedAt = start;
         if (option.option) {
-            await execDefine(foundJobs[0], option.option);
+            await execDefine(job, option.option);
         } else {
-            await execDefine(foundJobs[0]);
+            await execDefine(job);
         }
-        console.log(`${new Date()} -> Immediate - End job ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
-        return foundJobs[0];
+        console.log(`${new Date()} -> Immediate - End job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
+        return job;
     } catch (err) {
         let sError = `${new Date()} -> Immediate - End job`;
-        if (foundJobs && foundJobs[0] && foundJobs[0].attrs && foundJobs[0].attrs.data) {
-            sError += ` with error ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `;
+        if (foundJobs && job && job.attrs && job.attrs.data) {
+            sError += ` with error ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `;
         }
         console.error(sError);
         if (err.error && err.error.code) {
@@ -352,52 +355,78 @@ const getPlayImmediateJob = async (_id, option) => {
  * @param {string} job.attrs.params
  */
 async function execDefine(job, option) {
-    let api       = job.attrs.data.api;
-    const params  = job.attrs.data.params;
-    let errorData = null;
+    let api                 = job.attrs.data.api;
+    const appRoot           = slash(global.appRoot);
+    const globalAppUrl      = global.envConfig.environment.appUrl;
+    const params            = job.attrs.data.params;
+    const errorData         = null;
+    let lastExecutionResult = null;
     let result;
     // Directly call a service without going through an API
     if (api.startsWith('/services') || api.startsWith('/modules')) {
-        try {
-            if (api.endsWith('/')) api = api.substr(0, api.length - 1);
-            const funcName   = api.substr(api.lastIndexOf('/') + 1);
-            const modulePath = api.substr(0, api.lastIndexOf('/'));
-            try {
-                result = await require(`..${modulePath}`)[funcName](option);
-            } catch (error) {
-                // Sif the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
-                // save it in order to have a persistent error on the front side
-                if (!error.code) result = error;
-                if (error.code) result = (error && error.translations && error.translations.fr) ? error.translations.fr : error;
-                errorData = error;
-            }
-            // Used to retrieve the response of the function
-            job.attrs.data.lastExecutionResult = JSON.stringify(result, null, 2);
-        } catch (error) {
-            if (error.code !== 'MODULE_NOT_FOUND') throw error;
-            throw error;
-        }
-    } else {
-        const {method}   = job.attrs.data;
-        const httpMethod = method.toLowerCase();
-        if (!['get', 'post'].includes(httpMethod)) {
-            const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
+        if (api.endsWith('/')) api = api.substr(0, api.length - 1);
+        const funcName   = api.substr(api.lastIndexOf('/') + 1);
+        const modulePath = api.substr(0, api.lastIndexOf('/'));
+        const apiParams  = {
+            option,
+            modulePath,
+            funcName
+        };
 
-            throw error_method;
-        }
-        if (!api.includes('://')) {
-            // API's format /api/monapi
-            // Delete '/'
-            if (api.startsWith('/')) api = api.substr(1);
-            api = global.envConfig.environment.appUrl + api;
-        }
-        if (!utils.isJsonString(params)) {
-            throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
-        }
-        result = await axios[httpMethod](api, JSON.parse(params));
-        // Get the response from the API
-        job.attrs.data.lastExecutionResult = JSON.stringify(result.data);
+        console.log(`%scommand : node -e "global.appRoot = '${appRoot}'; globalAppUrl = globalAppUrl = '${globalAppUrl}'; require('.${modulePath}').${funcName}(${option})" with param : [${params}] (Path : ${global.appRoot})%s`, '\x1b[33m', '\x1b[0m');
+        return new Promise((resolve, reject) => {
+            const cmd = fork(
+                `${global.appRoot}/services/jobChild.js`,
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.envConfig)).toString('base64'), Buffer.from(JSON.stringify(global.envFile)).toString('base64'), ...params],
+                {cwd: global.appRoot, shell: true}
+            );
+            cmd.on('error', (err) => {
+                reject(err);
+            });
+            cmd.on('message', (data) => {
+                lastExecutionResult = data.message;
+            });
+            cmd.on('close', (code) => {
+                console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(2)' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
+                return resolve({code});
+            });
+        }).then(async (data) => {
+            const error = data.code;
+            if (error) lastExecutionResult = `Error -> ${JSON.stringify(lastExecutionResult)}`;
+            job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
+            await job.save();
+            if (error) throw NSErrors.JobErrorInChildNode;
+        });
     }
+
+    const {method}   = job.attrs.data;
+    const httpMethod = method.toLowerCase();
+    if (!['get', 'post'].includes(httpMethod)) {
+        const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
+
+        throw error_method;
+    }
+    if (!api.includes('://')) {
+        // API's format /api/monapi
+        // Delete '/'
+        if (api.startsWith('/')) api = api.substr(1);
+        api = global.envConfig.environment.appUrl + api;
+    }
+    if (!utils.isJsonString(params)) {
+        throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
+    }
+
+    try {
+        result = await axios({
+            method : httpMethod.toUpperCase(),
+            url    : api,
+            data   : JSON.parse(params)
+        });
+    } catch (err) {
+        result = {status: err.response.status, data: err.response.data};
+    }
+    // Get the response from the API
+    job.attrs.data.lastExecutionResult = JSON.stringify(result);
     await job.save();
     if (errorData !== null) throw errorData;
 }

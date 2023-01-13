@@ -40,6 +40,7 @@ class NSErrors {
     static get PostBodyUndefined() { return this.makeErrorAlias(NSErrors.BadRequest, 'PostBodyUndefined'); }
     static get PromoCodeIfStatementBadFormat() { return this.makeErrorAlias(NSErrors.BadRequest, 'PromoCodeIfStatementBadFormat'); }
     static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
+    static get CannotConnectDBFromChildNode() { return this.makeErrorAlias(NSErrors.BadRequest, 'CannotConnectDBFromChildNode'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
     static get DeactivateAccount() { return this.makeErrorAlias(NSErrors.Unauthorized, 'DeactivateAccount', undefined, 'none'); }
@@ -139,6 +140,8 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
+    static get GlobalNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'GlobalNotFound'); }
+    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }
