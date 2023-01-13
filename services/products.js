@@ -32,7 +32,7 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values', 'filename'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
