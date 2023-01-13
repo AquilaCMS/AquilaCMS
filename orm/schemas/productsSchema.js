@@ -209,9 +209,28 @@ ProductsSchema.methods.updateData = async function (data) {
         }
     }
 
-    reviewService.computeAverageRateAndCountReviews(data);
+    let update;
 
-    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    switch (data.type) {
+    case 'simple':
+        const ProductSimple = require('../models/productSimple');
+        update              = new ProductSimple(data).preUpdateSimpleProduct(data);
+        break;
+    case 'bundle':
+        const ProductBundle = require('../models/productBundle');
+        update              = new ProductBundle(data).preUpdateBundleProduct(data);
+        break;
+    case 'virtual':
+        const ProductVirtual = require('../models/productVirtual');
+        update               = new ProductVirtual(data).preUpdateVirtualProduct(data);
+        break;
+    default:
+        break;
+    }
+
+    reviewService.computeAverageRateAndCountReviews(update);
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: update}, {new: true});
     return updPrd;
 };
 

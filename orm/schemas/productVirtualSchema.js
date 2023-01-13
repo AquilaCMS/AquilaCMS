@@ -13,7 +13,8 @@ const Schema               = mongoose.Schema;
 
 const ProductVirtualSchema = new Schema({
     downloadLink  : {type: String, default: null},
-    downloadInfos : {type: String, default: null}
+    downloadInfos : {type: String, default: null},
+    filename      : {type: String, default: null}
 }, {
     discriminatorKey : 'type',
     toObject         : {virtuals: true},
