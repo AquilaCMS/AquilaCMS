@@ -176,6 +176,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
         cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
     }
 
+    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
