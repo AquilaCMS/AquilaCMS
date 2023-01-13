@@ -233,24 +233,19 @@ const addItem = async (postBody, userInfo, lang = '') => {
             ) {
                 continue;
             } else {
-                if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                    // check if same variant
-                    const variantOfItemInCart = cart.items[index].selected_variant;
-                    if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
-                        isANewProduct = index;
-                        break;
-                    } else {
-                        isANewProduct = true;
-                    }
+                if (
+                    (
+                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                    ) || (
+                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                    )
+                ) {
+                    // then it's the same product in the cart
+                    isANewProduct = index;
+                    break;
                 } else {
-                    if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    } else  if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    }
-                }
+                    // else, it's a new product in the cart
+                    isANewProduct = true;
             }
         }
         if (typeof isANewProduct === 'number') {
