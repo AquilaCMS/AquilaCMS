@@ -9,4 +9,9 @@
 const Products              = require('./products');
 const {ProductBundleSchema} = require('../schemas');
 
+ProductBundleSchema.methods.preUpdateBundleProduct = function (data) {
+    // do things here with data
+    return data;
+};
+
 module.exports = Products.discriminator('bundle', ProductBundleSchema);

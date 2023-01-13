@@ -9,4 +9,9 @@
 const Products              = require('./products');
 const {ProductSimpleSchema} = require('../schemas');
 
+ProductSimpleSchema.methods.preUpdateSimpleProduct = function (data) {
+    // do things here with data
+    return data;
+};
+
 module.exports = Products.discriminator('simple', ProductSimpleSchema);
