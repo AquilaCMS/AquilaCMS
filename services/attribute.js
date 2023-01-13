@@ -131,14 +131,14 @@ const updateProductsVariants = async (body, attribute) => {
             {'variants.$[element].translation': body.translation},
             {arrayFilters: [{'element.code': attribute.code}]}
         );
-        await regenerateProductsVariants(body, attribute);
+        await regenerateProductsVariants(body);
     } else if (!body.isVariantable && attribute.isVariantable) {
         // remove variant from product
         await ProductSimple.updateMany(
             {'variants.code': attribute.code},
             {$pull: {variants: {code: attribute.code}}}
         );
-        await regenerateProductsVariants(body, attribute);
+        await regenerateProductsVariants(body);
     }
 };
 

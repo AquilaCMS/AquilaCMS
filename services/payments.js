@@ -228,19 +228,6 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
-        // const orderdata = [];
-        // const datas = {
-        //     number : _order.number
-        // };
-
-        // for(let i = 0; i < returnData.products.length; i++) {
-        //     orderdata.push(`${returnData.products[i].product_code} (${returnData.products[i].qty_returned})`);
-        // }
-
-        // datas.orderdata = orderdata.join(", ");
-        /**
-         * DO NOT DELETE THE COMMENTED CODE ABOVE
-         */
         if (returnData.type === 'DEBIT') {
             const datas = {
                 ..._order,
