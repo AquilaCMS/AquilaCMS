@@ -13,8 +13,6 @@ const express                         = require('express');
 const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const path                            = require('path');
-const multer                          = require('multer');
-const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
 
