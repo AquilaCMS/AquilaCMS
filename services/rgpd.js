@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -97,17 +97,15 @@ const getBillsByUser = async (id) => Bills.find({client: id}, '-__v').lean();
 
 const anonymizeModulesByUser = async (user) => {
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const module of _modules) {
-            await new Promise(async (resolve, reject) => {
-                // Retrieves rgpd.js files from modules
-                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                    await rgpd.anonymize(user, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const module of _modules) {
+        await new Promise(async (resolve, reject) => {
+            // Retrieves rgpd.js files from modules
+            if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                await rgpd.anonymize(user, resolve, reject);
+            }
+            resolve();
+        });
     }
 };
 
@@ -161,20 +159,24 @@ const anonymizeUser = async (id) => {
 const copyDatabase = async () => {
     // Connection to the database
     try {
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
         try {
             await mongodump(global.envFile.db);
             await mongorestore(global.envFile.db);
         } catch (error) {
             throw NSErrors.CommandsMayNotInPath;
         }
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
 
         // Anonymization of the copied database
         await anonymizeDatabase();
@@ -310,16 +312,14 @@ const anonymizeDatabase = async () => {
         }
     }
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const mod of _modules) {
-            await new Promise(async (resolve, reject) => {
-                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
-                    await rgpd.anonymizeDatabase(database, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const mod of _modules) {
+        await new Promise(async (resolve, reject) => {
+            if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
+                await rgpd.anonymizeDatabase(database, resolve, reject);
+            }
+            resolve();
+        });
     }
     await client.close();
 };

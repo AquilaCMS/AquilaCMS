@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -85,10 +85,6 @@ const CartSchema = new Schema({
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
 
-/* CartSchema.pre('findOneAndUpdate', function () {
- this.findOneAndUpdate({},{ $set: { updated: Date.now() } });
- }); */
-
 const itemsSchema = CartSchema.path('items');
 
 itemsSchema.discriminator('simple', ItemSimpleSchema);
@@ -133,7 +129,6 @@ CartSchema.virtual('delivery.price').get(function () {
 });
 
 CartSchema.virtual('additionnalFees').get(function () {
-    // const self = this;
     const {et, tax} = global.envConfig.stockOrder.additionnalFees;
     return {
         ati : Number(et + (et * (tax / 100))),
@@ -189,7 +184,6 @@ CartSchema.virtual('priceTotal').get(function () {
 });
 
 CartSchema.virtual('priceSubTotal').get(function () {
-    // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;

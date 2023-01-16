@@ -8,7 +8,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 20,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -16,7 +15,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 20
       },
       "price": {
         "et": {
@@ -35,16 +35,16 @@
         "tax": 20
       },
       "reviews": {
-        "average": 4.5,
+        "average": 4.3,
         "reviews_nb": 3,
         "questions": [],
         "datas": [
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:12:48.785Z",
-            "questions": [],
             "_id": "5d3964804aa9c1692db06481",
+            "review_date": "2022-05-25T08:12:48.785Z",
+            "questions": [],
             "title": "Bon produit",
             "review": "Produit conforme, rapport/qualité prix OK",
             "rate": 4,
@@ -56,9 +56,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:13:24.652Z",
-            "questions": [],
             "_id": "5d3964a44aa9c1692db06482",
+            "review_date": "2022-05-25T08:13:24.652Z",
+            "questions": [],
             "title": "Basique",
             "review": "Un t-shirt simple, basique, correspond aux attentes",
             "rate": 5,
@@ -70,9 +70,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:12:48.785Z",
-            "questions": [],
             "_id": "5d3964804aa9c1692db06481",
+            "review_date": "2022-05-25T08:12:48.785Z",
+            "questions": [],
             "title": "Good product",
             "review": "Compliant product, price / quality ratio OK",
             "rate": 4,
@@ -84,8 +84,10 @@
         ]
       },
       "stats": {
-        "views": 49
+        "views": 49,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 404,
@@ -96,10 +98,207 @@
         "5d24a4844aa9c1692db04ae4"
       ],
       "is_new": true,
+      "variants": [
+        {
+          "_id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          },
+          "type": "list"
+        }
+      ],
+      "variants_values": [
+        {
+          "price": {
+            "et": {
+              "normal": 14.17,
+              "special": 10.83
+            },
+            "ati": {
+              "normal": 17,
+              "special": 13
+            },
+            "priceSort": {
+              "et": 10.83,
+              "ati": 13
+            },
+            "purchase": 10,
+            "tax": 20
+          },
+          "stock": {
+            "qty": 20,
+            "qty_booked": 0,
+            "orderable": true,
+            "status": "liv",
+            "label": "available",
+            "translation": {
+              "fr": {
+                "value": "Produit disponible"
+              },
+              "en": {
+                "value": "Available product"
+              }
+            }
+          },
+          "_id": "6364d6438ded9510a05191cf",
+          "code": "p000001-s",
+          "active": true,
+          "weight": 404,
+          "default": true,
+          "images": [
+            {
+              "default": true,
+              "extension": ".jpg",
+              "_id": "5d444221ede1945f660286ff",
+              "position": 0,
+              "alt": "",
+              "name": "produit_1.jpg",
+              "title": "produit_1",
+              "url": "photos/product/p/0/produit_1.jpg"
+            }
+          ],
+          "variant_codes": "s",
+          "translation": {
+            "fr": {
+              "name": "T-shirt basique blanc S"
+            }
+          }
+        },
+        {
+          "price": {
+            "et": {
+              "normal": 14.17,
+              "special": 10.83
+            },
+            "ati": {
+              "normal": 17,
+              "special": 13
+            },
+            "priceSort": {
+              "et": 10.83,
+              "ati": 13
+            },
+            "purchase": 10,
+            "tax": 20
+          },
+          "stock": {
+            "qty": 20,
+            "qty_booked": 0,
+            "orderable": true,
+            "status": "liv",
+            "label": "available",
+            "translation": {
+              "fr": {
+                "value": "Produit disponible"
+              },
+              "en": {
+                "value": "Available product"
+              }
+            }
+          },
+          "_id": "6364d6438ded9510a05191d1",
+          "code": "p000001-m",
+          "active": true,
+          "weight": 404,
+          "default": false,
+          "images": [
+            {
+              "default": true,
+              "extension": ".jpg",
+              "_id": "5d444221ede1945f660286ff",
+              "position": 0,
+              "alt": "",
+              "name": "produit_1.jpg",
+              "title": "produit_1",
+              "url": "photos/product/p/0/produit_1.jpg"
+            }
+          ],
+          "variant_codes": "m",
+          "translation": {
+            "fr": {
+              "name": "T-shirt basique blanc M"
+            }
+          }
+        },
+        {
+          "price": {
+            "et": {
+              "normal": 14.17,
+              "special": 10.83
+            },
+            "ati": {
+              "normal": 17,
+              "special": 13
+            },
+            "priceSort": {
+              "et": 10.83,
+              "ati": 13
+            },
+            "purchase": 10,
+            "tax": 20
+          },
+          "stock": {
+            "qty": 20,
+            "qty_booked": 0,
+            "orderable": true,
+            "status": "liv",
+            "label": "available",
+            "translation": {
+              "fr": {
+                "value": "Produit disponible"
+              },
+              "en": {
+                "value": "Available product"
+              }
+            }
+          },
+          "_id": "6364d6438ded9510a05191d3",
+          "code": "p000001-xl",
+          "active": true,
+          "weight": 404,
+          "default": false,
+          "images": [
+            {
+              "default": true,
+              "extension": ".jpg",
+              "_id": "5d444221ede1945f660286ff",
+              "position": 0,
+              "alt": "",
+              "name": "produit_1.jpg",
+              "title": "produit_1",
+              "url": "photos/product/p/0/produit_1.jpg"
+            }
+          ],
+          "variant_codes": "xl",
+          "translation": {
+            "fr": {
+              "name": "T-shirt basique blanc XL"
+            }
+          }
+        }
+      ],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -118,6 +317,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -128,7 +329,7 @@
               "value": true
             },
             "en": {
-              "name": "Favorite",
+              "name": "Favorite ",
               "value": true
             }
           }
@@ -136,6 +337,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -164,6 +367,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -180,7 +411,7 @@
       ],
       "pictos": [
         {
-          "_id": "5f6c6d8a53464f269885a52b",
+          "_id": "6364d54d8ded9510a051919b",
           "code": "LoveIt",
           "image": "loveit.png",
           "pictoId": "5da09f77db0b3834cf91a506",
@@ -189,8 +420,6 @@
         }
       ],
       "_id": "5c667f8a28a49c049c5863c8",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000001",
       "translation": {
@@ -217,14 +446,14 @@
           },
           "description2": {
             "title": "Coupe tubulaire",
-            "text": "Unisexe"
+            "text": "Existe en S, M et XL"
           },
           "canonical": "/mes-produits/t-shirt/premier-produit",
           "metaDesc": "T-shirt basique blanc"
         }
       },
-      "createdAt": "2020-05-13T09:07:33.753Z",
-      "updatedAt": "2020-05-20T14:08:18.268Z",
+      "createdAt": "2022-05-13T09:07:33.753Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "tshirts-tshirts"
     },
     {
@@ -234,7 +463,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 41,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -242,7 +470,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 41
       },
       "price": {
         "et": {
@@ -266,9 +495,9 @@
           {
             "visible": false,
             "verify": false,
-            "review_date": "2020-05-26T15:14:57.266Z",
-            "questions": [],
             "_id": "5d63f771e1b9464e059b1420",
+            "review_date": "2022-05-26T15:14:57.266Z",
+            "questions": [],
             "title": "M",
             "review": "super ton T",
             "rate": 5,
@@ -280,9 +509,9 @@
           {
             "visible": false,
             "verify": false,
-            "review_date": "2020-05-26T15:14:57.266Z",
-            "questions": [],
             "_id": "5d63f171efb1464f05fb1421",
+            "review_date": "2022-05-26T15:14:57.266Z",
+            "questions": [],
             "title": "Really good value T shirts",
             "review": "Really good value T shirts and so far they seem good quality too",
             "rate": 5,
@@ -294,8 +523,10 @@
         ]
       },
       "stats": {
-        "views": 33
+        "views": 33,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 982,
@@ -306,10 +537,14 @@
         "5c667f8a28a49c049c5863c8"
       ],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -328,6 +563,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -346,6 +583,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -376,6 +615,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -392,8 +659,6 @@
       ],
       "pictos": [],
       "_id": "5c667ff128a49c049c5863c9",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000002",
       "translation": {
@@ -426,8 +691,8 @@
           "metaDesc": "T-shirt blanc/vert"
         }
       },
-      "createdAt": "2020-05-13T09:07:33.753Z",
-      "updatedAt": "2020-05-20T14:02:13.859Z",
+      "createdAt": "2022-05-13T09:07:33.753Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "tshirts-tshirts"
     },
     {
@@ -437,7 +702,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 7,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -445,7 +709,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 7
       },
       "price": {
         "et": {
@@ -469,9 +734,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:14:32.945Z",
-            "questions": [],
             "_id": "5d3964e84aa9c1692db064f5",
+            "review_date": "2022-05-25T08:14:32.945Z",
+            "questions": [],
             "title": "Ô top !",
             "review": "Marinière très mignonne, cette coupe droite donne un aspect vintage. Les coutures sont doublées pour renforcer le produit. Je recommande vivement !",
             "rate": 5,
@@ -483,17 +748,23 @@
         ]
       },
       "stats": {
-        "views": 3
+        "views": 3,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -512,6 +783,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -530,6 +803,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -560,6 +835,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -576,8 +879,6 @@
       ],
       "pictos": [],
       "_id": "5d24a3e94aa9c1692db04ac7",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000003",
       "translation": {
@@ -610,8 +911,8 @@
           "metaDesc": "Red sailor t-shirt"
         }
       },
-      "createdAt": "2020-05-09T14:25:46.095Z",
-      "updatedAt": "2020-05-20T13:58:34.550Z",
+      "createdAt": "2022-05-09T14:25:46.095Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "tshirts-tshirts"
     },
     {
@@ -621,7 +922,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 15,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -629,7 +929,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 15
       },
       "price": {
         "et": {
@@ -653,9 +954,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:21:03.627Z",
-            "questions": [],
             "_id": "5d39666f4aa9c1692db066f2",
+            "review_date": "2022-05-25T08:21:03.627Z",
+            "questions": [],
             "title": "Pas mal",
             "review": "Simple, t-shirt noir",
             "rate": 3,
@@ -667,17 +968,23 @@
         ]
       },
       "stats": {
-        "views": 2
+        "views": 2,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -696,6 +1003,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -712,6 +1021,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -740,6 +1051,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -756,8 +1095,6 @@
       ],
       "pictos": [],
       "_id": "5d24a43a4aa9c1692db04ad8",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000004",
       "translation": {
@@ -790,8 +1127,8 @@
           "metaDesc": "Basic black t-shirt"
         }
       },
-      "createdAt": "2020-05-09T14:27:06.739Z",
-      "updatedAt": "2020-05-15T08:10:34.656Z",
+      "createdAt": "2022-05-09T14:27:06.739Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "tshirts-tshirts"
     },
     {
@@ -801,7 +1138,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 7,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -809,7 +1145,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 7
       },
       "price": {
         "et": {
@@ -832,17 +1169,23 @@
         "datas": []
       },
       "stats": {
-        "views": 3
+        "views": 3,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -861,6 +1204,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -879,6 +1224,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -907,6 +1254,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -923,7 +1298,7 @@
       ],
       "pictos": [
         {
-          "_id": "5f6c6d8a53464f269885a52b",
+          "_id": "6364d54d8ded9510a051919b",
           "code": "LoveIt",
           "image": "loveit.png",
           "pictoId": "5da09f77db0b3834cf91a506",
@@ -932,8 +1307,6 @@
         }
       ],
       "_id": "5d24a4844aa9c1692db04ae4",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000005",
       "translation": {
@@ -966,8 +1339,8 @@
           "metaDesc": "Basic blue t-shirt"
         }
       },
-      "createdAt": "2020-05-09T14:28:20.192Z",
-      "updatedAt": "2020-05-20T14:03:38.375Z",
+      "createdAt": "2022-05-09T14:28:20.192Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "tshirts-tshirts"
     },
     {
@@ -977,7 +1350,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 5,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -985,7 +1357,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 5
       },
       "price": {
         "et": {
@@ -1009,9 +1382,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:15:20.622Z",
-            "questions": [],
             "_id": "5d3965184aa9c1692db0656b",
+            "review_date": "2022-05-25T08:15:20.622Z",
+            "questions": [],
             "title": "Bien",
             "review": "Produit OK pour le sport",
             "rate": 5,
@@ -1023,9 +1396,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:15:20.622Z",
-            "questions": [],
             "_id": "5d3363184a6c316925bc656c",
+            "review_date": "2022-05-25T08:15:20.622Z",
+            "questions": [],
             "title": "Good",
             "review": "Product OK for sport",
             "rate": 5,
@@ -1037,17 +1410,23 @@
         ]
       },
       "stats": {
-        "views": 6
+        "views": 6,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -1066,6 +1445,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -1082,6 +1463,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -1110,6 +1493,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -1126,8 +1537,6 @@
       ],
       "pictos": [],
       "_id": "5d3074d44aa9c1692db0534d",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000006",
       "translation": {
@@ -1160,8 +1569,8 @@
           "metaDesc": "Black socks"
         }
       },
-      "createdAt": "2020-05-18T13:32:04.714Z",
-      "updatedAt": "2020-05-22T12:34:57.736Z",
+      "createdAt": "2022-05-18T13:32:04.714Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z",
       "universe": "chaussettes-chaussettes"
     },
     {
@@ -1169,7 +1578,6 @@
         "qty": 0,
         "qty_booked": 0,
         "orderable": true,
-        "qty_real": 0,
         "status": "epu",
         "label": "exhausted",
         "translation": {
@@ -1179,7 +1587,8 @@
           "fr": {
             "value": "Produit définitivement épuisé"
           }
-        }
+        },
+        "qty_real": 0
       },
       "price": {
         "et": {
@@ -1202,17 +1611,23 @@
         "datas": []
       },
       "stats": {
-        "views": 1
+        "views": 1,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -1231,6 +1646,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -1249,6 +1666,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -1277,6 +1696,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -1293,7 +1740,7 @@
       ],
       "pictos": [
         {
-          "_id": "5fbe5e8ab739d135f4fce236",
+          "_id": "6364d54d8ded9510a051919b",
           "code": "LoveIt",
           "image": "loveit.png",
           "pictoId": "5da09f77db0b3834cf91a506",
@@ -1302,8 +1749,6 @@
         }
       ],
       "_id": "5d3078aa4aa9c1692db05498",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000007",
       "translation": {
@@ -1337,8 +1782,8 @@
         }
       },
       "universe": "chaussettes-chaussettes",
-      "createdAt": "2020-05-18T13:48:26.837Z",
-      "updatedAt": "2020-05-20T13:56:02.745Z"
+      "createdAt": "2022-05-18T13:48:26.837Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z"
     },
     {
       "stock": {
@@ -1347,7 +1792,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 10,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -1355,7 +1799,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 10
       },
       "price": {
         "et": {
@@ -1378,17 +1823,23 @@
         "datas": []
       },
       "stats": {
-        "views": 3
+        "views": 3,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -1407,6 +1858,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -1423,6 +1876,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -1451,6 +1906,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -1467,8 +1950,6 @@
       ],
       "pictos": [],
       "_id": "5d3079de4aa9c1692db0549d",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000008",
       "translation": {
@@ -1502,8 +1983,8 @@
         }
       },
       "universe": "sweats-sweats",
-      "createdAt": "2020-05-18T13:53:34.892Z",
-      "updatedAt": "2020-05-18T14:06:14.961Z"
+      "createdAt": "2022-05-18T13:53:34.892Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z"
     },
     {
       "stock": {
@@ -1512,7 +1993,6 @@
         "orderable": true,
         "status": "liv",
         "label": "available",
-        "qty_real": 7,
         "translation": {
           "fr": {
             "value": "Produit disponible"
@@ -1520,7 +2000,8 @@
           "en": {
             "value": "Available product"
           }
-        }
+        },
+        "qty_real": 7
       },
       "price": {
         "et": {
@@ -1544,9 +2025,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:16:21.493Z",
-            "questions": [],
             "_id": "5d3965554aa9c1692db065e4",
+            "review_date": "2022-05-25T08:16:21.493Z",
+            "questions": [],
             "title": "Problème de taille !!!",
             "review": "Le produit ne correspond pas aux tailles Européennes, c'est trop petit, je suis déçu !!!",
             "rate": 1,
@@ -1558,9 +2039,9 @@
           {
             "visible": true,
             "verify": true,
-            "review_date": "2020-05-25T08:17:00.889Z",
-            "questions": [],
             "_id": "5d39657c4aa9c1692db065e5",
+            "review_date": "2022-05-25T08:17:00.889Z",
+            "questions": [],
             "title": "Satisfaisant",
             "review": "Contrairement à l'avis précédent, le sweat taille correctement. Cependant il ne mérite que 3 étoiles pour la coupe et les finitions.",
             "rate": 3,
@@ -1572,17 +2053,23 @@
         ]
       },
       "stats": {
-        "views": 7
+        "views": 7,
+        "sells": 0
       },
+      "type": "simple",
       "active": true,
       "_visible": true,
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
+      "variants": [],
+      "variants_values": [],
       "attributes": [
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da5765ede6bed65e1d2a6f9",
           "id": "5da5765ede6bed65e1d2a6f8",
           "code": "color",
@@ -1601,6 +2088,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5da0a39bde6bed65e1d2a1ed",
           "id": "5da0a39bde6bed65e1d2a1ec",
           "code": "loveit",
@@ -1617,6 +2106,8 @@
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5d3967aa4aa9c1692db068cf",
           "id": "5d3967aa4aa9c1692db068ce",
           "code": "material",
@@ -1645,6 +2136,34 @@
               ]
             }
           }
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
       "images": [
@@ -1661,8 +2180,6 @@
       ],
       "pictos": [],
       "_id": "5d307a164aa9c1692db054a4",
-      "type": "simple",
-      "cmsBlocks": [],
       "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p000009",
       "translation": {
@@ -1696,11 +2213,14 @@
         }
       },
       "universe": "sweats-sweats",
-      "createdAt": "2020-05-18T13:54:30.466Z",
-      "updatedAt": "2020-05-20T13:56:11.430Z"
+      "createdAt": "2022-05-18T13:54:30.466Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z"
     },
     {
-      "_id": "5eb2cfdb6cdf0b436c831f23",
+      "stock": {
+        "orderable": false,
+        "status": "liv"
+      },
       "price": {
         "et": {
           "normal": 49.99
@@ -1722,36 +2242,36 @@
         "datas": []
       },
       "stats": {
-        "views": 0
+        "views": 0,
+        "sells": 0
       },
+      "type": "bundle",
       "active": true,
       "_visible": true,
       "weight": 0,
       "associated_prds": [],
       "is_new": false,
-      "images": [],
-      "type": "bundle",
       "bundle_sections": [
         {
           "_id": "5eb2cff36cdf0b436c831f27",
           "products": [
             {
-              "_id": "5fda1d8a3cc9692058b04f6a",
-              "id": "5c667ff128a49c049c5863c9",
-              "isDefault": false,
               "modifier_price": {
                 "ati": 3,
                 "et": 2.5
-              }
+              },
+              "_id": "5fda1d8a3cc9692058b04f6a",
+              "id": "5c667ff128a49c049c5863c9",
+              "isDefault": false
             },
             {
-              "_id": "5fda1d8a3cc9692058b04f6b",
-              "id": "5d24a3e94aa9c1692db04ac7",
-              "isDefault": false,
               "modifier_price": {
                 "ati": -2,
                 "et": -1.67
-              }
+              },
+              "_id": "5fda1d8a3cc9692058b04f6b",
+              "id": "5d24a3e94aa9c1692db04ac7",
+              "isDefault": false
             },
             {
               "_id": "5fda1d8a3cc9692058b04f6c",
@@ -1796,23 +2316,23 @@
           "_id": "5eb2db8d6cdf0b436c83225e",
           "products": [
             {
+              "modifier_price": {
+                "ati": 10,
+                "et": 8.33
+              },
               "_id": "5fda1d8a3cc9692058b04f72",
               "id": "5d3078aa4aa9c1692db05498",
               "isDefault": false,
-              "modifier_price": {
-                "ati": 10,
-                "et": 8.33
-              },
               "modifier_weight": 150
             },
             {
-              "_id": "5fda1d8a3cc9692058b04f73",
-              "id": "5d3074d44aa9c1692db0534d",
-              "isDefault": false,
               "modifier_price": {
                 "ati": 10,
                 "et": 8.33
               },
+              "_id": "5fda1d8a3cc9692058b04f73",
+              "id": "5d3074d44aa9c1692db0534d",
+              "isDefault": false,
               "modifier_weight": 150
             }
           ],
@@ -1823,12 +2343,12 @@
           "title": "Chaussette"
         }
       ],
-      "qty": 0,
-      "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "attributes": [
         {
           "type": "multiselect",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5eb2cfdb6cdf0b436c831f24",
           "code": "material",
           "translation": {
@@ -1855,6 +2375,8 @@
         {
           "type": "bool",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5eb2cfdb6cdf0b436c831f25",
           "param": "Non",
           "code": "loveit",
@@ -1871,6 +2393,8 @@
         {
           "type": "color",
           "position": 1,
+          "visible": true,
+          "usedInSearch": false,
           "_id": "5eb2cfdb6cdf0b436c831f26",
           "param": "Non",
           "code": "color",
@@ -1883,8 +2407,41 @@
             }
           },
           "id": "5da5765ede6bed65e1d2a6f8"
+        },
+        {
+          "type": "list",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "6364d5e98ded9510a051919d",
+          "id": "ffc405d5b5e920814c99d2bb",
+          "code": "size",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Taille",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            },
+            "en": {
+              "name": "Size",
+              "values": [
+                "S",
+                "M",
+                "XL"
+              ]
+            }
+          }
         }
       ],
+      "images": [],
+      "pictos": [],
+      "_id": "5eb2cfdb6cdf0b436c831f23",
+      "qty": 0,
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
       "code": "p_bundle_001",
       "translation": {
         "fr": {
@@ -1916,9 +2473,8 @@
           "metaDesc": "Full outfit"
         }
       },
-      "pictos": [],
-      "createdAt": "2020-05-13T09:07:33.753Z",
-      "updatedAt": "2020-05-20T14:02:13.859Z"
+      "createdAt": "2022-05-13T09:07:33.753Z",
+      "updatedAt": "2022-11-04T09:18:13.781Z"
     }
   ]
 }

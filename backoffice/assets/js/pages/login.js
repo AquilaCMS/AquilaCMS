@@ -44,10 +44,12 @@ $(document).ready(function () {
             window.localStorage.setItem("jwtAdmin", response.data);
             location.href = "/" + window.location.pathname.split("/")[1];
         } catch (err) {
-            if(err.responseJSON.code === "DeactivateAccount"){
+            if (err.responseJSON.code === "DeactivateAccount"){
                 $("#error_msg_disable_account").show();
-            }else{
+            } else if (err.responseJSON.code === "Unauthorized") {
                 $("#error_msg_bad_login").show();
+            } else {
+                $("#api-error").show();
             }
         }
     });

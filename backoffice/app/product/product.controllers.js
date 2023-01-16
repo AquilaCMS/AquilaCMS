@@ -53,9 +53,14 @@ ProductControllers.controller("ProductListCtrl", [
                 return '';
             }
         };
-        $scope.collapse = function () {
+        $scope.collapseAdvancedSearch = function () {
             if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
                 document.getElementById('collapseIcon').className = "ico-arrow-up";
+                setTimeout(function () {
+                    $scope.$apply(function () {
+                        $scope.advancedSearchDisplay = true;
+                    });
+                }, 300); 
             }else {
                 document.getElementById('collapseIcon').className = "ico-arrow-down";
             }
@@ -296,7 +301,7 @@ ProductControllers.controller("nsProductGeneral", [
                 let isGoodCanonicalForAllLang = true;
                 for (let index = 0; index < $rootScope.languages.length; index++) {
                     const aLang = $rootScope.languages[index];
-                    if(!($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
+                    if(aLang.status === "visible" && !($scope.product.translation && $scope.product.translation[aLang.code] && $scope.product.translation[aLang.code].canonical && $scope.product.translation[aLang.code].canonical.length > 0)) {
                         isGoodCanonicalForAllLang = false;
                     }
                 }
@@ -346,6 +351,12 @@ ProductControllers.controller("nsProductGeneral", [
                 }
             }).result.then(function () {
             });
+        }
+
+        $scope.downloadLinkChange = function () {
+            const url = $scope.product.downloadLink;
+            if($scope.product.filename || !url) return;
+            $scope.product.filename = url.substring(url.lastIndexOf('/')+1);
         }
 
         window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )

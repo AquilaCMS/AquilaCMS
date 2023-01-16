@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -11,10 +11,11 @@ const themesServices     = require('../services/themes');
 const serviceThemeConfig = require('../services/themeConfig');
 const ServiceConfig      = require('../services/config');
 const utilsThemes        = require('../utils/themes');
+const {multerUpload}     = require('../middleware/multer');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  adminAuthRight('themes'), listTheme);
-    app.post('/v2/themes/upload',          adminAuthRight('themes'), uploadTheme);
+    app.post('/v2/themes/upload',          adminAuthRight('themes'), multerUpload.any(), uploadTheme);
     app.post('/v2/themes/delete',          adminAuthRight('themes'), deleteTheme);
     app.post('/v2/themes/copyDatas',       adminAuthRight('themes'), copyDatas);
     app.get('/v2/themes/css/:cssName',     adminAuthRight('design'), getCustomCss);

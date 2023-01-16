@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -80,9 +80,7 @@ const initModule = async (files) => {
 
     // move the file from the temporary location to the intended location
     await fs.mkdir(moduleFolderAbsPath, {recursive: true});
-    await fs.copyFile(
-        path.resolve(global.appRoot, filepath), zipFilePath
-    );
+    await fs.copyFile(path.resolve(global.appRoot, filepath), zipFilePath);
     await fs.unlink(path.resolve(global.appRoot, filepath));
 
     try {
@@ -111,8 +109,7 @@ const initModule = async (files) => {
             }
         }
         if (!found) {
-            throw NSErrors.ModuleMainFolder;
-            // throw new Error('missing main folder in zip');
+            throw NSErrors.ModuleMainFolder; // missing main folder in zip
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
@@ -532,10 +529,12 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         for (let i = 0; i < _module.files.length; i++) {
             if (await fs.hasAccess(_module.files[i])) {
                 if ((await fs.lstat(_module.files[i])).isDirectory()) {
-                    await new Promise((resolve) => rimraf(_module.files[i], (err) => {
-                        if (err) console.error(err);
-                        resolve();
-                    }));
+                    await new Promise((resolve) => {
+                        rimraf(_module.files[i], (err) => {
+                            if (err) console.error(err);
+                            resolve();
+                        });
+                    });
                 } else {
                     try {
                         await fs.unlink(_module.files[i]);
@@ -744,7 +743,10 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         const file = filesList[i].name;
         let type   = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
-            type = parsedInfo.info.types.find((t) => t.component === file).type;
+            type = parsedInfo.info.types.find((t) => t.component === file)?.type;
+        }
+        if (type === undefined) {
+            continue;
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
@@ -752,6 +754,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
+            // eslint-disable-next-line prefer-regex-literals
             const regexArray            = new RegExp(/\[[^]*?\]/, 'gm');
             let exportDefaultListModule = '';
             const match                 = result.match(regexArray);
@@ -771,6 +774,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(pathModule + file, copyTo);
         console.log(`Copy module's files front : ${pathModule + file} -> ${copyTo}`);
+    }
+
+    // Add translations files in the theme
+    const translationsFolder = path.join(pathModule, 'translations');
+    if (fs.existsSync(translationsFolder)) {
+        await fs.copyRecursive(translationsFolder, path.join(moduleFolderInTheme, 'translations'));
     }
 };
 
@@ -792,7 +801,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
 
     if (toRemove) {
         for (const file of listOfFile) {
-            await removeFromListModule(file, currentTheme, file.toLowerCase().replace('.js', ''));
+            await removeFromListModule(file, currentTheme);
             let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
             if (fs.existsSync(filePath)) {
@@ -881,7 +890,7 @@ const removeModuleAddon = async (_module) => {
 };
 
 const initComponentTemplate = async (model, component, moduleName) => {
-    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'gm'}}, {component_template: undefined}]}).select('_id component_template').lean();
+    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'm'}}, {component_template: undefined}]}).select('_id component_template').lean();
     for (const elem of elements) {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';

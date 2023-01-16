@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -21,13 +21,12 @@ const FamiliesSchema = new Schema({
     slug      : {type: String, unique: true},
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
-    details   : {}
+    details   : {},
+    order     : {type: Number}
 }, {
     timestamps : true,
     id         : false
 });
-
-// FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 
 FamiliesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
@@ -57,12 +56,6 @@ FamiliesSchema.pre('findOneAndDelete', async function (next) {
     await Products.updateMany(where, action);
     return next();
 });
-
-/*
-FamiliesSchema.post('save', function () {
-  helper.create_ancestors(this._id, this.parent);
-});
-*/
 
 // Add menu in a family, and add this menu to all products assigned to this universe
 // familyCode : families.code

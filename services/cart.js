@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -13,7 +13,6 @@ const {
     Cart,
     Orders,
     Products,
-    Languages,
     Configuration
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -56,7 +55,6 @@ const getCartById = async (id, PostBody = null, user = null) => {
         _id : mongoose.Types.ObjectId(id)
     };
 
-    // let cart = await queryBuilder.findById(id, PostBody);
     let cart = await queryBuilder.findOne(PostBody);
 
     if (cart) {
@@ -178,6 +176,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
         cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
     }
 
+    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
@@ -185,7 +184,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
-const addItem = async (postBody, userInfo) => {
+const addItem = async (postBody, userInfo, lang = '') => {
     // Force matching current user and the cart's customer
     const filter = {
         status : 'IN_PROGRESS',
@@ -205,7 +204,8 @@ const addItem = async (postBody, userInfo) => {
     if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
-    const _lang = await Languages.findOne({defaultLanguage: true});
+
+    const _lang = await servicesLanguages.getDefaultLang(lang);
 
     if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
@@ -221,7 +221,6 @@ const addItem = async (postBody, userInfo) => {
         }
     }
     if (cart.items && cart.items.length) {
-        // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
         const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
@@ -235,23 +234,19 @@ const addItem = async (postBody, userInfo) => {
             ) {
                 continue;
             } else {
-                if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                    // check if same variant
-                    const variantOfItemInCart = cart.items[index].selected_variant;
-                    if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
-                        isANewProduct = index;
-                        break;
-                    } else {
-                        isANewProduct = true;
-                    }
+                if (
+                    (
+                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                    ) || (
+                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                    )
+                ) {
+                    // then it's the same product in the cart
+                    isANewProduct = index;
+                    break;
                 } else {
-                    if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    } else  if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    }
+                    // else, it's a new product in the cart
+                    isANewProduct = true;
                 }
             }
         }
@@ -267,12 +262,12 @@ const addItem = async (postBody, userInfo) => {
             return updateQty(postBody, userInfo);
         }
     }
-    if (_product.translation[_lang.code]) {
-        postBody.item.name = _product.translation[_lang.code].name;
-        postBody.item.slug = _product.translation[_lang.code].slug;
+    if (_product.translation[_lang]) {
+        postBody.item.name = _product.translation[_lang].name;
+        postBody.item.slug = _product.translation[_lang].slug;
     }
     postBody.item.code  = _product.code;
-    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
+    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product);
     const idGift        = mongoose.Types.ObjectId();
     if (postBody.item.parent) {
         postBody.item._id = idGift;
@@ -282,9 +277,9 @@ const addItem = async (postBody, userInfo) => {
         ...postBody.item,
         weight       : _product.weight,
         price        : _product.price,
-        description1 : _product.translation[_lang.code].description1,
-        description2 : _product.translation[_lang.code].description2,
-        canonical    : _product.translation[_lang.code].canonical,
+        description1 : _product.translation[_lang].description1,
+        description2 : _product.translation[_lang].description2,
+        canonical    : _product.translation[_lang].canonical,
         attributes   : _product.attributes
     };
 
@@ -295,14 +290,14 @@ const addItem = async (postBody, userInfo) => {
     // Here you can change any information of a product before adding it to the user's cart
     item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
-    const data = await _product.addToCart(cart, item, userInfo, _lang.code);
+    const data = await _product.addToCart(cart, item, userInfo, _lang);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart = data;
     await utilsDatabase.populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
-    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang.code, false);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang, false);
     if (productsCatalog) {
         for (let i = 0; i < cart.items.length; i++) {
             let itemCart = cart.items[i];
@@ -310,9 +305,9 @@ const addItem = async (postBody, userInfo) => {
             itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
             cart.items[i] = itemCart;
         }
-        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang.code, false);
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang, false);
     }
-    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
+    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang);
     const _newCart = await cart.save();
     if (postBody.item.parent) {
         _newCart.items.find((item) => item._id.toString() === postBody.item.parent).children.push(idGift);
@@ -439,7 +434,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             throw NSErrors.CartInactive;
         }
         aquilaEvents.emit('cartToOrder', _cart);
-        lang = servicesLanguages.getDefaultLang(lang);
+        lang = await servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
         const result = validateForCheckout(_cart);
         if (result.code !== 'VALID') {
@@ -728,8 +723,12 @@ const mailPendingCarts = async () => {
             let nbMails = 0;
             for (const cart of carts) {
                 try {
-                    await servicesMail.sendMailPendingCarts(cart);
-                    nbMails++;
+                    // Verify that an order has not already been generated after the creation of the cart
+                    const orders = await Orders.find({createdAt: {$gte: cart.createdAt}, 'customer.id': cart.customer.id});
+                    if (!orders || orders.length === 0) {
+                        await servicesMail.sendMailPendingCarts(cart);
+                        nbMails++;
+                    }
                 } catch (error) {
                     console.error(error);
                     throw error;

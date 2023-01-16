@@ -15,7 +15,7 @@
         "itemSaved": "Article sauvegardé !",
         "errorSaved": "Une erreur est survenue lors de la sauvegarde.",
         "imgDelete": "Image supprimée",
-        "articleNotExist": "Cet attribut n'existe pas",
+        "articleNotExist": "Cet article n'existe pas",
         "slugEmpty": "Le slug ne doit pas être vide",
         "infoSaved": "Informations sauvegardées !",
         "content": "Contenu",

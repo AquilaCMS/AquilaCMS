@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -130,7 +130,7 @@ const initFrontFramework = async (themeName = null) => {
                         handler = await initFileOfConfig.start(server);
                         console.log('%s@@ Theme started %s', color, '\x1b[0m');
                     } else {
-                        throw "The 'themeInit.js' of your theme needs to export a start() function";
+                        throw new Error("The 'themeInit.js' of your theme needs to export a start() function");
                     }
                     process.chdir(global.appRoot);
                     if (typeof handler !== 'undefined' && handler !== null) {
@@ -143,7 +143,7 @@ const initFrontFramework = async (themeName = null) => {
                 }
             } catch (errorInit) {
                 console.error(errorInit);
-                throw 'Error loading the theme';
+                throw new Error('Error loading the theme');
             }
         } else if (type === 'normal') {
             console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
@@ -157,10 +157,10 @@ const initFrontFramework = async (themeName = null) => {
                 server.use('/', express.static(pathToPages));
             }
         } else {
-            throw 'Error with the theme, the type of your theme is not correct';
+            throw new Error('Error with the theme, the type of your theme is not correct');
         }
     } else {
-        throw 'Error with the theme, language management failed';
+        throw new Error('Error with the theme, language management failed');
     }
 };
 

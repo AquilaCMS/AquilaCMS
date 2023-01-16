@@ -241,8 +241,8 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 if($scope.product?.variants?.length > 0) {
                     $scope.createPrds()
                 } else {
-                    delete $scope.product.variants_values
-                    delete $scope.product.variants
+                    $scope.product.variants_values = []
+                    $scope.product.variants = []
                 }
             }
 
@@ -294,7 +294,21 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
 
             $scope.getProductVariantIndex = function (code) {
                 return $scope.product.variants.findIndex(v => v.code === code)
-            }     
+            }
+
+            $scope.updateVariantType = function (value) {
+                if (value === 'list2') {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        $scope.product.variants[i].type = value;
+                    }
+                } else {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        if ($scope.product.variants[i].type === 'list2') {
+                            $scope.product.variants[i].type = value;
+                        }
+                    }
+                }
+            }
 
             $scope.getImageUrl = function (variant) {
                 let defaultImage = variant.images.find(img => img.default)

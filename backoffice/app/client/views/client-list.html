@@ -1,7 +1,8 @@
 <ns-box data-title="client.list.t1" title-icon="fa fa-users fa-lg" new-href="#/clients/new">
     <div class="tab-content">
         <div id="clientsList" class="tab-pane fade in active">
-            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" hook-client-list>
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                <div hook-client-list></div>
                 <div class="row">
                     <div class="col-lg-1" style="float:right">
                             <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('users')" style="cursor: pointer" ></i>
@@ -81,7 +82,7 @@
                             <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
                             <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
                             <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
-                            <td data-label="Login :" class="tdSize">{{client.lastConnexion | date:"dd/MM/yy - hh:mm"}}</td>
+                            <td data-label="Login :" class="tdSize">{{client.lastConnexion | date:"dd/MM/yy - HH:mm"}}</td>
                             <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                             <!--<td style="width: 25%">
                                 <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">

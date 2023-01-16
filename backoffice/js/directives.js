@@ -864,6 +864,26 @@ adminCatagenDirectives.directive("numericbinding", function ()
         }
     };
 });
+adminCatagenDirectives.directive("restrictInput", function ()
+{
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attr, ctrl) {
+          ctrl.$parsers.unshift(function(viewValue) {
+            var options = scope.$eval(attr.restrictInput);
+            var reg = new RegExp(options.regex);
+            if (reg.test(viewValue)) { //if valid view value, return it
+              return viewValue;
+            } else { //if not valid view value, use the model value (or empty string if that's also invalid)
+              var overrideValue = (reg.test(ctrl.$modelValue) ? ctrl.$modelValue : '');
+              element.val(overrideValue);
+              return overrideValue;
+            }
+          });
+        }
+      };
+});
 adminCatagenDirectives.directive("nsAttributes", function ($compile)
 {
     return {
@@ -876,7 +896,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 scope.att.translation[scope.lang].value = colorString
             }
 
-            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+            /* scope.$watch('att.type', function(newValue, oldValue, elScope) { */
                 el = angular.element("<span/>");
                 scope.optionColor = {
                     format: "hexString",
@@ -971,7 +991,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 $compile(el)(scope);
                 element.append(el);
                 
-            })
+            /* }) */
         }
     };
 });
@@ -2555,6 +2575,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 max: true,
                 keepRatio: true,
                 ratio: 1,
+                relativeLink: true,
     
                 crop:false,
                 position:"center",
@@ -2607,7 +2628,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    $scope.link = `${!$scope.info.relativeLink ? window.location.origin : ''}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                     return $scope.link;
                 }
             };

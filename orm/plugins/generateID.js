@@ -5,7 +5,7 @@ const generate = () => mongoose.Types.ObjectId(`ff${[...Array(22)].map(() => Mat
 
 module.exports = function generateID(schema) {
     schema.pre('save', async function (next) {
-        if (this._id.id[0] !== 255 && this.isNew) this._id = generate();
+        if (this._id && this._id.id[0] !== 255 && this.isNew) this._id = generate();
         await utilsDatabase.preUpdates(this, next, schema);
     });
 

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -58,10 +58,6 @@ async function getProductsListing(req, res, next) {
         ];
         const result               = await ServiceProduct.getProductsListing(req, res);
 
-        if (req.body.dynamicFilters) {
-            const resultat = await ServiceProduct.calculateFilters(req, result);
-            return res.json(resultat, req.body.keepOriginalAttribs);
-        }
         // If it is a product visualization, we modify these view stats
         if (req.body.countviews && result.datas.length > 0) {
             require('../services/statistics').setProductViews(result.datas[0]._id);
@@ -138,11 +134,8 @@ async function getProductsByCategoryId(req, res, next) {
         let isAdmin = false;
         if (req.info) isAdmin = req.info.isAdmin;
 
-        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, req.info, {req, res});
-        if (req.body.dynamicFilters) {
-            const resultat = await ServiceProduct.calculateFilters(req, result);
-            return res.json(resultat);
-        }
+        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.info, req.body.lang, req.body.PostBody, isAdmin, {req, res});
+
         res.json(result);
     } catch (error) {
         return next(error);

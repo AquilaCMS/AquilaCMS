@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -10,18 +10,19 @@ const path             = require('path');
 const {adminAuthRight} = require('../middleware/authentication');
 const mediasServices   = require('../services/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
+const {multerUpload}   = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/medias', adminAuthRight('medias'), listMedias);
     app.post('/v2/media', getMedia);
     app.put('/v2/media',  adminAuthRight('medias'), saveMedia);
     app.delete('/v2/media/:_id', adminAuthRight('medias'), removeMedia);
-    app.post('/v2/medias/upload', adminAuthRight('medias'), uploadFiles);
+    app.post('/v2/medias/upload', adminAuthRight('medias'), multerUpload.any(), uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
     app.get('/v2/medias/download/documents', adminAuthRight('medias'), downloadAllDocuments);
-    app.post('/v2/medias/download/documents', adminAuthRight('medias'), uploadAllDocuments);
-    app.post('/v2/medias/download/medias', adminAuthRight('medias'), uploadAllMedias);
+    app.post('/v2/medias/download/documents', adminAuthRight('medias'), multerUpload.any(), uploadAllDocuments);
+    app.post('/v2/medias/download/medias', adminAuthRight('medias'), multerUpload.any(), uploadAllMedias);
 };
 
 /**

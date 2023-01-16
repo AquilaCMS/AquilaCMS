@@ -26,8 +26,10 @@
         "valeurDefaut": "Default value",
         "jeuAttrLie": "Attributes set linked :",
         "presJeuxAttr": "Present in those attributes sets:",
+        "parentsAttr": "Parent(s) attribute(s) :",
         "dispoCatAuto": "Available in automatic categorisation:",
         "dispoFiltresAuto": "Available in automatic filters:",
+        "dispoSearchPage": "Available in search pages:",
         "valeurs": "Values",
         "addValeur": "Add a value",
         "color": "Color",
@@ -39,6 +41,7 @@
         "error": "Error",
         "deleteAttribute": "Attribute deleted",
         "infoDispoFiltres": "Allows an attribute selection category to be visible in filters",
+        "infoDispoSearchPage": "Allows an attribute to be visible in a search page",
         "allowDeclinaison": "Use as products variant",
         "listcolor": "Color list"
     },
