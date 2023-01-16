@@ -19,7 +19,7 @@ const mongooseOptions = {
 };
 
 const connect = async () => {
-    if (!global.aql.envFile || !global.aql.envFile.db) {
+    if (!global.aquila.envFile || !global.aquila.envFile.db) {
         return mongoose;
     }
     // see : https://github.com/Automattic/mongoose/blob/master/lib/connectionstate.js
@@ -31,12 +31,12 @@ const connect = async () => {
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
         const checkConnect = async () => new Promise((resolve, reject) => {
-            mongoose.connect(global.aql.envFile.db, mongooseOptions, (error) => {
+            mongoose.connect(global.aquila.envFile.db, mongooseOptions, (error) => {
                 if (typeof error === 'undefined' || error === null) {
                     connection = true;
                     resolve(true);
                 } else {
-                    reject(new Error(`Unable to connect to" ${global.aql.envFile.db}, ${error.toString()}`));
+                    reject(new Error(`Unable to connect to" ${global.aquila.envFile.db}, ${error.toString()}`));
                 }
             });
         });
@@ -137,7 +137,7 @@ const initDBValues = async () => {
         });
         await defaultLang.save();
     }
-    global.aql.defaultLang = defaultLang.code;
+    global.aquila.defaultLang = defaultLang.code;
 
     /* ********** Attributes ********** */
     await SetAttributes.findOneAndUpdate(
@@ -152,7 +152,7 @@ const initDBValues = async () => {
             code        : 'home',
             type        : 'home',
             active      : true,
-            translation : {[global.aql.defaultLang]: {name: 'home', slug: 'home'}}
+            translation : {[global.aquila.defaultLang]: {name: 'home', slug: 'home'}}
         }
     }, {new: true, upsert: true});
 

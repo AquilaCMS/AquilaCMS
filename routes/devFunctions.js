@@ -26,7 +26,7 @@ async function createModelData(req, res, next) {
 async function cipherPasswords(req, res, next) {
     console.log(new Date(), 'Encryption in progress');
     try {
-        const _config = global.aql.envConfig;
+        const _config = global.aquila.envConfig;
 
         if (_config.environment && _config.environment.mailPass !== undefined && _config.environment.mailPass !== '') {
             const goodPassword = _config.environment.mailPass;

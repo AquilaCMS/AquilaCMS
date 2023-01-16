@@ -21,8 +21,8 @@ const NSErrors                = require('./errors/NSErrors');
  */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
-        let registryFile    = path.resolve(global.aql.appRoot, 'modules', moduleName, 'licence.json');
-        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.aql.appRoot, 'package.json'))).version;
+        let registryFile    = path.resolve(global.aquila.appRoot, 'modules', moduleName, 'licence.json');
+        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
             await axios.post('https://stats.aquila-cms.com/api/v1/register', {
@@ -45,7 +45,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
     try {
         const {Configuration, Users} = require('../orm/models');
         const configuration          = await Configuration.findOne({});
-        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.aql.appRoot, 'package.json'))).version;
+        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         const moment                 = require('moment');
         if (!configuration.licence || !configuration.licence.registryKey) {
             configuration.licence = {
@@ -319,7 +319,7 @@ const isAdmin = (info) => info && info.isAdmin;
  */
 const initDBandGlobalInChildProcess = async () => {
     try {
-        global.aql   = global.aql ? global.aql : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
+        global.aquila   = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
     } catch (err) {
         throw NSErrors.GlobalNotFound;
     }

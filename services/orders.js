@@ -98,7 +98,7 @@ const setStatus = async (_id, status, sendMail = true) => {
         await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
-    if (status === orderStatuses.PAID && global.aql.envConfig.stockOrder.automaticBilling) {
+    if (status === orderStatuses.PAID && global.aquila.envConfig.stockOrder.automaticBilling) {
         await require('./bills').orderToBill(order._id.toString());
     }
     if (([orderStatuses.ASK_CANCEL]).includes(order.status) && sendMail) {
@@ -137,14 +137,14 @@ const cancelOrder = async (orderId) => {
     }
     await setStatus(orderId, orderStatuses.CANCELED, order.status !== orderStatuses.PAYMENT_PENDING);
 
-    if (global.aql.envConfig.stockOrder.bookingStock !== 'none') {
+    if (global.aquila.envConfig.stockOrder.bookingStock !== 'none') {
         aquilaEvents.emit('aqCancelOrder', order);
     }
 };
 
 const cancelOrders = () => {
     const dateAgo = new Date();
-    dateAgo.setHours(dateAgo.getHours() - global.aql.envConfig.stockOrder.pendingOrderCancelTimeout);
+    dateAgo.setHours(dateAgo.getHours() - global.aquila.envConfig.stockOrder.pendingOrderCancelTimeout);
 
     return Orders.find({
         createdAt : {$lt: dateAgo},
@@ -200,7 +200,7 @@ const rma = async (orderId, returnData, lang) => {
             }
 
             // Check if we manage the stock
-            if (global.aql.envConfig.stockOrder.bookingStock !== 'none' && returnData.in_stock) {
+            if (global.aquila.envConfig.stockOrder.bookingStock !== 'none' && returnData.in_stock) {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
                 if (_product.type === 'simple') {
                     // The quantity is incremented
@@ -434,7 +434,7 @@ const duplicateItemsFromOrderToCart = async (postBody, userInfo) => {
 };
 
 const addPackage = async (orderId, pkgData) => {
-    moment.locale(global.aql.defaultLang);
+    moment.locale(global.aquila.defaultLang);
     let status = orderStatuses.DELIVERY_PROGRESS;
     if (pkgData.status && pkgData.status === 'partial') {
         status = orderStatuses.DELIVERY_PARTIAL_PROGRESS;
@@ -462,7 +462,7 @@ const addPackage = async (orderId, pkgData) => {
 
             packages[pkgProduct.product_id] += pkgProduct.qty_shipped;
             // Check if we manage the stock
-            if (global.aql.envConfig.stockOrder.bookingStock !== 'none') {
+            if (global.aquila.envConfig.stockOrder.bookingStock !== 'none') {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
                 if (_product.type === 'simple') {
                     // Decrement the quantity

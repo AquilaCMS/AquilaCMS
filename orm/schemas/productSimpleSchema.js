@@ -64,7 +64,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
     }
     // On gère le stock
     // Commandable et on gère la reservation du stock
-    if (global.aql.envConfig.stockOrder.bookingStock === 'panier') {
+    if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
         if (!(await prdServices.checkProductOrderable(this.stock, item.quantity, item.selected_variant)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
         await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variant);

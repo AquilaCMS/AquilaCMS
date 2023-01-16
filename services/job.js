@@ -23,7 +23,7 @@ let agenda;
 const initAgendaDB = async () => {
     console.log('Scheduler init : In progress...');
     await new Promise((resolve) => {
-        agenda = new Agenda({db: {address: global.aql.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
+        agenda = new Agenda({db: {address: global.aquila.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
             let tAgendaJobs;
             try {
                 tAgendaJobs = await agenda.jobs({'data.flag': 'system'});
@@ -356,9 +356,9 @@ const getPlayImmediateJob = async (_id, option) => {
  */
 async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
-    const globalAql         = global.aql;
-    const appRoot           = slash(global.aql.appRoot);
-    const globalAppUrl      = global.aql.envConfig.environment.appUrl;
+    const globalAql         = global.aquila;
+    const appRoot           = slash(global.aquila.appRoot);
+    const globalAppUrl      = global.aquila.envConfig.environment.appUrl;
     const params            = job.attrs.data.params;
     const errorData         = null;
     let lastExecutionResult = null;
@@ -374,12 +374,12 @@ async function execDefine(job, option) {
             funcName
         };
 
-        console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aql.appRoot})%s`, '\x1b[33m', '\x1b[0m');
+        console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot})%s`, '\x1b[33m', '\x1b[0m');
         return new Promise((resolve, reject) => {
             const cmd = fork(
-                `${global.aql.appRoot}/services/jobChild.js`,
-                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aql)).toString('base64'), ...params],
-                {cwd: global.aql.appRoot, shell: true}
+                `${global.aquila.appRoot}/services/jobChild.js`,
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                {cwd: global.aquila.appRoot, shell: true}
             );
             cmd.on('error', (err) => {
                 reject(err);
@@ -411,7 +411,7 @@ async function execDefine(job, option) {
         // API's format /api/monapi
         // Delete '/'
         if (api.startsWith('/')) api = api.substr(1);
-        api = global.aql.envConfig.environment.appUrl + api;
+        api = global.aquila.envConfig.environment.appUrl + api;
     }
     if (!utils.isJsonString(params)) {
         throw new Error(`Invalid JSON params for job ${job.attrs.name}`);

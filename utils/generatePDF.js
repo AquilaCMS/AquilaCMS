@@ -44,7 +44,7 @@ to detect the output you can use
 -----------------------
 */
 const useWkHTMLtoPDF = async (content = '', options = {}, stream = true) => {
-    const isDebug = global?.aql?.envFile?.devMode?.wkhtmltopdf_debug === true;
+    const isDebug = global?.aquila?.envFile?.devMode?.wkhtmltopdf_debug === true;
     if (isDebug === true) {
         console.info('development mode => using wkhtmltopdf with debug options');
         options = {

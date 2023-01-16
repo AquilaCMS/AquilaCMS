@@ -30,7 +30,7 @@ CmsBlocksSchema.statics.translationValidation = async function (self) {
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.aql.defaultLang] = {};
+        self.translation[global.aquila.defaultLang] = {};
         translationKeys                      = Object.keys(self.translation);
     }
 

@@ -15,14 +15,14 @@ const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 const transports = [];
 
 module.exports = () => {
-    if (global.aql.envFile.logs && global.aql.envFile.logs.type && global.aql.envFile.logs.type.console) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.console) {
         transports.push(new winston.transports.Console());
     }
 
-    if (global.aql.envFile.logs && global.aql.envFile.logs.type && global.aql.envFile.logs.type.file) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.file) {
         transports.push(new WinstonDailyRotateFile({
             level       : 'info',
-            filename    : `${global.aql.appRoot}/logs/app.log`,
+            filename    : `${global.aquila.appRoot}/logs/app.log`,
             datePattern : 'YYYY-MM-DD'
         }));
     }
@@ -47,7 +47,7 @@ module.exports = () => {
         }
     };
 
-    if (global.aql.envFile.logs && global.aql.envFile.logs.override) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.override) {
         // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
         // Override the base console log with winston
         console.log   = function () {

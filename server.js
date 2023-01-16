@@ -11,14 +11,14 @@ require('aql-utils');
 const express       = require('express');
 const passport      = require('passport');
 const path          = require('path');
-global.aql          = {};
-global.aql.envPath      = null;
-global.aql.envFile      = null;
-global.aql.appRoot      = path.resolve(__dirname);
-global.aql.port         = Number(process.env.PORT || 3010);
-global.aql.defaultLang  = '';
-global.aql.moduleExtend = {};
-global.aql.translate    = require('./utils/translate');
+global.aquila          = {};
+global.aquila.envPath      = null;
+global.aquila.envFile      = null;
+global.aquila.appRoot      = path.resolve(__dirname);
+global.aquila.port         = Number(process.env.PORT || 3010);
+global.aquila.defaultLang  = '';
+global.aquila.moduleExtend = {};
+global.aquila.translate    = require('./utils/translate');
 const utils         = require('./utils/utils');
 const fs            = require('./utils/fsp');
 const serverUtils   = require('./utils/server');
@@ -65,7 +65,7 @@ const init = async () => {
 };
 
 const initDatabase = async () => {
-    if (global.aql.envFile.db) {
+    if (global.aquila.envFile.db) {
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
         utilsDB.getMongdbVersion();
@@ -91,10 +91,10 @@ const setEnvConfig = async () => {
     if (!configuration.environment.photoPath) {
         configuration.environment.photoPath = 'uploads';
     }
-    global.aql.envConfig = configuration.toObject();
+    global.aquila.envConfig = configuration.toObject();
 
     if ((await Configuration.countDocuments()) > 1) {
-        console.error(`More than 1 configuration found ! _id '${global.aql.envConfig._id}' is use`);
+        console.error(`More than 1 configuration found ! _id '${global.aquila.envConfig._id}' is use`);
     }
 };
 
@@ -102,9 +102,9 @@ const initFrontFramework = async (themeName = null) => {
     let type = 'custom'; // default type
     let themeInfo;
     if (themeName === null) {
-        themeName =  global.aql.envConfig.environment.currentTheme;
+        themeName =  global.aquila.envConfig.environment.currentTheme;
     }
-    const pathToTheme  = path.join(global.aql.appRoot, 'themes', themeName, '/');
+    const pathToTheme  = path.join(global.aquila.appRoot, 'themes', themeName, '/');
     const pathToInit   = path.join(pathToTheme, 'themeInit.js');
     const languageInit = await require('./services/themes').languageManagement(themeName);
     if (languageInit === 'OK') {
@@ -133,7 +133,7 @@ const initFrontFramework = async (themeName = null) => {
                     } else {
                         throw new Error("The 'themeInit.js' of your theme needs to export a start() function");
                     }
-                    process.chdir(global.aql.appRoot);
+                    process.chdir(global.aquila.appRoot);
                     if (typeof handler !== 'undefined' && handler !== null) {
                         server.use('/', handler);
                     }
@@ -149,7 +149,7 @@ const initFrontFramework = async (themeName = null) => {
         } else if (type === 'normal') {
             console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
             // normal type
-            const pathToTheme = path.join(global.aql.appRoot, 'themes', themeName, '/');
+            const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName, '/');
             if (fs.existsSync(pathToTheme)) {
                 let pathToPages = pathToTheme;
                 if (typeof themeInfo.expose !== 'undefined') {
@@ -166,14 +166,14 @@ const initFrontFramework = async (themeName = null) => {
 };
 
 const initServer = async () => {
-    if (global.aql.envFile.db) {
+    if (global.aquila.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
 
-        console.log(`%s@@ Admin : '/${global.aql.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
+        console.log(`%s@@ Admin : '/${global.aquila.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
 
         // we check if we compile (default: true)
-        const compile = (typeof global?.aql?.envFile?.devMode?.compile === 'undefined' || (typeof global?.aql?.envFile?.devMode?.compile !== 'undefined' && global.aql.envFile.devMode.compile === true));
+        const compile = (typeof global?.aquila?.envFile?.devMode?.compile === 'undefined' || (typeof global?.aquila?.envFile?.devMode?.compile !== 'undefined' && global.aquila.envFile.devMode.compile === true));
 
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
@@ -186,8 +186,8 @@ const initServer = async () => {
         }
 
         if (compile) {
-            const {currentTheme} = global.aql.envConfig.environment;
-            const themeFolder    = path.join(global.aql.appRoot, 'themes', currentTheme, '/');
+            const {currentTheme} = global.aquila.envConfig.environment;
+            const themeFolder    = path.join(global.aquila.appRoot, 'themes', currentTheme, '/');
             if (!fs.existsSync(themeFolder)) {
                 throw new Error(`themes folder ${themeFolder} not found`);
             }

@@ -137,7 +137,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     if (!cart) throw NSErrors.CartInactive;
     const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId);
     if (itemIndex > -1) {
-        if (global.aql.envConfig.stockOrder.bookingStock === 'panier') {
+        if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
@@ -337,7 +337,7 @@ const updateQty = async (postBody, userInfo) => {
     const item     = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
     const _product = await Products.findOne({_id: item.id});
 
-    if (global.aql.envConfig.stockOrder.bookingStock === 'panier') {
+    if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
         const ServicesProducts = require('./products');
 
         const quantityToAdd = postBody.item.quantity - item.quantity;
@@ -411,7 +411,7 @@ const checkCountryTax = async (_cart, _user) => {
                 if (_country.taxeFree) { // No tax
                     paidTax = false; // Pay in ET
                 } else {
-                    const {websiteCountry} = global.aql.envConfig.environment;
+                    const {websiteCountry} = global.aquila.envConfig.environment;
                     if (websiteCountry && websiteCountry !== countryCode && _user.company && _user.company.intracom) {
                         paidTax = false;
                     }
@@ -470,7 +470,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             }
         }
         // We check that the products in the basket are orderable
-        const {bookingStock} = global.aql.envConfig.stockOrder;
+        const {bookingStock} = global.aquila.envConfig.stockOrder;
         if (bookingStock === 'commande') {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
@@ -562,7 +562,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 };
 
 const removeOldCarts = async () => {
-    const {bookingStock} = global.aql.envConfig.stockOrder;
+    const {bookingStock} = global.aquila.envConfig.stockOrder;
     const dateAgo        = new Date();
     const params         = {$or: [{createdAt: null}, {createdAt: {$lt: dateAgo}}]};
     const carts          = await Cart.find(params);

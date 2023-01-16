@@ -211,7 +211,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
 
     let _path          = server.getUploadDirectory();
-    _path              = path.join(global.aql.appRoot, _path);
+    _path              = path.join(global.aquila.appRoot, _path);
     const cacheFolder  = path.join(_path, '/cache/');
     let filePath       = '';
     let filePathCache  = '';
@@ -314,9 +314,9 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             console.warn('No image (or item) found. Default image used.');
         }
     }
-    if (!(await utilsMedias.existsFile(filePath)) && global.aql.envConfig.environment.defaultImage) {
-        fileName      = `default_image_cache_${size}${path.extname(global.aql.envConfig.environment.defaultImage)}`;
-        filePath      = path.join(_path, global.aql.envConfig.environment.defaultImage);
+    if (!(await utilsMedias.existsFile(filePath)) && global.aquila.envConfig.environment.defaultImage) {
+        fileName      = `default_image_cache_${size}${path.extname(global.aquila.envConfig.environment.defaultImage)}`;
+        filePath      = path.join(_path, global.aquila.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
     // if the requested image is already cached, it is returned direct
@@ -421,7 +421,7 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        const absoluteTargetPath = slash(path.resolve(global.aql.appRoot, target_path_full));
+        const absoluteTargetPath = slash(path.resolve(global.aquila.appRoot, target_path_full));
         await fsp.copyRecursive(tmp_path, absoluteTargetPath);
         if ((await fsp.stat(tmp_path)).isDirectory()) {
             await fsp.deleteRecursive(tmp_path);
