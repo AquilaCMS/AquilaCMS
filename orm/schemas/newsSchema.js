@@ -13,6 +13,7 @@ const utilsDatabase       = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
 const translation         = require('../../utils/translation');
 const Schema              = mongoose.Schema;
+const mongooseTranslate = require('../../utils/translate/mongoose');
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -54,7 +55,7 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
             }
 
             if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push('slug déjà existant');
+                errors.push(mongooseTranslate['slugAlreadyExists'][global.defaultLang]);
             }
 
             errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
