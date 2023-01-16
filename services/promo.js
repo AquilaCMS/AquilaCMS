@@ -139,12 +139,37 @@ const deletePromoCodeById = async (promoId, codeId) => {
     }
 };
 
+const checkPromoVariants = async (req, res, datas, populate) => {
+    // Just for product variants
+    for (let i = 0; i < datas.length; i++) {
+        const data = datas[i];
+        if (data.variants_values) {
+            for (let j = 0; j < data.variants_values.length; j++) {
+                const variantsValues           = data.variants_values[j];
+                variantsValues.price.priceSort = {
+                    et  : variantsValues.price.et.special || variantsValues.price.et.normal,
+                    ati : variantsValues.price.ati.special || variantsValues.price.ati.normal
+                };
+
+                const resVariantValues  = await checkPromoCatalog([variantsValues], req.info, req.body.lang, false, populate, false, res.keepPromos);
+                data.variants_values[j] = resVariantValues[0];
+                if (data.variants_values[j].default) {
+                    data.price = data.variants_values[j].price;
+                }
+            }
+        }
+        datas[i] = data;
+    }
+};
+
 const middlewarePromoCatalog = async (req, res) => {
     try {
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
             if (res.locals.datas) {
                 const datas = await checkPromoCatalog(res.locals.datas, req.info, req.body.lang, false, populate, res.keepPromos);
+                await checkPromoVariants(req, res, datas, populate);
+
                 if (res.keepPromos) {
                     return {...res.locals, datas: datas.products, promos: datas.promos};
                 }
@@ -152,24 +177,7 @@ const middlewarePromoCatalog = async (req, res) => {
             }
 
             const datas = await checkPromoCatalog([res.locals], req.info, req.body.lang, false, populate, false, res.keepPromos);
-
-            // Just for product variants
-            for (let i = 0; i < datas.length; i++) {
-                const data = datas[i];
-                if (data.variants_values) {
-                    for (let j = 0; j < data.variants_values.length; j++) {
-                        const variantsValues           = data.variants_values[j];
-                        variantsValues.price.priceSort = {
-                            et  : variantsValues.price.et.special || variantsValues.price.et.normal,
-                            ati : variantsValues.price.ati.special || variantsValues.price.ati.normal
-                        };
-
-                        const resVariantValues  = await checkPromoCatalog([variantsValues], req.info, req.body.lang, false, populate, false, res.keepPromos);
-                        data.variants_values[j] = resVariantValues[0];
-                    }
-                }
-                datas[i] = data;
-            }
+            await checkPromoVariants(req, res, datas, populate);
 
             if (res.keepPromos) {
                 return {datas};
