@@ -216,7 +216,6 @@ const modulesLoadInit = async (server, runInit = true) => {
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
         if (fs.existsSync(initModuleFile)) {
-            process.stdout.write(`- ${loadedModules[i].name}`);
             try {
                 const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
                 if (!isValid) {
@@ -226,12 +225,10 @@ const modulesLoadInit = async (server, runInit = true) => {
                 if (runInit) {
                     require(initModuleFile)(server);
                 }
-                process.stdout.write('\x1b[32m \u2713 \x1b[0m');
-                process.stdout.write("\n");
+                console.log(`- ${loadedModules[i].name}\x1b[32m \u2713 \x1b[0m`)
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write(' \x1b[31m \u274C An error has occurred \x1b[0m\n');
-                process.stdout.write("\n");
+                console.log(`- ${loadedModules[i].name}\x1b[31m \u274C An error has occurred \x1b[0m\n`)
                 console.error(err);
                 return false;
             }
@@ -259,8 +256,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                 // Get the initAfter.js files of the modules
                 await new Promise(async (resolve, reject) => {
                     try {
-                        if (mod.name === 'garantie-aquila' && fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
-                            process.stdout.write(`- ${mod.name}`);
+                        if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);
                                 if (!isValid) {
@@ -269,18 +265,16 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                             }
                             require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         } else {
-                            process.stdout.write(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)`);
+                            console.log(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)\x1b[32m \u2713 \x1b[0m`)
+                            return resolve();
                         }
+                        console.log(`- ${mod.name}\x1b[32m \u2713 \x1b[0m`)
                         resolve();
                     } catch (err) {
-                        process.stdout.write(' \x1b[31m \u274C \x1b[0m\n');
-                        process.stdout.write("\n");
+                        console.log(`- ${mod.name}\x1b[31m \u274C \x1b[0m\n`)
                         reject(err);
                     }
                 });
-                process.stdout.write('\x1b[32m \u2713 \x1b[0m');
-                process.stdout.write("\n");
-
             } catch (err) {
                 console.error(err);
             }
