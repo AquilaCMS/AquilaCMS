@@ -278,13 +278,13 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
             if (updateQuery.translation[lang.code].slug.length <= 2) {
-                errors.push(mongooseTranslate['slugTooShort'][global.defaultLang]);
+                errors.push(mongooseTranslate.slugTooShort[global.defaultLang]);
                 return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${utils.slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    errors.push(mongooseTranslate['slugAlreadyExists'][global.defaultLang]);
+                    errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
                 }
             }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [

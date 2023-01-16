@@ -55,7 +55,7 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
             }
 
             if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push(mongooseTranslate['slugAlreadyExists'][global.defaultLang]);
+                errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
             }
 
             errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [

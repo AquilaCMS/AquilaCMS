@@ -7,12 +7,12 @@
  */
 
 module.exports = {
-    'slugAlreadyExists': {
-        fr: 'Le slug existe déjà',
-        en: 'The slug already exists'
+    slugAlreadyExists : {
+        fr : 'Le slug existe déjà',
+        en : 'The slug already exists'
     },
-    'slugTooShort': {
-        fr: 'Le slug est trop court',
-        en: 'The slug is too short'
-    },
+    slugTooShort : {
+        fr : 'Le slug est trop court',
+        en : 'The slug is too short'
+    }
 };
