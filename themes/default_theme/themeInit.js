@@ -10,7 +10,7 @@ const packageManager = require('../../utils/packageManager');
 const dev = serverUtils.dev;
 
 const themeName = path.basename(__dirname);
-const pathToTheme = path.join(global.appRoot, "themes", themeName, "/");
+const pathToTheme = path.join(global.aql.appRoot, "themes", themeName, "/");
 
 
 const initI18n = async (i18nInstance, ns) => {

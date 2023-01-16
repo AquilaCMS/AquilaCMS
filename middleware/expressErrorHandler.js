@@ -90,7 +90,7 @@ const expressErrorHandler = (err, req, res, next) => {
         if (req.headers && req.headers.lang) lang = req.headers.lang;
         else if (req.query && req.query.lang) lang = req.query.lang;
         else if (req.body && req.body.lang && typeof req.body.lang === 'string') lang = req.body.lang;
-        else if (global.defaultLang) lang = global.defaultLang;
+        else if (global.aql.defaultLang) lang = global.aql.defaultLang;
 
         if (err instanceof MongoError) {
             if (getEnv('NODE_ENV') !== 'test') log(err);

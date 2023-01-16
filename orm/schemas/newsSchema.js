@@ -32,7 +32,7 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
+        self.translation[global.aql.defaultLang] = {};
         translationKeys                      = Object.keys(self.translation);
     }
 

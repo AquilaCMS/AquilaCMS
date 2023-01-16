@@ -42,7 +42,7 @@ const genSitemap = async () => {
         inCrawl = true;
 
         try {
-            const appUrl     = global.envConfig.environment.appUrl;
+            const appUrl     = global.aql.envConfig.environment.appUrl;
             const languages  = await Languages.find({status: 'visible'}).lean();
             const _languages = {};
             for (let i = 0, leni = languages.length; i < leni; i++) {
@@ -235,7 +235,7 @@ const removeSitemap = async () => {
 * Allow / Disallow seo in robots.txt
 */
 const manageRobotsTxt = async (allow = true) => {
-    const filePath  = path.join(global.appRoot, getUploadDirectory(), 'robots.txt');
+    const filePath  = path.join(global.aql.appRoot, getUploadDirectory(), 'robots.txt');
     let contentFile = 'User-agent: *\nAllow: /';
 
     if (!allow) {
@@ -248,7 +248,7 @@ const manageRobotsTxt = async (allow = true) => {
 /*
 * Return true if the site is in demoMode
 */
-const isDemoMode = async () => global.envConfig.environment.demoMode;
+const isDemoMode = async () => global.aql.envConfig.environment.demoMode;
 
 module.exports = {
     genSitemap,

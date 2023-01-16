@@ -22,15 +22,15 @@ let loadedModules;
  * @returns {any}
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
-    if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
+    if (global.aql.moduleExtend[property] && typeof global.aql.moduleExtend[property].function === 'function') {
         // here we run the function with error throwing (no try/catch)
-        if (global.moduleExtend[property].throwError) {
-            const fct = await global.moduleExtend[property].function(params);
+        if (global.aql.moduleExtend[property].throwError) {
+            const fct = await global.aql.moduleExtend[property].function(params);
             return fct;
         }
         // else, we run the function AND we catch the error to run the native function instead
         try {
-            const fct = await global.moduleExtend[property].function(params);
+            const fct = await global.aql.moduleExtend[property].function(params);
             return fct; // Be careful, we need to define 'fct' before return it ! (don't know why)
         } catch (err) {
             console.error(`Overide function ${property} from module rise an error, use native function instead.`, err);
@@ -45,9 +45,9 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
  * Module : Create '\themes\ {theme_name}\modules\list_modules.js'
  * @param {string} theme
  */
-const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
+const createListModuleFile = async (theme = global.aql.envConfig.environment.currentTheme) => {
     try {
-        const modules_folder = path.join(global.appRoot, 'themes', theme, 'modules');
+        const modules_folder = path.join(global.aql.appRoot, 'themes', theme, 'modules');
         await fs.ensureDir(modules_folder);
         const pathToListModules = path.join(modules_folder, 'list_modules.js');
         const isFileExists      = await fs.hasAccess(pathToListModules);
@@ -63,9 +63,9 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
  * display all modules installed with the current theme
  * @param {string} theme theme name
  */
-const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
+const displayListModule = async (theme = global.aql.envConfig.environment.currentTheme) => {
     try {
-        const modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
+        const modules_folder = path.join(global.aql.appRoot, `themes/${theme}/modules`);
         const fileContent    = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
@@ -214,7 +214,7 @@ const modulesLoadInit = async (server, runInit = true) => {
         console.log('Start init loading modules');
     }
     for (let i = 0; i < loadedModules.length; i++) {
-        const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
+        const initModuleFile = path.join(global.aql.appRoot, `/modules/${loadedModules[i].name}/init.js`);
         if (fs.existsSync(initModuleFile)) {
             console.log(`- ${loadedModules[i].name}`);
             try {
@@ -257,7 +257,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                 // Get the initAfter.js files of the modules
                 await new Promise(async (resolve, reject) => {
                     try {
-                        if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
+                        if (fs.existsSync(path.join(global.aql.appRoot, `/modules/${mod.name}/initAfter.js`))) {
                             console.log(`- ${mod.name}`);
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);
@@ -265,7 +265,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                                     throw new Error('Error checking licence');
                                 }
                             }
-                            require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
+                            require(path.join(global.aql.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         } else {
                             console.error(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
                         }

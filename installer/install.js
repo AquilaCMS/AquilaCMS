@@ -45,7 +45,7 @@ const testdb = async (req) => {
 // Only for installation purpose, will be inaccessible after first installation
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
-    global.installMode = true;
+    global.aql.installMode = true;
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
@@ -73,12 +73,12 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : write env file');
         await fs.writeFile('./config/envPath', datas.envPath);
         const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
-        global.envPath         = datas.envPath;
+        global.aql.envPath         = datas.envPath;
         let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
         envFile[aquila_env].db = datas.databaseAdd;
-        await fs.writeFile(path.join(global.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
+        await fs.writeFile(path.join(global.aql.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
         envFile        = envFile[aquila_env];
-        global.envFile = envFile;
+        global.aql.envFile = envFile;
         console.log('Installer : finish writing env file');
 
         await require('../utils/database').connect();
@@ -126,10 +126,10 @@ const recoverConfiguration = async (req) => {
         await fs.unlink(envPath);
         envPath = `${envPath}on`;
     }
-    const envPathFile = path.join(global.appRoot, 'config', 'envPath');
+    const envPathFile = path.join(global.aql.appRoot, 'config', 'envPath');
     await fs.writeFile(envPathFile, envPath);
-    global.envPath = envPath;
-    global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
+    global.aql.envPath = envPath;
+    global.aql.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
     console.log('Installer : finish fetching new env path');
 };
 

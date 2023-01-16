@@ -102,7 +102,7 @@ const exportData = async (model, PostBody, noCSV = false) => {
     const fsp    = require('../utils/fsp');
     const server = require('../utils/server');
 
-    moment.locale(global.defaultLang);
+    moment.locale(global.aql.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;

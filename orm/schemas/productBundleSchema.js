@@ -70,7 +70,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
         throw NSErrors.ProductInvalid;
     }
     // on check que les section son commandable si le stock est géré
-    if (global.envConfig.stockOrder.bookingStock === 'panier') {
+    if (global.aql.envConfig.stockOrder.bookingStock === 'panier') {
         for (let i = 0; i < item.selections.length; i++) {
             const selectionProducts = item.selections[i].products;
             // on check que chaque produit soit commandable

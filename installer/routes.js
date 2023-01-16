@@ -50,11 +50,11 @@ const getErrorText = (err) => {
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
-            const wkhtmlInstalled = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'wkhtmltopdf.js'));
-            const sharpInstalled  = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'sharp.js'));
-            const html            = (await fs.readFile(path.join(global.appRoot, 'installer', 'install.html'))).toString()
+            const wkhtmlInstalled = await execScript(path.join(global.aql.appRoot, 'installer', 'scripts', 'wkhtmltopdf.js'));
+            const sharpInstalled  = await execScript(path.join(global.aql.appRoot, 'installer', 'scripts', 'sharp.js'));
+            const html            = (await fs.readFile(path.join(global.aql.appRoot, 'installer', 'install.html'))).toString()
                 .replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`)
-                .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.appRoot, './package.json'))).version)
+                .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.aql.appRoot, './package.json'))).version)
                 .replace('{{wkhtmltopdf}}', wkhtmlInstalled)
                 .replace('{{sharp}}', sharpInstalled);
             res.send(html, {}, (err) => {
@@ -68,7 +68,7 @@ module.exports = (installRouter) => {
 
     installRouter.post('/config', async (req, res) => {
         try {
-            global.envConfig = {environment: {appUrl: req.body.appUrl}}; // We take the appUrl info as soon as possible
+            global.aql.envConfig = {environment: {appUrl: req.body.appUrl}}; // We take the appUrl info as soon as possible
             await require('./install').firstLaunch(req, true);
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();

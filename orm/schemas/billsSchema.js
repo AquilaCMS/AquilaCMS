@@ -79,7 +79,7 @@ BillsSchema.plugin(autoIncrement.plugin, {model: 'bills', field: 'id', startAt: 
 
 BillsSchema.pre('save', async function (next) {
     if (!this.facture || this.facture === '' || this.facture === 'unset') {
-        const config = global.envConfig.environment;
+        const config = global.aql.envConfig.environment;
         if (config.billsPattern && config.billsPattern !== '') {
             this.facture = config.billsPattern.replace('{year}', new Date().getFullYear())
                 .replace('{numAuto}', this.id);

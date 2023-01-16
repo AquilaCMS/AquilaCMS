@@ -76,10 +76,10 @@ const preview = async (body) => {
         }
     }
     if (body.lang) {
-        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
+        return URL.resolve(global.aql.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
     }
     const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
+    return URL.resolve(global.aql.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
 };
 
 /**

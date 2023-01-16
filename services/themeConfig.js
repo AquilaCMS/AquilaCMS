@@ -43,7 +43,7 @@ const getThemeConfigByKey = async (key) => {
  * @param body {object} the new theme configuration
  */
 const setThemeConfig = async (body) => {
-    const nameTheme = global.envConfig.environment.currentTheme;
+    const nameTheme = global.aql.envConfig.environment.currentTheme;
     delete body.lang;
     for (const [key, values] of Object.entries(body.config)) {
         body.config[key] = {values};

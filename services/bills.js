@@ -122,7 +122,7 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
         throw NSErrors.AccessUnauthorized;
     }
     bill              = bill.toObject();
-    const lang        = bill.lang || global.defaultLang;
+    const lang        = bill.lang || global.aql.defaultLang;
     const oldChecksum = bill.checksum;
     delete bill.checksum;
     const obj      = cleanBillObject(bill);

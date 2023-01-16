@@ -10,8 +10,8 @@ const crypto    = require('crypto');
 const IV_LENGTH = 16;
 
 const cipher = (dataToEncrypt) => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const {method, password} = global.envFile.encryption;
+    if (global.aql.envFile.encryption && global.aql.envFile.encryption.method && global.aql.envFile.encryption.password) {
+        const {method, password} = global.aql.envFile.encryption;
         const iv                 = crypto.randomBytes(IV_LENGTH);
         const cipher             = crypto.createCipheriv(method, password, iv); // password need to be at least 32 char in aes-256-cbc
         let encrypted            = cipher.update(dataToEncrypt);
@@ -24,8 +24,8 @@ const cipher = (dataToEncrypt) => {
 };
 
 const decipher = (dataToDecrypt) => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const {method, password} = global.envFile.encryption;
+    if (global.aql.envFile.encryption && global.aql.envFile.encryption.method && global.aql.envFile.encryption.password) {
+        const {method, password} = global.aql.envFile.encryption;
         const textParts          = dataToDecrypt.split(':');
         const iv                 = Buffer.from(textParts[0], 'hex');
         const encryptedText      = Buffer.from(textParts[1], 'hex');
@@ -38,7 +38,7 @@ const decipher = (dataToDecrypt) => {
 };
 
 const EncryptionConfigInfo = () => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
+    if (global.aql.envFile.encryption && global.aql.envFile.encryption.method && global.aql.envFile.encryption.password) {
         return;
     }
 

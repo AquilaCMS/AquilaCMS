@@ -47,12 +47,12 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
         if (isAdmin) {
             config.environment = {
                 ...config.environment,
-                databaseConnection : global.envFile.db
+                databaseConnection : global.aql.envFile.db
             };
-            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+            if (global.aql.envFile.ssl && global.aql.envFile.ssl.active === true) {
                 config.environment = {
                     ...config.environment,
-                    ssl : global.envFile.ssl
+                    ssl : global.aql.envFile.ssl
                 };
             } else {
                 // Put the SSL links empty if false
@@ -72,12 +72,12 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
 
 const updateEnvFile = async () => {
     const aquila_env      = serverUtils.getEnv('AQUILA_ENV');
-    const absoluteEnvPath = path.join(global.appRoot, global.envPath);
+    const absoluteEnvPath = path.join(global.aql.appRoot, global.aql.envPath);
     let oldEnvFile        = await fs.readFile(absoluteEnvPath);
     oldEnvFile            = JSON.parse(oldEnvFile);
     if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
-        oldEnvFile[aquila_env] = global.envFile;
-        global.envFile         = oldEnvFile[aquila_env];
+        oldEnvFile[aquila_env] = global.aql.envFile;
+        global.aql.envFile         = oldEnvFile[aquila_env];
         await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
     }
 };
@@ -85,11 +85,11 @@ const updateEnvFile = async () => {
 const saveEnvFile = async (body, files) => {
     const {environment} = body;
     if (environment) {
-        global.envFile.ssl = {
+        global.aql.envFile.ssl = {
             cert   : '',
             key    : '',
             active : false,
-            ...global.envFile.ssl
+            ...global.aql.envFile.ssl
         };
         if (files && files.length > 0) {
             for (const file of files) {
@@ -97,10 +97,10 @@ const saveEnvFile = async (body, files) => {
                     try {
                         await fs.moveFile(
                             path.resolve(file.destination, file.filename),
-                            path.resolve(global.appRoot, 'config/ssl', file.originalname),
+                            path.resolve(global.aql.appRoot, 'config/ssl', file.originalname),
                             {mkdirp: true}
                         );
-                        global.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
+                        global.aql.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
                         body.needRestart                   = true;
                     } catch (err) {
                         console.error(err);
@@ -110,17 +110,17 @@ const saveEnvFile = async (body, files) => {
         }
         if (environment.ssl && environment.ssl.active === 'true') {
             if (environment.ssl.active === 'false') {
-                global.envFile.ssl.active = false;
+                global.aql.envFile.ssl.active = false;
             } else {
-                global.envFile.ssl.active = true;
+                global.aql.envFile.ssl.active = true;
             }
             body.needRestart = true;
         }
         if (
             environment.databaseConnection
-            && environment.databaseConnection !== global.envFile.db
+            && environment.databaseConnection !== global.aql.envFile.db
         ) {
-            global.envFile.db = environment.databaseConnection;
+            global.aql.envFile.db = environment.databaseConnection;
             body.needRestart  = true;
         }
         await updateEnvFile();
@@ -142,7 +142,7 @@ const saveEnvConfig = async (newConfig) => {
         await updateProductsStockOrder(stockOrder, oldConfig.stockOrder);
     }
     const cfg        = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
-    global.envConfig = cfg;
+    global.aql.envConfig = cfg;
 };
 
 /**

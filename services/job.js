@@ -23,7 +23,7 @@ let agenda;
 const initAgendaDB = async () => {
     console.log('Scheduler init : In progress...');
     await new Promise((resolve) => {
-        agenda = new Agenda({db: {address: global.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
+        agenda = new Agenda({db: {address: global.aql.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
             let tAgendaJobs;
             try {
                 tAgendaJobs = await agenda.jobs({'data.flag': 'system'});
@@ -356,8 +356,9 @@ const getPlayImmediateJob = async (_id, option) => {
  */
 async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
-    const appRoot           = slash(global.appRoot);
-    const globalAppUrl      = global.envConfig.environment.appUrl;
+    const globalAql         = global.aql;
+    const appRoot           = slash(global.aql.appRoot);
+    const globalAppUrl      = global.aql.envConfig.environment.appUrl;
     const params            = job.attrs.data.params;
     const errorData         = null;
     let lastExecutionResult = null;
@@ -368,17 +369,17 @@ async function execDefine(job, option) {
         const funcName   = api.substr(api.lastIndexOf('/') + 1);
         const modulePath = api.substr(0, api.lastIndexOf('/'));
         const apiParams  = {
-            option,
+            option : option || '',
             modulePath,
             funcName
         };
 
-        console.log(`%scommand : node -e "global.appRoot = '${appRoot}'; globalAppUrl = globalAppUrl = '${globalAppUrl}'; require('.${modulePath}').${funcName}(${option})" with param : [${params}] (Path : ${global.appRoot})%s`, '\x1b[33m', '\x1b[0m');
+        console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aql.appRoot})%s`, '\x1b[33m', '\x1b[0m');
         return new Promise((resolve, reject) => {
             const cmd = fork(
-                `${global.appRoot}/services/jobChild.js`,
-                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.envConfig)).toString('base64'), Buffer.from(JSON.stringify(global.envFile)).toString('base64'), ...params],
-                {cwd: global.appRoot, shell: true}
+                `${global.aql.appRoot}/services/jobChild.js`,
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aql)).toString('base64'), ...params],
+                {cwd: global.aql.appRoot, shell: true}
             );
             cmd.on('error', (err) => {
                 reject(err);
@@ -410,7 +411,7 @@ async function execDefine(job, option) {
         // API's format /api/monapi
         // Delete '/'
         if (api.startsWith('/')) api = api.substr(1);
-        api = global.envConfig.environment.appUrl + api;
+        api = global.aql.envConfig.environment.appUrl + api;
     }
     if (!utils.isJsonString(params)) {
         throw new Error(`Invalid JSON params for job ${job.attrs.name}`);

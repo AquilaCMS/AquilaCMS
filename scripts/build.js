@@ -13,7 +13,7 @@ const buildOneTheme = async () => {
         appRoot : path.join(__dirname, '../')
     };
     if (args && args[0]) {
-        const pathToTheme = path.join(global.appRoot, 'themes', args[0], '/');
+        const pathToTheme = path.join(global.aql.appRoot, 'themes', args[0], '/');
         if (fs.existsSync(pathToTheme)) {
             await utilsThemes.yarnBuildCustom(args[0]);
         } else {

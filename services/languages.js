@@ -26,7 +26,7 @@ const saveLang = async (lang) => {
 
     if (lang.defaultLanguage) { // Remove other default language
         lang.status        = 'visible'; // The default language need to be visible
-        global.defaultLang = lang.code;
+        global.aql.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
@@ -57,7 +57,7 @@ const getDefaultLang = async (language) => {
         const lang = await Languages.find({code: language}).lean();
         if (lang) return language;
     }
-    return global.defaultLang;
+    return global.aql.defaultLang;
 };
 
 /**
@@ -120,17 +120,17 @@ const translateList = async () => {
  *
  */
 async function getTranslatePath(lang) {
-    return path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
+    return path.join(global.aql.appRoot, 'themes', global.aql.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 
 /**
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
-const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
+const createDynamicLangFile = async (selectedTheme = global.aql.envConfig.environment.currentTheme) => {
     try {
         const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
         const contentFile = `module.exports = [${_languages}];`;
-        const linkToFile  = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        const linkToFile  = path.join(global.aql.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
         if (await fs.existsSync(linkToFile)) {
             const originalContentFile = await fs.readFile(linkToFile);
 

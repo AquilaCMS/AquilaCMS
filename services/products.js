@@ -38,7 +38,7 @@ const queryBuilder        = new QueryBuilder(Products, restrictedFields, default
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // if in the config, we ask not to return the stock fields, we add them to the restrictedFields
-if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
+if (global.aql.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
@@ -84,9 +84,9 @@ const sortProductList = (products, PostBodySort, category) => {
 
         if (sortArray[0] === 'translation') {
             if (`${PostBodySort[sortPropertyName]}` === '1') {
-                products.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+                products.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.aql.defaultLang));
             } else {
-                products.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+                products.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.aql.defaultLang));
             }
         } else {
             // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
@@ -140,7 +140,7 @@ const priceFilterFromPostBody = (PostBody) => {
 };
 
 // Returns all products found, the products on the current page and the total number of products found
-const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaultLang) => {
+const getProductsByOrderedSearch = async (pattern, filters, lang = global.aql.defaultLang) => {
     const config         = await Configuration.findOne({}, {'environment.searchSettings': 1}).lean();
     const searchSettings = config?.environment?.searchSettings;
 
@@ -419,7 +419,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
  * @param reqRes
  * @param keepReviews
  */
-const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lang = global.defaultLang) => {
+const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lang = global.aql.defaultLang) => {
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
@@ -536,7 +536,7 @@ const _getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin =
  * @param reqRes
  */
 const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = false, reqRes = undefined) => {
-    moment.locale(global.defaultLang);
+    moment.locale(global.aql.defaultLang);
     lang = await servicesLanguages.getDefaultLang(lang);
 
     // Set PostBody.filter and PostBody.structure
@@ -575,7 +575,7 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
     }
 
     // If a productsList.id does not respond to the match then productsList.id === null
-    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
+    if (global.aql.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
         PostBody.structure.stock = 1;
     }
 
@@ -1401,8 +1401,8 @@ const calculStock = async (params, product = undefined) => {
     moment.locale('fr', {
         workingWeekdays : [1, 2, 3, 4, 5]
     });
-    moment.locale(global.defaultLang);
-    const stockLabels = global.envConfig.stockOrder.labels;
+    moment.locale(global.aql.defaultLang);
+    const stockLabels = global.aql.envConfig.stockOrder.labels;
     if (!product) {
         product = await Products.findOne({_id: params.idProduct});
     }

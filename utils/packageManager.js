@@ -13,7 +13,7 @@ const {spawn, exec} = require('child_process');
  * @param {string} cde Command to execute.
  * @param {string} path Path of the command.
  */
-exports.execCmd = async function (cde, path = global.appRoot) {
+exports.execCmd = async function (cde, path = global.aql.appRoot) {
     console.log(`%scommand : ${cde} (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         exec(cde, {cwd: path, maxBuffer: 1024 * 500}, (err, stdout, stderr) => {
@@ -33,7 +33,7 @@ exports.execCmd = async function (cde, path = global.appRoot) {
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execSh = async function (cde, param = [], path = global.appRoot) {
+exports.execSh = async function (cde, param = [], path = global.aql.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         const cmd    = spawn(cde, [...param], {cwd: path, shell: true});
