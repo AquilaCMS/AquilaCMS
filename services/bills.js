@@ -118,7 +118,7 @@ const orderToBill = async (idOrder, isAvoir = false) => {
 
 const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     const invoiceTranslate = require('../utils/translate/invoice');
-    let bill = await queryBuilder.findOne(PostBody);
+    let bill               = await queryBuilder.findOne(PostBody);
     if (!bill) {
         throw NSErrors.AccessUnauthorized;
     }
@@ -137,10 +137,12 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     if (!html) {
         throw NSErrors.CmsBlockNotFound;
     }
-    const withNoTaxes = invoiceTranslate['et'][lang];
-    const withTaxes = invoiceTranslate['ati'][lang];
-    const unpaid = invoiceTranslate['unpaid'][lang];
-    const paid =  invoiceTranslate['paid'][lang];
+
+    const apiLang     = lang === 'fr' ? 'fr' : 'en';
+    const withNoTaxes = invoiceTranslate.et[apiLang];
+    const withTaxes   = invoiceTranslate.ati[apiLang];
+    const unpaid      = invoiceTranslate.unpaid[apiLang];
+    const paid        = invoiceTranslate.paid[apiLang];
     const currency    = ' &euro;';
     const datas       = {
         '{{number}}'                 : bill.facture,
