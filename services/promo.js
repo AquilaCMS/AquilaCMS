@@ -346,6 +346,7 @@ const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo = null)
     } catch (error) {
         oCart = await Cart.findOneAndUpdate({_id: cart._id, status: 'IN_PROGRESS'}, {$set: {promos: []}}).populate(['items.id']);
     }
+    oCart = await oCart.getItemsStock();
     return oCart;
 };
 
@@ -482,6 +483,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
             });
         }
     }
+    cart = await cart.getItemsStock();
 
     return cart.save();
 };
@@ -590,7 +592,8 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             cart.promos[0].discountET = discountET;
         }
     }
-    const resultCart = await cart.save();
+    let resultCart = await cart.save();
+    resultCart     = await resultCart.getItemsStock();
     return resultCart;
 };
 
@@ -736,6 +739,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
             }
         }
     }
+    cart = await cart.getItemsStock();
     return cart;
 };
 
@@ -790,6 +794,7 @@ async function resetCartProductPrice(cart, j) {
     } else {
         cart.items[j].price.special = undefined;
     }
+    cart = await cart.getItemsStock();
     return cart;
 }
 

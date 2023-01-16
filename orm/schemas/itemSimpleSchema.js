@@ -48,16 +48,6 @@ const ItemSimple = new Schema(
                     extension        : {type: String, default: '.jpg'}
                 }
             ],
-            stock : {
-                qty          : {type: Number, default: 0},
-                qty_booked   : {type: Number, default: 0},
-                date_selling : Date,
-                date_supply  : Date,
-                orderable    : {type: Boolean, default: false},
-                status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
-                label        : String,
-                translation  : {}
-            },
             weight : Number
         }, {strict: false})
     },
@@ -70,7 +60,7 @@ const ItemSimple = new Schema(
 ItemSimple.methods.populateItem = async function () {
     const {Products} = require('../models');
     const self       = this;
-    if (self.id && self.id._id === undefined) self.id = await Products.findById(self.id);
+    if (self.id && self.id._id === undefined) self.id = await Products.findById(self.id).lean().exec();
 };
 
 ItemSimple.methods.decreaseStock = function (cartId, cb) {

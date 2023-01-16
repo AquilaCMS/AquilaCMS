@@ -15,6 +15,7 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 const utils             = require('../../utils/utils');
+const utilsDatabase     = require('../../utils/database');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -90,6 +91,17 @@ const itemsSchema = CartSchema.path('items');
 itemsSchema.discriminator('simple', ItemSimpleSchema);
 itemsSchema.discriminator('bundle', ItemBundleSchema);
 itemsSchema.discriminator('virtual', ItemVirtualSchema);
+
+CartSchema.methods.getItemsStock = async function () {
+    const cart = this;
+    for (let i = 0; i < cart.items.length; i++) {
+        if (cart.items[i].type !== 'virtual') {
+            cart.items[i]       = cart.items[i].toObject();
+            cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id);
+        }
+    }
+    return cart;
+};
 
 CartSchema.methods.calculateBasicTotal = function () {
     const cart       = this;

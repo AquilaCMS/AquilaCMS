@@ -2034,6 +2034,21 @@ const populateItems = async (items) => {
 };
 
 /**
+ * Allows you to populate cart items stock
+ * @param {any[]} items
+ */
+const populateStockData = async (_id) => {
+    const {ProductSimple} = require('../orm/models');
+    const {stock}         = await ProductSimple.findById(_id.toString());
+
+    if (global.envConfig?.stockOrder?.returnStockToFront === false) {
+        const {qty_booked, qty_real, qty, ...rest} = stock;
+        return rest;
+    }
+    return stock;
+};
+
+/**
  * called during pre hooks for `findOneAndUpdate` and/or `updateOne`
  * @param {mongoose.Query|mongoose.Model} that query to check
  * @param {mongoose.HookNextFunction} next hooks function
@@ -2081,5 +2096,6 @@ module.exports = {
     preUpdates,
     testdb,
     checkSlugExist,
-    checkCode
+    checkCode,
+    populateStockData
 };

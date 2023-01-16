@@ -98,11 +98,11 @@ ItemBundle.methods.populateItem = async function () {
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {
             if (selection.products[index].type === undefined) {
-                selection.products[index] = await Products.findById(_product);
+                selection.products[index] = await Products.findById(_product).lean().exec();
             }
         }
     }
-    if (self.id._id === undefined) self.id = await Products.findById(self.id);
+    if (self.id._id === undefined) self.id = await Products.findById(self.id.toString()).lean().exec();
 };
 
 module.exports = ItemBundle;
