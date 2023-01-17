@@ -108,13 +108,9 @@ const saveEnvFile = async (body, files) => {
                 }
             }
         }
-        if (environment.ssl && environment.ssl.active === 'true') {
-            if (environment.ssl.active === 'false') {
-                global.envFile.ssl.active = false;
-            } else {
-                global.envFile.ssl.active = true;
-            }
-            body.needRestart = true;
+        if (environment.ssl.active !== global.envFile.ssl.active) {
+            global.envFile.ssl.active = environment.ssl.active;
+            body.needRestart          = true;
         }
         if (
             environment.databaseConnection
