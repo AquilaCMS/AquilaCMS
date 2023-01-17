@@ -52,8 +52,12 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
             if (global.envFile.ssl) {
                 config.environment = {
                     ...config.environment,
-                    ssl : global.envFile.ssl
+                    ssl : {
+                        active : global.envFile.ssl.active
+                    }
                 };
+                if (global.envFile.ssl.cert) config.environment.ssl.cert = path.basename(global.envFile.ssl.cert);
+                if (global.envFile.ssl.key) config.environment.ssl.key = path.basename(global.envFile.ssl.key);
             } else {
                 // Put the SSL links empty if false
                 config.environment = {
@@ -257,9 +261,10 @@ const uploadSSLFile = async (fileType, files, body) => {
     }
     const file = files[0];
     // copy the file to the ssl directory
-    fs.renameSync(file.path, path.join('ssl', body.filename));
+    const filepath = path.join('ssl', body.filename);
+    fs.renameSync(file.path, filepath);
 
-    global.envFile.ssl[fileType] = body.filename;
+    global.envFile.ssl[fileType] = filepath;
     await updateEnvFile();
 };
 
