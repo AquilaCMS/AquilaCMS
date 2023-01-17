@@ -15,4 +15,19 @@ SystemDirectives.directive('inputFileSsl', function() {
             })
         }
     }
-})
+}).directive('sslFile', function () {
+    return {
+        scope: {
+            sslFile: '=',
+        },
+        link: function (scope, el, attrs) {
+            el.bind('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    scope.sslFile = file;
+                    scope.$apply();
+                }
+            });
+        }
+    };
+});

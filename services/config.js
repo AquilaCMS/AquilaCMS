@@ -49,7 +49,7 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
                 ...config.environment,
                 databaseConnection : global.envFile.db
             };
-            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+            if (global.envFile.ssl) {
                 config.environment = {
                     ...config.environment,
                     ssl : global.envFile.ssl
@@ -251,10 +251,27 @@ const updateConfig = async (newConfig, oldConfig) => {
     return newConfig;
 };
 
+const uploadSSLFile = async (fileType, files, body) => {
+    if (files?.length === 0) throw new Error('No file provided');
+    if (fileType !== 'key' && fileType !== 'cert') throw new Error('Invalid file type');
+    const dir = path.join(__dirname, '..', 'ssl');
+    // create the directory if not exists
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    const file = files[0];
+    // copy the file to the ssl directory
+    fs.renameSync(file.path, path.join('ssl', body.filename));
+
+    global.envFile.ssl[fileType] = body.filename;
+    await updateEnvFile();
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
     getConfigTheme,
-    needRebuildAndRestart
+    needRebuildAndRestart,
+    uploadSSLFile
 };

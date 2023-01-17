@@ -59,25 +59,24 @@
                     <div>
                         <h3 translate>system.environment.security.ssl.ssl</h3>
                         <div class="form-group">
-                            <ns-switch ng-model="system.environment.ssl.active" yes-value="true" no-value="false"
+                            <ns-switch ng-model="sslFiles.active" yes-value="true" no-value="false"
                                 name="active"></ns-switch>
                         </div>
-                        <div ng-show="system.environment.ssl.active">
+                        <div ng-show="sslFiles.active">
                             <div class="form-group">
                                 <label for="cert">
                                     <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
-                                    <input type="file" name="cert" id="cert" style="display:none"
-                                        ng-model="system.environment.security.ssl.cert" input-file-ssl>
+                                    <input type="file" name="cert" id="cert" style="display:none" ssl-file="sslFiles.cert" onchange="angular.element(this).scope().sendSSLFiles(this)" />
+                                        
                                 </label>
-                                <span>{{ssl.cert}}</span>
+                                <span>{{sslFiles.cert.name}}</span>
                             </div>
                             <div class="form-group">
                                 <label for="key">
                                     <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
-                                    <input type="file" name="key" id="key" style="display:none"
-                                        ng-model="system.environment.ssl.key" input-file-ssl>
+                                    <input type="file" name="key" id="key" style="display:none" ssl-file="sslFiles.key" onchange="angular.element(this).scope().sendSSLFiles(this)" />
                                 </label>
-                                <span>{{ssl.key}}</span>
+                                <span>{{sslFiles.key.name}}</span>
                             </div>
                         </div>
                     </div>
