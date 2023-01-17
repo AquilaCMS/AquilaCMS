@@ -17,7 +17,7 @@ const ItemVirtual = new Schema({}, {
 ItemVirtual.methods.populateItem = async function () {
     const {Products} = require('../models');
     const self       = this;
-    if (self.id._id === undefined) self.id = await Products.findById(self.id.toString()).lean().exec();
+    if (self.id._id === undefined) self.id = await Products.findById(self.id);
 };
 
 module.exports = ItemVirtual;

@@ -97,7 +97,7 @@ CartSchema.methods.getItemsStock = async function () {
     for (let i = 0; i < cart.items.length; i++) {
         if (cart.items[i].type !== 'virtual') {
             cart.items[i]       = cart.items[i].toObject();
-            cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id);
+            cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id._id || cart.items[i].id);
         }
     }
     return cart;
