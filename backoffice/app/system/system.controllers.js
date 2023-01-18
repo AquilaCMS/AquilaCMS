@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
+    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "$interval", "EnvBlocks", "$translate",
+    function ($scope, ConfigV2, NSConstants, System, $http, toastService, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
         $scope.showModuleLoading = false;
         $scope.log = {
@@ -23,6 +23,11 @@ SystemControllers.controller("systemGeneralController", [
             content: [],
             newPolicy: ""
         };
+        $scope.sslFiles = {
+            cert:null,
+            key: null,
+            active: false
+        }
 
         $scope.switchCsp = function (value) {
             if (value == true) {
@@ -60,9 +65,13 @@ SystemControllers.controller("systemGeneralController", [
             if ($scope.system.environment.contentSecurityPolicy.values) {
                 $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicy.values;
             }
-            $scope.ssl = {
-                cert: $scope.system.environment.ssl.cert || '',
-                key: $scope.system.environment.ssl.key || '',
+            $scope.sslFiles = {
+                cert: {
+                    name:$scope.system.environment.ssl.cert || ''
+                },
+                key:{
+                    name: $scope.system.environment.ssl.key || ''
+                },
                 active: $scope.system.environment.ssl.active || false
             }
             if(!$scope.system.environment.searchSettings) {
@@ -220,6 +229,35 @@ SystemControllers.controller("systemGeneralController", [
                 console.error(ex);
             }
         };
+        $scope.uploadImg = function (name, file) {
+            $http({
+                method: 'POST' , url: 'v2/config/ssl/' + name,
+                data: {file, filename: file.name},
+                headers: {'Content-Type': undefined},
+                transformRequest: function (data, headersGetter) {
+                    const formData = new FormData();
+                    angular.forEach(data, function (value, key) {
+                        formData.append(key, value);
+                    });
+                    return formData;
+                }
+            }).success(function(response) {
+                console.log("==============", response)
+            }).catch(function(err) {
+                console.log("==============", err)
+            })
+        };
+
+        $scope.sendSSLFiles = function (that) {
+            const {files, name} = that;
+            if(files?.length === 0) return
+            if($scope.sslFiles.cert) {
+                $scope.sslFiles.cert = files[0];
+            } else if($scope.sslFiles.key) {
+                $scope.sslFiles.key = files[0];
+            }
+            $scope.uploadImg(name, files[0]);
+        }
 
         $scope.validate = function () {
             $scope.showModuleLoading = true;
@@ -230,18 +268,7 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.environment.appUrl += "/";
             }
             let file = {};
-            if ($scope.system.environment.ssl.active) {
-                if ($scope.system.environment.ssl.cert instanceof File || $scope.system.environment.ssl.cert instanceof File) {
-                    if ($scope.system.environment.ssl.cert instanceof File) {
-                        file.cert = $scope.system.environment.ssl.cert;
-                        $scope.system.environment.ssl.cert = $scope.system.environment.ssl.cert.name;
-                    }
-                    if ($scope.system.environment.ssl.key instanceof File) {
-                        file.key = $scope.system.environment.ssl.key;
-                        $scope.system.environment.ssl.key = $scope.system.environment.ssl.key.name;
-                    }
-                }
-            }
+            $scope.system.environment.ssl.active = $scope.sslFiles.active
             if ($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)) {
                 $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
                 $scope.contentPolicy.newPolicy = "";

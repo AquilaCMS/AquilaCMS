@@ -10,7 +10,7 @@ ConfigsServices.factory('Config', ['$resource', function ($resource) {
 }]);
 
 ConfigsServices.factory('ConfigV2', ['$resource', function ($resource) {
-    return $resource('v2/config', {}, {
+    return $resource('v2/config/:option', {}, {
         get  : {method: 'POST'},
         save : {method: 'PUT'},
     });
