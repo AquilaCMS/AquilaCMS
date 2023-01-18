@@ -67,9 +67,9 @@ const ConfigurationSchema = new Schema({
             threshold          : {type: Number, default: 0.2},
             keys               : [
                 {
-                    name   : String,
-                    label  : String,
-                    weight : Number
+                    name        : String,
+                    translation : {},
+                    weight      : Number
                 }
             ]
         }
