@@ -224,6 +224,18 @@ const migration_12_searchSettings = async () => {
     }
 };
 
+const migration_14_jobsOnMainThread = async () => {
+    console.log('Applying migration script "migration_14_jobsOnMainThread"...');
+    const jobsToNotUpdate = [
+        'Mail to pending carts',
+        'Clean cache',
+        'Cache requests clean'
+    ];
+    await mongoose.connection.collection('agendaJobs').update({}, { $set: { 'data.onMainThread': true } });
+    await mongoose.connection.collection('agendaJobs').update({ name: { $nin: jobsToNotUpdate } }, { $set: { 'data.onMainThread': false } });
+    console.log('End migration script "migration_14_jobsOnMainThread"...');
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -237,7 +249,8 @@ const migrationScripts = [
     migration_9_adminRights,
     migration_10_clearSetAttributesIndexes,
     migration_11_clearAttributesIndexes,
-    migration_12_searchSettings
+    migration_12_searchSettings,
+    migration_14_jobsOnMainThread
     // sample
 ];
 
