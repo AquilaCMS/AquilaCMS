@@ -384,7 +384,7 @@ const execCanonical = async () => {
         }
 
         // Set the canonical to empty for all untreated products
-        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}}).lean();
+        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
@@ -398,6 +398,7 @@ const execCanonical = async () => {
 
         return `${productsNotCanonicalised.length} products not canonicalised : ${productsNotCanonicaliedString}`;
     } catch (error) {
+        console.error(error);
         return error.message;
     }
 };
