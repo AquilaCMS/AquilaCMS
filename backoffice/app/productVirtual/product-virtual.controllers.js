@@ -94,7 +94,7 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             {
                 text: 'product.button.dup',
                 onClick: function () {
-                    const newCode = prompt("Saisir le code du nouveau produit : ");
+                    const newCode = prompt($translate.instant("simple.inputCode"));
                     if (newCode) {
                         const newPrd = {...$scope.product, code: newCode};
                         delete newPrd._id;

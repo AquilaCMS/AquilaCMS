@@ -460,7 +460,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 text: 'product.button.dup',
                 onClick: function (){
                     var clone = angular.copy($scope.product);
-                    clone.code = prompt("Saisir le code: ");
+                    clone.code = prompt($translate.instant("bundle.product.inputCode"));
                     clone.id = clone._id;
                     delete clone._id;
                     ProductsV2.duplicate(clone, function (savedPrd)
