@@ -13,7 +13,7 @@ const utilsDatabase       = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
 const translation         = require('../../utils/translation');
 const Schema              = mongoose.Schema;
-const mongooseTranslate = require('../../utils/translate/mongoose');
+const { NSErrors } = require('../../utils');
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -25,10 +25,8 @@ const NewsSchema = new Schema({
     id         : false
 });
 
-NewsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+NewsSchema.statics.translationValidation = async function (self, updateQuery) {
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
@@ -55,21 +53,19 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
             }
 
             if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
+                throw NSErrors.SlugAlreadyExist; 
             }
 
-            errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'slug'}, {key: 'title'}
-            ]));
+            ]);
 
             if (lang.content) {
-                errors = translation.checkTranslations(lang.content.resume, 'content.resume', errors, translationKeys[i]);
-                errors = translation.checkTranslations(lang.content.text, 'content.text', errors, translationKeys[i]);
+                translation.checkTranslations(lang.content.resume, 'content.resume');
+                translation.checkTranslations(lang.content.text, 'content.text');
             }
         }
     }
-
-    return errors;
 };
 
 NewsSchema.statics.checkSlugExist = async function (that) {

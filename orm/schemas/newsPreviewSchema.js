@@ -26,8 +26,8 @@ NewsPreviewSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 NewsPreviewSchema.pre('save', async function (next) {
-    const errors = await NewsPreviewSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await NewsPreviewSchema.statics.translationValidation(this);
+    next();
 });
 
 NewsPreviewSchema.post('save', async function (doc) {

@@ -2053,9 +2053,8 @@ const preUpdates = async (that, next, schema) => {
                 checkSlugExist,
                 translationValidation
             } = schema.statics;
-            let errors = [];
             if (typeof translationValidation === 'function' && elem._id) {
-                errors = await translationValidation(elem, that);
+                await translationValidation(that, elem);
             }
             if (typeof checkCode === 'function') {
                 await checkCode(elem);
@@ -2063,7 +2062,6 @@ const preUpdates = async (that, next, schema) => {
             if (typeof checkSlugExist === 'function') {
                 await checkSlugExist(elem);
             }
-            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
         }
         return next();
     } catch (error) {

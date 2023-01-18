@@ -12,7 +12,7 @@ const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
-const mongooseTranslate   = require('../../utils/translate/mongoose');
+const { NSErrors } = require('../../utils');
 
 const StaticsSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -33,11 +33,10 @@ const StaticsSchema = new Schema({
  content
  */
 
-StaticsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
+StaticsSchema.statics.translationValidation = async function (self, updateQuery) {
 
     if (updateQuery) {
-        if (updateQuery.translation === undefined) return errors; // No translation
+        if (updateQuery.translation === undefined) return;
 
         const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
@@ -52,21 +51,18 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
             if (updateQuery.translation[lang.code].slug.length <= 2) {
-                errors.push(mongooseTranslate.slugTooShort[global.defaultLang]);
-                return errors;
+                throw NSErrors.SlugTooShort
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${utils.slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
+                    throw NSErrors.SlugAlreadyExist;
                 }
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
-            ]));
+            checkCustomFields(lang, [{key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}]);
         }
     } else {
-        if (self.translation === undefined) return errors; // No translation
+        if (self.translation === undefined) return; // No translation
         const translationKeys = Object.keys(self.translation);
         const languages       = await mongoose.model('languages').find({});
         for (const lang of languages) {
@@ -80,18 +76,13 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
-                errors.push(mongooseTranslate.slugTooShort[global.defaultLang]);
-                return errors;
+                throw NSErrors.SlugTooShort;
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
+                throw NSErrors.SlugAlreadyExist;
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
-            ]));
         }
     }
-    return errors;
 };
 
 StaticsSchema.statics.checkCode = async function (that) {

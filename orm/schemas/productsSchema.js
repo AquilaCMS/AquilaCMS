@@ -19,7 +19,6 @@ const {
 const utilsDatabase  = require('../../utils/database');
 const reviewService  = require('../../services/reviews');
 const helper         = require('../../utils/utils');
-const mongooseTranslate = require('../../utils/translate/mongoose');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -249,11 +248,9 @@ ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkN
     await this.updateMany(query, {_trademark: trademarkName});
 };
 
-ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
+ProductsSchema.statics.translationValidation = async function (self, updateQuery) {
     if (updateQuery) {
-        if (updateQuery.translation === undefined) return errors; // No translation
+        if (updateQuery.translation === undefined) return; // No translation
         const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
         for (const lang of languages) {
@@ -278,30 +275,29 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
             if (updateQuery.translation[lang.code].slug.length <= 2) {
-                errors.push(mongooseTranslate.slugTooShort[global.defaultLang]);
-                return errors;
+                throw NSErrors.SlugTooShort;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${utils.slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    errors.push(mongooseTranslate.slugAlreadyExists[global.defaultLang]);
+                    throw NSErrors.SlugAlreadyExist;
                 }
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+            checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            ]);
 
             if (updateQuery.translation[lang.code].description1) {
-                errors = checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title');
+                checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text');
             }
             if (updateQuery.translation[lang.code].description2) {
-                errors = checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title');
+                checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text');
             }
         }
     } else {
-        if (self.translation === undefined) return errors; // No translation
+        if (self.translation === undefined) return; // No translation
 
         const translationKeys = Object.keys(self.translation);
         const languages       = await mongoose.model('languages').find({});
@@ -316,28 +312,25 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
-                errors.push(mongooseTranslate['slugTooShort'][global.defaultLang]);
-                return errors;
+                throw NSErrors.SlugTooShort;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push(`slug '${lang.code}' déjà existant`);
+                throw NSErrors.SlugAlreadyExist;
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+            checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            ]);
 
             if (self.translation[lang.code].description1) {
-                errors = checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                checkTranslations(self.translation[lang.code].description1.title, 'description1.title');
+                checkTranslations(self.translation[lang.code].description1.text, 'description1.text');
             }
             if (self.translation[lang.code].description2) {
-                errors = checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                checkTranslations(self.translation[lang.code].description2.title, 'description2.title');
+                checkTranslations(self.translation[lang.code].description2.text, 'description2.text');
             }
         }
     }
-    // }
-    return errors;
 };
 
 ProductsSchema.methods.hasVariantsValue = function (that) {

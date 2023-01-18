@@ -113,7 +113,9 @@ class NSErrors {
     static get ProductNotSalable() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotSalable'); }
     static get ProductReviewNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductReviewNotFound'); }
     static get ProductUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductUpdateError'); }
-    static get ProductUpdateSlugError() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductUpdateSlugError'); }
+    static get SlugTooShort() { return this.makeErrorAlias(NSErrors.NotFound, 'SlugTooShort'); }
+    static get InvalidInputString() { return this.makeErrorAlias(NSErrors.NotFound, 'InvalidInputString'); }
+    static get NameMissing() { return this.makeErrorAlias(NSErrors.NotFound, 'NameMissing'); }
     static get PromoCodePromoInvalid() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoCodePromoInvalid'); }
     static get PromoDateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoDateError'); }
     static get PromoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoNotFound'); }

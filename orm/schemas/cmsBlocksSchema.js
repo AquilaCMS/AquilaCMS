@@ -23,9 +23,7 @@ const CmsBlocksSchema = new Schema({
 });
 
 CmsBlocksSchema.statics.translationValidation = async function (self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
@@ -36,13 +34,11 @@ CmsBlocksSchema.statics.translationValidation = async function (self) {
 
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
-            errors = translationUtils.checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
+            translationUtils.checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
                 {key: 'content'}
             ]);
         }
     }
-
-    return errors;
 };
 
 CmsBlocksSchema.statics.checkCode = async function (that) {

@@ -35,10 +35,8 @@ const PaymentMethodsSchema = new Schema({
  instruction
  */
 
-PaymentMethodsSchema.statics.translationValidation = async function (query, self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+PaymentMethodsSchema.statics.translationValidation = async function (self) {
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
@@ -49,13 +47,11 @@ PaymentMethodsSchema.statics.translationValidation = async function (query, self
 
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
-            errors = checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
+            checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
                 {key: 'name'}, {key: 'urlLogo'}, {key: 'description'}, {key: 'instruction'}
             ]);
         }
     }
-
-    return errors;
 };
 
 PaymentMethodsSchema.pre('updateOne', async function (next) {
@@ -63,8 +59,8 @@ PaymentMethodsSchema.pre('updateOne', async function (next) {
 });
 
 PaymentMethodsSchema.pre('save', async function (next) {
-    const errors = await PaymentMethodsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await PaymentMethodsSchema.statics.translationValidation(this);
+    next();
 });
 
 aquilaEvents.emit('paymentMethodSchemaInit', PaymentMethodsSchema);

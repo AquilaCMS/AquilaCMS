@@ -23,11 +23,9 @@ const MailSchema = new Schema({
     id         : false
 });
 
-MailSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
+MailSchema.statics.translationValidation = async function (self, updateQuery) {
     if (self && updateQuery === undefined || self.code !== undefined) {
-        if (self.translation === undefined) return errors; // No translation
+        if (self.translation === undefined) return; // No translation
 
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
@@ -40,16 +38,14 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
             if (updateQuery) {
                 self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
             }
-            errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'content'}, {key: 'subject'}
-            ]));
+            ]);
         }
         if (updateQuery) {
             updateQuery.updateOne(self);
         }
     }
-
-    return errors;
 };
 
 MailSchema.pre('updateOne', async function (next) {
@@ -60,8 +56,8 @@ MailSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 MailSchema.pre('save', async function (next) {
-    const errors = await MailSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await MailSchema.statics.translationValidation(this);
+    next();
 });
 
 aquilaEvents.emit('mailSchemaInit', MailSchema);
