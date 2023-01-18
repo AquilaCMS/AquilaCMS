@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "$interval", "EnvBlocks", "$translate",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, $interval, EnvBlocks, $translate) {
+    "$scope", "ConfigV2", "$rootScope", "System", "$http", "toastService", "$interval", "EnvBlocks", "$translate",
+    function ($scope, ConfigV2, $rootScope, System, $http, toastService, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
         $scope.showModuleLoading = false;
         $scope.log = {

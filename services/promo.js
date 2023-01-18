@@ -273,6 +273,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 products[i] = appliedPromoProduct;
             }
         }
+
         if (!keepObject) {
             products[i].isNew = false;
             if (products[i]._doc && products[i].associated_prds) {
