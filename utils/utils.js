@@ -317,18 +317,13 @@ const isAdmin = (info) => info && info.isAdmin;
 /**
  * Init child process Globals and Database
  */
-const initDBandGlobalInChildProcess = async () => {
+const initChildProcess = async () => {
+    const utilsDB       = require('./database');
     try {
-        global.aquila   = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
-    } catch (err) {
-        throw NSErrors.GlobalNotFound;
-    }
-
-    try {
-        const utilsDB = require('./database');
+        global.aquila       = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
         await utilsDB.connect();
     } catch (err) {
-        throw NSErrors.CannotConnectDBFromChildNode;
+        throw NSErrors.InitChildProcessError;
     }
 };
 
@@ -344,5 +339,5 @@ module.exports = {
     isEqual,
     isJsonString,
     isAdmin,
-    initDBandGlobalInChildProcess
+    initChildProcess
 };

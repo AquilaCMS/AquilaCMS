@@ -99,7 +99,7 @@ async function getPauseJob(req, res, next) {
  */
 async function setJob(req, res, next) {
     try {
-        const {_id, name, repeatInterval, data}                                             = req.body;
+        const {_id, name, repeatInterval, data}                                          = req.body;
         const {api, comment, method, flag, lastExecutionResult, params, onMainThread}    = data;
         const result = await ServiceJob.setJob(_id, name, repeatInterval, api, comment, method, flag, lastExecutionResult, false, params, onMainThread);
         return res.json(result);

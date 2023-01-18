@@ -39,10 +39,6 @@ module.exports = {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },
-    GlobalNotFound : {
-        fr : 'Variable globale non trouvée',
-        en : 'Global variable not found'
-    },
     JobErrorInChildNode : {
         fr : 'Erreur dans le job',
         en : 'Job error'
@@ -423,9 +419,9 @@ module.exports = {
         fr : 'Impossible de trouver le code de la promotion',
         en : 'Cannot find the code discount'
     },
-    CannotConnectDBFromChildNode : {
-        fr : 'Impossible de se connecter à la base de données depuis un noeud enfant',
-        en : 'Cannot connect to database from child node'
+    InitChildProcessError : {
+        fr : 'Impossible d\'initialiser le processus enfant',
+        en : 'Cannot initialize child process'
     },
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',
