@@ -38,7 +38,8 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             data: {
                 method: "get",
                 flag: "user",
-                params: ""
+                params: "",
+                onMainThread: true
             }
         };
         $scope.trustHtml = function(){

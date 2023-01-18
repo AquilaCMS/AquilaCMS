@@ -58,42 +58,42 @@ const initAgendaDB = async () => {
                     try {
                         if (tJobsSystem[i] === 'Sitemap') {
                             // await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
-                            await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', {en: 'Sitemap generations', fr: 'Génération du sitemap'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', {en: 'Sitemap generations', fr: 'Génération du sitemap'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Segmentation cat') {
-                            await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', {fr: 'Catégorisation automatique', en: 'Automatic categorization'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', {fr: 'Catégorisation automatique', en: 'Automatic categorization'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Segmentation picto') {
-                            await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', {fr: 'Segmentation automatique des pictogrammes', en: 'Automatic pictogram segmentation'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', {fr: 'Segmentation automatique des pictogrammes', en: 'Automatic pictogram segmentation'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Canonicalisation') {
-                            await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', {fr: 'Génère les canonicals de chaque produit', en: 'Generates the canonicals of each product'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', {fr: 'Génère les canonicals de chaque produit', en: 'Generates the canonicals of each product'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Remove old carts') {
-                            await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', {fr: 'Suppression des anciens panier', en: 'Deleting old carts'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', {fr: 'Suppression des anciens panier', en: 'Deleting old carts'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Remove pending payment orders') {
-                            await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', {fr: 'Annulation des commandes en attente de paiement', en: 'Cancellation of orders awaiting payment'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', {fr: 'Annulation des commandes en attente de paiement', en: 'Cancellation of orders awaiting payment'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Cohérence produits') {
-                            await setJob(undefined, tJobsSystem[6], '0 1 1 * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[6], '0 1 1 * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Cohérence données') {
-                            await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Build stats') {
-                            await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', {fr: 'Construction des statistiques de la veille', en: 'Construction of the statistics of the previous day'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', {fr: 'Construction des statistiques de la veille', en: 'Construction of the statistics of the previous day'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Cache requests clean') {
-                            await setJob(undefined, tJobsSystem[9], '0 */6 * * *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[9], '0 */6 * * *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true, '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
-                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'system', '', true, '');
+                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'system', '', true, '', true);
                         } else if (tJobsSystem[i] === 'Remove temp file') {
-                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'system', '', true, '');
+                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Remove previews') {
-                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '');
+                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
-                            await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
+                            await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Delete orders\' failed payments') {
                             await setJob(undefined, tJobsSystem[14], '0 */4 * * *', '/services/payments/deleteFailedPayment', {
                                 fr : 'Supprime les anciens paiements echoués des anciennes commandes',
                                 en : 'Remove failed payments from old orders'
-                            }, 'service', 'system', '', true, '');
+                            }, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'RGPD bills') {
-                            await setJob(undefined, tJobsSystem[15], '* * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[15], '* * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'RGPD users') {
-                            await setJob(undefined, tJobsSystem[16], '* * 1 * * *', '/services/rgpd/checkLastConnexion', {fr: 'Anonymise les utilisateurs inactifs de plus de 3 ans pour le RGPD', en: 'Anonymizes inactive users older than 3 years for RGPD'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[16], '* * 1 * * *', '/services/rgpd/checkLastConnexion', {fr: 'Anonymise les utilisateurs inactifs de plus de 3 ans pour le RGPD', en: 'Anonymizes inactive users older than 3 years for RGPD'}, 'service', 'system', '', true, '', false);
                         }
                     } catch (error) {
                         console.error(error);
@@ -190,8 +190,9 @@ const agendaDefine = async (name) => {
  * @param {string} [lastExecutionResult=""] default value : "" - the result of the last cron run
  * @param {boolean} [fromServer=false] default value : false - if setJob is executed by the server or by the client (from a route)
  * @param {string} [params=''] default value : "" - jobs data params
+ * @param {boolean} [onMainThread=true] default value : true - if setJob is executed in the main thread or in a child thread
  */
-const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '') => {
+const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '', onMainThread = true) => {
     let query;
     if (_id) query = {_id: mongoose.Types.ObjectId(_id)};
     else query = {name};
@@ -217,12 +218,13 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
             // If the job is not created by the server then the modification of the system type job is not authorized
             // Take the old values
             if (!fromServer) {
-                name    = jobs[0].attrs.name;
-                api     = jobs[0].attrs.data.api;
-                comment = jobs[0].attrs.data.comment;
-                method  = jobs[0].attrs.data.method;
-                flag    = jobs[0].attrs.data.flag;
-                params  = jobs[0].attrs.data.params;
+                name            = jobs[0].attrs.name;
+                api             = jobs[0].attrs.data.api;
+                comment         = jobs[0].attrs.data.comment;
+                method          = jobs[0].attrs.data.method;
+                flag            = jobs[0].attrs.data.flag;
+                params          = jobs[0].attrs.data.params;
+                onMainThread    = jobs[0].attrs.data.onMainThread;
             } else {
                 // If the server creates the job by calling the setJob service then we take lastExecutionResult
                 // because it will not be passed as a parameter of the setJob, otherwise the lastExecutionResult will be deleted
@@ -234,12 +236,12 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         }
         await jobs[0].save();
         // We must each time recreate the job so that "every" validates the new data entered by the user (cf: failReason if the repeatInterval is false)
-        const oAgenda          = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
+        const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
         oAgenda.attrs.disabled = jobs[0].attrs.disabled;
         return oAgenda;
     }
     // When creating an agenda
-    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
+    const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user enters the wrong frequency
     oAgenda.disable();
@@ -258,11 +260,11 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
  */
 const defineJobOnStartUp = async (job) => {
     const {name, repeatInterval, disabled, data}                    = job.attrs;
-    const {api, comment, method, flag, lastExecutionResult, params} = data;
+    const { api, comment, method, flag, lastExecutionResult, params, onMainThread } = data;
     // definition of the task to be performed by the agenda
     await agendaDefine(name);
     // Create in the agendaJobs collection and add field (data, comment and flag)
-    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
+    const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user set the wrong frequency
     if (disabled === false) oAgenda.enable();
@@ -356,10 +358,8 @@ const getPlayImmediateJob = async (_id, option) => {
  */
 async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
-    const globalAql         = global.aquila;
-    const appRoot           = slash(global.aquila.appRoot);
-    const globalAppUrl      = global.aquila.envConfig.environment.appUrl;
     const params            = job.attrs.data.params;
+    const onMainThread      = job.attrs.data.onMainThread;
     const errorData         = null;
     let lastExecutionResult = null;
     let result;
@@ -368,66 +368,73 @@ async function execDefine(job, option) {
         if (api.endsWith('/')) api = api.substr(0, api.length - 1);
         const funcName   = api.substr(api.lastIndexOf('/') + 1);
         const modulePath = api.substr(0, api.lastIndexOf('/'));
-        const apiParams  = {
-            option : option || '',
-            modulePath,
-            funcName
-        };
+        const apiParams  = { modulePath, funcName, option : option || '' };
 
-        console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot})%s`, '\x1b[33m', '\x1b[0m');
-        return new Promise((resolve, reject) => {
-            const cmd = fork(
-                `${global.aquila.appRoot}/services/jobChild.js`,
-                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
-                {cwd: global.aquila.appRoot, shell: true}
-            );
-            cmd.on('error', (err) => {
-                reject(err);
+        if (onMainThread) {
+            try {
+                result = await require(`..${modulePath}`)[funcName](option);
+            } catch (err) {
+                // If the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
+                // save it in order to have a persistent error on the front side
+                if (!error.code) result = error;
+                if (error.code) result = (error && error.translations && error.translations.fr) ? error.translations.fr : error;
+                errorData = error;
+            }
+        }else{
+            console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot})%s`, '\x1b[33m', '\x1b[0m');
+            return new Promise((resolve, reject) => {
+                const cmd = fork(
+                    `${global.aquila.appRoot}/services/jobChild.js`,
+                    [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                    {cwd: global.aquila.appRoot, shell: true}
+                );
+                cmd.on('error', (err) => {
+                    reject(err);
+                });
+                cmd.on('message', (data) => {
+                    lastExecutionResult = data.message;
+                });
+                cmd.on('close', (code) => {
+                    console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(2)' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
+                    return resolve({code});
+                });
+            }).then(async (data) => {
+                const error = data.code;
+                if (error) lastExecutionResult = `Error -> ${JSON.stringify(lastExecutionResult)}`;
+                job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
+                await job.save();
+                if (error) throw NSErrors.JobErrorInChildNode;
             });
-            cmd.on('message', (data) => {
-                lastExecutionResult = data.message;
+        }
+    }else{
+        const {method}   = job.attrs.data;
+        const httpMethod = method.toLowerCase();
+        if (!['get', 'post'].includes(httpMethod)) {
+            const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
+            throw error_method;
+        }
+        if (!api.includes('://')) {
+            // API's format /api/monapi
+            // Delete '/'
+            if (api.startsWith('/')) api = api.substr(1);
+            api = global.aquila.envConfig.environment.appUrl + api;
+        }
+        if (!utils.isJsonString(params)) {
+            throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
+        }
+    
+        try {
+            result = await axios({
+                method : httpMethod.toUpperCase(),
+                url    : api,
+                data   : JSON.parse(params)
             });
-            cmd.on('close', (code) => {
-                console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(2)' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
-                return resolve({code});
-            });
-        }).then(async (data) => {
-            const error = data.code;
-            if (error) lastExecutionResult = `Error -> ${JSON.stringify(lastExecutionResult)}`;
-            job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
-            await job.save();
-            if (error) throw NSErrors.JobErrorInChildNode;
-        });
+        } catch (err) {
+            result = {status: err.response.status, data: err.response.data};
+        }
+        // Get the response from the API
+        job.attrs.data.lastExecutionResult = JSON.stringify(result);
     }
-
-    const {method}   = job.attrs.data;
-    const httpMethod = method.toLowerCase();
-    if (!['get', 'post'].includes(httpMethod)) {
-        const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
-
-        throw error_method;
-    }
-    if (!api.includes('://')) {
-        // API's format /api/monapi
-        // Delete '/'
-        if (api.startsWith('/')) api = api.substr(1);
-        api = global.aquila.envConfig.environment.appUrl + api;
-    }
-    if (!utils.isJsonString(params)) {
-        throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
-    }
-
-    try {
-        result = await axios({
-            method : httpMethod.toUpperCase(),
-            url    : api,
-            data   : JSON.parse(params)
-        });
-    } catch (err) {
-        result = {status: err.response.status, data: err.response.data};
-    }
-    // Get the response from the API
-    job.attrs.data.lastExecutionResult = JSON.stringify(result);
     await job.save();
     if (errorData !== null) throw errorData;
 }
