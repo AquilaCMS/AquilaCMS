@@ -229,7 +229,7 @@ SystemControllers.controller("systemGeneralController", [
                 console.error(ex);
             }
         };
-        $scope.uploadImg = function (name, file) {
+        $scope.uploadFile = function (name, file) {
             $http({
                 method: 'POST' , url: 'v2/config/ssl/' + name,
                 data: {file, filename: file.name},
@@ -242,9 +242,9 @@ SystemControllers.controller("systemGeneralController", [
                     return formData;
                 }
             }).success(function(response) {
-                console.log("==============", response)
+                toastService.toast('success', $translate.instant('mail.detail.fileSaved'))
             }).catch(function(err) {
-                console.log("==============", err)
+                toastService.toast('danger', $translate.instant('global.standardError'))
             })
         };
 
@@ -256,7 +256,7 @@ SystemControllers.controller("systemGeneralController", [
             } else if($scope.sslFiles.key) {
                 $scope.sslFiles.key = files[0];
             }
-            $scope.uploadImg(name, files[0]);
+            $scope.uploadFile(name, files[0]);
         }
 
         $scope.validate = function () {

@@ -224,6 +224,32 @@ const migration_12_searchSettings = async () => {
     }
 };
 
+const migration_13_searchSettings = async () => {
+    console.log('Applying migration script "migration_13_searchSettings"...');
+    // getb the old config
+    const config = await mongoose.connection.collection('configurations').findOne({});
+    if (config.environment.searchSettings.keys) {
+        // loop on each key
+        config.environment.searchSettings.keys.forEach((key) => {
+            if (!key.translation && key.label) {
+                // transform the simple label into multi-country translated label
+                key.translation = {
+                    fr : {
+                        label : key.label
+                    },
+                    en : {
+                        label : `EN-${key.label}`
+                    }
+                };
+                // delete the old property
+                delete key.label;
+            }
+        });
+        // save the new config
+        await mongoose.connection.collection('configurations').updateOne({}, {$set: {'environment.searchSettings': config.environment.searchSettings}});
+    }
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -237,7 +263,8 @@ const migrationScripts = [
     migration_9_adminRights,
     migration_10_clearSetAttributesIndexes,
     migration_11_clearAttributesIndexes,
-    migration_12_searchSettings
+    migration_12_searchSettings,
+    migration_13_searchSettings
     // sample
 ];
 
