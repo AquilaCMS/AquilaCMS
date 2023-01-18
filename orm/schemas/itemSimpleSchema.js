@@ -60,8 +60,7 @@ const ItemSimple = new Schema(
 ItemSimple.methods.populateItem = async function () {
     const {Products} = require('../models');
     const self       = this;
-    if (self.id && self.id._id === undefined) {
-        self.id = await Products.findById(self.id);
+    if (self.id && self.id._id === undefined) self.id = await Products.findById(self.id);
 };
 
 ItemSimple.methods.decreaseStock = function (cartId, cb) {
