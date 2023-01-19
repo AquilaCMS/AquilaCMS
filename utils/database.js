@@ -2038,8 +2038,8 @@ const populateItems = async (items) => {
  * @param {any[]} items
  */
 const populateStockData = async (_id) => {
-    const {ProductSimple} = require('../orm/models');
-    const {stock}         = await ProductSimple.findById(_id.toString());
+    const {Products} = require('../orm/models');
+    const {stock}    = await Products.findById(_id.toString());
 
     if (global.envConfig?.stockOrder?.returnStockToFront === false) {
         const {qty_booked, qty_real, qty, ...rest} = stock;
