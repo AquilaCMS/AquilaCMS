@@ -797,17 +797,21 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     if (!fs.existsSync(pathThemeComponents)) {
         return;
     }
-    const currentTheme             = global.envConfig.environment.currentTheme;
-    const listOfFile               = await fs.readdir(pathThemeComponents);
-    const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
-    let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
-    if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
+    const currentTheme = global.envConfig.environment.currentTheme;
 
     if (toRemove) {
+        const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
+        let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
+        if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
+
+        // Remove all component files (especially from the list_modules.js file)
+        const listOfDir  = await fs.readdir(pathThemeComponents, {withFileTypes: true});
+        const listOfFile = listOfDir.filter((file) => file.isFile());
         for (const file of listOfFile) {
-            await removeFromListModule(file, currentTheme);
-            let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
-            if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, file); // The new way
+            const fileName = file.name;
+            await removeFromListModule(fileName, currentTheme);
+            let filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', fileName);
+            if (!fs.existsSync(filePath)) filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName, fileName); // The new way
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
@@ -817,9 +821,10 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
                 }
             }
         }
+
         const moduleFolderInTheme = path.join(global.appRoot, 'themes', currentTheme, 'modules', moduleName);
-        if (fs.existsSync(moduleFolderInTheme) && fs.readdirSync(moduleFolderInTheme).length === 0) {
-            await fs.rmdir(moduleFolderInTheme);
+        if (fs.existsSync(moduleFolderInTheme)) {
+            fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
             console.log(`Delete ${moduleFolderInTheme}`);
         }
     } else {
