@@ -222,13 +222,22 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             });
         };
 
-        $scope.editFamilies = function (idFamilies) {
+        $scope.editFamilies = function (idFamilies, type) {
             const modalInstance = $modal.open({
                 templateUrl : 'app/family/views/modals/family-edit.html',
                 controller  : 'FamilyEditCtrl',
                 resolve     : {
                     item() {
-                        return $filter('filter')($scope.universes, {_id: idFamilies})[0];
+                        switch (type) {
+                            case 'universe':
+                                return $filter('filter')($scope.universes, {_id: idFamilies})[0];
+                            case 'family':
+                                return $filter('filter')($scope.families, {_id: idFamilies})[0];
+                            case 'subFamily':
+                                return $filter('filter')($scope.subFamilies, {_id: idFamilies})[0];                        
+                            default:
+                                break;
+                        }
                     }
                 }
             });
@@ -259,7 +268,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
                 $scope.subFamilies = [];
                 FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 0, populate: 'children'}}, function (result) {
                     if(result.datas[0] != undefined){
-                        $scope.subFamilies = result.datas[0].children?.sort((a, b) => a.order - b.order);;
+                        $scope.subFamilies = result.datas[0].children?.sort((a, b) => a.order - b.order);
                     }
                 });
             }else{

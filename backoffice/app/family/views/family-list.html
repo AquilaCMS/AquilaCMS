@@ -72,7 +72,7 @@
                             </div>
                             <div class="col-md-3">
                                 <span class="btn btn-primary littleBlueButton pull-right">
-                                    <a href=""  ng-click="updateFromUnivers(universe._id); editFamilies(universe._id);">
+                                    <a href=""  ng-click="updateFromUnivers(universe._id); editFamilies(universe._id, 'universe');">
                                         <span class="glyphicon glyphicon-pencil"></span>
                                     </a>
                                 </span>
@@ -109,8 +109,8 @@
                                         </div>
                                         <div class="col-md-3">
                                             <span class="btn btn-primary littleBlueButton pull-right">
-                                                <a href="" ng-click="editFamilies(family._id); "><span
-                                                        class="glyphicon glyphicon-pencil"></span></a>
+                                                <a href="" ng-click="editFamilies(family._id, 'family'); "><span
+                                                    class="glyphicon glyphicon-pencil"></span></a>
                                             </span>
                                             <span class="btn btn-primary littleBlueButton pull-right">
                                                 <a href="" ng-click="removeFamily(family._id);"><span
@@ -129,7 +129,7 @@
                                             <span class="label label-info">Sous famille</span>
                                             <span class="titleTree">{{subFamily.name}}</span>
                                             <span class="btn btn-primary littleBlueButton pull-right">
-                                                <a href="" ng-click="editFamilies(subFamily._id);"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                <a href="" ng-click="editFamilies(subFamily._id, 'subFamily');"><span class="glyphicon glyphicon-pencil"></span></a>
                                             </span>
                                             <span class="btn btn-primary littleBlueButton pull-right">
                                                 <a href="" ng-click="removeFamily(subFamily._id);"><span class="glyphicon glyphicon-trash"></span></a>
