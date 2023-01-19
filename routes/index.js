@@ -79,7 +79,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         await require('../services/medias').getImageStream(req.url, res);
     } else if (
         global.envConfig
-        && req.url.length > global.envConfig.environment.adminPrefix.length + 2
+        && req.url.length > global.envConfig.environment.adminPrefix?.length + 2
         && req.url.indexOf(`/${global.envConfig.environment.adminPrefix}/`)  > -1
         && req.url.split('/')[req.url.split('/').length - 1].indexOf('.') > -1
     ) {

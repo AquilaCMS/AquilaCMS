@@ -49,11 +49,15 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
                 ...config.environment,
                 databaseConnection : global.envFile.db
             };
-            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+            if (global.envFile.ssl) {
                 config.environment = {
                     ...config.environment,
-                    ssl : global.envFile.ssl
+                    ssl : {
+                        active : global.envFile.ssl.active
+                    }
                 };
+                if (global.envFile.ssl.cert) config.environment.ssl.cert = path.basename(global.envFile.ssl.cert);
+                if (global.envFile.ssl.key) config.environment.ssl.key = path.basename(global.envFile.ssl.key);
             } else {
                 // Put the SSL links empty if false
                 config.environment = {
@@ -108,13 +112,9 @@ const saveEnvFile = async (body, files) => {
                 }
             }
         }
-        if (environment.ssl && environment.ssl.active === 'true') {
-            if (environment.ssl.active === 'false') {
-                global.envFile.ssl.active = false;
-            } else {
-                global.envFile.ssl.active = true;
-            }
-            body.needRestart = true;
+        if (environment.ssl.active !== global.envFile.ssl.active) {
+            global.envFile.ssl.active = environment.ssl.active;
+            body.needRestart          = true;
         }
         if (
             environment.databaseConnection
@@ -251,10 +251,28 @@ const updateConfig = async (newConfig, oldConfig) => {
     return newConfig;
 };
 
+const uploadSSLFile = async (fileType, files, body) => {
+    if (files?.length === 0) throw new Error('No file provided');
+    if (fileType !== 'key' && fileType !== 'cert') throw new Error('Invalid file type');
+    const dir = path.join(__dirname, '..', 'ssl');
+    // create the directory if not exists
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    const file = files[0];
+    // copy the file to the ssl directory
+    const filepath = path.join('ssl', body.filename);
+    fs.renameSync(file.path, filepath);
+
+    global.envFile.ssl[fileType] = filepath;
+    await updateEnvFile();
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
     getConfigTheme,
-    needRebuildAndRestart
+    needRebuildAndRestart,
+    uploadSSLFile
 };
