@@ -225,45 +225,47 @@ const addItem = async (postBody, userInfo, lang = '') => {
         }
     }
     if (cart.items && cart.items.length) {
-        const indexes     = cart.items.toObject()
-            .map((val, index) => ({val, index}))
-            .filter(({val}) => val.id._id.toString() === _product._id.toString())
-            .map(({index}) => index);
-        let isANewProduct = false;
-        for (const index of indexes) {
-            if (
-                cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
-            // eslint-disable-next-line no-empty
-            ) {
-                continue;
-            } else {
+        if (typeof cart.items.toObject === 'function') {
+            const indexes     = cart.items.toObject()
+                .map((val, index) => ({val, index}))
+                .filter(({val}) => val.id._id.toString() === _product._id.toString())
+                .map(({index}) => index);
+            let isANewProduct = false;
+            for (const index of indexes) {
                 if (
-                    (
-                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
-                    ) || (
-                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
-                    )
+                    cart.items[index].type === 'bundle'
+            && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
+                // eslint-disable-next-line no-empty
                 ) {
-                    // then it's the same product in the cart
-                    isANewProduct = index;
-                    break;
+                    continue;
                 } else {
-                    // else, it's a new product in the cart
-                    isANewProduct = true;
+                    if (
+                        (
+                            postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                        ) || (
+                            typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                        )
+                    ) {
+                        // then it's the same product in the cart
+                        isANewProduct = index;
+                        break;
+                    } else {
+                        // else, it's a new product in the cart
+                        isANewProduct = true;
+                    }
                 }
             }
-        }
-        if (typeof isANewProduct === 'number') {
-            postBody.item._id = cart.items[isANewProduct]._id.toString();
+            if (typeof isANewProduct === 'number') {
+                postBody.item._id = cart.items[isANewProduct]._id.toString();
 
-            postBody.item.quantity += cart.items[isANewProduct].quantity;
+                postBody.item.quantity += cart.items[isANewProduct].quantity;
 
-            delete postBody.item.id;
+                delete postBody.item.id;
 
-            delete postBody.item.weight;
+                delete postBody.item.weight;
 
-            return updateQty(postBody, userInfo);
+                return updateQty(postBody, userInfo);
+            }
         }
     }
     if (_product.translation[_lang]) {
