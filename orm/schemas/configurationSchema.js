@@ -65,13 +65,83 @@ const ConfigurationSchema = new Schema({
             useExtendedSearch  : {type: Boolean, default: true},
             minMatchCharLength : {type: Number, default: 2},
             threshold          : {type: Number, default: 0.2},
-            keys               : [
-                {
-                    name   : String,
-                    label  : String,
-                    weight : Number
-                }
-            ]
+            keys               : {
+                type    : [{name: {type: String, required: true}, weight: {type: Number, required: true}, translation: {}}],
+                default : [
+                    {
+                        name        : 'code',
+                        weight      : 20,
+                        translation : {
+                            fr : {
+                                label : 'Code'
+                            },
+                            en : {
+                                label : 'Code'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.name',
+                        weight      : 10,
+                        translation : {
+                            fr : {
+                                label : 'Nom'
+                            },
+                            en : {
+                                label : 'Name'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description1.title',
+                        weight      : 3,
+                        translation : {
+                            fr : {
+                                label : 'Titre description 1'
+                            },
+                            en : {
+                                label : 'Title description 1'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description1.text',
+                        weight      : 2.5,
+                        translation : {
+                            fr : {
+                                label : 'Texte descripiton 1'
+                            },
+                            en : {
+                                label : 'Text descripiton 1'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description2.title',
+                        weight      : 2,
+                        translation : {
+                            fr : {
+                                label : 'Titre description 2'
+                            },
+                            en : {
+                                label : 'Title description 2'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description2.text',
+                        weight      : 1.5,
+                        translation : {
+                            fr : {
+                                label : 'Texte description 2'
+                            },
+                            en : {
+                                label : 'Text description 2'
+                            }
+                        }
+                    }
+                ]
+            }
         }
 
     },
@@ -118,7 +188,8 @@ const ConfigurationSchema = new Schema({
                         fr : {value: 'Produit définitivement épuisé'}
                     }
                 }
-            ]},
+            ]
+        },
         additionnalFees : {
             tax : {type: Number, default: 0},
             et  : {type: Number, default: 0}
@@ -154,8 +225,8 @@ ConfigurationSchema.post('findOne', async function (doc) {
     if (doc && doc.environment && doc.environment.mailPass) {
         try {
             doc.environment.mailPass = encryption.decipher(doc.environment.mailPass);
-        // eslint-disable-next-line no-empty
-        } catch (err) {}
+            // eslint-disable-next-line no-empty
+        } catch (err) { }
     }
 });
 

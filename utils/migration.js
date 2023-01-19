@@ -174,47 +174,91 @@ const migration_11_clearAttributesIndexes = async () => {
     console.log('End migration script "migration_11_clearAttributesIndexes"...');
 };
 
+const searchSettingsKeys = [
+    {
+        name        : 'code',
+        weight      : 20,
+        translation : {
+            fr : {
+                label : 'Code'
+            },
+            en : {
+                label : 'Code'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.name',
+        weight      : 10,
+        translation : {
+            fr : {
+                label : 'Nom'
+            },
+            en : {
+                label : 'Name'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description1.title',
+        weight      : 3,
+        translation : {
+            fr : {
+                label : 'Titre description 1'
+            },
+            en : {
+                label : 'Title description 1'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description1.text',
+        weight      : 2.5,
+        translation : {
+            fr : {
+                label : 'Texte descripiton 1'
+            },
+            en : {
+                label : 'Text descripiton 1'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description2.title',
+        weight      : 2,
+        translation : {
+            fr : {
+                label : 'Titre description 2'
+            },
+            en : {
+                label : 'Title description 2'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description2.text',
+        weight      : 1.5,
+        translation : {
+            fr : {
+                label : 'Texte description 2'
+            },
+            en : {
+                label : 'Text description 2'
+            }
+        }
+    }
+];
+
 const migration_12_searchSettings = async () => {
     console.log('Applying migration script "migration_12_searchSettings"...');
     const config = await mongoose.connection.collection('configurations').findOne({});
     if (config && config.environment) {
         const searchSettings = {
-            findAllMatches  : true,
-            ignoreFieldNorm : true,
-            ignoreLocation  : true,
-            includeScore    : true,
-            keys            : [
-                {
-                    name   : 'code',
-                    label  : 'Code',
-                    weight : 20
-                },
-                {
-                    name   : 'translation.{lang}.name',
-                    label  : 'Nom',
-                    weight : 10
-                },
-                {
-                    name   : 'translation.{lang}.description1.title',
-                    label  : 'Titre description 1',
-                    weight : 3
-                },
-                {
-                    name   : 'translation.{lang}.description1.text',
-                    label  : 'Texte description 1',
-                    weight : 2.5
-                },
-                {
-                    name   : 'translation.{lang}.description2.title',
-                    label  : 'Titre description 2',
-                    weight : 2
-                },
-                {
-                    name   : 'translation.{lang}.description2.text',
-                    label  : 'Texte description 2',
-                    weight : 1.5
-                }
-            ],
+            findAllMatches     : true,
+            ignoreFieldNorm    : true,
+            ignoreLocation     : true,
+            includeScore       : true,
+            keys               : searchSettingsKeys,
             minMatchCharLength : 2,
             shouldSort         : true,
             threshold          : 0.2,
@@ -224,23 +268,28 @@ const migration_12_searchSettings = async () => {
     }
 };
 
-const migration_13_searchSettings = async () => {
-    console.log('Applying migration script "migration_13_searchSettings"...');
+const migration_13_searchSettings_translations = async () => {
+    console.log('Applying migration script "migration_13_searchSettings_translations"...');
     // getb the old config
     const config = await mongoose.connection.collection('configurations').findOne({});
     if (config.environment.searchSettings.keys) {
         // loop on each key
         config.environment.searchSettings.keys.forEach((key) => {
             if (!key.translation && key.label) {
-                // transform the simple label into multi-country translated label
-                key.translation = {
-                    fr : {
-                        label : key.label
-                    },
-                    en : {
-                        label : `EN-${key.label}`
-                    }
-                };
+                // if the key name is one of the default keys, we use the associated translation, else we put EN- before the label for english translations
+                const foundKey = searchSettingsKeys.find((k) => k.name === key.name);
+                if (foundKey) {
+                    key.translation = foundKey.translation;
+                } else {
+                    key.translation = {
+                        fr : {
+                            label : key.label
+                        },
+                        en : {
+                            label : `EN-${key.label}`
+                        }
+                    };
+                }
                 // delete the old property
                 delete key.label;
             }
@@ -248,6 +297,7 @@ const migration_13_searchSettings = async () => {
         // save the new config
         await mongoose.connection.collection('configurations').updateOne({}, {$set: {'environment.searchSettings': config.environment.searchSettings}});
     }
+    console.log('End migration script "migration_13_searchSettings_translations"...');
 };
 
 const migration_14_jobsOnMainThread = async () => {
@@ -276,7 +326,7 @@ const migrationScripts = [
     migration_10_clearSetAttributesIndexes,
     migration_11_clearAttributesIndexes,
     migration_12_searchSettings,
-    migration_13_searchSettings,
+    migration_13_searchSettings_translations,
     migration_14_jobsOnMainThread
     // sample
 ];
