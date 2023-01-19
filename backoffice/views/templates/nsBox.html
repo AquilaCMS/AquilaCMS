@@ -15,6 +15,14 @@
                 <li ng-if="hasAdd">
                     <a ng-href="{{addHref}}" ng-click="addClick()"><i class="ico-add"></i></a>
                 </li>
+
+                <li ng-if="hasMassClick">
+                    <a class="btn btn-transparent btn-setting" ng-click="massClick()">
+                        <i class="ico-plus-small"></i>
+                        <span translate>medias.medias.uploadButton</span>
+                    </a>
+                </li>
+
                 <li ng-if="hasNew">
                     <a class="btn btn-transparent btn-setting" ng-href="{{newHref}}" ng-click="newClick()">
                         <i class="ico-plus-small"></i>
@@ -33,6 +41,12 @@
                 </li>
                 <li ng-if="hasAdd">
                     <a ng-href="{{addHref}}" ng-click="addClick()"><i class="ico-add"></i></a>
+                </li>
+                <li ng-if="hasMassClick">
+                    <a class="btn btn-transparent btn-setting" ng-click="massClick()">
+                        <i class="ico-plus-small"></i>
+                        <span translate>medias.medias.uploadButton</span>
+                    </a>
                 </li>
                 <li ng-if="hasNew">
                     <a class="btn btn-transparent btn-setting" ng-href="{{newHref}}" ng-click="newClick()">
