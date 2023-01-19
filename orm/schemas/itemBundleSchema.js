@@ -51,7 +51,17 @@ const ItemBundle = new Schema({
             minSelect  : Number,
             maxSelect  : Number
         }
-    ]
+    ],
+    stock : {
+        qty          : {type: Number, default: 0},
+        qty_booked   : {type: Number, default: 0},
+        date_selling : Date,
+        date_supply  : Date,
+        orderable    : {type: Boolean, default: false},
+        status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
+        label        : String,
+        translation  : {}
+    }
 }, {
     discriminatorKey : 'type',
     id               : false

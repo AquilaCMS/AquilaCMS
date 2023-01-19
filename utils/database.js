@@ -2040,9 +2040,10 @@ const populateItems = async (items) => {
 const populateStockData = async (_id) => {
     const {Products} = require('../orm/models');
     const {stock}    = await Products.findById(_id.toString());
+    delete stock.$init;
 
     if (global.envConfig?.stockOrder?.returnStockToFront === false) {
-        const {qty_booked, qty_real, qty, ...rest} = stock;
+        const {qty_booked, qty_real, qty, $init, ...rest} = stock;
         return rest;
     }
     return stock;

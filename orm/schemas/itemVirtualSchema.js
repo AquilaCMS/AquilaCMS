@@ -11,7 +11,11 @@ const Schema   = mongoose.Schema;
 
 const ItemVirtual = new Schema({
     downloadInfos : {type: String},
-    filename      : {type: String}
+    filename      : {type: String},
+    stock         : {
+        qty        : {type: Number, default: 0},
+        qty_booked : {type: Number, default: 0}
+    }
 }, {
     discriminatorKey : 'type',
     id               : false

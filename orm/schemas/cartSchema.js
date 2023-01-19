@@ -95,10 +95,8 @@ itemsSchema.discriminator('virtual', ItemVirtualSchema);
 CartSchema.methods.getItemsStock = async function () {
     const cart = this;
     for (let i = 0; i < cart.items.length; i++) {
-        if (cart.items[i].type !== 'virtual') {
-            if (typeof cart.items[i].toObject === 'function') cart.items[i] = cart.items[i].toObject();
-            cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id._id || cart.items[i].id);
-        }
+        if (typeof cart.items[i].toObject === 'function') cart.items[i] = cart.items[i].toObject();
+        cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id._id || cart.items[i].id);
     }
     return cart;
 };
