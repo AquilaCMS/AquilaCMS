@@ -66,8 +66,8 @@ const getCartById = async (id, PostBody = null, user = null) => {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
+        cart = await cart.getItemsStock();
     }
-    cart = await cart.getItemsStock();
     return cart;
 };
 
