@@ -74,7 +74,7 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB, group = '') => {
+const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder = true) => {
     console.log('Upload medias start...');
 
     // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
@@ -93,12 +93,12 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     try {
         filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
     } catch (e) {
-        deleteTempFiles(path_unzip, path_init);
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotFound;
     }
     // check if zip have folder but no file
     if (filenames.length === 0) {
-        deleteTempFiles(path_unzip, path_init);
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
         throw NSErrors.MediaNotInRoot;
     }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
@@ -152,7 +152,7 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
         }
     }
 
-    deleteTempFiles(path_unzip, path_init);
+    if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
     console.log('Upload medias done !');
 };
 
