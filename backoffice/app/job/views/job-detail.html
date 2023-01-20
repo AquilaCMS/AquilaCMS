@@ -108,8 +108,8 @@
                         </div>
                     </div>
                     <div class="col-sm-6" ng-show="job.data.flag == 'system'">
-                        <span ng-if="job.data.onMainThread" translate>job.detail.yes</span>
-                        <span ng-if="!job.data.onMainThread" translate>job.detail.no</span>
+                        <span ng-if="job.data.onMainThread === false" translate>job.detail.no</span>
+                        <span ng-if="job.data.onMainThread !== false" translate>job.detail.yes</span>
                     </div>
                 </div>
             </div>

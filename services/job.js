@@ -359,7 +359,7 @@ const getPlayImmediateJob = async (_id, option) => {
 async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
     const params            = job.attrs.data.params;
-    const onMainThread      = job.attrs.data.onMainThread;
+    const onMainThread      = job.attrs.data.onMainThread === false ? false : true;
     let errorData         = null;
     let lastExecutionResult = null;
     let result;
@@ -374,6 +374,7 @@ async function execDefine(job, option) {
             try {
                 console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}]  (Path : ${global.aquila.appRoot}) on the main process %s`, '\x1b[33m', '\x1b[0m');
                 result = await require(`..${modulePath}`)[funcName](option);
+                job.attrs.data.lastExecutionResult = JSON.stringify(result);
             } catch (err) {
                 // If the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
                 // save it in order to have a persistent error on the front side
