@@ -74,9 +74,11 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB) => {
+const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     console.log('Upload medias start...');
 
+    // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
+    reqFile.path      = path.resolve(global.appRoot, reqFile.path);
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
         .slice(0, -1)
@@ -141,7 +143,7 @@ const uploadAllMedias = async (reqFile, insertDB) => {
                 await Medias.updateOne({name: name_file}, {
                     link  : `medias/${filename}`,
                     name  : name_file,
-                    group : path.parse(reqFile.originalname).name
+                    group : group || path.parse(reqFile.originalname).name
                 }, {upsert: true});
             }
         } catch (e) {
