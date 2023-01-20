@@ -66,9 +66,8 @@ const getCartById = async (id, PostBody = null, user = null) => {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
-        cart = await cart.getItemsStock();
     }
-    return cart;
+    return cart.getItemsStock();
 };
 
 /**
@@ -100,14 +99,12 @@ const setCartAddresses = async (cartId, addresses, userInfo) => {
 
         resp = await Cart.findOneAndUpdate(filter, {$set: {...update}}, {new: true});
         if (!resp) {
-            let newCart = await Cart.create(update);
-            newCart     = await newCart.getItemsStock();
+            const newCart = await Cart.create(update);
             await utilsDatabase.populateItems(newCart.items);
-            return {code: 'CART_CREATED', data: {cart: newCart}};
+            return {code: 'CART_CREATED', data: {cart: await newCart.getItemsStock()}};
         }
-        resp = await resp.getItemsStock();
         await utilsDatabase.populateItems(resp.items);
-        return {code: 'CART_UPDATED', data: {cart: resp}};
+        return {code: 'CART_UPDATED', data: {cart: await resp.getItemsStock()}};
     } catch (err) {
         console.error(err);
         throw err;
@@ -120,9 +117,8 @@ const setComment = async (cartId, comment, userInfo) => {
         _id : mongoose.Types.ObjectId(cartId),
         ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
     };
-    let resp     = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
-    resp         = await resp.getItemsStock();
-    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
+    const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
+    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: await resp.getItemsStock()}};
 };
 
 const deleteCartItem = async (cartId, itemId, userInfo) => {
@@ -183,9 +179,8 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    cart = await cart.getItemsStock();
     await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ITEM_DELETED', data: {cart}};
+    return {code: 'CART_ITEM_DELETED', data: {cart: await cart.getItemsStock()}};
 };
 
 const addItem = async (postBody, userInfo, lang = '') => {
@@ -326,9 +321,8 @@ const addItem = async (postBody, userInfo, lang = '') => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
-    cart = await cart.getItemsStock();
     await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const updateQty = async (postBody, userInfo) => {
@@ -408,9 +402,8 @@ const updateQty = async (postBody, userInfo) => {
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    cart = await cart.getItemsStock();
     await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const checkCountryTax = async (_cart, _user) => {
@@ -691,14 +684,12 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
             await cart.save();
         }
     }
-    cart = await cart.getItemsStock();
-    return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
+    return {code: 'CART_DELIVERY_UPDATED', data: {cart: await cart.getItemsStock()}};
 };
 
 const removeDelivery = async (body) => {
-    let cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
-    cart     = await cart.getItemsStock();
-    return cart;
+    const cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
+    return cart.getItemsStock();
 };
 
 const removeDiscount = async (id) => {
@@ -706,8 +697,7 @@ const removeDiscount = async (id) => {
     if (!updCart) {
         throw NSErrors.InactiveCart;
     }
-    const cart = await updCart.getItemsStock();
-    return {code: 'CART_DISCOUNT_REMOVE', data: {cart}};
+    return {code: 'CART_DISCOUNT_REMOVE', data: {cart: await updCart.getItemsStock()}};
 };
 
 const validateForCheckout = (cart) => {
