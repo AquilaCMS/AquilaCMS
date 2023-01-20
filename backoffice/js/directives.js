@@ -730,7 +730,8 @@ adminCatagenDirectives.directive("nsBox", function ()
             editHref: "@?",
             editClick: "&?",
             newHref: "@?",
-            newClick: "&?"
+            newClick: "&?",
+            massClick: "&?"
         },
         templateUrl: "views/templates/nsBox.html",
         link: function (scope, element, attrs)
@@ -742,6 +743,7 @@ adminCatagenDirectives.directive("nsBox", function ()
             scope.hasAdd = attrs.addHref || attrs.addClick;
             scope.hasClose = attrs.closeHref || attrs.closeClick;
             scope.hasNew = attrs.newHref || attrs.newClick;
+            scope.hasMassClick = attrs.massClick;
             scope.hasEdit = attrs.editHref || attrs.editClick;
 
             let type;
