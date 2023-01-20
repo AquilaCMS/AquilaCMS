@@ -18,16 +18,15 @@ const NewsPreviewSchema   = new Schema(News);
 NewsPreviewSchema.statics = News.statics;
 
 NewsPreviewSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, NewsPreviewSchema);
+    await utilsDatabase.preUpdates(this, next, NewsPreviewSchema);
 });
 
 NewsPreviewSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, NewsPreviewSchema);
+    await utilsDatabase.preUpdates(this, next, NewsPreviewSchema);
 });
 
 NewsPreviewSchema.pre('save', async function (next) {
-    await NewsPreviewSchema.statics.translationValidation(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, NewsPreviewSchema);
 });
 
 NewsPreviewSchema.post('save', async function (doc) {

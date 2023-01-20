@@ -55,12 +55,10 @@ PaymentMethodsSchema.statics.translationValidation = async function (self) {
 };
 
 PaymentMethodsSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
+    await utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
 });
-
 PaymentMethodsSchema.pre('save', async function (next) {
-    await PaymentMethodsSchema.statics.translationValidation(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
 });
 
 aquilaEvents.emit('paymentMethodSchemaInit', PaymentMethodsSchema);

@@ -9,6 +9,7 @@
 const mongoose       = require('mongoose');
 const {aquilaEvents} = require('aql-utils');
 const utilsDatabase  = require('../../utils/database');
+const {checkCustomFields} = require('../../utils/translation');
 const Schema         = mongoose.Schema;
 const {ObjectId}     = Schema.Types;
 const NSErrors       = require('../../utils/errors/NSErrors');
@@ -56,8 +57,6 @@ AttributesSchema.statics.translationValidation = async function (self) {
             if (lang.name === undefined) {
                 throw NSErrors.NameMissing;
             }
-
-            const {checkCustomFields} = require('../../utils/translation');
             checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'name'},
                 {key: 'values', type: 'object'}
@@ -86,11 +85,11 @@ AttributesSchema.post('remove', async function (doc, next) {
 });
 
 AttributesSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 AttributesSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 /**

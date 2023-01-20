@@ -274,15 +274,6 @@ ProductsSchema.statics.translationValidation = async function (self, updateQuery
             } else {
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
-            if (updateQuery.translation[lang.code].slug.length <= 2) {
-                throw NSErrors.SlugTooShort;
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${utils.slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
-                if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    throw NSErrors.SlugAlreadyExist;
-                }
-            }
             checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
             ]);
@@ -311,12 +302,6 @@ ProductsSchema.statics.translationValidation = async function (self, updateQuery
             } else {
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
-            if (self.translation[lang.code].slug.length <= 2) {
-                throw NSErrors.SlugTooShort;
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                throw NSErrors.SlugAlreadyExist;
-            }
             checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
             ]);
@@ -341,6 +326,10 @@ ProductsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('products', that._id, that.code);
 };
 
+ProductsSchema.statics.checkSlugLength = async function (that) {
+    await utilsDatabase.checkSlugLength(that, 'products');
+};
+
 ProductsSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'products');
 };
@@ -350,7 +339,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, ProductsSchema);
+    await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {

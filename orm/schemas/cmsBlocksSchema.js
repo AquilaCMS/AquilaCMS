@@ -8,7 +8,7 @@
 
 const mongoose         = require('mongoose');
 const {aquilaEvents}   = require('aql-utils');
-const translationUtils = require('../../utils/translation');
+const {checkCustomFields} = require('../../utils/translation');
 const Schema           = mongoose.Schema;
 const utilsDatabase    = require('../../utils/database');
 
@@ -34,7 +34,7 @@ CmsBlocksSchema.statics.translationValidation = async function (self) {
 
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
-            translationUtils.checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
+            checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
                 {key: 'content'}
             ]);
         }
@@ -46,15 +46,15 @@ CmsBlocksSchema.statics.checkCode = async function (that) {
 };
 
 CmsBlocksSchema.pre('save', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 aquilaEvents.emit('cmsBlocksSchema', CmsBlocksSchema);

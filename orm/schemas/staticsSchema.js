@@ -12,7 +12,6 @@ const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
-const { NSErrors } = require('../../utils');
 
 const StaticsSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -50,9 +49,6 @@ StaticsSchema.statics.translationValidation = async function (self, updateQuery)
             } else {
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
-            if (updateQuery.translation[lang.code].slug.length <= 2) {
-                throw NSErrors.SlugTooShort
-            }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${utils.slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
@@ -75,9 +71,6 @@ StaticsSchema.statics.translationValidation = async function (self, updateQuery)
             } else {
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
-            if (self.translation[lang.code].slug.length <= 2) {
-                throw NSErrors.SlugTooShort;
-            }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
                 throw NSErrors.SlugAlreadyExist;
             }
@@ -89,20 +82,20 @@ StaticsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('statics', that._id, that.code);
 };
 
-StaticsSchema.statics.checkSlugExist = async function (that) {
-    await utilsDatabase.checkSlugExist(that, 'statics');
+StaticsSchema.statics.checkSlugLength = async function (that) {
+    await utilsDatabase.checkSlugLength(that, 'statics');
 };
 
 StaticsSchema.pre('updateOne', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
 
 StaticsSchema.pre('save', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
 
 aquilaEvents.emit('staticsSchemaInit', StaticsSchema);

@@ -86,18 +86,30 @@ const checkIfReplicaSet = async () => {
 const checkSlugExist = async (doc, modelName) => {
     const query = {$or: []};
     if (!doc || !doc.translation) return;
-
     for (const [lang] of Object.entries(doc.translation)) {
         if (doc.translation[lang]) {
             query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
         }
     }
     if (doc._id) {
-        query._id = {$nin: [doc._id]};
+        query._id = { $ne: doc._id };
     }
-
     if (await mongoose.model(modelName).exists(query)) {
         throw NSErrors.SlugAlreadyExist;
+    }
+};
+
+/**
+ * Check if slug is not too short for this collection and language
+ * @param {*} doc
+ * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
+ */
+const checkSlugLength = async (doc) => {
+    if (!doc || !doc.translation) return;
+    for (const [lang] of Object.entries(doc.translation)) {
+        if (doc.translation[lang] && doc.translation[lang].slug && doc.translation[lang].slug.length <= 2) {
+            throw NSErrors.SlugTooShort;
+        }
     }
 };
 
@@ -2051,6 +2063,7 @@ const preUpdates = async (that, next, schema) => {
             const {
                 checkCode,
                 checkSlugExist,
+                checkSlugLength,
                 translationValidation
             } = schema.statics;
             if (typeof translationValidation === 'function' && elem._id) {
@@ -2061,6 +2074,9 @@ const preUpdates = async (that, next, schema) => {
             }
             if (typeof checkSlugExist === 'function') {
                 await checkSlugExist(elem);
+            }
+            if (typeof checkSlugLength === 'function') {
+                await checkSlugLength(elem);
             }
         }
         return next();
@@ -2079,5 +2095,6 @@ module.exports = {
     preUpdates,
     testdb,
     checkSlugExist,
+    checkSlugLength,
     checkCode
 };

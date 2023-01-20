@@ -387,6 +387,10 @@ module.exports = {
         fr : 'Le nom est manquant',
         en : 'Name is missing'
     },
+    MailTypeCodeEmpty : {
+        fr : 'Le code du type de mail est vide',
+        en : 'Email type code is empty'
+    },
     ProductIdExisting : {
         fr : 'ID produit déjà existant',
         en : 'Product id already exists'

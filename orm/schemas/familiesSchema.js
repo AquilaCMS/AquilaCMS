@@ -29,9 +29,8 @@ const FamiliesSchema = new Schema({
 });
 
 FamiliesSchema.pre('save', async function (next) {
-    await utilsDatabase.preUpdates(this, next, FamiliesSchema);
     if (!this.slug) this.slug = `${helper.slugify(this.name)}-${this.code}`;
-    return next();
+    await utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
 FamiliesSchema.pre('findOneAndDelete', async function (next) {

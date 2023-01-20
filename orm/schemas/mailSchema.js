@@ -49,15 +49,13 @@ MailSchema.statics.translationValidation = async function (self, updateQuery) {
 };
 
 MailSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, MailSchema);
+    await utilsDatabase.preUpdates(this, next, MailSchema);
 });
 MailSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, MailSchema);
+    await utilsDatabase.preUpdates(this, next, MailSchema);
 });
-
 MailSchema.pre('save', async function (next) {
-    await MailSchema.statics.translationValidation(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, MailSchema);
 });
 
 aquilaEvents.emit('mailSchemaInit', MailSchema);

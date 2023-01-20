@@ -10,10 +10,8 @@ const mongoose            = require('mongoose');
 const {aquilaEvents}      = require('aql-utils');
 const utils               = require('../../utils/utils');
 const utilsDatabase       = require('../../utils/database');
-const {checkCustomFields} = require('../../utils/translation');
-const translation         = require('../../utils/translation');
+const {checkCustomFields, checkTranslations} = require('../../utils/translation');
 const Schema              = mongoose.Schema;
-const { NSErrors } = require('../../utils');
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -51,18 +49,13 @@ NewsSchema.statics.translationValidation = async function (self, updateQuery) {
                 slugEdit.translation[translationKeys[i]].slug = lang.slug;
                 updateQuery.updateOne(slugEdit);
             }
-
-            if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                throw NSErrors.SlugAlreadyExist; 
-            }
-
             checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'slug'}, {key: 'title'}
             ]);
 
             if (lang.content) {
-                translation.checkTranslations(lang.content.resume, 'content.resume');
-                translation.checkTranslations(lang.content.text, 'content.text');
+                checkTranslations(lang.content.resume, 'content.resume');
+                checkTranslations(lang.content.text, 'content.text');
             }
         }
     }
@@ -70,6 +63,7 @@ NewsSchema.statics.translationValidation = async function (self, updateQuery) {
 
 NewsSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'news');
+    await utilsDatabase.checkSlugExistAndGenerate(that, 'news');
 };
 
 NewsSchema.pre('updateOne', async function (next) {
