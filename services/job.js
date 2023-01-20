@@ -360,7 +360,7 @@ async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
     const params            = job.attrs.data.params;
     const onMainThread      = job.attrs.data.onMainThread;
-    const errorData         = null;
+    let errorData         = null;
     let lastExecutionResult = null;
     let result;
     // Directly call a service without going through an API
@@ -372,6 +372,7 @@ async function execDefine(job, option) {
 
         if (onMainThread) {
             try {
+                console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}]  (Path : ${global.aquila.appRoot}) on the main process %s`, '\x1b[33m', '\x1b[0m');
                 result = await require(`..${modulePath}`)[funcName](option);
             } catch (err) {
                 // If the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
@@ -381,7 +382,7 @@ async function execDefine(job, option) {
                 errorData = error;
             }
         }else{
-            console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot})%s`, '\x1b[33m', '\x1b[0m');
+            console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot}) on a child process %s`, '\x1b[33m', '\x1b[0m');
             return new Promise((resolve, reject) => {
                 const cmd = fork(
                     `${global.aquila.appRoot}/services/jobChild.js`,
@@ -395,13 +396,16 @@ async function execDefine(job, option) {
                     lastExecutionResult = data.message;
                 });
                 cmd.on('close', (code) => {
-                    console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(2)' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
+                    console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(${apiParams.option})' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
                     return resolve({code});
                 });
             }).then(async (data) => {
                 const error = data.code;
-                if (error) lastExecutionResult = `Error -> ${JSON.stringify(lastExecutionResult)}`;
-                job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
+                if(typeof lastExecutionResult === 'string'){
+                    job.attrs.data.lastExecutionResult = lastExecutionResult;
+                }else{
+                    job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
+                }
                 await job.save();
                 if (error) throw NSErrors.JobErrorInChildNode;
             });

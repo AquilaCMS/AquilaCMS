@@ -302,13 +302,24 @@ const migration_13_searchSettings_translations = async () => {
 
 const migration_14_jobsOnMainThread = async () => {
     console.log('Applying migration script "migration_14_jobsOnMainThread"...');
-    const jobsToNotUpdate = [
-        'Mail to pending carts',
-        'Clean cache',
-        'Cache requests clean'
+    const jobsToUpdate = [
+    'Sitemap',
+    'Segmentation cat',
+    'Segmentation picto',
+    'Canonicalisation',
+    'Remove old carts',
+    'Remove pending payment orders',
+    'Cohérence produits',
+    'Cohérence données',
+    'Remove temp file',
+    'Remove previews',
+    "Delete orders\' failed payments",
+    'RGPD bills',
+    'RGPD users'
     ];
-    await mongoose.connection.collection('agendaJobs').update({}, { $set: { 'data.onMainThread': true } });
-    await mongoose.connection.collection('agendaJobs').update({ name: { $nin: jobsToNotUpdate } }, { $set: { 'data.onMainThread': false } });
+
+    await mongoose.connection.collection('agendaJobs').updateMany({}, { $set: { 'data.onMainThread': true } });
+    await mongoose.connection.collection('agendaJobs').updateMany({ name: { $in: jobsToUpdate } }, { $set: { 'data.onMainThread': false } });
     console.log('End migration script "migration_14_jobsOnMainThread"...');
 }
 
