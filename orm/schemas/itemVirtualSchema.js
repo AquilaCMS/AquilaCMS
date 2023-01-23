@@ -9,7 +9,10 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
-const ItemVirtual = new Schema({}, {
+const ItemVirtual = new Schema({
+    downloadInfos : {type: String},
+    filename      : {type: String}
+}, {
     discriminatorKey : 'type',
     id               : false
 });

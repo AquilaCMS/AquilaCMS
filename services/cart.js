@@ -283,7 +283,12 @@ const addItem = async (postBody, userInfo, lang = '') => {
         attributes   : _product.attributes
     };
 
-    if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (_product.type !== 'virtual') {
+        item.stock = _product.stock;
+    } else {
+        item.filename      = _product.filename;
+        item.downloadInfos = _product.downloadInfos;
+    }
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
