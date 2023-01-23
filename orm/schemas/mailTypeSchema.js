@@ -9,6 +9,7 @@
 const mongoose       = require('mongoose');
 const {aquilaEvents} = require('aql-utils');
 const Schema         = mongoose.Schema;
+const NSErrors       = require('../../utils/errors/NSErrors');
 
 const MailTypeSchema = new Schema({
     code        : {type: String, unique: true, sparse: true},
@@ -21,7 +22,7 @@ const MailTypeSchema = new Schema({
 
 MailTypeSchema.pre('validate', function (next) {
     if (this.code === undefined || this.code == null) {
-        next(new Error('mailtype.code is empty'));
+        next(NSErrors.MailTypeCodeEmpty);
     }
     next();
 });

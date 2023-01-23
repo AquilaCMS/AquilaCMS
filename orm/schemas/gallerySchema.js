@@ -46,7 +46,6 @@ GallerySchema.pre('updateOne', async function (next) {
 
 GallerySchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, GallerySchema);
-    next();
 });
 
 aquilaEvents.emit('gallerySchemaInit', GallerySchema);
