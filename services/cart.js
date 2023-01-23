@@ -66,8 +66,9 @@ const getCartById = async (id, PostBody = null, user = null) => {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
+        return cart.getItemsStock();
     }
-    return cart.getItemsStock();
+    return cart;
 };
 
 /**
@@ -118,6 +119,7 @@ const setComment = async (cartId, comment, userInfo) => {
         ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
     };
     const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
+    if (!resp) return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: null}};
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: await resp.getItemsStock()}};
 };
 
