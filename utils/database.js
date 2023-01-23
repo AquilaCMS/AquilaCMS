@@ -92,7 +92,7 @@ const checkSlugExist = async (doc, modelName) => {
         }
     }
     if (doc._id) {
-        query._id = { $ne: doc._id };
+        query._id = {$ne: doc._id};
     }
     if (await mongoose.model(modelName).exists(query)) {
         throw NSErrors.SlugAlreadyExist;

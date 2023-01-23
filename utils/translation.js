@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const NSErrors = require("./errors/NSErrors");
+const NSErrors = require('./errors/NSErrors');
 
 /**
  * translate a Mongo document

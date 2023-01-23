@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const {aquilaEvents} = require('aql-utils');
-const utilsDatabase  = require('../../utils/database');
+const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
+const utilsDatabase       = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
-const Schema         = mongoose.Schema;
-const {ObjectId}     = Schema.Types;
-const NSErrors       = require('../../utils/errors/NSErrors');
+const Schema              = mongoose.Schema;
+const {ObjectId}          = Schema.Types;
+const NSErrors            = require('../../utils/errors/NSErrors');
 
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: false},

@@ -379,7 +379,7 @@ module.exports = {
         fr : 'Le slug est trop court',
         en : 'Slug is too short'
     },
-    InvalidInputString: {
+    InvalidInputString : {
         fr : 'Un champs de type string est invalide',
         en : 'A string field is invalid'
     },

@@ -12,6 +12,7 @@ const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
+const NSErrors            = require('../../utils/errors/NSErrors');
 
 const StaticsSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -33,7 +34,6 @@ const StaticsSchema = new Schema({
  */
 
 StaticsSchema.statics.translationValidation = async function (self, updateQuery) {
-
     if (updateQuery) {
         if (updateQuery.translation === undefined) return;
 
