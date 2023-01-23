@@ -65,6 +65,7 @@ class PageCategory extends NSPageCategory {
 
                     <div className="page-content">
                         {nsCms_extraText && nsCms_extraText.content !== '' && <CMS content={nsCms_extraText.content} hide_error="1" />}
+                        {nsCms_extraText && nsCms_extraText.content == '' ? <div class="intro" style={{maxHeight: '60px'}}><div class="intro__content"><div class="shell"><h1>{category.name.toUpperCase()}</h1></div></div></div> : null}
 
                         <div className="main">
                             <div className="shell">
@@ -114,8 +115,8 @@ class PageCategory extends NSPageCategory {
                                                         <option value={JSON.stringify({ field: 'sortWeight', sortValue: '-1' })}>{t('category:pertinence')}</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '1' })}>A-Z</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '-1' })}>Z-A</option>
-                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '1' })}>{t('category:prix')} -</option> {/* TODO: trier par prix normal & discount */}
-                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '-1' })}>{t('category:prix')} +</option>
+                                                        <option value={JSON.stringify({ field: `price.priceSort.${taxDisplay}`, sortValue: '1' })}>{t('category:prix')} -</option> {/* TODO: trier par prix normal & discount */}
+                                                        <option value={JSON.stringify({ field: `price.priceSort.${taxDisplay}`, sortValue: '-1' })}>{t('category:prix')} +</option>
                                                         <option value={JSON.stringify({ field: 'is_new', sortValue: '-1' })}>{t('category:new')}</option>
                                                         <option value={JSON.stringify({ field: 'reviews.average', sortValue: '-1' })}>{t('category:grade')}</option>
                                                         <option value={JSON.stringify({ field: 'stats.views', sortValue: '-1' })}>{t('category:mostViewed')}</option>
@@ -168,26 +169,26 @@ class PageCategory extends NSPageCategory {
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        className="btn"
+                                                        className="btn btn-grid"
                                                         onClick={() => this.setState({ gridDisplay: true }, () => {
                                                             window.localStorage.setItem('gridDisplay', 'true');
                                                         })}
                                                         aria-label={t('category:grid')}
                                                     >
-                                                        <i className={`ico-grid${gridDisplay ? ' active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">apps</span>
                                                     </button>
                                                 </li>
 
                                                 <li>
                                                     <button
                                                         type="button"
-                                                        className="btn"
+                                                        className="btn btn-grid"
                                                         onClick={() => this.setState({ gridDisplay: false }, () => {
                                                             window.localStorage.setItem('gridDisplay', 'false');
                                                         })}
                                                         aria-label={t('category:list')}
                                                     >
-                                                        <i className={`ico-list${!gridDisplay ? '-active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">format_list_bulleted</span>
                                                     </button>
                                                 </li>
                                             </ul>

@@ -24,6 +24,7 @@
         "slug": "Slug",
         "downloadLink": "Liens de téléchargement",
         "downloadInfos": "Informations au téléchargement",
+        "filename": "Nom du fichier (affichage uniquement)",
         "autoGen": "Generation automatique par le nom si vide",
         "jeuAttr": "Jeu d'attributs",
         "jeuOpt": "Jeu d'options",

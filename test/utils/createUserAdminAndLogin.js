@@ -1,3 +1,4 @@
+const crypto  = require('crypto');
 const chai    = require('chai');
 const faker   = require('faker');
 const app     = require('../../server');
@@ -9,13 +10,14 @@ const createUserAdminAndLogin = async (email = null, password = null) => {
     await Users.deleteMany({});
 
     const doc  = {
-        email           : email || faker.internet.email(),
-        password        : password || 'dm0W3#96OC',
-        firstName       : faker.name.firstName(),
-        lastName        : faker.name.lastName(),
-        isAdmin         : true,
-        isActive        : true,
-        isActiveAccount : true
+        email                : email || faker.internet.email(),
+        password             : password || 'dm0W3#96OC',
+        firstName            : faker.name.firstName(),
+        lastName             : faker.name.lastName(),
+        isAdmin              : true,
+        isActive             : true,
+        isActiveAccount      : false,
+        activateAccountToken : crypto.randomBytes(26).toString('hex')
     };
     const user = new Users(doc);
     await user.save();

@@ -21,13 +21,13 @@
                     <span class="label" ng-class="{'label-danger': !node.active || !node.isDisplayed, 'label-success': node.active && node.isDisplayed}" style="font-size:10px;margin:9px 10px 0 0;float:right">{{node.action}}</span>
                 </div>
                 <ol ui-tree-nodes="" ng-if="node.children.length > 0" ng-model="node.nodes" ng-class="{'hidden': node.collapsed}">
-                    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder"></li>
+                    <li ng-repeat="node in node.nodes track by $index" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder"></li>
                 </ol>
             </script>
             <!-- end of template -->
             <div ui-tree="treeOptions" ng-if="categories.length > 0" data-drag-delay="300" class="cleanBorder">
                 <ol ui-tree-nodes="" ng-model="categories" id="tree-root">
-                    <li ng-repeat="node in categories" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                    <li ng-repeat="node in categories track by $index" ui-tree-node ng-include="'nodes_renderer.html'"></li>
                 </ol>
             </div>
             <div ng-if="categories.length == 0" translate>category.list.noCatCreated</div>

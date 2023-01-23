@@ -50,6 +50,13 @@
           "type": "select",
           "value": "tshirts-tshirts",
           "operator": "eq"
+        },
+        {
+          "_id": "6364d9ce8ded9510a051938f",
+          "target": "code",
+          "type": "text",
+          "value": "p_bundle_001",
+          "operator": "eq"
         }
       ],
       "other_rules": [],
@@ -66,6 +73,13 @@
           "target": "universe",
           "type": "select",
           "value": "sweats-sweats",
+          "operator": "eq"
+        },
+        {
+          "_id": "6364d9e08ded9510a051939e",
+          "target": "code",
+          "type": "text",
+          "value": "p_bundle_001",
           "operator": "eq"
         }
       ],

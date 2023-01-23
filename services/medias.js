@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -11,8 +11,8 @@ const moment        = require('moment');
 const path          = require('path');
 const mongoose      = require('mongoose');
 const {fs, slugify} = require('aql-utils');
-const ObjectID = mongoose.Types.ObjectId;
-const slash    = require('slash');
+const ObjectID      = mongoose.Types.ObjectId;
+const slash         = require('slash');
 
 const {
     Medias,
@@ -67,15 +67,17 @@ const downloadAllDocuments = async () => {
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return fs.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
+    return path.resolve(uploadDirectory, 'temp/documents.zip');
 };
 
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB, group = '') => {
+const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder = true) => {
     console.log('Upload medias start...');
 
+    // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
+    reqFile.path      = path.resolve(global.appRoot, reqFile.path);
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
         .slice(0, -1)
@@ -83,41 +85,79 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     const target_path = `./${server.getUploadDirectory()}/medias`;
 
     const zip = new AdmZip(path_init);
+    // Extract files from zip to 'temp' folder
     zip.extractAllTo(path_unzip);
-    // Browse all the files to add them to the medias table
-    const filenames = fs.readdirSync(path_unzip);
-
+    let filenames = '';
+    // check if zip is totaly empty
+    try {
+        filenames = fs.readdirSync(path_unzip).filter((file) => fs.statSync(path.resolve(path_unzip, file)).isFile());
+    } catch (e) {
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotFound;
+    }
+    // check if zip have folder but no file
+    if (filenames.length === 0) {
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotInRoot;
+    }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
-        const filename    = filenames[index];
-        const init_file   = path.resolve(path_unzip, filename);
-        const target_file = path.resolve(target_path, filename);
-        const name_file   = filename.split('.')
-            .slice(0, -1)
-            .join('.');
+        try {
+            let filename                 = filenames[index];
+            const init_file              = path.resolve(path_unzip, filename);
+            let target_file              = path.resolve(target_path, filename);
+            let name_file                = filename.split('.').slice(0, -1).join('.');
+            const now                    = Date.now();
+            const ext_file               = filename.split('.').pop();
+            const filename_duplicated    = `${name_file + now}.${ext_file}`;
+            const name_file_duplicated   = filename_duplicated.split('.').slice(0, -1).join('.');
+            const target_file_duplicated = path.resolve(target_path, filename_duplicated);
 
-        // Check if folder
-        if (fs.lstatSync(init_file)
-            .isDirectory()) {
-            return;
-        }
+            // Check if folder
+            if (fs.lstatSync(init_file)
+                .isDirectory()) {
+                return;
+            }
 
-        // Move file to / medias
-        require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
-            if (err) console.error(err);
-        });
+            // if target_file exists use the target_file_duplicated variable
+            if (fs.existsSync(target_file)) {
+                target_file = target_file_duplicated;
+            }
+            // Copy files to /medias and delete the original files from 'temp' folder
+            try {
+                await fs.copyRecursive(init_file, target_file);
+                await fs.deleteRecursive(init_file);
+            } catch (e) {
+                console.error(e);
+                throw NSErrors.MediaNotFound;
+            }
 
-        // Insert it in the database
-        if (insertDB) {
-            await Medias.updateOne({name: name_file}, {
-                link : `medias/${filename}`,
-                name : name_file,
-                group
-            }, {upsert: true});
+            // Insert it in the database
+            if (insertDB) {
+                // check if filename already exist in the database OR if link already exist in the database
+                if (await Medias.findOne({$or: [{name: name_file}, {link: `medias/${filename}`}]})) {
+                    name_file = name_file_duplicated;
+                    filename  = filename_duplicated;
+                }
+                await Medias.updateOne({name: name_file}, {
+                    link  : `medias/${filename}`,
+                    name  : name_file,
+                    group : group || path.parse(reqFile.originalname).name
+                }, {upsert: true});
+            }
+        } catch (e) {
+            console.error(e);
+            throw NSErrors.InvalidFile;
         }
     }
 
+    if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
     console.log('Upload medias done !');
+};
+
+const deleteTempFiles = async (path_unzip, path_init) => {
+    fs.deleteRecursive(path_unzip);
+    fs.deleteRecursive(path_init);
 };
 
 /* **************** Documents **************** *
@@ -146,7 +186,6 @@ const uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - file extension (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-// const getImagePathCache = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
 const getImagePathCache = async (type, _id, size, extension, quality = 80, options = {}) => {
     const sharpOptions = {};
 
@@ -185,9 +224,8 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = options.position.replace(/ /g, '_');
     } else if (options.background) {
         fileNameOption = options.background;
-    } else {
-        fileNameOption = '';
     }
+
     if (ObjectID.isValid(_id)) {
         try {
             switch (type) {
@@ -200,7 +238,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.join(_path, imageObj.url);
                 fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
                 filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
-                await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
                 break;
                 // if a media is requested
             case 'productsVariant':
@@ -217,7 +255,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.join(_path, imageObj.url);
                 fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
                 filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
-                await fsp.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
                 break;
                 // if a media is requested
             case 'medias':
@@ -226,7 +264,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.join(_path, imageObj.link);
                 fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.link)}`;
                 filePathCache = path.join(cacheFolder, 'medias', fileName);
-                await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
                 break;
             case 'slider':
             case 'gallery':
@@ -236,7 +274,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.resolve(_path, imageObj.src);
                 fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(imageObj.src)}`;
                 filePathCache = path.resolve(cacheFolder, type, fileName);
-                await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
                 break;
             case 'blog':
                 const blog    = await mongoose.model('news').findOne({_id});
@@ -244,7 +282,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.join(_path, blog.img);
                 fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(blog.img)}`;
                 filePathCache = path.join(cacheFolder, type, fileName);
-                await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
                 break;
             case 'category':
                 const category = await mongoose.model('categories').findOne({_id});
@@ -252,7 +290,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath       = path.join(_path, category.img);
                 fileName       = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(category.img)}`;
                 filePathCache  = path.join(cacheFolder, type, fileName);
-                await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
                 break;
             case 'picto':
                 const picto   = await mongoose.model('pictos').findOne({_id});
@@ -260,7 +298,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath      = path.join(_path, 'medias/picto', picto.filename);
                 fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
                 filePathCache = path.join(cacheFolder, type, fileName);
-                await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
                 break;
             case 'trademark':
                 const trademark = await mongoose.model('trademarks').findOne({_id});
@@ -268,7 +306,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 filePath        = path.join(_path, 'medias/trademark', trademark.logo);
                 fileName        = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(trademark.logo)}`;
                 filePathCache   = path.join(cacheFolder, type, fileName);
-                await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+                await fs.mkdir(path.join(cacheFolder, type), {recursive: true});
                 break;
             default:
                 return null;
@@ -277,23 +315,20 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             console.warn('No image (or item) found. Default image used.');
         }
     }
-
-    // if the requested image is already cached, it is returned direct
-    if (filePathCache && await fs.existsSync(filePathCache)) {
-        return filePathCache;
-    }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
         fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = path.join(_path, global.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
+    // if the requested image is already cached, it is returned direct
+    if (filePathCache && await fs.existsSync(filePathCache)) {
+        return filePathCache;
+    }
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
             outPath : filePathCache
-        }, () => {
-            fs.copyFileSync(filePath, filePathCache);
-        });
+        }, () => fs.copyFileSync(filePath, filePathCache));
     } else {
     // otherwise, we recover the original image, we resize it, we compress it and we return it
     // resize
@@ -304,6 +339,10 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         try {
             sharpOptions.width  = Number(size.split('x')[0]);
             sharpOptions.height = Number(size.split('x')[1]);
+
+            if (!filePath || !filePathCache) {
+                return;
+            }
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
             console.error('Image not resized : ', exc);
@@ -313,9 +352,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 await utilsModules.modulesLoadFunctions('downloadFile', {
                     key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
                     outPath : filePathCache
-                }, async () => {
-                    await fs.copyFileSync(filePath, filePathCache);
-                });
+                }, async () => fs.copyFileSync(filePath, filePathCache));
             } catch (err) {
                 return '/';
             }
@@ -333,12 +370,8 @@ const uploadFiles = async (body, files) => {
     let target_path = `medias/${body.type}/`;
 
     switch (body.type) {
+    case 'productsVariant':
     case 'products': {
-        const code  = body.code.substring(0, 2);
-        target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
-        break;
-    }
-    case 'productsVariant': {
         const code  = body.code.substring(0, 2);
         target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
         break;
@@ -390,9 +423,9 @@ const uploadFiles = async (body, files) => {
         }
 
         const absoluteTargetPath = slash(path.resolve(global.appRoot, target_path_full));
-        await fsp.copyRecursive(tmp_path, absoluteTargetPath);
-        if ((await fsp.stat(tmp_path)).isDirectory()) {
-            await fsp.deleteRecursive(tmp_path);
+        await fs.copyRecursive(tmp_path, absoluteTargetPath);
+        if ((await fs.stat(tmp_path)).isDirectory()) {
+            await fs.deleteRecursive(tmp_path);
         } else {
             await fs.unlink(tmp_path);
         }
@@ -406,7 +439,7 @@ const uploadFiles = async (body, files) => {
             position : body.position ? body.position : false,
             alt      : body.alt,
             name     : name + extension,
-            title    : utils.slugify(files[0].originalname),
+            title    : slugify(files[0].originalname),
             url      : target_path_full,
             extension
         };
@@ -577,21 +610,7 @@ const uploadFiles = async (body, files) => {
 
         return {name: name + extension, path: target_path_full};
     }
-    // case 'option': {
-    //     const values = body.entity.values;
-    //     for (let i = 0; i < values.length; i++) {
-    //         delete values[i].$hashKey;
-    //     }
 
-    //     const path = body.entity.value[body.entity.line];
-    //     await utilsMedias.deleteFile(path);
-
-    //     values[body.entity.lineIndex][body.entity.line] = target_path_full;
-
-    //     await Opts.updateOne({_id: body._id}, {$set: {values}});
-
-    //     return {name: name + extension, path: target_path_full};
-    // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         if (result.img) await deleteFileAndCacheFile(result.img, 'category');
@@ -711,10 +730,9 @@ const getImageStream = async (url, res) => {
             res.set('Content-Type', `image/${imagePath.split('.').pop()}`);
         }
         if (imagePath && await fs.existsSync(imagePath) && (await fs.lstat(imagePath)).isFile()) {
-            fs.createReadStream(imagePath, {autoClose: true}).pipe(res);
-        } else {
-            res.status(404).send('Not found');
+            return res.sendFile(imagePath);
         }
+        res.status(404).send('Not found');
     } else {
         res.status(404).send('Not found');
     }

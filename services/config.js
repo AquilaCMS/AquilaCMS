@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -49,11 +49,15 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
                 ...config.environment,
                 databaseConnection : global.envFile.db
             };
-            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+            if (global.envFile.ssl) {
                 config.environment = {
                     ...config.environment,
-                    ssl : global.envFile.ssl
+                    ssl : {
+                        active : global.envFile.ssl.active
+                    }
                 };
+                if (global.envFile.ssl.cert) config.environment.ssl.cert = path.basename(global.envFile.ssl.cert);
+                if (global.envFile.ssl.key) config.environment.ssl.key = path.basename(global.envFile.ssl.key);
             } else {
                 // Put the SSL links empty if false
                 config.environment = {
@@ -108,13 +112,9 @@ const saveEnvFile = async (body, files) => {
                 }
             }
         }
-        if (environment.ssl && environment.ssl.active === 'true') {
-            if (environment.ssl.active === 'false') {
-                global.envFile.ssl.active = false;
-            } else {
-                global.envFile.ssl.active = true;
-            }
-            body.needRestart = true;
+        if (environment.ssl.active !== global.envFile.ssl.active) {
+            global.envFile.ssl.active = environment.ssl.active;
+            body.needRestart          = true;
         }
         if (
             environment.databaseConnection
@@ -129,76 +129,19 @@ const saveEnvFile = async (body, files) => {
     }
 };
 
-const saveEnvConfig = async (body) => {
-    const oldConfig = await Configuration.findOne({});
-    if (typeof body.environment?.contentSecurityPolicy !== 'undefined') {
-        const tempValueActive = body.environment.contentSecurityPolicy.active;
-        if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
-            if (typeof tempValueActive === 'string') {
-                if (tempValueActive === 'false') {
-                    body.environment.contentSecurityPolicy.active = false;
-                } else if (tempValueActive === 'true') {
-                    body.environment.contentSecurityPolicy.active = true;
-                }
-            }
-        }
-        if (typeof body.environment.contentSecurityPolicy.values === 'undefined') {
-            body.environment.contentSecurityPolicy.values = [];
-        }
-    }
-    const {environment, stockOrder} = body;
+const saveEnvConfig = async (newConfig) => {
+    const oldConfig                 = await Configuration.findOne({});
+    const {environment, stockOrder} = newConfig;
+    // environment
     if (environment) {
-        // compare two array
-        const array2 = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
-        const array1 = environment.contentSecurityPolicy.values.slice().sort();
-        const isSame = array1.length === array2.length && array1.every((value, index) =>  value === array2[index]);
-        if (
-            oldConfig.environment.appUrl !== environment.appUrl
-            || oldConfig.environment.adminPrefix !== environment.adminPrefix
-            || isSame === false
-            || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
-        ) {
-            body.needRestart = true;
-        }
-        if (environment.defaultImage !== oldConfig.defaultImage) {
-            await ServiceCache.flush();
-            await ServiceCache.cleanCache();
-        }
-        if (environment.photoPath) {
-            environment.photoPath = path.normalize(environment.photoPath);
-        }
-        // specific treatment
-        if (environment.demoMode) {
-            const seoService = require('./seo');
-            console.log('DemoMode : removing sitemap.xml');
-            await seoService.removeSitemap(); // Remove the sitemap.xml
-            console.log('DemoMode : changing robots.txt');
-            await seoService.manageRobotsTxt(false); // Ban robots.txt
-        }
+        newConfig = await updateConfig(newConfig, oldConfig);
     }
 
     // if the stockOrder has changed, in this case for the stock labels, we apply the changes to the product with these labels
     if (stockOrder) {
-        const result = diff(
-            JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),
-            stockOrder.labels,
-            '_id',
-            {updatedValues: diff.updatedValues.second}
-        );
-        for (let i = 0; i < result.removed.length; i++) {
-            await Products.updateMany(
-                {'stock.label': result.removed[i].code},
-                {'stock.label': null, 'stock.translation': undefined}
-            );
-        }
-        for (let i = 0; i < result.updated.length; i++) {
-            await Products.updateMany(
-                {'stock.label': result.updated[i].code},
-                {'stock.translation': result.updated[i].translation}
-            );
-        }
+        await updateProductsStockOrder(stockOrder, oldConfig.stockOrder);
     }
-    const cfg        = await Configuration.findOneAndUpdate({}, {$set: body}, {new: true});
+    const cfg        = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
     global.envConfig = cfg;
 };
 
@@ -245,10 +188,91 @@ const needRebuildAndRestart = async (restart = false, rebuild = false) => {
     });
 };
 
+const updateProductsStockOrder = async (stockOrder, oldStockOrder) => {
+    const result = diff(
+        JSON.parse(JSON.stringify(oldStockOrder.labels)),
+        stockOrder.labels,
+        '_id',
+        {updatedValues: diff.updatedValues.second}
+    );
+    for (let i = 0; i < result.removed.length; i++) {
+        await Products.updateMany(
+            {'stock.label': result.removed[i].code},
+            {'stock.label': null, 'stock.translation': undefined}
+        );
+    }
+    for (let i = 0; i < result.updated.length; i++) {
+        await Products.updateMany(
+            {'stock.label': result.updated[i].code},
+            {'stock.translation': result.updated[i].translation}
+        );
+    }
+};
+
+const updateConfig = async (newConfig, oldConfig) => {
+    // Content security policy
+    if (typeof newConfig?.environment?.contentSecurityPolicy !== 'undefined' && typeof newConfig.environment.contentSecurityPolicy.values === 'undefined') {
+        newConfig.environment.contentSecurityPolicy.values = [];
+    }
+    // compare two array (old contentPolicy & new contentPolicy)
+    const oldValues = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
+    const newValues = newConfig.environment.contentSecurityPolicy.values.slice().sort();
+    const isSame    = newValues.length === oldValues.length && newValues.every((value, index) =>  value === oldValues[index]);
+    if (
+        oldConfig.environment.appUrl !== newConfig.environment.appUrl
+        || oldConfig.environment.adminPrefix !== newConfig.environment.adminPrefix
+        || isSame === false
+        || oldConfig.environment.contentSecurityPolicy.active !== newConfig.environment.contentSecurityPolicy.active
+    ) {
+        newConfig.environment.needRestart = true;
+    }
+    // images
+    if (newConfig.environment.defaultImage !== oldConfig.environment.defaultImage) {
+        await ServiceCache.flush();
+        await ServiceCache.cleanCache();
+    }
+    if (newConfig.environment.photoPath) {
+        newConfig.environment.photoPath = path.normalize(newConfig.environment.photoPath);
+    }
+    // specific treatment (seo)
+    if (oldConfig.environment.demoMode !== newConfig.environment.demoMode) {
+        const seoService = require('./seo');
+        if (newConfig.environment.demoMode) {
+            console.log('DemoMode : removing sitemap.xml');
+            await seoService.removeSitemap(); // Remove the sitemap.xml
+        }
+        console.log('DemoMode : changing robots.txt');
+        /*
+         * de Oui a Non (donc newConfig.environment.demoMode = false)  -> manageRobotsTxt(false)
+         * de Non a Oui (donc newConfig.environment.demoMode = true)  -> manageRobotsTxt(true)
+         */
+        await seoService.manageRobotsTxt(!newConfig.environment.demoMode); // Ban robots.txt
+    }
+    return newConfig;
+};
+
+const uploadSSLFile = async (fileType, files, body) => {
+    if (files?.length === 0) throw new Error('No file provided');
+    if (fileType !== 'key' && fileType !== 'cert') throw new Error('Invalid file type');
+    const dir = path.join(__dirname, '..', 'ssl');
+    // create the directory if not exists
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    const file = files[0];
+    // copy the file to the ssl directory
+    const filepath = path.join('ssl', body.filename);
+    fs.renameSync(file.path, filepath);
+
+    global.envFile.ssl[fileType] = filepath;
+    await updateEnvFile();
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
     saveEnvFile,
     getConfigTheme,
-    needRebuildAndRestart
+    needRebuildAndRestart,
+    uploadSSLFile
 };

@@ -35,7 +35,7 @@
                 infinite-scroll-immediate-check="true"
                 infinite-scroll-disabled='scroller.busy'>
             <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                ng-repeat="trademark in trademarks | orderBy:sortType:sortReverse"
+                ng-repeat="trademark in trademarks track by trademark.code | orderBy:sortType:sortReverse"
                 ng-click="editTrademark(trademark)"
                 style="cursor: pointer;">
                 <td data-label="Nom :" class="  sorting_1">{{trademark.name}}</td>

@@ -44,7 +44,7 @@
                                 name="type_{{$index}}" id="type_{{$index}}" 
                                 ng-model="product.variants[getProductVariantIndex(declinaison.code)].type" 
                                 ng-click="$event.stopPropagation()"
-                                ng-show="getProductVariantIndex(declinaison.code) === 0"
+                                ng-change="updateVariantType(product.variants[getProductVariantIndex(declinaison.code)].type)">
                             >
                                 <option selected value="image" translate>product.declinaisons.displayImage</option>
                                 <option selected value="list" translate>product.declinaisons.displayList</option>

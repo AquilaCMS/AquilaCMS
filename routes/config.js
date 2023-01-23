@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -14,10 +14,12 @@ const {extendTimeOut}      = require('../middleware/server');
 const serviceConfig        = require('../services/config');
 const NSErrors             = require('../utils/errors/NSErrors');
 const {getUploadDirectory} = require('../utils/server');
+const {multerUpload}       = require('../middleware/multer');
 
 module.exports = function (app) {
     app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
+    app.post('/v2/config/ssl/:fileType', adminAuth, multerUpload.any(), uploadSSLFile);
     app.get('/restart', adminAuth, restartServer);
     app.get('/robot', adminAuth, getRobot);
     app.post('/robot', adminAuth, setRobot);
@@ -68,15 +70,15 @@ async function saveEnvFile(req, res, next) {
 async function saveEnvConfig(req, res, next) {
     try {
         await serviceConfig.saveEnvConfig(req.body);
-        if (req.body.needRestart) {
+        if (req.body?.environment?.needRestart || global.envConfig.environment.needRestart) {
             setTimeout(() => {
                 restart();
             }, 5000);
         }
-        res.send({
+        res.json({
             status : 'success',
             data   : {
-                needRestart : req.body.needRestart
+                needRestart : req.body?.environment?.needRestart || global.envConfig.environment.needRestart
             }
         });
     } catch (err) {
@@ -123,5 +125,13 @@ async function setRobot(req, res, next) {
         return res.json({message: 'success'});
     } catch (error) {
         next(error);
+    }
+}
+
+async function uploadSSLFile(req, res, next) {
+    try {
+        return res.json(await serviceConfig.uploadSSLFile(req.params.fileType, req.files, req.body));
+    } catch (err) {
+        next(err);
     }
 }

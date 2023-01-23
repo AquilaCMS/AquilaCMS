@@ -64,17 +64,17 @@
 
             <div class="row" style="margin-top:20px">
             <!-- <div class="row" style="margin-bottom:30px;overflow:scroll; height:70vh;overflow-x: hidden;padding:15px 20px"> -->
-                <div ng-repeat="media in list">
-                    <div ng-if="media.extension && ((['.png', '.jpg']).includes(media.extension.toLowerCase()))" class="col-md-3" style="text-align: center;margin-bottom:20px">
-                        <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
-                            ng-click="selectImage(media)"><img
-                                ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
+                <div ng-repeat="lMedia in list">
+                    <div ng-if="lMedia.extension && ((['.png', '.jpg']).includes(lMedia.extension.toLowerCase()))" class="col-md-3" style="text-align: center;margin-bottom:20px">
+                        <button ng-if="imageId === lMedia._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
+                            ng-click="selectImage(lMedia)"><img
+                                ng-src="/images/medias/200x100-50/{{lMedia._id}}/{{lMedia.link.split('/')[lMedia.link.split('/').length - 1]}}"
                                 alt=""></button>
-                        <button ng-if="imageId !== media._id" ng-click="selectImage(media)"><img
-                                ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
+                        <button ng-if="imageId !== lMedia._id" ng-click="selectImage(lMedia)"><img
+                                ng-src="/images/medias/200x100-50/{{lMedia._id}}/{{lMedia.link.split('/')[lMedia.link.split('/').length - 1]}}"
                                 alt=""></button>
                         <br />
-                        <label>{{media.name || '-'}}</label>
+                        <label>{{lMedia.name || '-'}}</label>
                     </div>
                 </div>
             </div>

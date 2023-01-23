@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -98,6 +98,7 @@ class NSErrors {
     static get MailUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateError'); }
     static get MailUpdateNoTypeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateNoTypeError'); }
     static get MediaNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotFound'); }
+    static get MediaNotInRoot() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotInRoot'); }
     static get MissingConfiguration() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingConfiguration'); }
     static get ModuleNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleNotFound'); }
     static get OrderNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'OrderNotFound'); }

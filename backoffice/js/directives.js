@@ -411,6 +411,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 insertDBMediaUpload: true,
                                 search: ""
                             };
+                            $scope.media = {};
 
                                 $scope.generateFilter = function () {
                                     const filter = {};
@@ -482,7 +483,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $modalInstance.close(url);
                             };
 
-                            $scope.media = {};
 
                         }],
                         resolve: {
@@ -730,7 +730,8 @@ adminCatagenDirectives.directive("nsBox", function ()
             editHref: "@?",
             editClick: "&?",
             newHref: "@?",
-            newClick: "&?"
+            newClick: "&?",
+            massClick: "&?"
         },
         templateUrl: "views/templates/nsBox.html",
         link: function (scope, element, attrs)
@@ -742,6 +743,7 @@ adminCatagenDirectives.directive("nsBox", function ()
             scope.hasAdd = attrs.addHref || attrs.addClick;
             scope.hasClose = attrs.closeHref || attrs.closeClick;
             scope.hasNew = attrs.newHref || attrs.newClick;
+            scope.hasMassClick = attrs.massClick;
             scope.hasEdit = attrs.editHref || attrs.editClick;
 
             let type;
@@ -864,6 +866,26 @@ adminCatagenDirectives.directive("numericbinding", function ()
         }
     };
 });
+adminCatagenDirectives.directive("restrictInput", function ()
+{
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attr, ctrl) {
+          ctrl.$parsers.unshift(function(viewValue) {
+            var options = scope.$eval(attr.restrictInput);
+            var reg = new RegExp(options.regex);
+            if (reg.test(viewValue)) { //if valid view value, return it
+              return viewValue;
+            } else { //if not valid view value, use the model value (or empty string if that's also invalid)
+              var overrideValue = (reg.test(ctrl.$modelValue) ? ctrl.$modelValue : '');
+              element.val(overrideValue);
+              return overrideValue;
+            }
+          });
+        }
+      };
+});
 adminCatagenDirectives.directive("nsAttributes", function ($compile)
 {
     return {
@@ -876,7 +898,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 scope.att.translation[scope.lang].value = colorString
             }
 
-            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+            /* scope.$watch('att.type', function(newValue, oldValue, elScope) { */
                 el = angular.element("<span/>");
                 scope.optionColor = {
                     format: "hexString",
@@ -971,7 +993,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 $compile(el)(scope);
                 element.append(el);
                 
-            })
+            /* }) */
         }
     };
 });
@@ -2468,7 +2490,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         if (err && err.data && err.data.message) {
                                             toastService.toast('danger', err.data.message);
                                         }
-                                        $scope.onError(err);
+                                        if(typeof $scope.onError === 'function') $scope.onError(err);
                                     }, function (evt) {
                                         $scope.disableUpload = true;
                                         $scope.progress[evt.config.data.file.$ngfBlobUrl] = parseInt(100.0 * evt.loaded / evt.total);
@@ -2555,6 +2577,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 max: true,
                 keepRatio: true,
                 ratio: 1,
+                relativeLink: true,
     
                 crop:false,
                 position:"center",
@@ -2607,8 +2630,8 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/${$scope.media.type}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                    return $scope.link
+                    $scope.link = `${!$scope.info.relativeLink ? window.location.origin : ''}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    return $scope.link;
                 }
             };
     
@@ -2626,18 +2649,19 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 const img = new Image();
                 img.src = url;
                 img.onload = function() { 
-                    $scope.info.ratio = this.width / this.height;
-                    $scope.info.width = this.width;
-                    $scope.info.height = this.height;
-                    $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
-                    $scope.$apply()
+                    const that = this;
+                    $scope.$apply(function () {
+                        $scope.info.ratio = that.width / that.height;
+                        $scope.info.width = that.width;
+                        $scope.info.height = that.height;
+                        $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
+                    })
                 }
             }
 
-            $scope.$watch(function (scp) {return scp.media}, function(oldValue, newValue) {
-                if (newValue)
-                    $scope.getMeta(newValue.link)
-            }, true);
+            $scope.$watch(function (scp) {return scp.media}, function(newValue, oldValue) {
+                if (newValue?.link)  $scope.getMeta(newValue.link)
+            });
 
         }]
     }

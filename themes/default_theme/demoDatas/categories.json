@@ -17,7 +17,7 @@
         "5c91f90fb8a46740e46c7ff1",
         "5c920856ff724742a0922257"
       ],
-      "displayOrder": 99,
+      "displayOrder": 0,
       "canonical_weight": 0,
       "_id": "5b7ea55c09c72307ffb3c7dd",
       "code": "menu-header",
@@ -32,8 +32,9 @@
         }
       },
       "productsList": [],
-      "createdAt": "2020-05-13T09:07:33.482Z",
-      "openDate": "2020-05-13T09:07:33.482Z"
+      "createdAt": "2022-05-13T09:07:33.482Z",
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "updatedAt": "2022-11-04T10:11:18.967Z"
     },
     {
       "filters": {
@@ -101,79 +102,82 @@
           "name": "MY PRODUCTS",
           "slug": "my-products",
           "metaDescription": "My products meta description",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/medias/banniere_1_tshirt.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n        <h1>My products</h1>\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d4a5011edd1c15f16018b85/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUCTS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "fr": {
           "name": "PRODUITS",
           "metaDescription": "Mes produits meta description",
           "slug": "mes-produits",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/medias/banniere_1_tshirt.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>MES PRODUITS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/category/max-80/5c6676a1583a67281c09f77c/banniere_produits.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>PRODUITS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
-      "openDate": "2020-05-13T09:07:33.482Z",
-      "createdAt": "2020-05-13T09:07:33.482Z",
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "createdAt": "2022-05-13T09:07:33.482Z",
       "productsList": [
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8ad",
+          "sortWeight": 10,
+          "_id": "fffccaf3294671b45ac5bffa",
           "id": "5c667f8a28a49c049c5863c8"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8ac",
+          "sortWeight": 8,
+          "_id": "ff78348429f3badc894d2740",
           "id": "5c667ff128a49c049c5863c9"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8ab",
+          "sortWeight": 8,
+          "_id": "ffaa222ec17dbb985b1fb33a",
           "id": "5d24a3e94aa9c1692db04ac7"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8aa",
+          "sortWeight": 8,
+          "_id": "ff06d35fdf9c1315528f521d",
           "id": "5d24a43a4aa9c1692db04ad8"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a9",
+          "sortWeight": 8,
+          "_id": "ffc44a11ff29730b4b3066a5",
           "id": "5d24a4844aa9c1692db04ae4"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a8",
+          "_id": "ffd9a1b723d192d622e7edf7",
           "id": "5d3074d44aa9c1692db0534d"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a7",
+          "_id": "ff6432b737ddd2b6ed987a87",
           "id": "5d3078aa4aa9c1692db05498"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a6",
+          "sortWeight": 5,
+          "_id": "ffd84bb4764569cb9a79c1aa",
           "id": "5d3079de4aa9c1692db0549d"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a5",
+          "sortWeight": 5,
+          "_id": "ff6db68c44c76e0e3cfcdbee",
           "id": "5d307a164aa9c1692db054a4"
         },
         {
           "checked": false,
-          "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8a6",
+          "sortWeight": 9,
+          "_id": "ffa2ef7b7433b3951d7e5cf8",
           "id": "5eb2cfdb6cdf0b436c831f23"
-        }        
-      ]
+        }
+      ],
+      "updatedAt": "2022-11-04T10:11:18.969Z",
+      "alt": "",
+      "img": "medias/category/category-products.jpg"
     },
     {
       "filters": {
@@ -206,9 +210,10 @@
           "pageSlug": "contactez-nous"
         }
       },
-      "openDate": "2020-05-13T09:07:33.482Z",
-      "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "createdAt": "2022-05-13T09:07:33.482Z",
+      "productsList": [],
+      "updatedAt": "2022-11-04T10:11:18.971Z"
     },
     {
       "filters": {
@@ -239,9 +244,10 @@
           "slug": "blog"
         }
       },
-      "openDate": "2020-05-13T09:07:33.482Z",
-      "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "createdAt": "2022-05-13T09:07:33.482Z",
+      "productsList": [],
+      "updatedAt": "2022-11-04T10:11:18.973Z"
     },
     {
       "filters": {
@@ -272,9 +278,10 @@
           "slug": "gallerie"
         }
       },
-      "openDate": "2020-05-13T09:07:33.482Z",
-      "createdAt": "2020-05-13T09:07:33.482Z",
-      "productsList": []
+      "openDate": "2022-05-13T09:07:33.482Z",
+      "createdAt": "2022-05-13T09:07:33.482Z",
+      "productsList": [],
+      "updatedAt": "2022-11-04T10:11:18.974Z"
     },
     {
       "filters": {
@@ -337,49 +344,58 @@
         "fr": {
           "name": "T-SHIRT",
           "slug": "t-shirt",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444fa2ede1945f6602892f/banniere1.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>T-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/category/max-80/5d25f0964aa9c1692db052a6/t-shirts.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>T-SHIRTS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "T-SHIRT",
           "slug": "t-shirt",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444fa2ede1945f6602892f/banniere1.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>TEE-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444fa2ede1945f6602892f/t-shirts.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>T-SHIRTS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
-      "openDate": "2020-05-10T14:05:10.806Z",
-      "createdAt": "2020-05-10T14:05:10.806Z",
+      "openDate": "2022-05-10T14:05:10.806Z",
+      "createdAt": "2022-05-10T14:05:10.806Z",
       "productsList": [
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b2",
+          "_id": "ffce8247aeec1440793df886",
           "id": "5c667f8a28a49c049c5863c8"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b1",
+          "_id": "ff480f127fb40dd33959f3e5",
           "id": "5c667ff128a49c049c5863c9"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b0",
+          "_id": "ffe3f195f73a48b4fd2b523b",
           "id": "5d24a3e94aa9c1692db04ac7"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8af",
+          "_id": "ff16c1b06159b77b8040271f",
           "id": "5d24a43a4aa9c1692db04ad8"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8ae",
+          "_id": "ff776abc5c8212e8c1da4f25",
           "id": "5d24a4844aa9c1692db04ae4"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "ff473160b66e7cb11b1d6d01",
+          "id": "5eb2cfdb6cdf0b436c831f23"
         }
       ],
-      "colorName": ""
+      "colorName": "",
+      "updatedAt": "2022-11-04T10:11:18.976Z",
+      "alt": "",
+      "img": "medias/category/category-tshirts.jpg"
     },
     {
       "filters": {
@@ -442,30 +458,39 @@
         "fr": {
           "name": "SWEAT",
           "slug": "sweat",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444efbede1945f660288d7/banniere2.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SWEAT-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/category/max-80/5d25f0a14aa9c1692db052a7/sweat.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SWEATS</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "SWEAT",
           "slug": "sweat",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d444efbede1945f660288d7/banniere2.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SWEAT-SHIRTS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/medias/max-80/5d444efbede1945f660288d7/banniere2.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SWEATS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
-      "openDate": "2020-05-10T14:05:21.458Z",
-      "createdAt": "2020-05-10T14:05:21.458Z",
+      "openDate": "2022-05-10T14:05:21.458Z",
+      "createdAt": "2022-05-10T14:05:21.458Z",
       "productsList": [
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b4",
+          "_id": "ff66bedee53f7704efb09022",
           "id": "5d3079de4aa9c1692db0549d"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b3",
+          "_id": "ffecefcf1d1e0c37cf3ca356",
           "id": "5d307a164aa9c1692db054a4"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "ff690977a8453976c94828a2",
+          "id": "5eb2cfdb6cdf0b436c831f23"
         }
-      ]
+      ],
+      "updatedAt": "2022-11-04T10:11:18.979Z",
+      "alt": "",
+      "img": "medias/category/category-sweat.jpg"
     },
     {
       "filters": {
@@ -528,30 +553,33 @@
         "fr": {
           "name": "CHAUSSETTES",
           "slug": "chaussettes",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d445012ede1945f6602898b/banniere3.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>CHAUSSETTES</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/category/max-80/5d25f0b14aa9c1692db052a8/chaussettes.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>CHAUSSETTES</h1>\n</div>\n</div>\n</div>\n</div>"
         },
         "en": {
           "name": "SOCKS",
           "slug": "socks",
-          "extraText": "<div class=\"intro\" style=\"background-image: url(/images/medias/max-70/5d445012ede1945f6602898b/banniere3.jpg);\">\n   <div class=\"intro__content\">\n     <div class=\"shell\">\n<h1>SOCKS</h1>\n\n      </div>\n     </div>\n</div>"
+          "extraText": "<div>\n<div class=\"intro intro-image\" style=\"background-image: linear-gradient(rgba(252, 180, 76, 0.72), rgba(240, 84, 35, 0.72)), url('/images/category/max-80/5d25f0b14aa9c1692db052a8/socks.jpg');\">\n<div class=\"intro__content\">\n<div class=\"shell\">\n<h1>SOCKS</h1>\n</div>\n</div>\n</div>\n</div>"
         }
       },
-      "openDate": "2020-05-10T14:05:37.465Z",
-      "createdAt": "2020-05-10T14:05:37.465Z",
+      "openDate": "2022-05-10T14:05:37.465Z",
+      "createdAt": "2022-05-10T14:05:37.465Z",
       "productsList": [
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b6",
+          "_id": "ffa10296b4c6d4efe4ebfed2",
           "id": "5d3074d44aa9c1692db0534d"
         },
         {
           "checked": false,
           "sortWeight": 0,
-          "_id": "5da57915de6bed65e1d2a8b5",
+          "_id": "ff14156390394d046dc722ac",
           "id": "5d3078aa4aa9c1692db05498"
         }
-      ]
+      ],
+      "updatedAt": "2022-11-04T10:11:18.981Z",
+      "alt": "",
+      "img": "medias/category/category-socks.jpg"
     }
   ]
 }

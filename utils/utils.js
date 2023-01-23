@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -26,18 +26,16 @@ const checkModuleRegistryKey = async (moduleName) => {
         const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
-            const result = await axios.post('https://stats.aquila-cms.com/api/v1/register', {
+            await axios.post('https://stats.aquila-cms.com/api/v1/register', {
                 registryKey : registryFile.code,
                 aquilaVersion
             });
-            if (!result.data.data) return true;
-            return true;
+        } else {
+            await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
+                registryKey : registryFile.code,
+                aquilaVersion
+            });
         }
-        const result = await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
-            registryKey : registryFile.code,
-            aquilaVersion
-        });
-        if (!result.data.data) return true;
         return true;
     } catch (err) {
         return true;
@@ -119,6 +117,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             && !checkForValidMongoDbID.test(value)
             && value
             && value !== {}
+            && !(data[key] instanceof Date)
         ) {
             // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
@@ -130,7 +129,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
     return fields;
 };
 
-const checkForValidMongoDbID = new RegExp('^[0-9a-fA-F]{24}$');
+const checkForValidMongoDbID = /^[0-9a-fA-F]{24}$/;
 
 /**
  * Detect if array contain duplicated values

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -63,7 +63,8 @@ const BillsSchema = new Schema({
     },
     avoir           : {type: Boolean, default: false},
     additionnalFees : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}, tax: {type: Number, default: 0}},
-    priceSubTotal   : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}}
+    priceSubTotal   : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}},
+    anonymized      : {type: Boolean, default: false}
 }, {
     timestamps : true,
     id         : false

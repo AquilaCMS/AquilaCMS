@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -174,6 +174,132 @@ const migration_11_clearAttributesIndexes = async () => {
     console.log('End migration script "migration_11_clearAttributesIndexes"...');
 };
 
+const searchSettingsKeys = [
+    {
+        name        : 'code',
+        weight      : 20,
+        translation : {
+            fr : {
+                label : 'Code'
+            },
+            en : {
+                label : 'Code'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.name',
+        weight      : 10,
+        translation : {
+            fr : {
+                label : 'Nom'
+            },
+            en : {
+                label : 'Name'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description1.title',
+        weight      : 3,
+        translation : {
+            fr : {
+                label : 'Titre description 1'
+            },
+            en : {
+                label : 'Title description 1'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description1.text',
+        weight      : 2.5,
+        translation : {
+            fr : {
+                label : 'Texte descripiton 1'
+            },
+            en : {
+                label : 'Text descripiton 1'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description2.title',
+        weight      : 2,
+        translation : {
+            fr : {
+                label : 'Titre description 2'
+            },
+            en : {
+                label : 'Title description 2'
+            }
+        }
+    },
+    {
+        name        : 'translation.{lang}.description2.text',
+        weight      : 1.5,
+        translation : {
+            fr : {
+                label : 'Texte description 2'
+            },
+            en : {
+                label : 'Text description 2'
+            }
+        }
+    }
+];
+
+const migration_12_searchSettings = async () => {
+    console.log('Applying migration script "migration_12_searchSettings"...');
+    const config = await mongoose.connection.collection('configurations').findOne({});
+    if (config && config.environment) {
+        const searchSettings = {
+            findAllMatches     : true,
+            ignoreFieldNorm    : true,
+            ignoreLocation     : true,
+            includeScore       : true,
+            keys               : searchSettingsKeys,
+            minMatchCharLength : 2,
+            shouldSort         : true,
+            threshold          : 0.2,
+            useExtendedSearch  : true
+        };
+        await mongoose.connection.collection('configurations').updateOne({}, {$set: {'environment.searchSettings': searchSettings}});
+    }
+};
+
+const migration_13_searchSettings_translations = async () => {
+    console.log('Applying migration script "migration_13_searchSettings_translations"...');
+    // getb the old config
+    const config = await mongoose.connection.collection('configurations').findOne({});
+    if (config.environment.searchSettings.keys) {
+        // loop on each key
+        config.environment.searchSettings.keys.forEach((key) => {
+            if (!key.translation && key.label) {
+                // if the key name is one of the default keys, we use the associated translation, else we put EN- before the label for english translations
+                const foundKey = searchSettingsKeys.find((k) => k.name === key.name);
+                if (foundKey) {
+                    key.translation = foundKey.translation;
+                } else {
+                    key.translation = {
+                        fr : {
+                            label : key.label
+                        },
+                        en : {
+                            label : `EN-${key.label}`
+                        }
+                    };
+                }
+                // delete the old property
+                delete key.label;
+            }
+        });
+        // save the new config
+        await mongoose.connection.collection('configurations').updateOne({}, {$set: {'environment.searchSettings': config.environment.searchSettings}});
+    }
+    console.log('End migration script "migration_13_searchSettings_translations"...');
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -186,7 +312,9 @@ const migrationScripts = [
     migration_8_CmsBlocks,
     migration_9_adminRights,
     migration_10_clearSetAttributesIndexes,
-    migration_11_clearAttributesIndexes
+    migration_11_clearAttributesIndexes,
+    migration_12_searchSettings,
+    migration_13_searchSettings_translations
     // sample
 ];
 

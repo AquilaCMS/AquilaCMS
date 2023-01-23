@@ -167,14 +167,12 @@ class CartPayment extends React.Component {
 
                         {pm.name ? (
                             <label htmlFor={`field-payment-card-${pm.code}`}>
-                                <i>
-                                    <img src={pm.urlLogo ? pm.urlLogo : ''} alt={pm.name} width="62" height="134" />
-                                </i>
+                                {pm.urlLogo && <img src={pm.urlLogo} alt={pm.name} width="62" height="134" />}
                                 {pm.description}
                             </label>
                         ) : (
-                                <label htmlFor={`field-payment-card-${pm.code}`}>{pm.code}</label>
-                            )}
+                            <label htmlFor={`field-payment-card-${pm.code}`}>{pm.code}</label>
+                        )}
                     </div>
                 </div>
             );

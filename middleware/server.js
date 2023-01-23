@@ -1,23 +1,21 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const swaggerUi                       = require('swagger-ui-express-updated');
-const cookieParser                    = require('cookie-parser');
-const cors                            = require('cors');
-const express                         = require('express');
-const helmet                          = require('helmet');
-const morgan                          = require('morgan');
-const multer                          = require('multer');
-const path                            = require('path');
-const {v1: uuidv1}                    = require('uuid');
-const {fs}                            = require('aql-utils');
-const {translation, serverUtils}      = require('../utils');
-const {retrieveUser}                  = require('./authentication');
+const swaggerUi                  = require('swagger-ui-express-updated');
+const cookieParser               = require('cookie-parser');
+const cors                       = require('cors');
+const express                    = require('express');
+const helmet                     = require('helmet');
+const morgan                     = require('morgan');
+const path                       = require('path');
+const {fs}                       = require('aql-utils');
+const {translation, serverUtils} = require('../utils');
+const {retrieveUser}             = require('./authentication');
 
 const getUserFromRequest = async (req) => {
     const user = null;
@@ -49,7 +47,9 @@ const serverUseRequest = async (req, res, next) => {
 
         if (json) {
             let lang = global.defaultLang;
-            if (req.body && req.body.lang) {
+            if (req.headers && req.headers.lang) {
+                lang = req.headers.lang;
+            } else if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
             json = translation.translateDocument(json, lang, keepOriginalAttribs);
@@ -178,14 +178,6 @@ const initExpress = async (server, passport) => {
         next();
     });
 
-    const storage = multer.diskStorage({
-        destination : path.resolve(photoPath, 'temp'),
-        filename(req, file, cb) {
-            cb(null, uuidv1() + path.extname(file.originalname));
-        }
-    });
-
-    server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
         require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
         JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))

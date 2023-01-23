@@ -140,13 +140,25 @@ AttributeControllers.controller('AttributeDetailCtrl', [
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
                 $scope.attribute.update = true;
+
+                $scope.getParentsAttr();
+            });
+        };
+
+        $scope.getParentsAttr = function () {
+            AttributesV2.list({
+                PostBody: { filter: { code: { $ne: $scope.attribute.code || '' }, set_attributes: { $in: $scope.attribute.set_attributes } }, structure: '*', limit: 0 }
+            }, function (attributesList) {
+                $scope.parentsAttributesList = attributesList.datas;
+            }, function (error) {
+                // deal with error here
             });
         };
 
         if ($routeParams.attributeCode === 'new' || $routeParams.attributeCode === undefined) {
             $scope.isEditMode = false;
             $scope.attribute  = {
-                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false
+                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false, usedInSearch : false
             };
 
             if ($routeParams.code) {
@@ -176,6 +188,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                         }
                     }
                 });
+                $scope.getParentsAttr();
             }
         });
 
@@ -191,6 +204,11 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.attribute.translation[$scope.lang].values = [];
             }
             $scope.attribute.translation[$scope.lang].values.push('');
+        };
+
+        $scope.changeSetAttributes = function () {
+            $scope.attribute.parents = [];
+            $scope.getParentsAttr();
         };
 
         $scope.removeValue = function (index) {
@@ -278,7 +296,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm($translate.instant('confirm.removeAttribute'))) {
+            if (confirm($translate.instant(attr.isVariantable ? 'confirm.removeVariantAttribute' : 'confirm.removeAttribute'))) {
                 AttributesV2.delete({id: attr._id}, function () {
                     toastService.toast('success', $translate.instant('attribute.detail.deleteAttribute'));
                     $location.path(`/${$scope._type}/attributes`);

@@ -72,10 +72,21 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label" translate>attribute.detail.presJeuxAttr</label>
                     <div class="col-sm-6">
-                        <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" multiple>
-                            <option ng-repeat="setAtt in setAttributes" value="{{setAtt._id}}"
+                        <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" ng-change="changeSetAttributes()" multiple>
+                            <option ng-repeat="setAtt in setAttributes track by setAtt.code" value="{{setAtt._id}}"
                                 ng-selected="attribute.set_attributes.indexOf(setAtt._id) > -1">{{setAtt.name}}
                                 (Code : {{setAtt.code}})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.parentsAttr</label>
+                    <div class="col-sm-6">
+                        <select name="parents" class="form-control" ng-model="attribute.parents" multiple>
+                            <option ng-repeat="parentAtt in parentsAttributesList track by parentAtt.code" value="{{parentAtt._id}}"
+                                ng-selected="attribute.parents.indexOf(parentAtt._id) > -1">{{parentAtt.translation[lang].name}}
+                                (Code : {{parentAtt.code}})
                             </option>
                         </select>
                     </div>
@@ -94,6 +105,16 @@
                         aria-hidden="true"></i>
                     <div class="col-sm-6">
                         <ns-switch name="used_in_filters" ng-model="attribute.usedInFilters"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" style="margin-left: -15px"
+                        translate>attribute.detail.dispoSearchPage</label>
+                    <i style="float:left" class="fa fa-question-circle"
+                        popover="{{'attribute.detail.infoDispoSearchPage' | translate}}" popover-trigger="mouseenter"
+                        aria-hidden="true"></i>
+                    <div class="col-sm-6">
+                        <ns-switch name="used_in_search_page" ng-model="attribute.usedInSearch"></ns-switch>
                     </div>
                 </div>
                 <div class="form-group" ng-show="_type === 'products'">

@@ -1,64 +1,95 @@
 {
-   "collection": "medias",
-   "datas": [
-      {
-         "extension": ".png",
-         "_id": "5c2ced396fb96b1353dd13b9",
-         "link": "medias/paiement-cheque-logo.png",
-         "name": "paiement-par-cheque"
-      },
-      {
-         "extension": ".png",
-         "_id": "5c2ced6a6fb96b1353dd13ba",
-         "link": "medias/paiement-virement-logo.png",
-         "name": "paiement-par-virement"
-      },
-      {
-         "extension": ".png",
-         "_id": "5c6e88dfa2df781c984d5381",
-         "link": "medias/shipper.png",
-         "name": "Shipper"
-      },
-      {
-         "extension": ".jpg",
-         "_id": "5d248c814aa9c1692db04a34",
-         "link": "medias/Aquila_CMS_horizontal.jpg"
-      },
-      {
-         "extension": ".png",
-         "_id": "5d443d76ede1945f66028313",
-         "link": "medias/logo2.png",
-         "name": "logo aquila blanc"
-      },
-      {
-         "extension": ".jpg",
-         "_id": "5d444efbede1945f660288d7",
-         "link": "medias/banniere2.jpg",
-         "name": "banniere sweat"
-      },
-      {
-         "extension": ".jpg",
-         "_id": "5d444fa2ede1945f6602892f",
-         "link": "medias/banniere1.jpg",
-         "name": "banniere tshirt"
-      },
-      {
-         "extension": ".jpg",
-         "_id": "5d445012ede1945f6602898b",
-         "link": "medias/banniere3.jpg",
-         "name": "banniere chaussettes"
-      },
-      {
-         "extension": ".jpg",
-         "_id": "5d4a5011edd1c15f16018b85",
-         "link": "medias/banniere_1_tshirt.jpg",
-         "name": "banniere produits"
-      },
-      {
-         "extension": ".png",
-         "_id": "5d4b5021ef01c34126038c90",
-         "link": "medias/no-image.png",
-         "name": "No image"
-      }
-   ]
+  "collection": "medias",
+  "datas": [
+    {
+      "group": "Payment",
+      "extension": ".png",
+      "_id": "5c2ced396fb96b1353dd13b9",
+      "link": "medias/paiement-cheque-logo.png",
+      "name": "paiement-par-cheque"
+    },
+    {
+      "group": "Payment",
+      "extension": ".png",
+      "_id": "5c2ced6a6fb96b1353dd13ba",
+      "link": "medias/paiement-virement-logo.png",
+      "name": "paiement-par-virement"
+    },
+    {
+      "group": "",
+      "extension": ".png",
+      "_id": "5c6e88dfa2df781c984d5381",
+      "link": "medias/shipper.png",
+      "name": "Shipper"
+    },
+    {
+      "group": "",
+      "extension": ".jpg",
+      "_id": "5d248c814aa9c1692db04a34",
+      "link": "medias/Aquila_CMS_horizontal.jpg"
+    },
+    {
+      "group": "",
+      "extension": ".png",
+      "_id": "5d443d76ede1945f66028313",
+      "link": "medias/logo2.png",
+      "name": "logo aquila blanc"
+    },
+    {
+      "group": "",
+      "extension": ".png",
+      "_id": "5d4b5021ef01c34126038c90",
+      "link": "medias/no-image.png",
+      "name": "No image"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ff3e1929840fa34a0d9e9692",
+      "link": "medias/Amex.png",
+      "name": "Amex"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ffc8075e1e302647255400f4",
+      "link": "medias/GooglePay.png",
+      "name": "Google Pay"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ff474bb95ae64e20fc9456ec",
+      "link": "medias/Mastercard.png",
+      "name": "Mastercard"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ff16bf881d88a3b3792d086b",
+      "link": "medias/PayPal.png",
+      "name": "Paypal"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ff2995ebc66c892935dcd005",
+      "link": "medias/SEPA.png",
+      "name": "SEPA"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "fffc6f1ae37b47307dfc5a9a",
+      "link": "medias/Stripe.png",
+      "name": "Stripe"
+    },
+    {
+      "group": "Payment",
+      "extension": ".jpg",
+      "_id": "ffcdd77e851f52715c820477",
+      "link": "medias/Visa.png",
+      "name": "VISA"
+    }
+  ]
 }

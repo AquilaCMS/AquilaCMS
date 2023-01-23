@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -53,13 +53,15 @@ const ProductsSchema = new Schema({
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
         {
-            id          : {type: ObjectId, ref: 'attributes', index: true},
-            code        : String,
-            param       : String,
-            type        : {type: String, default: 'unset'},
-            translation : {},
-            position    : {type: Number, default: 1},
-            visible     : {type: Boolean, default: true}
+            id           : {type: ObjectId, ref: 'attributes', index: true},
+            code         : String,
+            param        : String,
+            type         : {type: String, default: 'unset'},
+            translation  : {},
+            position     : {type: Number, default: 1},
+            visible      : {type: Boolean, default: true},
+            usedInSearch : {type: Boolean, default: false},
+            parents      : [{type: ObjectId, ref: 'attributes'}]
         }
     ], // Module Options
     images : [
@@ -125,11 +127,6 @@ const ProductsSchema = new Schema({
     id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
-// ProductsSchema.index({
-//     code        : 'text',
-//     trademark   : 'text',
-//     code_ean    : 'text',
-// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
     /** Quantity <= 0 not allowed on creation * */
@@ -200,14 +197,37 @@ ProductsSchema.methods.updateData = async function (data) {
                 await require('../../services/cache').deleteCacheImage('products', this);
                 // puis on delete l'image original
                 const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
-                await fs.unlinkSync(joindPath);
+                try {
+                    await fs.unlinkSync(joindPath);
+                } catch {
+                    console.warn(`Unable to remove ${joindPath}`);
+                }
             }
         }
     }
 
-    reviewService.computeAverageRateAndCountReviews(data);
+    let update;
 
-    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    switch (data.type) {
+    case 'simple':
+        const ProductSimple = require('../models/productSimple');
+        update              = new ProductSimple(data).preUpdateSimpleProduct(data);
+        break;
+    case 'bundle':
+        const ProductBundle = require('../models/productBundle');
+        update              = new ProductBundle(data).preUpdateBundleProduct(data);
+        break;
+    case 'virtual':
+        const ProductVirtual = require('../models/productVirtual');
+        update               = new ProductVirtual(data).preUpdateVirtualProduct(data);
+        break;
+    default:
+        break;
+    }
+
+    reviewService.computeAverageRateAndCountReviews(update);
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: update}, {new: true});
     return updPrd;
 };
 
@@ -228,7 +248,6 @@ ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkN
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    // if (self._collection && !self._collection.collectionName.includes('preview')) {
     if (updateQuery) {
         if (updateQuery.translation === undefined) return errors; // No translation
         const languages       = await mongoose.model('languages').find({});

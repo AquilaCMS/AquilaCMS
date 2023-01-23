@@ -162,6 +162,9 @@ PictoControllers.controller('PictoDetailsCtrl', [
         };
 
         $scope.getImage = function(picto) {
+            if(!picto || !picto._id) {
+                return "";
+            }
             return `/images/picto/200x180-70/${picto._id}/${picto.filename}`;
         }
     }
@@ -171,10 +174,9 @@ PictoControllers.controller('PictoNewCtrl', [
     'PictoApi',
     '$routeParams',
     'toastService',
-    'RuleApi',
     '$location',
     '$translate',
-    function ($scope, PictoApi, $routeParams, toastService, RuleApi, $location, $translate) {
+    function ($scope, PictoApi, $routeParams, toastService, $location, $translate) {
         $scope.picto = {
             location : 'TOP_LEFT',
             enabled  : false,

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -28,6 +28,8 @@ const AttributesSchema = new Schema({
     visible        : {type: Boolean, default: true},
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
+    usedInSearch   : {type: Boolean, default: false},
+    parents        : [{type: ObjectId, ref: 'attributes'}],
     translation    : {},
     isVariantable  : Boolean
 }, {
@@ -99,7 +101,6 @@ AttributesSchema.pre('findOneAndUpdate', async function (next) {
  * @deprecated seem like it's not used, because the service setAttribute handle all modifications
  */
 AttributesSchema.post('updateOne', async function ({next}) {
-    console.warn("If you see that, AttributesSchema.post('updateOne') is not deprecated. Please remove this message");
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {

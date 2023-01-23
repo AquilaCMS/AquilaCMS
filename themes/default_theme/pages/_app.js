@@ -1,5 +1,5 @@
 import React from 'react';
-import 'aql-utils';
+import 'aql-utils/themeIndex.js';
 import axios from 'axios';
 import App from 'next/app';
 import Head from 'next/head';
@@ -18,11 +18,13 @@ import {
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
 import 'styles/global.css';
+
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
 import 'lightbox-react/style.css';
 import 'public/static/slick-1.6.0/slick_and_theme.css';
 import 'public/static/css/product-card.css';
+import 'public/static/css/cart-structure.css';
 
 class AquilaApp extends App {
     static async getInitialProps(bundle) {

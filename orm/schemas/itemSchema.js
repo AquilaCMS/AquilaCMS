@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -79,8 +79,7 @@ itemsSchema.set('toObject', {virtuals: true});
 
 itemsSchema.virtual('price.total').get(function () {
     const self = this;
-    // const isChildKart = self.name && self.name.indexOf("enfant") > -1;
-    let price = self.price.unit.ati;
+    let price  = self.price.unit.ati;
 
     if (self.price.special && self.price.special.ati !== undefined) {
         price = self.price.special.ati;

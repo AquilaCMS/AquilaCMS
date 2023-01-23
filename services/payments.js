@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -228,19 +228,6 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
-        // const orderdata = [];
-        // const datas = {
-        //     number : _order.number
-        // };
-
-        // for(let i = 0; i < returnData.products.length; i++) {
-        //     orderdata.push(`${returnData.products[i].product_code} (${returnData.products[i].qty_returned})`);
-        // }
-
-        // datas.orderdata = orderdata.join(", ");
-        /**
-         * DO NOT DELETE THE COMMENTED CODE ABOVE
-         */
         if (returnData.type === 'DEBIT') {
             const datas = {
                 ..._order,

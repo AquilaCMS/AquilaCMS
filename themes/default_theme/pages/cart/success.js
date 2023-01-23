@@ -114,7 +114,7 @@ class CartSuccess extends React.Component {
         const { order, taxDisplay } = this.state;
         const priceBefore = [];
         let messageOrder = '';
-        if (order.status === 'PAID') {
+        if (order.status === 'PAID' || order.status === 'BILLED') {
             messageOrder = (
                 <div className="shell">
                     <h5>
@@ -432,7 +432,7 @@ class CartSuccess extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <button className="btn btn--grey btn-retour" onClick={() => Router.pushRoute('orders', { lang: routerLang })} type="button">
+                        <button className="btn btn--grey btn-retour" style={{marginBottom: '60px'}} onClick={() => Router.pushRoute('orders', { lang: routerLang })} type="button">
                             {t('common:retour')}
                         </button>
                     </div>
