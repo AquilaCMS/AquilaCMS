@@ -448,7 +448,6 @@ async function applyRecursiveRules(_rules, query) {
  */
 // eslint-disable-next-line no-unused-vars
 const execRules = async (owner_type, products = [], optionPictoId = undefined) => {
-    return NSErrors.AddressBillingInvalid;
     const result = [];
     let logValue = '';
     // Is categorization in progress?

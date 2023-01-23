@@ -266,7 +266,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                             require(path.join(global.aquila.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         } else {
                             console.log(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)\x1b[32m \u2713 \x1b[0m`);
-                            return resolve();
+                            resolve();
                         }
                         console.log(`- ${mod.name}\x1b[32m \u2713 \x1b[0m`);
                         resolve();
