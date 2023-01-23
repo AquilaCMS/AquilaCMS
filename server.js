@@ -8,10 +8,10 @@
 
 require('dotenv').config();
 require('aql-utils');
-const express       = require('express');
-const passport      = require('passport');
-const path          = require('path');
-global.aquila          = {};
+const express              = require('express');
+const passport             = require('passport');
+const path                 = require('path');
+global.aquila              = {};
 global.aquila.envPath      = null;
 global.aquila.envFile      = null;
 global.aquila.appRoot      = path.resolve(__dirname);
@@ -19,11 +19,11 @@ global.aquila.port         = Number(process.env.PORT || 3010);
 global.aquila.defaultLang  = '';
 global.aquila.moduleExtend = {};
 global.aquila.translate    = require('./utils/translate');
-const utils         = require('./utils/utils');
-const fs            = require('./utils/fsp');
-const serverUtils   = require('./utils/server');
-const utilsModules  = require('./utils/modules');
-const utilsThemes   = require('./utils/themes');
+const utils                = require('./utils/utils');
+const fs                   = require('./utils/fsp');
+const serverUtils          = require('./utils/server');
+const utilsModules         = require('./utils/modules');
+const utilsThemes          = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,

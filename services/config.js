@@ -81,7 +81,7 @@ const updateEnvFile = async () => {
     oldEnvFile            = JSON.parse(oldEnvFile);
     if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
         oldEnvFile[aquila_env] = global.aquila.envFile;
-        global.aquila.envFile         = oldEnvFile[aquila_env];
+        global.aquila.envFile  = oldEnvFile[aquila_env];
         await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
     }
 };
@@ -105,7 +105,7 @@ const saveEnvFile = async (body, files) => {
                             {mkdirp: true}
                         );
                         global.aquila.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
-                        body.needRestart                   = true;
+                        body.needRestart                          = true;
                     } catch (err) {
                         console.error(err);
                     }
@@ -114,14 +114,14 @@ const saveEnvFile = async (body, files) => {
         }
         if (environment.ssl.active !== global.aquila.envFile.ssl.active) {
             global.aquila.envFile.ssl.active = environment.ssl.active;
-            body.needRestart          = true;
+            body.needRestart                 = true;
         }
         if (
             environment.databaseConnection
             && environment.databaseConnection !== global.aquila.envFile.db
         ) {
             global.aquila.envFile.db = environment.databaseConnection;
-            body.needRestart  = true;
+            body.needRestart         = true;
         }
         await updateEnvFile();
         delete environment.databaseConnection;
@@ -141,7 +141,7 @@ const saveEnvConfig = async (newConfig) => {
     if (stockOrder) {
         await updateProductsStockOrder(stockOrder, oldConfig.stockOrder);
     }
-    const cfg        = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
+    const cfg               = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
     global.aquila.envConfig = cfg;
 };
 

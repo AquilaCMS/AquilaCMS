@@ -225,10 +225,10 @@ const modulesLoadInit = async (server, runInit = true) => {
                 if (runInit) {
                     require(initModuleFile)(server);
                 }
-                console.log(`- ${loadedModules[i].name}\x1b[32m \u2713 \x1b[0m`)
+                console.log(`- ${loadedModules[i].name}\x1b[32m \u2713 \x1b[0m`);
             } catch (err) {
                 loadedModules[i].init = false;
-                console.log(`- ${loadedModules[i].name}\x1b[31m \u274C An error has occurred \x1b[0m\n`)
+                console.log(`- ${loadedModules[i].name}\x1b[31m \u274C An error has occurred \x1b[0m\n`);
                 console.error(err);
                 return false;
             }
@@ -265,13 +265,13 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                             }
                             require(path.join(global.aquila.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         } else {
-                            console.log(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)\x1b[32m \u2713 \x1b[0m`)
+                            console.log(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)\x1b[32m \u2713 \x1b[0m`);
                             return resolve();
                         }
-                        console.log(`- ${mod.name}\x1b[32m \u2713 \x1b[0m`)
+                        console.log(`- ${mod.name}\x1b[32m \u2713 \x1b[0m`);
                         resolve();
                     } catch (err) {
-                        console.log(`- ${mod.name}\x1b[31m \u274C \x1b[0m\n`)
+                        console.log(`- ${mod.name}\x1b[31m \u274C \x1b[0m\n`);
                         reject(err);
                     }
                 });

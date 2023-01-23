@@ -73,11 +73,11 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : write env file');
         await fs.writeFile('./config/envPath', datas.envPath);
         const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
-        global.aquila.envPath         = datas.envPath;
+        global.aquila.envPath  = datas.envPath;
         let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
         envFile[aquila_env].db = datas.databaseAdd;
         await fs.writeFile(path.join(global.aquila.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
-        envFile        = envFile[aquila_env];
+        envFile               = envFile[aquila_env];
         global.aquila.envFile = envFile;
         console.log('Installer : finish writing env file');
 

@@ -318,9 +318,9 @@ const isAdmin = (info) => info && info.isAdmin;
  * Init child process Globals and Database
  */
 const initChildProcess = async () => {
-    const utilsDB       = require('./database');
+    const utilsDB = require('./database');
     try {
-        global.aquila       = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
+        global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
         await utilsDB.connect();
     } catch (err) {
         throw NSErrors.InitChildProcessError;

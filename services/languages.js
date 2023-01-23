@@ -25,7 +25,7 @@ const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status        = 'visible'; // The default language need to be visible
+        lang.status               = 'visible'; // The default language need to be visible
         global.aquila.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }

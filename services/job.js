@@ -10,7 +10,6 @@ const Agenda   = require('agenda');
 const axios    = require('axios');
 const mongoose = require('mongoose');
 const {fork}   = require('child_process');
-const slash    = require('slash');
 const NSErrors = require('../utils/errors/NSErrors');
 const utils    = require('../utils/utils');
 
@@ -218,13 +217,13 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
             // If the job is not created by the server then the modification of the system type job is not authorized
             // Take the old values
             if (!fromServer) {
-                name            = jobs[0].attrs.name;
-                api             = jobs[0].attrs.data.api;
-                comment         = jobs[0].attrs.data.comment;
-                method          = jobs[0].attrs.data.method;
-                flag            = jobs[0].attrs.data.flag;
-                params          = jobs[0].attrs.data.params;
-                onMainThread    = jobs[0].attrs.data.onMainThread;
+                name         = jobs[0].attrs.name;
+                api          = jobs[0].attrs.data.api;
+                comment      = jobs[0].attrs.data.comment;
+                method       = jobs[0].attrs.data.method;
+                flag         = jobs[0].attrs.data.flag;
+                params       = jobs[0].attrs.data.params;
+                onMainThread = jobs[0].attrs.data.onMainThread;
             } else {
                 // If the server creates the job by calling the setJob service then we take lastExecutionResult
                 // because it will not be passed as a parameter of the setJob, otherwise the lastExecutionResult will be deleted
@@ -236,12 +235,12 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         }
         await jobs[0].save();
         // We must each time recreate the job so that "every" validates the new data entered by the user (cf: failReason if the repeatInterval is false)
-        const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
+        const oAgenda          = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
         oAgenda.attrs.disabled = jobs[0].attrs.disabled;
         return oAgenda;
     }
     // When creating an agenda
-    const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
+    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user enters the wrong frequency
     oAgenda.disable();
@@ -259,12 +258,12 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
  * @param job : object: the job in DB
  */
 const defineJobOnStartUp = async (job) => {
-    const {name, repeatInterval, disabled, data}                    = job.attrs;
-    const { api, comment, method, flag, lastExecutionResult, params, onMainThread } = data;
+    const {name, repeatInterval, disabled, data}                                  = job.attrs;
+    const {api, comment, method, flag, lastExecutionResult, params, onMainThread} = data;
     // definition of the task to be performed by the agenda
     await agendaDefine(name);
     // Create in the agendaJobs collection and add field (data, comment and flag)
-    const oAgenda = await agenda.every(repeatInterval, name, { api, comment, method, flag, lastExecutionResult, params, onMainThread });
+    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user set the wrong frequency
     if (disabled === false) oAgenda.enable();
@@ -359,8 +358,8 @@ const getPlayImmediateJob = async (_id, option) => {
 async function execDefine(job, option) {
     let api                 = job.attrs.data.api;
     const params            = job.attrs.data.params;
-    const onMainThread      = job.attrs.data.onMainThread === false ? false : true;
-    let errorData         = null;
+    const onMainThread      = job.attrs.data.onMainThread !== false;
+    let errorData           = null;
     let lastExecutionResult = null;
     let result;
     // Directly call a service without going through an API
@@ -368,21 +367,21 @@ async function execDefine(job, option) {
         if (api.endsWith('/')) api = api.substr(0, api.length - 1);
         const funcName   = api.substr(api.lastIndexOf('/') + 1);
         const modulePath = api.substr(0, api.lastIndexOf('/'));
-        const apiParams  = { modulePath, funcName, option : option || '' };
+        const apiParams  = {modulePath, funcName, option: option || ''};
 
         if (onMainThread) {
             try {
                 console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}]  (Path : ${global.aquila.appRoot}) on the main process %s`, '\x1b[33m', '\x1b[0m');
-                result = await require(`..${modulePath}`)[funcName](option);
+                result                             = await require(`..${modulePath}`)[funcName](option);
                 job.attrs.data.lastExecutionResult = JSON.stringify(result);
-            } catch (err) {
+            } catch (error) {
                 // If the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
                 // save it in order to have a persistent error on the front side
                 if (!error.code) result = error;
                 if (error.code) result = (error && error.translations && error.translations.fr) ? error.translations.fr : error;
                 errorData = error;
             }
-        }else{
+        } else {
             console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot}) on a child process %s`, '\x1b[33m', '\x1b[0m');
             return new Promise((resolve, reject) => {
                 const cmd = fork(
@@ -402,16 +401,16 @@ async function execDefine(job, option) {
                 });
             }).then(async (data) => {
                 const error = data.code;
-                if(typeof lastExecutionResult === 'string'){
+                if (typeof lastExecutionResult === 'string') {
                     job.attrs.data.lastExecutionResult = lastExecutionResult;
-                }else{
+                } else {
                     job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
                 }
                 await job.save();
                 if (error) throw NSErrors.JobErrorInChildNode;
             });
         }
-    }else{
+    } else {
         const {method}   = job.attrs.data;
         const httpMethod = method.toLowerCase();
         if (!['get', 'post'].includes(httpMethod)) {
@@ -427,7 +426,7 @@ async function execDefine(job, option) {
         if (!utils.isJsonString(params)) {
             throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
         }
-    
+
         try {
             result = await axios({
                 method : httpMethod.toUpperCase(),

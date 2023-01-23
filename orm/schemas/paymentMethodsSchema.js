@@ -44,7 +44,7 @@ PaymentMethodsSchema.statics.translationValidation = async function (query, self
 
     if (translationKeys.length === 0) {
         self.translation[global.aquila.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {

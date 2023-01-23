@@ -52,10 +52,13 @@ const addUserVisitIP = async (ipClient) => {
 
         if (existing === -1) {
             // Update data
-            await StatsToday.updateOne({}, {
-                $push : {visit: {$each: [ipClient]}}
-            },
-            {upsert: true, new: true});
+            await StatsToday.updateOne(
+                {},
+                {
+                    $push : {visit: {$each: [ipClient]}}
+                },
+                {upsert: true, new: true}
+            );
         }
     } catch (error) {
         console.error(error);

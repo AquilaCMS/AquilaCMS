@@ -798,7 +798,6 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
         return;
     }
     const currentTheme             = global.aquila.envConfig.environment.currentTheme;
-    const listOfFile               = await fs.readdir(pathThemeComponents);
     const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
     let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
     if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
