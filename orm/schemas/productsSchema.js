@@ -63,7 +63,8 @@ const ProductsSchema = new Schema({
             translation  : {},
             position     : {type: Number, default: 1},
             visible      : {type: Boolean, default: true},
-            usedInSearch : {type: Boolean, default: false}
+            usedInSearch : {type: Boolean, default: false},
+            parents      : [{type: ObjectId, ref: 'attributes'}]
         }
     ], // Module Options
     images : [
@@ -129,11 +130,6 @@ const ProductsSchema = new Schema({
     id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
-// ProductsSchema.index({
-//     code        : 'text',
-//     trademark   : 'text',
-//     code_ean    : 'text',
-// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
     /** Quantity <= 0 not allowed on creation * */
@@ -203,7 +199,7 @@ ProductsSchema.methods.updateData = async function (data) {
                 // on delete les images cache generées depuis cette image
                 await require('../../services/cache').deleteCacheImage('products', this);
                 // puis on delete l'image original
-                const joindPath = path.join(global.envConfig.environment.photoPath, prdImage.url);
+                const joindPath = path.join(global.aquila.envConfig.environment.photoPath, prdImage.url);
                 try {
                     await fs.unlinkSync(joindPath);
                 } catch {
@@ -213,9 +209,28 @@ ProductsSchema.methods.updateData = async function (data) {
         }
     }
 
-    reviewService.computeAverageRateAndCountReviews(data);
+    let update;
 
-    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    switch (data.type) {
+    case 'simple':
+        const ProductSimple = require('../models/productSimple');
+        update              = new ProductSimple(data).preUpdateSimpleProduct(data);
+        break;
+    case 'bundle':
+        const ProductBundle = require('../models/productBundle');
+        update              = new ProductBundle(data).preUpdateBundleProduct(data);
+        break;
+    case 'virtual':
+        const ProductVirtual = require('../models/productVirtual');
+        update               = new ProductVirtual(data).preUpdateVirtualProduct(data);
+        break;
+    default:
+        break;
+    }
+
+    reviewService.computeAverageRateAndCountReviews(update);
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: update}, {new: true});
     return updPrd;
 };
 
@@ -236,7 +251,6 @@ ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkN
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    // if (self._collection && !self._collection.collectionName.includes('preview')) {
     if (updateQuery) {
         if (updateQuery.translation === undefined) return errors; // No translation
         const languages       = await mongoose.model('languages').find({});

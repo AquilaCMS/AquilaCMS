@@ -24,15 +24,6 @@ const NewsSchema = new Schema({
     id         : false
 });
 
-/* translation:
- slug: unique
- title
- content: {
- resume
- text
- }
- */
-
 NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
@@ -41,8 +32,8 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {

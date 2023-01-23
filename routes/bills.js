@@ -83,7 +83,8 @@ async function generatePDF(req, res, next) {
         const response         = await ServiceBills.generatePDF(PostBodyVerified);
         if (response instanceof stream.Readable) {
             return response.pipe(res);
-        } if (Buffer.isBuffer(response) || typeof response === 'string') {
+        }
+        if (Buffer.isBuffer(response) || typeof response === 'string') {
             return res.end(response);
         }
         return res.end('ERROR_WK-HTML-TO-PDF');

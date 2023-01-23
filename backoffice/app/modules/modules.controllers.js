@@ -1,4 +1,4 @@
-var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 'ui.bootstrap']);
+var ModulesControllers = angular.module('aq.modules.controllers', ['ui.bootstrap']);
 
 ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', '$translate', 'ModuleServiceV2', 'ModuleService',
 function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate, ModuleServiceV2, ModuleService) {

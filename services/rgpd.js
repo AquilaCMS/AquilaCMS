@@ -97,17 +97,15 @@ const getBillsByUser = async (id) => Bills.find({client: id}, '-__v').lean();
 
 const anonymizeModulesByUser = async (user) => {
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const module of _modules) {
-            await new Promise(async (resolve, reject) => {
-                // Retrieves rgpd.js files from modules
-                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                    await rgpd.anonymize(user, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const module of _modules) {
+        await new Promise(async (resolve, reject) => {
+            // Retrieves rgpd.js files from modules
+            if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                await rgpd.anonymize(user, resolve, reject);
+            }
+            resolve();
+        });
     }
 };
 
@@ -161,20 +159,24 @@ const anonymizeUser = async (id) => {
 const copyDatabase = async () => {
     // Connection to the database
     try {
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
         try {
-            await mongodump(global.envFile.db);
-            await mongorestore(global.envFile.db);
+            await mongodump(global.aquila.envFile.db);
+            await mongorestore(global.aquila.envFile.db);
         } catch (error) {
             throw NSErrors.CommandsMayNotInPath;
         }
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
 
         // Anonymization of the copied database
         await anonymizeDatabase();
@@ -206,7 +208,7 @@ async function mongorestore(uri) {
  */
 const anonymizeDatabase = async () => {
     // Connection to the new database
-    const data     = mongoURI.parse(global.envFile.db);
+    const data     = mongoURI.parse(global.aquila.envFile.db);
     data.database += '_anonymized';
     const client   = new MongoClient(
         mongoURI.format(data),
@@ -310,16 +312,14 @@ const anonymizeDatabase = async () => {
         }
     }
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const mod of _modules) {
-            await new Promise(async (resolve, reject) => {
-                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
-                    await rgpd.anonymizeDatabase(database, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const mod of _modules) {
+        await new Promise(async (resolve, reject) => {
+            if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
+                await rgpd.anonymizeDatabase(database, resolve, reject);
+            }
+            resolve();
+        });
     }
     await client.close();
 };
@@ -328,7 +328,7 @@ const anonymizeDatabase = async () => {
 * Deletes the copy database
 */
 const dropDatabase = async () => {
-    const mongodbUri     = mongoURI.parse(global.envFile.db);
+    const mongodbUri     = mongoURI.parse(global.aquila.envFile.db);
     mongodbUri.database += '_anonymized';
     const client         = new MongoClient(
         mongoURI.format(mongodbUri),
@@ -446,7 +446,7 @@ const generateFakeAddresses = async (options) => {
 const dumpAnonymizedDatabase = async () => {
     try {
         await copyDatabase();
-        let uri = global.envFile.db;
+        let uri = global.aquila.envFile.db;
         // ReplicaSet management
         if (uri.includes('replicaSet')) {
             uri = uri.replace('?', '_anonymized?');
@@ -462,7 +462,7 @@ const dumpAnonymizedDatabase = async () => {
         // Removal of the copy database
         await dropDatabase();
         // Download the dump file
-        const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        const pathToArchive = path.join(global.aquila.appRoot, pathUpload, 'temp', 'database_dump.gz');
         const temp          = fs.readFile(pathToArchive, 'binary');
         fs.unlink(pathToArchive, function () {
             console.log('File was deleted'); // Callback

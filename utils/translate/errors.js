@@ -39,6 +39,10 @@ module.exports = {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },
+    JobErrorInChildNode : {
+        fr : 'Erreur dans le job',
+        en : 'Job error'
+    },
     NotFound : {
         fr : 'Item non trouvé',
         en : 'Item not found'
@@ -46,6 +50,10 @@ module.exports = {
     MediaNotFound : {
         fr : 'Média introuvable',
         en : 'Media not found'
+    },
+    MediaNotInRoot : {
+        fr : 'Aucun média à la racine du zip',
+        en : 'No media in root zip'
     },
     UserNotFound : {
         fr : 'Utilisateur non trouvé',
@@ -410,6 +418,10 @@ module.exports = {
     PromoCodeNotFound : {
         fr : 'Impossible de trouver le code de la promotion',
         en : 'Cannot find the code discount'
+    },
+    InitChildProcessError : {
+        fr : 'Impossible d\'initialiser le processus enfant',
+        en : 'Cannot initialize child process'
     },
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',

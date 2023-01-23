@@ -15,6 +15,7 @@
         "addMailVar": "Ajouter une variable de mail",
         "noParameters":"This shortcode has no parameters.",
         "back":"Return",
-        "ratio": "Respect image ratio"
+        "ratio": "Respect image ratio",
+        "relativeLink": "Relative link"
     }
 }

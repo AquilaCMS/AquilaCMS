@@ -74,9 +74,11 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB, group = '') => {
+const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder = true) => {
     console.log('Upload medias start...');
 
+    // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
+    reqFile.path      = path.resolve(global.aquila.appRoot, reqFile.path);
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
         .slice(0, -1)
@@ -84,41 +86,79 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     const target_path = `./${server.getUploadDirectory()}/medias`;
 
     const zip = new AdmZip(path_init);
+    // Extract files from zip to 'temp' folder
     zip.extractAllTo(path_unzip);
-    // Browse all the files to add them to the medias table
-    const filenames = fsp.readdirSync(path_unzip);
-
+    let filenames = '';
+    // check if zip is totaly empty
+    try {
+        filenames = fsp.readdirSync(path_unzip).filter((file) => fsp.statSync(path.resolve(path_unzip, file)).isFile());
+    } catch (e) {
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotFound;
+    }
+    // check if zip have folder but no file
+    if (filenames.length === 0) {
+        if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
+        throw NSErrors.MediaNotInRoot;
+    }
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
     for (let index = 0; index < filenames.length; index++) {
-        const filename    = filenames[index];
-        const init_file   = path.resolve(path_unzip, filename);
-        const target_file = path.resolve(target_path, filename);
-        const name_file   = filename.split('.')
-            .slice(0, -1)
-            .join('.');
+        try {
+            let filename                 = filenames[index];
+            const init_file              = path.resolve(path_unzip, filename);
+            let target_file              = path.resolve(target_path, filename);
+            let name_file                = filename.split('.').slice(0, -1).join('.');
+            const now                    = Date.now();
+            const ext_file               = filename.split('.').pop();
+            const filename_duplicated    = `${name_file + now}.${ext_file}`;
+            const name_file_duplicated   = filename_duplicated.split('.').slice(0, -1).join('.');
+            const target_file_duplicated = path.resolve(target_path, filename_duplicated);
 
-        // Check if folder
-        if (fsp.lstatSync(init_file)
-            .isDirectory()) {
-            return;
-        }
+            // Check if folder
+            if (fsp.lstatSync(init_file)
+                .isDirectory()) {
+                return;
+            }
 
-        // Move file to / medias
-        require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
-            if (err) console.error(err);
-        });
+            // if target_file exists use the target_file_duplicated variable
+            if (fsp.existsSync(target_file)) {
+                target_file = target_file_duplicated;
+            }
+            // Copy files to /medias and delete the original files from 'temp' folder
+            try {
+                await fsp.copyRecursive(init_file, target_file);
+                await fsp.deleteRecursive(init_file);
+            } catch (e) {
+                console.error(e);
+                throw NSErrors.MediaNotFound;
+            }
 
-        // Insert it in the database
-        if (insertDB) {
-            await Medias.updateOne({name: name_file}, {
-                link : `medias/${filename}`,
-                name : name_file,
-                group
-            }, {upsert: true});
+            // Insert it in the database
+            if (insertDB) {
+                // check if filename already exist in the database OR if link already exist in the database
+                if (await Medias.findOne({$or: [{name: name_file}, {link: `medias/${filename}`}]})) {
+                    name_file = name_file_duplicated;
+                    filename  = filename_duplicated;
+                }
+                await Medias.updateOne({name: name_file}, {
+                    link  : `medias/${filename}`,
+                    name  : name_file,
+                    group : group || path.parse(reqFile.originalname).name
+                }, {upsert: true});
+            }
+        } catch (e) {
+            console.error(e);
+            throw NSErrors.InvalidFile;
         }
     }
 
+    if (deleteTempFolder) deleteTempFiles(path_unzip, path_init);
     console.log('Upload medias done !');
+};
+
+const deleteTempFiles = async (path_unzip, path_init) => {
+    fsp.deleteRecursive(path_unzip);
+    fsp.deleteRecursive(path_init);
 };
 
 /* **************** Documents **************** *
@@ -147,7 +187,6 @@ const uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - file extension (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-// const getImagePathCache = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
 const getImagePathCache = async (type, _id, size, extension, quality = 80, options = {}) => {
     const sharpOptions = {};
 
@@ -174,7 +213,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
 
     let _path          = server.getUploadDirectory();
-    _path              = path.join(global.appRoot, _path);
+    _path              = path.join(global.aquila.appRoot, _path);
     const cacheFolder  = path.join(_path, '/cache/');
     let filePath       = '';
     let filePathCache  = '';
@@ -186,9 +225,8 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = options.position.replace(/ /g, '_');
     } else if (options.background) {
         fileNameOption = options.background;
-    } else {
-        fileNameOption = '';
     }
+
     if (ObjectID.isValid(_id)) {
         try {
             switch (type) {
@@ -278,9 +316,9 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             console.warn('No image (or item) found. Default image used.');
         }
     }
-    if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
-        fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
-        filePath      = path.join(_path, global.envConfig.environment.defaultImage);
+    if (!(await utilsMedias.existsFile(filePath)) && global.aquila.envConfig.environment.defaultImage) {
+        fileName      = `default_image_cache_${size}${path.extname(global.aquila.envConfig.environment.defaultImage)}`;
+        filePath      = path.join(_path, global.aquila.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
     // if the requested image is already cached, it is returned direct
@@ -302,6 +340,10 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         try {
             sharpOptions.width  = Number(size.split('x')[0]);
             sharpOptions.height = Number(size.split('x')[1]);
+
+            if (!filePath || !filePathCache) {
+                return;
+            }
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
             console.error('Image not resized : ', exc);
@@ -329,12 +371,8 @@ const uploadFiles = async (body, files) => {
     let target_path = `medias/${body.type}/`;
 
     switch (body.type) {
+    case 'productsVariant':
     case 'products': {
-        const code  = body.code.substring(0, 2);
-        target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
-        break;
-    }
-    case 'productsVariant': {
         const code  = body.code.substring(0, 2);
         target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
         break;
@@ -385,7 +423,7 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        const absoluteTargetPath = slash(path.resolve(global.appRoot, target_path_full));
+        const absoluteTargetPath = slash(path.resolve(global.aquila.appRoot, target_path_full));
         await fsp.copyRecursive(tmp_path, absoluteTargetPath);
         if ((await fsp.stat(tmp_path)).isDirectory()) {
             await fsp.deleteRecursive(tmp_path);
@@ -573,21 +611,7 @@ const uploadFiles = async (body, files) => {
 
         return {name: name + extension, path: target_path_full};
     }
-    // case 'option': {
-    //     const values = body.entity.values;
-    //     for (let i = 0; i < values.length; i++) {
-    //         delete values[i].$hashKey;
-    //     }
 
-    //     const path = body.entity.value[body.entity.line];
-    //     await utilsMedias.deleteFile(path);
-
-    //     values[body.entity.lineIndex][body.entity.line] = target_path_full;
-
-    //     await Opts.updateOne({_id: body._id}, {$set: {values}});
-
-    //     return {name: name + extension, path: target_path_full};
-    // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         if (result.img) await deleteFileAndCacheFile(result.img, 'category');

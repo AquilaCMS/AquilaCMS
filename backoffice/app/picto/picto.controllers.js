@@ -162,6 +162,9 @@ PictoControllers.controller('PictoDetailsCtrl', [
         };
 
         $scope.getImage = function(picto) {
+            if(!picto || !picto._id) {
+                return "";
+            }
             return `/images/picto/200x180-70/${picto._id}/${picto.filename}`;
         }
     }

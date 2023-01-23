@@ -51,7 +51,7 @@ const getUserByAccountToken = async (activateAccountToken) => {
     return {isActiveAccount: user?.isActiveAccount};
 };
 
-const setUser = async (id, info, isAdmin = false, lang) => {
+const setUser = async (id, info, isAdmin, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -166,7 +166,7 @@ const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunc
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
-    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+    servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
     aquilaEvents.emit('aqUserCreated', newUser);
@@ -205,7 +205,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     if (!user) {
         throw NSErrors.NotFound;
     }
-    const {appUrl, adminPrefix} = global.envConfig.environment;
+    const {appUrl, adminPrefix} = global.aquila.envConfig.environment;
     let link;
     if (user.isAdmin) {
         link = `${appUrl}${adminPrefix}/login`;
@@ -232,7 +232,6 @@ const changePassword = async (email, password) => {
         user.password = password;
         await user.save();
         await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-        // await Users.updateOne({_id: user._id}, {password, $unset: {resetPassToken: 1}}, {runValidators: true});
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
             throw NSErrors.LoginSubscribePasswordInvalid;

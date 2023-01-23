@@ -38,7 +38,7 @@
                                 <div class="row">
                                     <div class="col-sm-4 img-responsive"
                                         style="white-space: nowrap; text-align: center;">
-                                        <img ng-src="{{getImage(picto)}}" ng-if="picto.filename !== ''"
+                                        <img ng-src="{{getImage(picto)}}" ng-if="picto && picto.filename !== ''"
                                             alt="{{picto.filename}}">
                                     </div>
                                     <div class="col-sm-8">

@@ -6,12 +6,21 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const Products              = require('./products');
-const {ProductSimpleSchema} = require('../schemas');
-
-ProductSimpleSchema.methods.preUpdateSimpleProduct = function (data) {
-    // do things here with data
-    return data;
+module.exports = {
+    et : {
+        fr : 'HT',
+        en : 'excl tax'
+    },
+    ati : {
+        fr : 'TTC',
+        en : 'incl tax'
+    },
+    paid : {
+        fr : 'Payé',
+        en : 'Paid'
+    },
+    unpaid : {
+        fr : 'Non payé',
+        en : 'Unpaid'
+    }
 };
-
-module.exports = Products.discriminator('simple', ProductSimpleSchema);

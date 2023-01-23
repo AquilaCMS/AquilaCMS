@@ -32,13 +32,13 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values', 'filename'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // if in the config, we ask not to return the stock fields, we add them to the restrictedFields
-if (global.envConfig?.stockOrder?.returnStockToFront !== true) {
+if (global.aquila.envConfig?.stockOrder?.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
@@ -84,9 +84,9 @@ const sortProductList = (products, PostBodySort, category) => {
 
         if (sortArray[0] === 'translation') {
             if (`${PostBodySort[sortPropertyName]}` === '1') {
-                products.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+                products.sort((p1, p2) => p1.translation[sortArray[1]][sortArray[2]].localeCompare(p2.translation[sortArray[1]][sortArray[2]], global.aquila.defaultLang));
             } else {
-                products.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.defaultLang));
+                products.sort((p1, p2) => p2.translation[sortArray[1]][sortArray[2]].localeCompare(p1.translation[sortArray[1]][sortArray[2]], global.aquila.defaultLang));
             }
         } else {
             // Generic sort condition as for "sort by is_new" where "-1" means that products with the requested property will appear in the first results
@@ -140,17 +140,13 @@ const priceFilterFromPostBody = (PostBody) => {
 };
 
 // Returns all products found, the products on the current page and the total number of products found
-const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaultLang) => {
+const getProductsByOrderedSearch = async (pattern, filters, lang = global.aquila.defaultLang) => {
     const config         = await Configuration.findOne({}, {'environment.searchSettings': 1}).lean();
     const searchSettings = config?.environment?.searchSettings;
-
-    const selectedFields                = `translation.${lang}.name code translation.${lang}.description1.title translation.${lang}.description1.text translation.${lang}.description2.title translation.${lang}.description2.text`;
-    const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
     for (let index = 0; index < searchSettings.keys.length; index++) {
         searchSettings.keys[index].name = searchSettings.keys[index].name.replace('{lang}', lang);
     }
-
     const selectedFieldsArray = [
         {name: `translation.${lang}.name`, weight: 10},
         {name: 'code', weight: 20},
@@ -158,6 +154,12 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
         {name: `translation.${lang}.description1.text`, weight: 2.5},
         {name: `translation.${lang}.description2.title`, weight: 2},
         {name: `translation.${lang}.description2.text`, weight: 1.5}];
+    const keySearch           = (searchSettings.keys !== undefined && searchSettings.keys.length !== 0) ? searchSettings.keys : selectedFieldsArray;
+    const selectedFields      = keySearch.map(function (item) {
+        return item.name;
+    });
+
+    const allProductsWithSearchCriteria = await Products.find(filters).select(selectedFields).lean();
 
     // To adapt the options see the following link https://fusejs.io/concepts/scoring-theory.html#scoring-theory
     const options = {
@@ -169,7 +171,7 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
         useExtendedSearch  : searchSettings.useExtendedSearch !== undefined ? searchSettings.useExtendedSearch : true,
         minMatchCharLength : searchSettings.minMatchCharLength !== undefined ? searchSettings.minMatchCharLength : 2,
         threshold          : searchSettings.threshold !== undefined ? searchSettings.threshold : 0.2, // 0.2 and 0.3 are the recommended values
-        keys               : (searchSettings.keys !== undefined && searchSettings.keys.length !== 0) ? searchSettings.keys : selectedFieldsArray
+        keys               : keySearch
     };
 
     const fuse    = new Fuse(allProductsWithSearchCriteria, options);
@@ -179,11 +181,13 @@ const getProductsByOrderedSearch = async (pattern, filters, lang = global.defaul
 
 /**
  * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
+ * List A: set of products returned by the fuzzy search
+ * List B: all previous products found in list A after application of the filters
+ * List C: all previous products found in list B after the pagination
  * @param {PostBody} PostBody
  * @param {Express.Request} reqRes
  * @param {string} lang
  */
-// eslint-disable-next-line no-unused-vars
 const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     let structure = {};
     if (PostBody && PostBody.structure) {
@@ -245,9 +249,9 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             .populate(PostBody.populate)
             .select(querySelect)
             .lean();
-        allProductsRes    = {datas: allProducts, count: allProducts.length};
+        allProductsRes    = {datas: allProducts, count: allProducts.length}; // List A
     } else {
-        allProductsRes = await queryBuilder.find(PostBody);
+        allProductsRes = await queryBuilder.find(PostBody); // List A
     }
     queryBuilder.defaultFields = defaultFields;
 
@@ -258,6 +262,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
+    let allFilteredProducts;
     if (reqRes !== undefined && PostBody.withPromos !== false && structure.price !== 0 && withFilters) {
         reqRes.res.locals = result;
         result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
@@ -288,7 +293,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             const res = filteredId.includes(item._id.toString()) && (item.price.priceSort.ati >= formatedPriceFilter.gte && item.price.priceSort.ati <= formatedPriceFilter.lte);
             return res;
         });
-        const allFilteredProducts = {datas: filteredProductsData, count: filteredProductsData.length};
+        allFilteredProducts = {datas: filteredProductsData, count: filteredProductsData.length};
 
         const arrayUnfilteredPriceSort = {et: [], ati: []};
         for (const prd of result.datas) {
@@ -302,7 +307,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             }
         }
 
-        result = JSON.parse(JSON.stringify(allFilteredProducts));
+        result = JSON.parse(JSON.stringify(allFilteredProducts)); // List B
 
         const arrayPriceSort = {et: [], ati: []};
         for (const prd of result.datas) {
@@ -329,8 +334,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             .lean();
         const filteredId           = filteredProductsRes.map((res) => res._id.toString());
         const filteredProductsData = result.datas.filter((item) => filteredId.includes(item._id.toString()));
-        const allFilteredProducts  = {datas: filteredProductsData, count: filteredProductsData.length};
-        result                     = JSON.parse(JSON.stringify(allFilteredProducts));
+        allFilteredProducts        = {datas: filteredProductsData, count: filteredProductsData.length};
+        result                     = JSON.parse(JSON.stringify(allFilteredProducts)); // List B
     }
 
     if (PostBody.filter?._id?.$in) {
@@ -359,7 +364,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
                 res.push(result.datas[i]);
                 i++;
             }
-            result.datas = res;
+            result.datas = res; // List C
         }
         delete PostBody.filter._id;
     }
@@ -374,7 +379,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             {$match: PostBody.filter},
             {$group: {_id: null, min: {$min: '$price.ati.normal'}, max: {$max: '$price.ati.normal'}}}
         ]);
-        if (normalET.length > 0 & normalATI.length > 0) {
+        if (normalET.length > 0 && normalATI.length > 0) {
             result.min = {et: normalET[0].min, ati: normalATI[0].min};
             if (!result.priceSortMin) result.priceSortMin = {et: normalET[0].min, ati: normalATI[0].min};
             result.max = {et: normalET[0].max, ati: normalATI[0].max};
@@ -402,7 +407,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         };
     }
 
-    result.allProductsRes = allProductsRes;
+    result.allProductsRes          = allProductsRes; // List A
+    result.allProductsAfterFilters = allFilteredProducts; // List B
 
     return result;
 };
@@ -413,7 +419,7 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
  * @param reqRes
  * @param keepReviews
  */
-const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lang = global.defaultLang) => {
+const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lang = global.aquila.defaultLang) => {
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
@@ -515,9 +521,9 @@ const duplicateProduct = async (idProduct, newCode) => {
     return doc;
 };
 
-const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => global.cache.get(
+const _getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = false, reqRes = undefined) => global.cache.get(
     `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
-    async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
+    async () => getProductsByCategoryId(id, user, lang, PostBody, isAdmin, reqRes)
 );
 
 /**
@@ -529,9 +535,9 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  * @param user
  * @param reqRes
  */
-const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
-    moment.locale(global.defaultLang);
-    lang = servicesLanguages.getDefaultLang(lang);
+const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = false, reqRes = undefined) => {
+    moment.locale(global.aquila.defaultLang);
+    lang = await servicesLanguages.getDefaultLang(lang);
 
     // Set PostBody.filter and PostBody.structure
     if (!PostBody.filter) PostBody.filter = {};
@@ -569,7 +575,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     // If a productsList.id does not respond to the match then productsList.id === null
-    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
+    if (global.aquila.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
         PostBody.structure.stock = 1;
     }
 
@@ -995,15 +1001,15 @@ const controlAllProducts = async (option) => {
     try {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
-        const _config     = await Configuration.findOne({}, {stockOrder: 1});
+        const _config     = await Configuration.findOne({}, {stockOrder: 1}).lean();
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
         let productsList;
         if (option) {
-            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)})];
+            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)}).lean()];
         } else {
-            productsList = await Products.find({});
+            productsList = await Products.find({}).lean();
         }
         for (const oneProduct of productsList) {
             // Code control
@@ -1107,11 +1113,10 @@ const controlAllProducts = async (option) => {
             }
 
             // Control of the categorization
-            await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
-                if (typeof categories === 'undefined' || categories.length === 0) {
-                    returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
-                }
-            });
+            const categoriesId = await Categories.find({'productsList.id': oneProduct._id.toString()}).lean();
+            if (typeof categoriesId === 'undefined' || categoriesId.length === 0) {
+                returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
+            }
         }
 
         // Displaying the summary
@@ -1263,8 +1268,11 @@ const getProductsListing = async (req, res) => {
         const datas = JSON.parse(JSON.stringify(result.datas));
         if (!req.body.dynamicFilters) {
             result.datas = result.allProductsRes.datas;
+        } else {
+            result.datas = result.allProductsAfterFilters.datas;
         }
         delete result.allProductsRes;
+        delete result.allProductsAfterFilters;
 
         const selectedAttributes = [];
         if (filter.$and) {
@@ -1277,11 +1285,11 @@ const getProductsListing = async (req, res) => {
         result.datas = datas;
     } else {
         delete result.allProductsRes;
+        delete result.allProductsAfterFilters;
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
-        /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
-        result.datas = productsDiscount.datas; */
+
         // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
         if (structure.price !== 0) {
             const priceFilter = priceFilterFromPostBody(req.body.PostBody);
@@ -1305,7 +1313,7 @@ const getProductsListing = async (req, res) => {
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant = null) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
 
     if (selected_variant) {
@@ -1337,7 +1345,7 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_varia
     }
 };
 
-const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
+const updateVariantsStock = async (prd, qty1, qty2, selected_variant) => {
     const selectedVariantIndex = prd.variants_values.findIndex((prdVariant) => prdVariant._id.toString() === selected_variant.id);
     if (selectedVariantIndex > -1) {
         if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {
@@ -1393,8 +1401,8 @@ const calculStock = async (params, product = undefined) => {
     moment.locale('fr', {
         workingWeekdays : [1, 2, 3, 4, 5]
     });
-    moment.locale(global.defaultLang);
-    const stockLabels = global.envConfig.stockOrder.labels;
+    moment.locale(global.aquila.defaultLang);
+    const stockLabels = global.aquila.envConfig.stockOrder.labels;
     if (!product) {
         product = await Products.findOne({_id: params.idProduct});
     }

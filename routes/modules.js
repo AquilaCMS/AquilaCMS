@@ -12,11 +12,12 @@ const {adminAuthRight}   = require('../middleware/authentication');
 const {adminAuth}        = require('../middleware/authentication');
 const serviceModule      = require('../services/modules');
 const NSErrors           = require('../utils/errors/NSErrors');
+const {multerUpload}     = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/modules', adminAuth, getAllModules);
     app.post('/v2/module', adminAuthRight('modules'), getModule);
-    app.post('/v2/modules/upload', adminAuthRight('modules'), uploadModule);
+    app.post('/v2/modules/upload', adminAuthRight('modules'), multerUpload.any(), uploadModule);
     app.post('/v2/modules/toggle', adminAuthRight('modules'), toggleActiveModule);
     app.delete('/v2/modules/:id', adminAuthRight('modules'), removeModule);
     app.get('/v2/modules/check', adminAuthRight('modules'), checkDependencies);

@@ -26,6 +26,7 @@
         "valeurDefaut": "Default value",
         "jeuAttrLie": "Attributes set linked :",
         "presJeuxAttr": "Present in those attributes sets:",
+        "parentsAttr": "Parent(s) attribute(s) :",
         "dispoCatAuto": "Available in automatic categorisation:",
         "dispoFiltresAuto": "Available in automatic filters:",
         "dispoSearchPage": "Available in search pages:",

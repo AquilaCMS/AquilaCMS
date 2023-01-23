@@ -98,12 +98,11 @@ const getBreadcrumb = async (url) => {
     return parts;
 };
 
-const exportData = async (model, PostBody) => {
+const exportData = async (model, PostBody, noCSV = false) => {
     const fsp    = require('../utils/fsp');
     const server = require('../utils/server');
-    const buffer = require('buffer');
 
-    moment.locale(global.defaultLang);
+    moment.locale(global.aquila.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;
@@ -119,8 +118,10 @@ const exportData = async (model, PostBody) => {
         } else if (model === 'products') {
             structure.push('-reviews');
         }
-        const datas           = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
-        const csvFields       = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+        const datas     = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
+        const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
+
+        if (noCSV) return {datas, csvFields};
         const uploadDirectory = server.getUploadDirectory();
         if (!fsp.existsSync(path.resolve(uploadDirectory, 'temp'))) {
             fsp.mkdirSync(path.resolve(uploadDirectory, 'temp'));
@@ -128,7 +129,7 @@ const exportData = async (model, PostBody) => {
 
         const date   = Date.now();
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), buffer.transcode(Buffer.from(result.csv), 'utf8', 'latin1').toString('latin1'), {encoding: 'latin1'});
+        fsp.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), `\ufeff${result.csv}`, {encoding: 'utf8'});
         result.url = date;
         return result;
     }

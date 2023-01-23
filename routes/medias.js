@@ -10,18 +10,19 @@ const path             = require('path');
 const {adminAuthRight} = require('../middleware/authentication');
 const mediasServices   = require('../services/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
+const {multerUpload}   = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/medias', adminAuthRight('medias'), listMedias);
     app.post('/v2/media', getMedia);
     app.put('/v2/media',  adminAuthRight('medias'), saveMedia);
     app.delete('/v2/media/:_id', adminAuthRight('medias'), removeMedia);
-    app.post('/v2/medias/upload', adminAuthRight('medias'), uploadFiles);
+    app.post('/v2/medias/upload', adminAuthRight('medias'), multerUpload.any(), uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
     app.get('/v2/medias/download/documents', adminAuthRight('medias'), downloadAllDocuments);
-    app.post('/v2/medias/download/documents', adminAuthRight('medias'), uploadAllDocuments);
-    app.post('/v2/medias/download/medias', adminAuthRight('medias'), uploadAllMedias);
+    app.post('/v2/medias/download/documents', adminAuthRight('medias'), multerUpload.any(), uploadAllDocuments);
+    app.post('/v2/medias/download/medias', adminAuthRight('medias'), multerUpload.any(), uploadAllMedias);
 };
 
 /**
@@ -132,7 +133,7 @@ async function getMediasGroupsImg(req, res, next) {
 async function uploadAllMedias(req, res, next) {
     if (path.extname(req.files[0].originalname) === '.zip') {
         try {
-            mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === 'true');
+            await mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === 'true');
             res.json({name: req.files[0].originalname});
         } catch (exc) {
             next(exc);

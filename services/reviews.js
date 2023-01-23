@@ -56,7 +56,7 @@ const getAggregateReviews = async (body) => {
  * @param {ObjectId} idProduct product id
  * @param {Object} review comment on item idProduct
  */
-const setProductReview = async (idProduct, user = null, review, title, rate, lang, questions = [], ipClient = null) => {
+const setProductReview = async (idProduct, user, review, title, rate, lang, questions = [], ipClient = null) => {
     const {Products} = require('../orm/models');
     const product    = await Products.findById(idProduct);
     if (!product) {

@@ -21,13 +21,12 @@ const FamiliesSchema = new Schema({
     slug      : {type: String, unique: true},
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
-    details   : {}
+    details   : {},
+    order     : {type: Number}
 }, {
     timestamps : true,
     id         : false
 });
-
-// FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 
 FamiliesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, FamiliesSchema);
@@ -57,12 +56,6 @@ FamiliesSchema.pre('findOneAndDelete', async function (next) {
     await Products.updateMany(where, action);
     return next();
 });
-
-/*
-FamiliesSchema.post('save', function () {
-  helper.create_ancestors(this._id, this.parent);
-});
-*/
 
 // Add menu in a family, and add this menu to all products assigned to this universe
 // familyCode : families.code

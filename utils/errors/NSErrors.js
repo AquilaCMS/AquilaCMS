@@ -40,6 +40,7 @@ class NSErrors {
     static get PostBodyUndefined() { return this.makeErrorAlias(NSErrors.BadRequest, 'PostBodyUndefined'); }
     static get PromoCodeIfStatementBadFormat() { return this.makeErrorAlias(NSErrors.BadRequest, 'PromoCodeIfStatementBadFormat'); }
     static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
+    static get InitChildProcessError() { return this.makeErrorAlias(NSErrors.BadRequest, 'InitChildProcessError'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
     static get DeactivateAccount() { return this.makeErrorAlias(NSErrors.Unauthorized, 'DeactivateAccount', undefined, 'none'); }
@@ -98,6 +99,7 @@ class NSErrors {
     static get MailUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateError'); }
     static get MailUpdateNoTypeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateNoTypeError'); }
     static get MediaNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotFound'); }
+    static get MediaNotInRoot() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotInRoot'); }
     static get MissingConfiguration() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingConfiguration'); }
     static get ModuleNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleNotFound'); }
     static get OrderNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'OrderNotFound'); }
@@ -138,6 +140,7 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
+    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }

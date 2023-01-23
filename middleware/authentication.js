@@ -112,21 +112,23 @@ const isAdminRights = async (req, requiredRights) => {
 const generateJWTToken = async (res, user, isAdmin) => {
     const jwtToken = await utilsModules.modulesLoadFunctions('generateJWTToken', {res, user, isAdmin}, () => {
         // Ne pas mettre trop de propriétés dans le token pour ne pas dépasser les limites du header
-        let token = jwt.sign({
-            type   : 'USER',
-            userId : user._id,
-            info   : {
-                _id             : user._id,
-                email           : user.email,
-                isAdmin         : user.isAdmin,
-                active          : user.active,
-                type            : user.type,
-                taxDisplay      : user.taxDisplay,
-                isActiveAccount : user.isActiveAccount
-            }
-        },
-        global.envFile.jwt.secret,
-        {expiresIn: 172800 /* 48 hours in second */});
+        let token = jwt.sign(
+            {
+                type   : 'USER',
+                userId : user._id,
+                info   : {
+                    _id             : user._id,
+                    email           : user.email,
+                    isAdmin         : user.isAdmin,
+                    active          : user.active,
+                    type            : user.type,
+                    taxDisplay      : user.taxDisplay,
+                    isActiveAccount : user.isActiveAccount
+                }
+            },
+            global.aquila.envFile.jwt.secret,
+            {expiresIn: 172800 /* 48 hours in second */}
+        );
         token     = `JWT ${token}`;
 
         if (!isAdmin) {
@@ -136,7 +138,7 @@ const generateJWTToken = async (res, user, isAdmin) => {
                 expires  : currentDate,
                 httpOnly : false,
                 encode   : String,
-                secure   : !!global.isServerSecure
+                secure   : !!global.aquila.isServerSecure
             });
         }
 

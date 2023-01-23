@@ -56,7 +56,6 @@ const getCartById = async (req, res, next) => {
     try {
         const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info);
         if (result) {
-            // await utilsDatabase.populateItems(result.items);
             return res.json(result);
         }
         return next(NSErrors.CartNotFound);
@@ -100,7 +99,7 @@ const addItem = async (req, res, next) => {
     // YES : add product
     // NO : create and add
     try {
-        const result = await ServiceCart.addItem(req.body, req.info);
+        const result = await ServiceCart.addItem(req.body, req.info, req.headers.lang);
         if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }

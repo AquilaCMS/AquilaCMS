@@ -1,6 +1,7 @@
 {
     "deleteCustomer": "Êtes-vous sûr de vouloir supprimer ce client ? Ses commandes ne seront pas supprimées !",
     "removeAttribute": "Êtes-vous sûr de vouloir supprimer cet attribut ?",
+    "removeVariantAttribute": "Êtes-vous sûr de vouloir supprimer cet attribut ? Attention les listes des déclinaisons des produits concernés seront effacées !",
     "removeSetAttribute": "Êtes-vous sur de vouloir supprimer ce jeu d'attributs ?",
     "fileAttachedNotSaved": "La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?",
     "changesNotSaved": "Les modifications non sauvegardées seront perdues.\nÊtes-vous sûr de vouloir quitter cette page ?",

@@ -143,7 +143,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 if($scope.category.filters && $scope.category.filters.attributes){
                     $scope.usedInFilters = []
                     for(var i = 0; i < response.length; i++) {
-                        console.log($scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code))
                         if(!$scope.category.filters.attributes.find(fltrAttr => fltrAttr.code === response[i].code)) {
                             $scope.usedInFilters.push(response[i])
                         }
