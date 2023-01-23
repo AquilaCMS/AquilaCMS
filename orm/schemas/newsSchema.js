@@ -63,7 +63,6 @@ NewsSchema.statics.translationValidation = async function (self, updateQuery) {
 
 NewsSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'news');
-    await utilsDatabase.checkSlugExistAndGenerate(that, 'news');
 };
 
 NewsSchema.pre('updateOne', async function (next) {
