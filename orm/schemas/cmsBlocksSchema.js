@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose         = require('mongoose');
-const {aquilaEvents}   = require('aql-utils');
-const translationUtils = require('../../utils/translation');
-const Schema           = mongoose.Schema;
-const utilsDatabase    = require('../../utils/database');
+const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
+const {checkCustomFields} = require('../../utils/translation');
+const Schema              = mongoose.Schema;
+const utilsDatabase       = require('../../utils/database');
 
 const CmsBlocksSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -23,26 +23,22 @@ const CmsBlocksSchema = new Schema({
 });
 
 CmsBlocksSchema.statics.translationValidation = async function (self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
-            errors = translationUtils.checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
+            checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
                 {key: 'content'}
             ]);
         }
     }
-
-    return errors;
 };
 
 CmsBlocksSchema.statics.checkCode = async function (that) {
@@ -50,15 +46,15 @@ CmsBlocksSchema.statics.checkCode = async function (that) {
 };
 
 CmsBlocksSchema.pre('save', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
+    await utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 aquilaEvents.emit('cmsBlocksSchema', CmsBlocksSchema);

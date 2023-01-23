@@ -15,8 +15,6 @@
     }
 </style>
 
-<link rel="stylesheet" href="assets/css/angular-bootstrap-toggle.min.css">
-
 <ns-box data-title="modules.t1" title-icon="fa fa-plug fa-lg" ng-show="!showLoading" new-click="addPlugin()">  
     <div class="form-group">
         <button type="button" class="btn btn-default" ng-click="installModulesDeps()" translate>global.installDeps</button>
@@ -55,15 +53,20 @@
                         {{module.version}}
                     </td>
                     <td>
-                        
-                        <toggle
-                            ng-model="module.active"
-                            ng-change="toggleActive(module._id, module.name, module.active)"
-                            on="{{'modules.activate' | translate}}"
-                            off="{{'modules.deactivate' | translate}}"
-                            onstyle="btn btn-success btnsuccess"
-                            offstyle="btn btn-red"
-                        ></toggle>
+                        <ul class="list-radios">
+                            <li>
+                                <div class="radio">
+                                    <input id="{{module._id}}_module_on" type="radio" class="switch-radio" name="{{module._id}}_active" ng-value="true" ng-model="module.active" ng-change="toggleActive(module._id, module.name, module.active)">
+                                    <label class="form-label" for="{{module._id}}_module_on" translate>modules.activate</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio">
+                                    <input id="{{module._id}}_module_off" type="radio" class="switch-radio" name="{{module._id}}_active" ng-value="false" ng-model="module.active" ng-change="toggleActive(module._id, module.name, module.active)">
+                                    <label class="form-label" for="{{module._id}}_module_off" translate>modules.deactivate</label>
+                                </div>
+                            </li>
+                        </ul>
                     </td>
                     <td data-label="Action :" >
                         <a href="#/{{module.url}}" class="btn btn-blue btn-with-icon" style="margin-top:0px;margin-bottom:10px;" ng-disabled="!module.active || !module.url">

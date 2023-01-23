@@ -353,6 +353,12 @@ ProductControllers.controller("nsProductGeneral", [
             });
         }
 
+        $scope.downloadLinkChange = function () {
+            const url = $scope.product.downloadLink;
+            if($scope.product.filename || !url) return;
+            $scope.product.filename = url.substring(url.lastIndexOf('/')+1);
+        }
+
         window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
 
     }

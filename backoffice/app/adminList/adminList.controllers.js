@@ -187,7 +187,6 @@ AdminListControllers.controller("AdminDetailCtrl", [
 
             if ($scope.user.email && $scope.user.password && $scope.user.firstname && $scope.user.lastname) {
                 $scope.user.isAdmin = true;
-                console.log($scope.user)
                 ClientV2.save({ type: 'user' }, $scope.user, function (response) {
                     toastService.toast("success", $translate.instant("global.infoSaved"));
                     if (quit) {

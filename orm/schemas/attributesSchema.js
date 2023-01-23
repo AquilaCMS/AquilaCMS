@@ -6,11 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const {aquilaEvents} = require('aql-utils');
-const utilsDatabase  = require('../../utils/database');
-const Schema         = mongoose.Schema;
-const {ObjectId}     = Schema.Types;
+const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
+const utilsDatabase       = require('../../utils/database');
+const {checkCustomFields} = require('../../utils/translation');
+const Schema              = mongoose.Schema;
+const {ObjectId}          = Schema.Types;
+const NSErrors            = require('../../utils/errors/NSErrors');
 
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: false},
@@ -29,6 +31,7 @@ const AttributesSchema = new Schema({
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
     usedInSearch   : {type: Boolean, default: false},
+    parents        : [{type: ObjectId, ref: 'attributes'}],
     translation    : {},
     isVariantable  : Boolean
 }, {
@@ -38,15 +41,13 @@ const AttributesSchema = new Schema({
 AttributesSchema.index({code: 1, _type: 1}, {unique: true});
 
 AttributesSchema.statics.translationValidation = async function (self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -54,18 +55,14 @@ AttributesSchema.statics.translationValidation = async function (self) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.name === undefined) {
-                errors.push('name manquant');
+                throw NSErrors.NameMissing;
             }
-
-            const {checkCustomFields} = require('../../utils/translation');
-            errors                    = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'name'},
                 {key: 'values', type: 'object'}
-            ]));
+            ]);
         }
     }
-
-    return errors;
 };
 
 AttributesSchema.statics.checkCode = async function (data) {
@@ -88,11 +85,11 @@ AttributesSchema.post('remove', async function (doc, next) {
 });
 
 AttributesSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 AttributesSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 /**

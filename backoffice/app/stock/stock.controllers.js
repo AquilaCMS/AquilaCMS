@@ -51,7 +51,6 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
                 if(result) {
                     if(result.isNew) {
                         $scope.stock.labels.push(result.label);
-                        console.log($scope.stock.labels);
                     } else {
                         $scope.stock.labels[$scope.stock.labels.findIndex(function (_label) {
                             return _label.code === result.label.code;
@@ -78,7 +77,6 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
                 if (result) {
                     if (result.isNew) {
                         $scope.taxerate.push(result.tva);
-                        console.log($scope.taxerate);
                     }
                     else {
                         $scope.taxerate[$scope.taxerate.findIndex(function (_tva) {

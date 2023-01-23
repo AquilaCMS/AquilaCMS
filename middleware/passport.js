@@ -26,7 +26,7 @@ let passport;
 const init = async (pp) => {
     passport       = pp;
     const strategy = new Strategy({
-        secretOrKey    : global.envFile.jwt.secret,
+        secretOrKey    : global.aquila.envFile.jwt.secret,
         jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme('jwt')
     }, async (payload, done) => {
         try {
@@ -81,7 +81,7 @@ const init = async (pp) => {
             return null;
         },
         authenticate() {
-            return passport.authenticate('jwt', global.envFile.jwt.session);
+            return passport.authenticate('jwt', global.aquila.envFile.jwt.session);
         }
     };
 };
@@ -93,7 +93,7 @@ const authenticate = (req, res) => new Promise((resolve, reject) => {
     const _res = res;
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if (err) reject(err);
-        else if (!user) _res.clearCookie('jwt'); // reject(NSErrors.Unauthorized);
+        else if (!user) _res.clearCookie('jwt');
         resolve(user);
     })(req, res);
 });

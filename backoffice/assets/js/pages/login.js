@@ -37,17 +37,27 @@ $(document).ready(function () {
         e.preventDefault();
         hideError();
         try {
-            const response = await $.post(window.location.origin + "/api/v2/auth/login/admin", {
-                username: $("#field-email", this).val(),
-                password: $("#field-password", this).val()
+            const response = await $.ajax({
+                url: window.location.origin + "/api/v2/auth/login/admin",
+                data: {
+                    username: $("#field-email", this).val(),
+                    password: $("#field-password", this).val()
+                },
+                type: 'post',
+                beforeSend: function (jqXHR, settings) { jqXHR.setRequestHeader("lang", 'en') ;}
             });
             window.localStorage.setItem("jwtAdmin", response.data);
             location.href = "/" + window.location.pathname.split("/")[1];
         } catch (err) {
-            if(err.responseJSON.code === "DeactivateAccount"){
+            if (err.responseJSON.code === "DeactivateAccount"){
                 $("#error_msg_disable_account").show();
-            }else{
+            } else if (err.responseJSON.code === "Unauthorized") {
                 $("#error_msg_bad_login").show();
+            } else if (err.responseJSON.code === 'BadLogin') {
+                $("#error_msg_bad_login").text(function() {return err.responseJSON.message});
+                $("#error_msg_bad_login").show();
+            } else {
+                $("#api-error").show();
             }
         }
     });

@@ -730,7 +730,8 @@ adminCatagenDirectives.directive("nsBox", function ()
             editHref: "@?",
             editClick: "&?",
             newHref: "@?",
-            newClick: "&?"
+            newClick: "&?",
+            massClick: "&?"
         },
         templateUrl: "views/templates/nsBox.html",
         link: function (scope, element, attrs)
@@ -742,6 +743,7 @@ adminCatagenDirectives.directive("nsBox", function ()
             scope.hasAdd = attrs.addHref || attrs.addClick;
             scope.hasClose = attrs.closeHref || attrs.closeClick;
             scope.hasNew = attrs.newHref || attrs.newClick;
+            scope.hasMassClick = attrs.massClick;
             scope.hasEdit = attrs.editHref || attrs.editClick;
 
             let type;
@@ -2488,7 +2490,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         if (err && err.data && err.data.message) {
                                             toastService.toast('danger', err.data.message);
                                         }
-                                        $scope.onError(err);
+                                        if(typeof $scope.onError === 'function') $scope.onError(err);
                                     }, function (evt) {
                                         $scope.disableUpload = true;
                                         $scope.progress[evt.config.data.file.$ngfBlobUrl] = parseInt(100.0 * evt.loaded / evt.total);
@@ -2575,6 +2577,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 max: true,
                 keepRatio: true,
                 ratio: 1,
+                relativeLink: true,
     
                 crop:false,
                 position:"center",
@@ -2627,7 +2630,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    $scope.link = `${!$scope.info.relativeLink ? window.location.origin : ''}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                     return $scope.link;
                 }
             };

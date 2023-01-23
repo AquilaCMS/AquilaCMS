@@ -217,15 +217,6 @@ OrdersSchema.index({'priceTotal.ati': 1});
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
 
-/* OrdersSchema.virtual("delivery.date").get(function () {
-    if (this.delivery.dateDelivery !== undefined && this.delivery.dateDelivery.delayPreparation && this.delivery.dateDelivery.delayPreparation) {
-        const mDate = moment(new Date()).add(this.delivery.dateDelivery.delayPreparation, this.delivery.dateDelivery.unitPreparation);
-        mDate.add(this.delivery.dateDelivery.delayDelivery, this.delivery.dateDelivery.unitDelivery);
-        return mDate;
-    }
-    return null;
-}); */
-
 const docArray = OrdersSchema.path('items');
 
 docArray.discriminator('simple', ItemSimpleSchema);

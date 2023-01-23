@@ -25,8 +25,8 @@ const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status        = 'visible'; // The default language need to be visible
-        global.defaultLang = lang.code;
+        lang.status               = 'visible'; // The default language need to be visible
+        global.aquila.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
@@ -51,10 +51,13 @@ const removeLang = async (_id) => {
  * @description Return the default lang code
  * @param {string} language - Requested language
  */
-const getDefaultLang = (language) => {
-    // If the language requested is the default one, we will recover the "real" default language
-    if (language === undefined || language === null || language === '') return global.defaultLang;
-    return language;
+const getDefaultLang = async (language) => {
+    if (language) {
+        // Check if language exists
+        const lang = await Languages.find({code: language}).lean();
+        if (lang) return language;
+    }
+    return global.aquila.defaultLang;
 };
 
 /**
@@ -117,17 +120,17 @@ const translateList = async () => {
  *
  */
 async function getTranslatePath(lang) {
-    return path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
+    return path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 
 /**
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
-const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
+const createDynamicLangFile = async (selectedTheme = global.aquila.envConfig.environment.currentTheme) => {
     try {
         const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
         const contentFile = `module.exports = [${_languages}];`;
-        const linkToFile  = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        const linkToFile  = path.join(global.aquila.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
         if (await fs.existsSync(linkToFile)) {
             const originalContentFile = await fs.readFile(linkToFile);
 

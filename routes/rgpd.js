@@ -39,18 +39,16 @@ async function exportData(req, res, next) {
             let modulesData = '';
 
             const _modules = await Modules.find({active: true});
-            if (_modules.length >= 0) {
-                for (const module of _modules) {
-                    await new Promise(async (resolve, reject) => {
-                        if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                            const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                            const data   = await rgpd.exportData(userData, resolve, reject);
-                            modulesData += `\n\n${module.name} :\n`;
-                            modulesData += JSON.stringify(data, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, '');
-                        }
-                        resolve();
-                    });
-                }
+            for (const module of _modules) {
+                await new Promise(async (resolve, reject) => {
+                    if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                        const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                        const data   = await rgpd.exportData(userData, resolve, reject);
+                        modulesData += `\n\n${module.name} :\n`;
+                        modulesData += JSON.stringify(data, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, '');
+                    }
+                    resolve();
+                });
             }
 
             // Data processing (formatting, deletion of password, isAdmin and __v)

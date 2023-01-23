@@ -59,7 +59,7 @@
         "bottomRight": "Bottom right",
         "enterAllValue": "Please enter all values.",
         "linkGenerated": "Generated link",
-        "massAddDone.": "Mass addition performed.",
+        "massAddDone": "Mass addition performed.",
         "takeTime": "It may take a while, please wait ..."
     },
     "multi": {

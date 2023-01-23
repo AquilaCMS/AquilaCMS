@@ -66,6 +66,7 @@ const UserSchema = new Schema({
         },
         validate : {
             validator(email) {
+                // eslint-disable-next-line prefer-regex-literals
                 return (new RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i)).test(email);
             },
             message : () => 'BAD_EMAIL_FORMAT'

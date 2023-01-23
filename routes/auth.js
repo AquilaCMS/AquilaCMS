@@ -29,7 +29,6 @@ module.exports = function (app) {
      */
     app.get('/v2/auth/isauthenticated', authentication, IsAuthenticate);
     app.get('/v2/auth/logout', logout);
-    app.post('/v2/auth/logout/admin', logoutAdmin);
     app.post('/v2/auth/loginAdminAsClient', authentication, loginAdminAsClient);
 
     // Deprecied
@@ -44,15 +43,6 @@ const logout = (req, res) => {
     res.clearCookie('jwt');
     res.removeHeader('x-auth-token');
     res.status(204).end();
-};
-
-const logoutAdmin = (req, res, next) => {
-    try {
-        req.logOut();
-        return res.status(204).end();
-    } catch (err) {
-        next(err);
-    }
 };
 
 const loginAdminAsClient = async (req, res, next) => {

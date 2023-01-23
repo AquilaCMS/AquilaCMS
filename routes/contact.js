@@ -12,11 +12,12 @@ const ServiceContacts              = require('../services/contacts');
 const {getUploadDirectory}         = require('../utils/server');
 const {adminAuthRight}             = require('../middleware/authentication');
 const {fsp, modules: modulesUtils} = require('../utils');
+const {multerUpload}               = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/contacts', adminAuthRight('contacts'), getContacts);
     app.delete('/v2/contact/:id', adminAuthRight('contacts'), deleteContact);
-    app.post('/v2/contact/:mode', setContact);
+    app.post('/v2/contact/:mode', multerUpload.any(), setContact);
 };
 
 /**
@@ -76,8 +77,8 @@ async function setContact(req, res, next) {
                         return next(err);
                     }
 
-                    target_path_full   = target_path_full.replace(path.resolve(global.appRoot, pathUpload), '');
-                    _body.filesPath[i] = url.resolve(global.envConfig.environment.appUrl, target_path_full);
+                    target_path_full   = target_path_full.replace(path.resolve(global.aquila.appRoot, pathUpload), '');
+                    _body.filesPath[i] = url.resolve(global.aquila.envConfig.environment.appUrl, target_path_full);
                     return _body.filesPath[i];
                 });
 

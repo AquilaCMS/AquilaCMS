@@ -15,10 +15,12 @@ const packageManager       = require('../utils/packageManager');
 const NSErrors             = require('../utils/errors/NSErrors');
 const fs                   = require('../utils/fsp');
 const {getUploadDirectory} = require('../utils/server');
+const {multerUpload}       = require('../middleware/multer');
 
 module.exports = function (app) {
     app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
+    app.post('/v2/config/ssl/:fileType', adminAuth, multerUpload.any(), uploadSSLFile);
     app.get('/restart', adminAuth, restart);
     app.get('/robot', adminAuth, getRobot);
     app.post('/robot', adminAuth, setRobot);
@@ -69,7 +71,7 @@ async function saveEnvFile(req, res, next) {
 async function saveEnvConfig(req, res, next) {
     try {
         await serviceConfig.saveEnvConfig(req.body);
-        if (req.body?.environment?.needRestart || global.envConfig.environment.needRestart) {
+        if (req.body?.environment?.needRestart || global.aquila.envConfig.environment.needRestart) {
             setTimeout(() => {
                 packageManager.restart();
             }, 5000);
@@ -77,7 +79,7 @@ async function saveEnvConfig(req, res, next) {
         res.json({
             status : 'success',
             data   : {
-                needRestart : req.body?.environment?.needRestart || global.envConfig.environment.needRestart
+                needRestart : req.body?.environment?.needRestart || global.aquila.envConfig.environment.needRestart
             }
         });
     } catch (err) {
@@ -124,5 +126,13 @@ async function setRobot(req, res, next) {
         return res.json({message: 'success'});
     } catch (error) {
         next(error);
+    }
+}
+
+async function uploadSSLFile(req, res, next) {
+    try {
+        return res.json(await serviceConfig.uploadSSLFile(req.params.fileType, req.files, req.body));
+    } catch (err) {
+        next(err);
     }
 }

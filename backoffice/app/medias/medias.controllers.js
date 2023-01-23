@@ -29,6 +29,17 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
             });
         };
 
+        $scope.addMassMedia = function() {
+            var modalInstance = $modal.open({
+                templateUrl: 'app/medias/views/modals/medias-mass-new.html',
+                controller: 'MediasModalMassNewCtrl',
+            });
+
+            modalInstance.result.then(() => {
+                $scope.init();
+            });
+        };
+
         $scope.generateFilter = function () {
             const filter = {};
             if($scope.currentTab === 'general') {
@@ -134,9 +145,9 @@ MediasControllers.controller("MediasDetailsCtrl",
             }
         }
 
-        function setMode(mode){
+        function setMode(isNew){
             let id;
-            if(mode == true){
+            if (isNew == true){
                 // it is a new media
                 id = $routeParams.id.substring(0, $routeParams.id.length - 4);
                 $scope.additionnalButtons = [
@@ -299,8 +310,8 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
 ]);
 
 
-MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate",
-    function ($scope, toastService, $modalInstance, $translate) {
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate", "$location",
+    function ($scope, toastService, $modalInstance, $translate, $location) {
         $scope.local = {
             insertDBMediaUpload: true
         };
@@ -311,11 +322,15 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
         $scope.uploadedMediaMass = function () {
             toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
+            $location.path('/medias');
         };
-
         $scope.cancel = function () {
             $modalInstance.close('cancel')
         };
+        $scope.onError = function () {
+            $modalInstance.close('error')
+        };
+        
     }
 ]);
 

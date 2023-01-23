@@ -22,7 +22,7 @@ const saveFamily = async (family) => {
     if (!family) throw NSErrors.UnprocessableEntity;
     let _family = null;
     if (family._id) {
-        _family = await Families.findOneAndUpdate({_id: family._id}, family);
+        _family = await Families.findOneAndUpdate({_id: family._id}, family, {new: true});
     } else {
         _family = await Families.create(family);
     }

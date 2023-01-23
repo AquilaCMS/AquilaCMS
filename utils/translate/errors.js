@@ -39,6 +39,10 @@ module.exports = {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },
+    JobErrorInChildNode : {
+        fr : 'Erreur dans le job',
+        en : 'Job error'
+    },
     NotFound : {
         fr : 'Item non trouvé',
         en : 'Item not found'
@@ -46,6 +50,10 @@ module.exports = {
     MediaNotFound : {
         fr : 'Média introuvable',
         en : 'Media not found'
+    },
+    MediaNotInRoot : {
+        fr : 'Aucun média à la racine du zip',
+        en : 'No media in root zip'
     },
     UserNotFound : {
         fr : 'Utilisateur non trouvé',
@@ -118,10 +126,6 @@ module.exports = {
     categoryAlreadyExist : {
         fr : 'Catégorie déjà existante',
         en : 'Category already exist'
-    },
-    SlugAlreadyExist : {
-        fr : 'Le slug existe déjà',
-        en : 'Slug already exist'
     },
     CmsBlockNotFound : {
         fr : 'Bloc CMS non trouvé',
@@ -371,9 +375,25 @@ module.exports = {
         fr : 'Impossible de mettre à jour le produit',
         en : 'Cannot update this product'
     },
-    ProductUpdateSlugError : {
-        fr : 'Impossible de mettre à jour le produit, le slug est trop court',
-        en : 'Cannot update this product, slug is too short'
+    SlugAlreadyExist : {
+        fr : 'Le slug existe déjà',
+        en : 'Slug already exists'
+    },
+    SlugTooShort : {
+        fr : 'Le slug est trop court',
+        en : 'Slug is too short'
+    },
+    InvalidInputString : {
+        fr : 'Un champs de type string est invalide',
+        en : 'A string field is invalid'
+    },
+    NameMissing : {
+        fr : 'Le nom est manquant',
+        en : 'Name is missing'
+    },
+    MailTypeCodeEmpty : {
+        fr : 'Le code du type de mail est vide',
+        en : 'Email type code is empty'
     },
     ProductIdExisting : {
         fr : 'ID produit déjà existant',
@@ -410,6 +430,10 @@ module.exports = {
     PromoCodeNotFound : {
         fr : 'Impossible de trouver le code de la promotion',
         en : 'Cannot find the code discount'
+    },
+    InitChildProcessError : {
+        fr : 'Impossible d\'initialiser le processus enfant',
+        en : 'Cannot initialize child process'
     },
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',

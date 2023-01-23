@@ -61,10 +61,11 @@ const getProductImageUrl = (product) => {
 };
 
 const getProductImageId = (product) => {
+    const defaultImage = global.aquila.envConfig.environment.defaultImage ? 'no-image' : '';
     if (product.selected_variant && product.selected_variant.images) {
-        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : 'no-image';
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : defaultImage;
     }
-    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : 'no-image';
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : defaultImage;
 };
 
 // Generic file deletion function
@@ -134,10 +135,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.existsSync(pathToCheck) && !(await fsp.lstatSync(pathToCheck)).isDirectory()) {
-                return true;
-            }
-            return false;
+            return !!(pathToCheck && fsp.existsSync(pathToCheck) && !(fsp.lstatSync(pathToCheck)).isDirectory());
         });
     }
 };

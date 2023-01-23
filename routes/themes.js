@@ -11,10 +11,11 @@ const themesServices     = require('../services/themes');
 const serviceThemeConfig = require('../services/themeConfig');
 const ServiceConfig      = require('../services/config');
 const utilsThemes        = require('../utils/themes');
+const {multerUpload}     = require('../middleware/multer');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  adminAuthRight('themes'), listTheme);
-    app.post('/v2/themes/upload',          adminAuthRight('themes'), uploadTheme);
+    app.post('/v2/themes/upload',          adminAuthRight('themes'), multerUpload.any(), uploadTheme);
     app.post('/v2/themes/delete',          adminAuthRight('themes'), deleteTheme);
     app.post('/v2/themes/copyDatas',       adminAuthRight('themes'), copyDatas);
     app.get('/v2/themes/css/:cssName',     adminAuthRight('design'), getCustomCss);

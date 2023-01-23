@@ -6,7 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const path                   = require('path');
 const Products               = require('./products');
 const {ProductVirtualSchema} = require('../schemas');
+
+ProductVirtualSchema.methods.preUpdateVirtualProduct = function (data) {
+    // do things here with data
+    if (data.downloadLink && !data.filename) data.filename = path.basename(data.downloadLink);
+    return data;
+};
 
 module.exports = Products.discriminator('virtual', ProductVirtualSchema);

@@ -7,8 +7,10 @@
         "5c5abe92c1f87b5f46c451fa"
       ],
       "position": 1,
+      "visible": true,
       "usedInRules": true,
       "usedInFilters": true,
+      "usedInSearch": false,
       "_id": "5d3967aa4aa9c1692db068ce",
       "code": "material",
       "translation": {
@@ -39,8 +41,10 @@
         "5c5abe92c1f87b5f46c451fa"
       ],
       "position": 1,
+      "visible": true,
       "usedInRules": true,
       "usedInFilters": false,
+      "usedInSearch": false,
       "_id": "5da0a39bde6bed65e1d2a1ec",
       "param": "Non",
       "code": "loveit",
@@ -60,8 +64,10 @@
         "5c5abe92c1f87b5f46c451fa"
       ],
       "position": 1,
+      "visible": true,
       "usedInRules": true,
       "usedInFilters": true,
+      "usedInSearch": false,
       "_id": "5da5765ede6bed65e1d2a6f8",
       "param": "Non",
       "code": "color",
@@ -74,6 +80,40 @@
         }
       },
       "type": "color"
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "visible": true,
+      "usedInRules": true,
+      "usedInFilters": false,
+      "usedInSearch": false,
+      "_id": "ffc405d5b5e920814c99d2bb",
+      "param": "Non",
+      "code": "size",
+      "translation": {
+        "fr": {
+          "name": "Taille",
+          "values": [
+            "S",
+            "M",
+            "XL"
+          ]
+        },
+        "en": {
+          "name": "Size",
+          "values": [
+            "S",
+            "M",
+            "XL"
+          ]
+        }
+      },
+      "type": "list",
+      "isVariantable": true
     }
   ]
 }
