@@ -22,5 +22,5 @@ module.exports = {
     unpaid : {
         fr : 'Non payé',
         en : 'Unpaid'
-    },
+    }
 };
