@@ -10,7 +10,7 @@ const serverUtils = require('../../utils/server');
 const dev = serverUtils.dev;
 
 const themeName = path.basename(__dirname);
-const pathToTheme = path.join(global.appRoot, "themes", themeName, "/");
+const pathToTheme = path.join(global.aquila.appRoot, "themes", themeName, "/");
 
 
 const initI18n = async (i18nInstance, ns) => {

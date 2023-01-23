@@ -3,7 +3,7 @@ const {fs} = require('aql-utils');
 
 const getLogsContent = async (fileName, page = 1) => {
     const linePerPage = 300;
-    const filePath    = path.resolve(global.appRoot, fileName);
+    const filePath    = path.resolve(global.aquila.appRoot, fileName);
     if (await fs.hasAccess(filePath)) {
         let fileContent  = '';
         let currentLines = '';

@@ -15,7 +15,7 @@ const utilsModules = require('../utils/modules');
 const createModelData = async () => {
     const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
     const schemas        = [];
-    const themeFolder    = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+    const themeFolder    = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
         if (forbidenModels.indexOf(modelName) === -1) {
@@ -31,7 +31,7 @@ const createModelData = async () => {
         }
     }
 
-    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
+    const photoPath = path.join(global.aquila.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
     if (!await fs.hasAccess(photoPath)) {
         throw new Error(`"${photoPath}" is not readable`);
@@ -118,7 +118,7 @@ const hotReloadAPI = async (express, server, passport) => {
                     continue;
                 }
                 for (const oneFolder of ['routes', 'services']) {
-                    const pathToFolder = path.join(global.appRoot, oneFolder);
+                    const pathToFolder = path.join(global.aquila.appRoot, oneFolder);
                     if (oneLine.startsWith(pathToFolder)) {
                         delete require.cache[oneLine];
                     }

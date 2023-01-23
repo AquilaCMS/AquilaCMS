@@ -18,7 +18,7 @@ const tmpPath                  = path.resolve('./uploads/temp');
  * Compare local version with distant version
  */
 const verifyingUpdate = async () => {
-    const actualVersion = JSON.parse(fs.readFileSync(path.resolve(global.appRoot, './package.json'))).version;
+    const actualVersion = JSON.parse(fs.readFileSync(path.resolve(global.aquila.appRoot, './package.json'))).version;
 
     // Create the /uploads/temp folder if it doesn't exist
     if (!fs.existsSync(tmpPath)) {
@@ -78,7 +78,7 @@ const update = async () => {
     const filePath = `${tmpPath}//Aquila-${version}.zip`;
     let aquilaPath = './';
 
-    const devMode = global.envFile.devMode;
+    const devMode = global.aquila.envFile.devMode;
     if (typeof devMode !== 'undefined') {
         aquilaPath = tmpPath;
     }

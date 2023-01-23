@@ -47,17 +47,17 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
         if (isAdmin) {
             config.environment = {
                 ...config.environment,
-                databaseConnection : global.envFile.db
+                databaseConnection : global.aquila.envFile.db
             };
-            if (global.envFile.ssl) {
+            if (global.aquila.envFile.ssl) {
                 config.environment = {
                     ...config.environment,
                     ssl : {
-                        active : global.envFile.ssl.active
+                        active : global.aquila.envFile.ssl.active
                     }
                 };
-                if (global.envFile.ssl.cert) config.environment.ssl.cert = path.basename(global.envFile.ssl.cert);
-                if (global.envFile.ssl.key) config.environment.ssl.key = path.basename(global.envFile.ssl.key);
+                if (global.aquila.envFile.ssl.cert) config.environment.ssl.cert = path.basename(global.aquila.envFile.ssl.cert);
+                if (global.aquila.envFile.ssl.key) config.environment.ssl.key = path.basename(global.aquila.envFile.ssl.key);
             } else {
                 // Put the SSL links empty if false
                 config.environment = {
@@ -76,12 +76,12 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
 
 const updateEnvFile = async () => {
     const aquila_env      = serverUtils.getEnv('AQUILA_ENV');
-    const absoluteEnvPath = path.join(global.appRoot, global.envPath);
+    const absoluteEnvPath = path.join(global.aquila.appRoot, global.aquila.envPath);
     let oldEnvFile        = await fs.readFile(absoluteEnvPath);
     oldEnvFile            = JSON.parse(oldEnvFile);
     if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
-        oldEnvFile[aquila_env] = global.envFile;
-        global.envFile         = oldEnvFile[aquila_env];
+        oldEnvFile[aquila_env] = global.aquila.envFile;
+        global.aquila.envFile  = oldEnvFile[aquila_env];
         await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
     }
 };
@@ -89,11 +89,11 @@ const updateEnvFile = async () => {
 const saveEnvFile = async (body, files) => {
     const {environment} = body;
     if (environment) {
-        global.envFile.ssl = {
+        global.aquila.envFile.ssl = {
             cert   : '',
             key    : '',
             active : false,
-            ...global.envFile.ssl
+            ...global.aquila.envFile.ssl
         };
         if (files && files.length > 0) {
             for (const file of files) {
@@ -101,27 +101,27 @@ const saveEnvFile = async (body, files) => {
                     try {
                         await fs.moveFile(
                             path.resolve(file.destination, file.filename),
-                            path.resolve(global.appRoot, 'config/ssl', file.originalname),
+                            path.resolve(global.aquila.appRoot, 'config/ssl', file.originalname),
                             {mkdirp: true}
                         );
-                        global.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
-                        body.needRestart                   = true;
+                        global.aquila.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
+                        body.needRestart                          = true;
                     } catch (err) {
                         console.error(err);
                     }
                 }
             }
         }
-        if (environment.ssl.active !== global.envFile.ssl.active) {
-            global.envFile.ssl.active = environment.ssl.active;
-            body.needRestart          = true;
+        if (environment.ssl.active !== global.aquila.envFile.ssl.active) {
+            global.aquila.envFile.ssl.active = environment.ssl.active;
+            body.needRestart                 = true;
         }
         if (
             environment.databaseConnection
-            && environment.databaseConnection !== global.envFile.db
+            && environment.databaseConnection !== global.aquila.envFile.db
         ) {
-            global.envFile.db = environment.databaseConnection;
-            body.needRestart  = true;
+            global.aquila.envFile.db = environment.databaseConnection;
+            body.needRestart         = true;
         }
         await updateEnvFile();
         delete environment.databaseConnection;
@@ -141,8 +141,8 @@ const saveEnvConfig = async (newConfig) => {
     if (stockOrder) {
         await updateProductsStockOrder(stockOrder, oldConfig.stockOrder);
     }
-    const cfg        = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
-    global.envConfig = cfg;
+    const cfg               = await Configuration.findOneAndUpdate({}, {$set: newConfig}, {new: true});
+    global.aquila.envConfig = cfg;
 };
 
 /**
@@ -264,7 +264,7 @@ const uploadSSLFile = async (fileType, files, body) => {
     const filepath = path.join('ssl', body.filename);
     fs.renameSync(file.path, filepath);
 
-    global.envFile.ssl[fileType] = filepath;
+    global.aquila.envFile.ssl[fileType] = filepath;
     await updateEnvFile();
 };
 

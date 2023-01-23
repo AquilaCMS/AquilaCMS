@@ -40,6 +40,11 @@ class NSErrors {
     static get PostBodyUndefined() { return this.makeErrorAlias(NSErrors.BadRequest, 'PostBodyUndefined'); }
     static get PromoCodeIfStatementBadFormat() { return this.makeErrorAlias(NSErrors.BadRequest, 'PromoCodeIfStatementBadFormat'); }
     static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
+    static get SlugTooShort() { return this.makeErrorAlias(NSErrors.BadRequest, 'SlugTooShort'); }
+    static get InvalidInputString() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidInputString'); }
+    static get NameMissing() { return this.makeErrorAlias(NSErrors.BadRequest, 'NameMissing'); }
+    static get MailTypeCodeEmpty() { return this.makeErrorAlias(NSErrors.BadRequest, 'MailTypeCodeEmpty'); }
+    static get InitChildProcessError() { return this.makeErrorAlias(NSErrors.BadRequest, 'InitChildProcessError'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
     static get DeactivateAccount() { return this.makeErrorAlias(NSErrors.Unauthorized, 'DeactivateAccount', undefined, 'none'); }
@@ -113,7 +118,6 @@ class NSErrors {
     static get ProductNotSalable() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotSalable'); }
     static get ProductReviewNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductReviewNotFound'); }
     static get ProductUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductUpdateError'); }
-    static get ProductUpdateSlugError() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductUpdateSlugError'); }
     static get PromoCodePromoInvalid() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoCodePromoInvalid'); }
     static get PromoDateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoDateError'); }
     static get PromoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoNotFound'); }
@@ -139,6 +143,7 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
+    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }

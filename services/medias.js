@@ -77,7 +77,7 @@ const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder =
     console.log('Upload medias start...');
 
     // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
-    reqFile.path      = path.resolve(global.appRoot, reqFile.path);
+    reqFile.path      = path.resolve(global.aquila.appRoot, reqFile.path);
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
         .slice(0, -1)
@@ -212,7 +212,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
 
     let _path          = server.getUploadDirectory();
-    _path              = path.join(global.appRoot, _path);
+    _path              = path.join(global.aquila.appRoot, _path);
     const cacheFolder  = path.join(_path, '/cache/');
     let filePath       = '';
     let filePathCache  = '';
@@ -315,9 +315,9 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             console.warn('No image (or item) found. Default image used.');
         }
     }
-    if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
-        fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
-        filePath      = path.join(_path, global.envConfig.environment.defaultImage);
+    if (!(await utilsMedias.existsFile(filePath)) && global.aquila.envConfig.environment.defaultImage) {
+        fileName      = `default_image_cache_${size}${path.extname(global.aquila.envConfig.environment.defaultImage)}`;
+        filePath      = path.join(_path, global.aquila.envConfig.environment.defaultImage);
         filePathCache = path.join(cacheFolder, fileName);
     }
     // if the requested image is already cached, it is returned direct
@@ -422,7 +422,7 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        const absoluteTargetPath = slash(path.resolve(global.appRoot, target_path_full));
+        const absoluteTargetPath = slash(path.resolve(global.aquila.appRoot, target_path_full));
         await fs.copyRecursive(tmp_path, absoluteTargetPath);
         if ((await fs.stat(tmp_path)).isDirectory()) {
             await fs.deleteRecursive(tmp_path);

@@ -78,8 +78,8 @@ async function setContact(req, res, next) {
                         return next(err);
                     }
 
-                    target_path_full   = target_path_full.replace(path.resolve(global.appRoot, pathUpload), '');
-                    _body.filesPath[i] = url.resolve(global.envConfig.environment.appUrl, target_path_full);
+                    target_path_full   = target_path_full.replace(path.resolve(global.aquila.appRoot, pathUpload), '');
+                    _body.filesPath[i] = url.resolve(global.aquila.envConfig.environment.appUrl, target_path_full);
                     return _body.filesPath[i];
                 });
 
