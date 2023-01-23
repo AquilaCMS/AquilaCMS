@@ -125,7 +125,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 onClick: function () {
                     const newCode = prompt($translate.instant("simple.inputCode"));
                     if (newCode) {
-                        const newPrd = { ...$scope.product, code: newCode };
+                        const newPrd = {...$scope.product, code: newCode };
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
                             toastService.toast("success", $translate.instant("simple.productDuplicate"));
