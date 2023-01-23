@@ -23,7 +23,7 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
 /**
  * Controller de la page contenant le detail d'un Job
  */
-JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
+    JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
     function ($scope, $rootScope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById, $translate) {
         $scope.lang = $rootScope.adminLang;
         $scope.test = 1;
@@ -38,7 +38,8 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             data: {
                 method: "get",
                 flag: "user",
-                params: ""
+                params: "",
+                onMainThread: true
             }
         };
         $scope.trustHtml = function(){

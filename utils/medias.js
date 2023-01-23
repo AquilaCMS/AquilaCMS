@@ -61,7 +61,7 @@ const getProductImageUrl = (product) => {
 };
 
 const getProductImageId = (product) => {
-    const defaultImage = global.envConfig.environment.defaultImage ? 'no-image' : '';
+    const defaultImage = global.aquila.envConfig.environment.defaultImage ? 'no-image' : '';
     if (product.selected_variant && product.selected_variant.images) {
         return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : defaultImage;
     }

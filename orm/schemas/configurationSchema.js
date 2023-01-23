@@ -218,7 +218,7 @@ ConfigurationSchema.pre('updateOne', async function () {
 });
 
 ConfigurationSchema.post('updateOne', async function () {
-    global.envConfig = (await this.findOne({})).toObject();
+    global.aquila.envConfig = (await this.findOne({})).toObject();
 });
 
 ConfigurationSchema.post('findOne', async function (doc) {

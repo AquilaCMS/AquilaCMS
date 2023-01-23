@@ -27,7 +27,7 @@ const IsAuthenticate = async (req, res) => res.status(200).send({
  * @param {String} token
  * @returns user
  */
-const getDecodedToken = (token) => jwt.verify(token.substr(token.indexOf(' ') + 1), global.envFile.jwt.secret);
+const getDecodedToken = (token) => jwt.verify(token.substr(token.indexOf(' ') + 1), global.aquila.envFile.jwt.secret);
 
 /**
  * Login user or admin
