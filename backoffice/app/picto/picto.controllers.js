@@ -128,7 +128,6 @@ PictoControllers.controller('PictoDetailsCtrl', [
             }
             PictoApi.save({id: $scope.picto._id}, $scope.picto, function (response) {
                 if(response.status === 400) {
-                    console.log("4")
                     toastService.toast('danger', response.translations[$scope.adminLang]);
                 } else {
                     toastService.toast('success', $translate.instant("picto.details.pictoSegmentation"));

@@ -8,6 +8,7 @@
         "valider": "Valider"
     },
     "product": {
+        "inputCode":"Saisir le code du nouveau produit :",
         "gen": "Général",
         "mark": "Marketing",
         "compo": "Composition",

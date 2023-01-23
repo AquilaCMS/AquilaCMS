@@ -129,7 +129,6 @@ async function setStatic(req, res, next) {
         } else {
             await ServiceStatic.createStatic(req.body);
         }
-        console.log('deletePreview', req.body.code);
         await ServiceStaticPreview.deletePreview(req.body.code);
 
         res.end();
