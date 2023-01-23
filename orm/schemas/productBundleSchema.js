@@ -7,8 +7,8 @@
  */
 
 const mongoose       = require('mongoose');
-const NSErrors       = require('../../utils/errors/NSErrors');
 const {aquilaEvents} = require('aql-utils');
+const NSErrors       = require('../../utils/errors/NSErrors');
 const Schema         = mongoose.Schema;
 const {ObjectId}     = Schema.Types;
 

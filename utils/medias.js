@@ -42,7 +42,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            if (pathIn !== filePathOut) await fsp.rename(pathIn, filePathOut);
+            if (pathIn !== filePathOut) await fs.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
@@ -135,7 +135,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            return !!(pathToCheck && fsp.existsSync(pathToCheck) && !(fsp.lstatSync(pathToCheck)).isDirectory());
+            return !!(pathToCheck && fs.existsSync(pathToCheck) && !(fs.lstatSync(pathToCheck)).isDirectory());
         });
     }
 };

@@ -7,8 +7,8 @@
  */
 
 const mongoose       = require('mongoose');
-const utilsDatabase  = require('../../utils/database');
 const {aquilaEvents} = require('aql-utils');
+const utilsDatabase  = require('../../utils/database');
 const Schema         = mongoose.Schema;
 const {ObjectId}     = Schema.Types;
 

@@ -9,6 +9,7 @@
 const moment                      = require('moment-business-days');
 const path                        = require('path');
 const mongoose                    = require('mongoose');
+const Fuse                        = require('fuse.js');
 const {fs, aquilaEvents, slugify} = require('aql-utils');
 const QueryBuilder                = require('../utils/QueryBuilder');
 const utils                       = require('../utils/utils');

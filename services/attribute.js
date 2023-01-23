@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose                                                 = require('mongoose');
-const {slugify}                                                = require('aql-utils');
-const QueryBuilder                                             = require('../utils/QueryBuilder');
-const NSErrors                                                 = require('../utils/errors/NSErrors');
-const utilsMedia                                               = require('../utils/medias');
+const mongoose                                                                = require('mongoose');
+const {slugify}                                                               = require('aql-utils');
+const QueryBuilder                                                            = require('../utils/QueryBuilder');
+const NSErrors                                                                = require('../utils/errors/NSErrors');
+const utilsMedia                                                              = require('../utils/medias');
 const {Attributes, Categories, SetAttributes, Products, Users, ProductSimple} = require('../orm/models');
 
 const restrictedFields = [];

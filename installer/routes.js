@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const {fork}         = require('child_process');
-const {fs, restart}  = require('aql-utils');
-const jobServices    = require('../services/job');
-const adminServices  = require('../services/admin');
+const path          = require('path');
+const {fork}        = require('child_process');
+const {fs, restart} = require('aql-utils');
+const jobServices   = require('../services/job');
+const adminServices = require('../services/admin');
 
 const execScript = async (scriptPath) => {
     try {

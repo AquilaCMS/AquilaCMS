@@ -6,6 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const {fs}              = require('aql-utils');
 const {News, Languages} = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
 const NSErrors          = require('../utils/errors/NSErrors');
@@ -56,12 +57,11 @@ const saveNew = async (_new) => {
 };
 
 const deleteImage = async (_old) => {
-    const fsp  = require('../utils/fsp');
     const path = require('path');
 
     if (!_old) throw NSErrors.UnprocessableEntity;
     const imgPath = path.resolve(require('../utils/server').getUploadDirectory(), _old);
-    await fsp.unlink(imgPath);
+    await fs.unlink(imgPath);
 };
 const deleteNew = async (_id) => {
     if (!_id) throw NSErrors.UnprocessableEntity;

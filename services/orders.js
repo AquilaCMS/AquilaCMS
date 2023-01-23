@@ -7,7 +7,6 @@
  */
 
 const moment           = require('moment');
-const path             = require('path');
 const {aquilaEvents}   = require('aql-utils');
 const {
     Orders,

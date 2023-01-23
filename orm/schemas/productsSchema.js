@@ -8,14 +8,14 @@
 
 const mongoose                    = require('mongoose');
 const {fs, aquilaEvents, slugify} = require('aql-utils');
+const path                        = require('path');
 const NSErrors                    = require('../../utils/errors/NSErrors');
-const path           = require('path');
 const {
     checkCustomFields,
     checkTranslations
 } = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const reviewService = require('../../services/reviews');
+const utilsDatabase               = require('../../utils/database');
+const reviewService               = require('../../services/reviews');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -189,7 +189,7 @@ ProductsSchema.methods.updateData = async function (data) {
     // Slugify images name
     if (data.images) {
         for (const image of data.images) {
-            image.title = helper.slugify(image.title);
+            image.title = slugify(image.title);
         }
         for (const prdImage of this.images) {
             if (!data.images.find((img) => img._id.toString() === prdImage._id.toString()) && prdImage.url) {

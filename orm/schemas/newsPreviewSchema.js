@@ -32,7 +32,6 @@ NewsPreviewSchema.pre('save', async function (next) {
 });
 
 NewsPreviewSchema.post('save', async function (doc) {
-    const {aquilaEvents} = require('aql-utils');
     aquilaEvents.emit('aqNewPreviewArticle', doc);
 });
 

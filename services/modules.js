@@ -11,7 +11,9 @@ const path                        = require('path');
 const mongoose                    = require('mongoose');
 const rimraf                      = require('rimraf');
 const semver                      = require('semver');
+const slash                       = require('slash');
 const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const utilsThemes                 = require('../utils/themes');
 const {isEqual}                   = require('../utils/utils');
 const QueryBuilder                = require('../utils/QueryBuilder');
 const modulesUtils                = require('../utils/modules');
@@ -486,8 +488,8 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
-                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -647,7 +649,7 @@ const removeModule = async (idModule) => {
 };
 
 const retrieveModuleComponentType = async (theme) => {
-    const themeInfo = await themesUtils.loadThemeInfo(theme);
+    const themeInfo = await utilsThemes.loadThemeInfo(theme);
     if (themeInfo?.moduleComponentType) return themeInfo.moduleComponentType;
     return '';
 };

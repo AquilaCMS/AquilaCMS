@@ -9,7 +9,7 @@ const axios          = require('axios');
 const path           = require('path');
 const Json2csvParser = require('json2csv').Parser;
 const {
-    transforms: {unwind, flatten}
+    transforms: {flatten}
 } = require('json2csv');
 const {v4: uuidv4}   = require('uuid');
 const mongoose       = require('mongoose');
@@ -180,12 +180,6 @@ const downloadFile = async (url, dest) => {
             reject(err.message);
         });
     });
-};
-
-const slugify = (text = '') => {
-    const slug = require('slug');
-    slug.extend({_: '_'});
-    return slug(text, {lower: true});
 };
 
 /**

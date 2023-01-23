@@ -15,7 +15,7 @@ const ServiceLanguages            = require('./languages');
 const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const utilsServer                 = require('../utils/server');
-const modulesUtils     = require('../utils/modules');
+const modulesUtils                = require('../utils/modules');
 const {
     Users,
     Mail,
