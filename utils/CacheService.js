@@ -11,7 +11,7 @@ const NodeCache = require('node-cache');
 // HOW TO DECLARE A NEW CACHE FROM A MODULE (in the init.js) :
 // const { info } = require('./info');
 // const CacheService = require('./services/cache');
-// global.moduleExtend.useCacheModule = {
+// global.aquila.moduleExtend.useCacheModule = {
 //     module: info.name,
 //     function: (params) => { global.cache = new CacheService(params.cacheTTL); }
 // };

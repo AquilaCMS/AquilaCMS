@@ -205,7 +205,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     if (!user) {
         throw NSErrors.NotFound;
     }
-    const {appUrl, adminPrefix} = global.envConfig.environment;
+    const {appUrl, adminPrefix} = global.aquila.envConfig.environment;
     let link;
     if (user.isAdmin) {
         link = `${appUrl}${adminPrefix}/login`;

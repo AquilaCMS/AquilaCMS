@@ -74,8 +74,8 @@ CategoriesSchema.statics.translationValidation = async function (self, updateQue
 
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
-            self.translation[global.defaultLang] = {};
-            translationKeys                      = Object.keys(self.translation);
+            self.translation[global.aquila.defaultLang] = {};
+            translationKeys                             = Object.keys(self.translation);
         }
         for (let i = 0; i < translationKeys.length; i++) {
             const lang = self.translation[translationKeys[i]];
@@ -107,8 +107,8 @@ CategoriesSchema.statics.translationValidation = async function (self, updateQue
 
         let translationKeys = Object.keys(updateQuery.translation);
         if (translationKeys.length === 0) {
-            self.translation[global.defaultLang] = {};
-            translationKeys                      = Object.keys(self.translation);
+            self.translation[global.aquila.defaultLang] = {};
+            translationKeys                             = Object.keys(self.translation);
         }
         for (let i = 0; i < translationKeys.length; i++) {
             const lang = updateQuery.translation[translationKeys[i]];

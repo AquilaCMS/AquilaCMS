@@ -44,6 +44,7 @@ class NSErrors {
     static get InvalidInputString() { return this.makeErrorAlias(NSErrors.BadRequest, 'InvalidInputString'); }
     static get NameMissing() { return this.makeErrorAlias(NSErrors.BadRequest, 'NameMissing'); }
     static get MailTypeCodeEmpty() { return this.makeErrorAlias(NSErrors.BadRequest, 'MailTypeCodeEmpty'); }
+    static get InitChildProcessError() { return this.makeErrorAlias(NSErrors.BadRequest, 'InitChildProcessError'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
     static get DeactivateAccount() { return this.makeErrorAlias(NSErrors.Unauthorized, 'DeactivateAccount', undefined, 'none'); }
@@ -142,6 +143,7 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
+    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }
