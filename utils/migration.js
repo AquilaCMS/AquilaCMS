@@ -313,7 +313,7 @@ const migration_14_jobsOnMainThread = async () => {
         'Cohérence données',
         'Remove temp file',
         'Remove previews',
-        "Delete orders' failed payments",
+        'Delete orders\' failed payments',
         'RGPD bills',
         'RGPD users'
     ];
