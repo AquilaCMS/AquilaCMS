@@ -8,7 +8,6 @@
 
 const mongoose                     = require('mongoose');
 const path                         = require('path');
-const slash                        = require('slash');
 const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
@@ -16,7 +15,6 @@ const modulesUtils                 = require('../utils/modules');
 const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
-const packageManager               = require('../utils/packageManager');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -406,7 +404,8 @@ async function languageInitExec(theme = global.aquila.envConfig.environment.curr
 
             const tabLang     = sortedLangs.map((_lang) => _lang.code);
             const defaultLang = await ServiceLanguages.getDefaultLang();
-            returnValues      = await packageManager.execCmd(`node -e "global.aquila = '${slash(global.aquila)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
+
+            returnValues = await themesUtils.execThemeFile(pathToLanguageInit, `setLanguage('${tabLang}','${defaultLang}')`, pathToTheme);
             if (returnValues.stderr === '') {
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {
