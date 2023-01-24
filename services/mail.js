@@ -18,6 +18,7 @@ const modulesUtils     = require('../utils/modules');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utilsServer      = require('../utils/server');
 const fs               = require('../utils/fsp');
+const translate        = require('../utils/translate/common');
 const {
     Users,
     Mail,
@@ -410,8 +411,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     const datas = {
-        '{{taxdisplay}}'                 : global.aquila.translate.common[taxDisplay][lang],
-        '{{discount}}'                   : global.aquila.translate.common.discount[lang],
+        '{{taxdisplay}}'                 : translate[taxDisplay][lang],
+        '{{discount}}'                   : translate.discount[lang],
         '{{order.customer.company}}'     : order.customer.company.name,
         '{{order.customer.fullname}}'    : order.customer.id.fullname,
         '{{order.customer.name}}'        : order.customer.id.fullname,
@@ -423,7 +424,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
         '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].aqlRound(2)} €`,
-        '{{order.delivery}}'             : order._doc.orderReceipt ? global.aquila.translate.common[order._doc.orderReceipt.method][lang] : global.aquila.translate.common.delivery[lang],
+        '{{order.delivery}}'             : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
         '{{order.shipment}}'             : order._doc.delivery.name,
@@ -486,8 +487,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const mailDatas = {
-        '{{taxdisplay}}'                : global.aquila.translate.common[taxDisplay][lang],
-        '{{discount}}'                  : global.aquila.translate.common.discount[lang],
+        '{{taxdisplay}}'                : translate[taxDisplay][lang],
+        '{{discount}}'                  : translate.discount[lang],
         '{{payment.instruction}}'       : '',
         '{{order.customer.company}}'    : order.customer.company.name,
         '{{order.customer.firstname}}'  : order.customer.id.firstname,
@@ -506,7 +507,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         '{{address.country}}'           : country || '',
         '{{order.paymentMode}}'         : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'  : order._doc.payment[0].description,
-        '{{order.delivery}}'            : order._doc.orderReceipt ? global.aquila.translate.common[order._doc.orderReceipt.method][lang] : global.aquila.translate.common.delivery[lang],
+        '{{order.delivery}}'            : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
         '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
@@ -954,7 +955,7 @@ async function sendMailPendingCarts(cart) {
     }
 
     const datas = {
-        '{{taxdisplay}}'         : global.aquila.translate.common[taxDisplay][lang],
+        '{{taxdisplay}}'         : translate[taxDisplay][lang],
         '{{customer.fullname}}'  : customer.fullname,
         '{{customer.name}}'      : customer.fullname,
         '{{customer.firstname}}' : customer.firstname,

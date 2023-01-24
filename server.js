@@ -18,7 +18,6 @@ global.aquila.appRoot      = path.resolve(__dirname);
 global.aquila.port         = Number(process.env.PORT || 3010);
 global.aquila.defaultLang  = '';
 global.aquila.moduleExtend = {};
-global.aquila.translate    = require('./utils/translate');
 const utils                = require('./utils/utils');
 const fs                   = require('./utils/fsp');
 const serverUtils          = require('./utils/server');
