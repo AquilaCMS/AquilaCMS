@@ -61,10 +61,11 @@ const yarnBuildCustom = async (themeName = '') => {
             process.chdir(linkToTheme); // protect require of the frontFrameWork
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                const appRoot         = slash(global.aquila.appRoot);
-                const globalAppUrl    = global.aquila.envConfig.environment.appUrl;
-                const globalEnvConfig = JSON.stringify({environment: {appUrl: globalAppUrl}}).replace(/"/g, '#') || '{}';
-                returnValues          = await packageManager.execCmd(`node -e "global.aquila.appRoot = '${appRoot}'; global.aquila.envConfig = '${globalEnvConfig}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
+                const appRoot = global.aquila.appRoot;
+                slash(global.aquila.appRoot);
+                const objectsTab      = [global.aquila];
+                returnValues          = await packageManager.execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToInit)}').build()"`, objectsTab, slash(path.join(linkToTheme, '/')));
+                global.aquila.appRoot = appRoot;
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
