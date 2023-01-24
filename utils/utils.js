@@ -12,6 +12,7 @@ const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
 const fs                      = require('./fsp');
+const NSErrors                = require('./errors/NSErrors');
 
 /**
  *
@@ -20,8 +21,8 @@ const fs                      = require('./fsp');
  */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
-        let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
-        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        let registryFile    = path.resolve(global.aquila.appRoot, 'modules', moduleName, 'licence.json');
+        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
             await axios.post('https://stats.aquila-cms.com/api/v1/register', {
@@ -44,7 +45,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
     try {
         const {Configuration, Users} = require('../orm/models');
         const configuration          = await Configuration.findOne({});
-        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         const moment                 = require('moment');
         if (!configuration.licence || !configuration.licence.registryKey) {
             configuration.licence = {
@@ -313,6 +314,19 @@ const isJsonString = (str) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Init child process Globals and Database
+ */
+const initChildProcess = async () => {
+    const utilsDB = require('./database');
+    try {
+        global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
+        await utilsDB.connect();
+    } catch (err) {
+        throw NSErrors.InitChildProcessError;
+    }
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -324,5 +338,6 @@ module.exports = {
     checkOrCreateAquilaRegistryKey,
     isEqual,
     isJsonString,
-    isAdmin
+    isAdmin,
+    initChildProcess
 };

@@ -94,10 +94,9 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             {
                 text: 'product.button.dup',
                 onClick: function () {
-                    const newCode = prompt("Saisir le code du nouveau produit : ");
+                    const newCode = prompt($translate.instant("simple.inputCode"));
                     if (newCode) {
                         const newPrd = {...$scope.product, code: newCode};
-                        delete newPrd._id;
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
                             toastService.toast("success", $translate.instant("simple.productDuplicate"));

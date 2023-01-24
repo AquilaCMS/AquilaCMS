@@ -126,7 +126,7 @@ const generateJWTToken = async (res, user, isAdmin) => {
                     isActiveAccount : user.isActiveAccount
                 }
             },
-            global.envFile.jwt.secret,
+            global.aquila.envFile.jwt.secret,
             {expiresIn: 172800 /* 48 hours in second */}
         );
         token     = `JWT ${token}`;
@@ -138,7 +138,7 @@ const generateJWTToken = async (res, user, isAdmin) => {
                 expires  : currentDate,
                 httpOnly : false,
                 encode   : String,
-                secure   : !!global.isServerSecure
+                secure   : !!global.aquila.isServerSecure
             });
         }
 

@@ -13,19 +13,50 @@ const {spawn, exec} = require('child_process');
  * @param {string} cde Command to execute.
  * @param {string} path Path of the command.
  */
-exports.execCmd = async function (cde, path = global.appRoot) {
-    console.log(`%scommand : ${cde} (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
+exports.execCmd = async function (cde, path = global.aquila.appRoot) {
+    console.log(`%sExec command : ${cde} (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
+    await aqlExec(cde, path);
+};
+
+/**
+ * @description Launch a command on the defined path
+ * @param {string} cde Command to execute.
+ * @param {string} path Path of the command.
+ */
+exports.execCmdBase64 = async function (cde, objectsTab, path = global.aquila.appRoot) {
+    console.log(`%sExec command base64 (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
+    for (let i = 0; i < objectsTab.length; i++) {
+        cde = cde.replace(`#OBJECT${i}#`, Buffer.from(JSON.stringify(objectsTab[i])).toString('base64'));
+    }
     return new Promise((resolve, reject) => {
         exec(cde, {cwd: path, maxBuffer: 1024 * 500}, (err, stdout, stderr) => {
             if (err) {
                 console.error(err);
                 reject(err);
             }
-            console.log(`%scommand : ${cde} ended%s`, '\x1b[33m', '\x1b[0m');
+            console.log('%sExec ended%s', '\x1b[33m', '\x1b[0m');
             resolve({stdout, stderr});
         });
     });
 };
+
+/**
+ * @description Launch a command on the defined path
+ * @param {string} cde Command to execute.
+ * @param {string} path Path of the command.
+ */
+async function aqlExec(cde, path) {
+    return new Promise((resolve, reject) => {
+        exec(cde, {cwd: path, maxBuffer: 1024 * 500}, (err, stdout, stderr) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            }
+            console.log('%sExec ended%s', '\x1b[33m', '\x1b[0m');
+            resolve({stdout, stderr});
+        });
+    });
+}
 
 /**
  * @description Launch a shell command on the defined path
@@ -33,7 +64,7 @@ exports.execCmd = async function (cde, path = global.appRoot) {
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execSh = async function (cde, param = [], path = global.appRoot) {
+exports.execSh = async function (cde, param = [], path = global.aquila.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         const cmd    = spawn(cde, [...param], {cwd: path, shell: true});

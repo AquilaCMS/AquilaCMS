@@ -300,6 +300,29 @@ const migration_13_searchSettings_translations = async () => {
     console.log('End migration script "migration_13_searchSettings_translations"...');
 };
 
+const migration_14_jobsOnMainThread = async () => {
+    console.log('Applying migration script "migration_14_jobsOnMainThread"...');
+    const jobsToUpdate = [
+        'Sitemap',
+        'Segmentation cat',
+        'Segmentation picto',
+        'Canonicalisation',
+        'Remove old carts',
+        'Remove pending payment orders',
+        'Cohérence produits',
+        'Cohérence données',
+        'Remove temp file',
+        'Remove previews',
+        'Delete orders\' failed payments',
+        'RGPD bills',
+        'RGPD users'
+    ];
+
+    await mongoose.connection.collection('agendaJobs').updateMany({}, {$set: {'data.onMainThread': true}});
+    await mongoose.connection.collection('agendaJobs').updateMany({name: {$in: jobsToUpdate}}, {$set: {'data.onMainThread': false}});
+    console.log('End migration script "migration_14_jobsOnMainThread"...');
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -314,7 +337,8 @@ const migrationScripts = [
     migration_10_clearSetAttributesIndexes,
     migration_11_clearAttributesIndexes,
     migration_12_searchSettings,
-    migration_13_searchSettings_translations
+    migration_13_searchSettings_translations,
+    migration_14_jobsOnMainThread
     // sample
 ];
 

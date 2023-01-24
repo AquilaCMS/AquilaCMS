@@ -6,6 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const NSErrors = require('./errors/NSErrors');
+
 /**
  * translate a Mongo document
  * @param {object} doc - Mongo document to translate
@@ -73,18 +75,13 @@ const assignTranslation = (json, lang) => {
     return result;
 };
 
-const checkTranslations = (value, key, errors, lang) => {
+const checkTranslations = (value, key) => {
     if (typeof key === 'string' && value !== undefined && typeof value !== 'string') {
-        errors.push(`translations.${lang}.${key}, is not a string`);
+        throw NSErrors.InvalidInputString();
     }
-    return errors;
 };
 
-function checkCustomFields(customObject, parent, fields) {
-    const errorsType = {
-        string : 'a string'
-    };
-    const errors     = [];
+function checkCustomFields(customObject, fields) {
     const customKeys = Object.keys(customObject);
 
     for (let i = 0; i < customKeys.length; i++) {
@@ -100,12 +97,10 @@ function checkCustomFields(customObject, parent, fields) {
                 && ((typeof customObject[customKeys[i]]) !== fields[j].type.toString())
             ) {
                 // TODO P4 "Error management": put the code system
-                errors.push(`${(parent ? `${parent}.` : '') + fields[j].key}, is not ${errorsType[fields[j].type]}`);
+                throw NSErrors.InvalidInputString();
             }
         }
     }
-
-    return errors;
 }
 
 module.exports = {

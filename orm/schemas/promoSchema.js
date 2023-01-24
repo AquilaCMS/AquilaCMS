@@ -68,7 +68,6 @@ PromoSchema.pre('findOneAndUpdate', async function (next) {
 
 PromoSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, PromoSchema);
-    next();
 });
 
 module.exports = PromoSchema;

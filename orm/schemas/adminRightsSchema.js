@@ -22,10 +22,6 @@ const AdminRightsSchema = new Schema({
  name
  */
 
-AdminRightsSchema.statics.checkSlugExist = async function (that) {
-    await utilsDatabase.checkSlugExist(that, 'news');
-};
-
 AdminRightsSchema.pre('updateOne', async function (next) {
     await utilsDatabase.preUpdates(this, next, AdminRightsSchema);
 });

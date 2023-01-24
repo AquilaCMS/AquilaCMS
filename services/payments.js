@@ -131,7 +131,7 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
             console.error(e);
         }
         // We check that the products of the basket are well orderable
-        const {bookingStock} = global.envConfig.stockOrder;
+        const {bookingStock} = global.aquila.envConfig.stockOrder;
         if (bookingStock === 'payment') {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
@@ -341,7 +341,7 @@ function createDeferredPayment(order, method, lang) {
 
 async function immediateCashPayment(req, method) {
     try {
-        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
+        const modulePath     = path.join(global.aquila.appRoot, `modules/${method.moduleFolderName}`);
         const paymentService = require(`${modulePath}/services/${method.paymentServiceFileName ? method.paymentServiceFileName : req.body.paymentMethod}`);
         // We set the same value in several places to fit all modules
         req.query.orderId      = req.params.orderNumber;
@@ -360,7 +360,7 @@ async function deleteFailedPayment() {
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - (global.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
+        dateToDelete.setDate(dateToDelete.getDate() - (global.aquila.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
         const orders = await Orders.find({
             payment : {
                 $elemMatch : {

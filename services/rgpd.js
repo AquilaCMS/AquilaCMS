@@ -166,8 +166,8 @@ const copyDatabase = async () => {
             });
         });
         try {
-            await mongodump(global.envFile.db);
-            await mongorestore(global.envFile.db);
+            await mongodump(global.aquila.envFile.db);
+            await mongorestore(global.aquila.envFile.db);
         } catch (error) {
             throw NSErrors.CommandsMayNotInPath;
         }
@@ -208,7 +208,7 @@ async function mongorestore(uri) {
  */
 const anonymizeDatabase = async () => {
     // Connection to the new database
-    const data     = mongoURI.parse(global.envFile.db);
+    const data     = mongoURI.parse(global.aquila.envFile.db);
     data.database += '_anonymized';
     const client   = new MongoClient(
         mongoURI.format(data),
@@ -328,7 +328,7 @@ const anonymizeDatabase = async () => {
 * Deletes the copy database
 */
 const dropDatabase = async () => {
-    const mongodbUri     = mongoURI.parse(global.envFile.db);
+    const mongodbUri     = mongoURI.parse(global.aquila.envFile.db);
     mongodbUri.database += '_anonymized';
     const client         = new MongoClient(
         mongoURI.format(mongodbUri),
@@ -446,7 +446,7 @@ const generateFakeAddresses = async (options) => {
 const dumpAnonymizedDatabase = async () => {
     try {
         await copyDatabase();
-        let uri = global.envFile.db;
+        let uri = global.aquila.envFile.db;
         // ReplicaSet management
         if (uri.includes('replicaSet')) {
             uri = uri.replace('?', '_anonymized?');
@@ -462,7 +462,7 @@ const dumpAnonymizedDatabase = async () => {
         // Removal of the copy database
         await dropDatabase();
         // Download the dump file
-        const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        const pathToArchive = path.join(global.aquila.appRoot, pathUpload, 'temp', 'database_dump.gz');
         const temp          = fs.readFile(pathToArchive, 'binary');
         fs.unlink(pathToArchive, function () {
             console.log('File was deleted'); // Callback

@@ -18,6 +18,7 @@ const modulesUtils     = require('../utils/modules');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utilsServer      = require('../utils/server');
 const fs               = require('../utils/fsp');
+const translate        = require('../utils/translate/common');
 const {
     Users,
     Mail,
@@ -217,7 +218,7 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
 }
 
 const sendMailActivationAccount = async (user_id, lang = '') => {
-    const _config = global.envConfig;
+    const _config = global.aquila.envConfig;
     const _user   = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
@@ -245,7 +246,7 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
  * @param {string} [lang] - langue du mail (Optionnel)
  */
 const sendRegister = async (user_id, lang = '') => {
-    const _config = global.envConfig;
+    const _config = global.aquila.envConfig;
     const _user   = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
@@ -325,7 +326,7 @@ const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
         '{{fullname}}'  : _user.fullname,
         '{{tokenlink}}' : tokenlink,
         '{{token}}'     : token,
-        '{{URL_SITE}}'  : global.envConfig.environment.appUrl
+        '{{URL_SITE}}'  : global.aquila.envConfig.environment.appUrl
     };
     const htmlBody  = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, attachments});
@@ -401,7 +402,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     let hourReceipt = '';
     if (order.orderReceipt && order.orderReceipt.date) {
         const d       = order.orderReceipt.date;
-        const _config = global.envConfig;
+        const _config = global.aquila.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
@@ -410,8 +411,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     const datas = {
-        '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
-        '{{discount}}'                   : global.translate.common.discount[lang],
+        '{{taxdisplay}}'                 : translate[taxDisplay][lang],
+        '{{discount}}'                   : translate.discount[lang],
         '{{order.customer.company}}'     : order.customer.company.name,
         '{{order.customer.fullname}}'    : order.customer.id.fullname,
         '{{order.customer.name}}'        : order.customer.id.fullname,
@@ -423,7 +424,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
         '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].aqlRound(2)} €`,
-        '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
+        '{{order.delivery}}'             : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
         '{{order.shipment}}'             : order._doc.delivery.name,
@@ -478,7 +479,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     let hourReceipt = '';
     if (order.orderReceipt && order.orderReceipt.date) {
         const d       = order.orderReceipt.date;
-        const _config = global.envConfig;
+        const _config = global.aquila.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
@@ -486,8 +487,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const mailDatas = {
-        '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
-        '{{discount}}'                  : global.translate.common.discount[lang],
+        '{{taxdisplay}}'                : translate[taxDisplay][lang],
+        '{{discount}}'                  : translate.discount[lang],
         '{{payment.instruction}}'       : '',
         '{{order.customer.company}}'    : order.customer.company.name,
         '{{order.customer.firstname}}'  : order.customer.id.firstname,
@@ -506,7 +507,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         '{{address.country}}'           : country || '',
         '{{order.paymentMode}}'         : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'  : order._doc.payment[0].description,
-        '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
+        '{{order.delivery}}'            : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
         '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
@@ -663,7 +664,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailSecure,
             overrideSendTo,
             mailFromContact
-        } = global.envConfig.environment;
+        } = global.aquila.envConfig.environment;
 
         if (!mailTo || mailTo.length === 0) {
             console.error('sendMail() : mailTo is empty !!');
@@ -675,7 +676,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
         }
 
         // If we are in DEV mode, the recipient is the dev, and not the real mail
-        const devMode = global.envFile.devMode;
+        const devMode = global.aquila.envFile.devMode;
         if (devMode && devMode.mailTo) {
             mailTo = devMode.mailTo;
         }
@@ -858,7 +859,7 @@ const sendContact = async (datas, lang = '') => {
  */
 const generateHTML = (html, datas = {}) => {
     if (!datas) datas = {};
-    const {appUrl} = global.envConfig.environment;
+    const {appUrl} = global.aquila.envConfig.environment;
     // Override appUrl
     datas['{{appUrl}}'] = appUrl;
     return replaceMultiple(html, datas);
@@ -954,7 +955,7 @@ async function sendMailPendingCarts(cart) {
     }
 
     const datas = {
-        '{{taxdisplay}}'         : global.translate.common[taxDisplay][lang],
+        '{{taxdisplay}}'         : translate[taxDisplay][lang],
         '{{customer.fullname}}'  : customer.fullname,
         '{{customer.name}}'      : customer.fullname,
         '{{customer.firstname}}' : customer.firstname,
