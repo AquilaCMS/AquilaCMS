@@ -50,7 +50,7 @@ const getNewsTags = async (query, lang) => {
 const saveNew = async (_new) => {
     if (!_new) throw NSErrors.UnprocessableEntity;
     if (_new._id) {
-        return News.findOneAndUpdate({_id: _new._id}, _new);
+        return News.findOneAndUpdate({_id: _new._id}, {$set: _new});
     }
     return News.create(_new);
 };
