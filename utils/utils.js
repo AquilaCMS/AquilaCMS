@@ -35,9 +35,7 @@ const checkModuleRegistryKey = async (moduleName) => {
                 aquilaVersion
             });
         }
-    } catch (err) {
-        console.error(err);
-    }
+    } catch (err) { /* TODO improve module registry */ }
 
     return true;
 };

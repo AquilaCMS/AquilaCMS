@@ -79,7 +79,7 @@ const updateEnvFile = async () => {
     const absoluteEnvPath = path.join(global.aquila.appRoot, global.aquila.envPath);
     let oldEnvFile        = await fs.readFile(absoluteEnvPath);
     oldEnvFile            = JSON.parse(oldEnvFile);
-    if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
+    if (!utils.isEqual(oldEnvFile[aquila_env], global.aquila.envFile)) {
         oldEnvFile[aquila_env] = global.aquila.envFile;
         global.aquila.envFile  = oldEnvFile[aquila_env];
         await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
