@@ -26,7 +26,7 @@ let passport;
 const init = async (pp) => {
     passport       = pp;
     const strategy = new Strategy({
-        secretOrKey    : global.envFile.jwt.secret,
+        secretOrKey    : global.aquila.envFile.jwt.secret,
         jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme('jwt')
     }, async (payload, done) => {
         try {
@@ -81,7 +81,7 @@ const init = async (pp) => {
             return null;
         },
         authenticate() {
-            return passport.authenticate('jwt', global.envFile.jwt.session);
+            return passport.authenticate('jwt', global.aquila.envFile.jwt.session);
         }
     };
 };

@@ -66,7 +66,6 @@ ShipmentSchema.pre('findOneAndUpdate', async function (next) {
 
 ShipmentSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, ShipmentSchema);
-    next();
 });
 
 aquilaEvents.emit('shipmentSchemaInit', ShipmentSchema);

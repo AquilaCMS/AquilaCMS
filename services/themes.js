@@ -8,7 +8,6 @@
 
 const mongoose                     = require('mongoose');
 const path                         = require('path');
-const slash                        = require('slash');
 const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
@@ -16,7 +15,6 @@ const modulesUtils                 = require('../utils/modules');
 const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
-const packageManager               = require('../utils/packageManager');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -67,7 +65,7 @@ const changeTheme = async (selectedTheme, type) => {
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
         const tmp_path         = filepath;
-        const target_path      = path.join(global.appRoot, 'themes');
+        const target_path      = path.join(global.aquila.appRoot, 'themes');
         const target_path_full = path.join(target_path, originalname);
         console.log(`Uploading theme to : ${target_path_full}`);
 
@@ -84,7 +82,7 @@ const uploadTheme = async (originalname, filepath) => {
         if (packageTheme) {
             const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
             if (moduleAquilaVersion) {
-                const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+                const packageAquila = (await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
                 const aquilaVersion = JSON.parse(packageAquila).version;
                 if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
                     throw NSErrors.ThemeAquilaVersionNotSatisfied;
@@ -139,7 +137,7 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    const pathToTheme = path.join(global.appRoot, complete_Path);
+    const pathToTheme = path.join(global.aquila.appRoot, complete_Path);
     if (await fs.hasAccess(pathToTheme)) {
         const nodeModulesContent = await themesUtils.yarnDeleteNodeModulesContent(themePath);
         console.log(nodeModulesContent.stdout);
@@ -149,7 +147,7 @@ const deleteTheme = async (themePath) => {
 };
 
 const getDemoDatasFilesName = async () => {
-    const folder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`);
+    const folder = path.join(global.aquila.appRoot, `themes/${global.aquila.envConfig.environment.currentTheme}/demoDatas`);
     if (!fs.existsSync(folder)) {
         return [];
     }
@@ -180,7 +178,7 @@ const getDemoDatasFilesName = async () => {
  * @param {Boolean} override : Override datas if exists
  */
 const copyDatas = async (themePath, override = true, configuration = null, fileNames = null) => {
-    const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
+    const themeDemoData = path.join(global.aquila.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     let listOfFile      = [];
     if (!fs.existsSync(themeDemoData)) {
@@ -201,7 +199,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
             return (index > -1 && fileNames[index].value === true);
         });
     }
-    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
+    const photoPath = path.join(global.aquila.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
 
     for (const value of listOfFile) {
@@ -264,7 +262,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return (await fs.readFile(fullPath)).toString();
@@ -285,7 +283,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -307,7 +305,7 @@ const getAllCssComponentName = async () => {
         const cssNames  = [];
         const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder);
+            const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {
@@ -334,7 +332,7 @@ const getAllCssComponentName = async () => {
  * @description Get path of the current theme
  */
 function getThemePath() {
-    return global.envConfig.environment.currentTheme;
+    return global.aquila.envConfig.environment.currentTheme;
 }
 
 /**
@@ -375,8 +373,8 @@ async function buildTheme(theme) {
     }
 }
 
-async function languageManagement(theme = global.envConfig.environment.currentTheme) {
-    const pathToTheme = path.join(global.appRoot, 'themes', theme, '/');
+async function languageManagement(theme = global.aquila.envConfig.environment.currentTheme) {
+    const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme, '/');
     if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
         await languageInitExec(theme);
     } else {
@@ -385,10 +383,10 @@ async function languageManagement(theme = global.envConfig.environment.currentTh
     return 'OK';
 }
 
-async function languageInitExec(theme = global.envConfig.environment.currentTheme) {
+async function languageInitExec(theme = global.aquila.envConfig.environment.currentTheme) {
     let returnValues;
     try {
-        const pathToTheme        = path.join(global.appRoot, 'themes', theme);
+        const pathToTheme        = path.join(global.aquila.appRoot, 'themes', theme);
         const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
         const isExist            = await fs.existsSync(pathToLanguageInit);
         if (isExist) {
@@ -406,7 +404,8 @@ async function languageInitExec(theme = global.envConfig.environment.currentThem
 
             const tabLang     = sortedLangs.map((_lang) => _lang.code);
             const defaultLang = await ServiceLanguages.getDefaultLang();
-            returnValues      = await packageManager.execCmd(`node -e "global.appRoot = '${slash(global.appRoot)}'; require('${slash(pathToLanguageInit)}').setLanguage('${tabLang}','${defaultLang}')"`, slash(path.join(pathToTheme, '/')));
+
+            returnValues = await themesUtils.execThemeFile(pathToLanguageInit, `setLanguage('${tabLang}','${defaultLang}')`, pathToTheme);
             if (returnValues.stderr === '') {
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {
@@ -426,7 +425,7 @@ async function languageInitExec(theme = global.envConfig.environment.currentThem
 
 async function generateDynamicLangFile(theme) {
     try {
-        const pathToTheme = path.join(global.appRoot, 'themes', theme);
+        const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme);
         // "dynamic_langs.js" is required to build (reactjs) theme
         const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
         const isExist            = await fs.existsSync(pathToDynamicLangs);
@@ -448,9 +447,9 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
         await require('../utils/translation').initI18n(i18nInstance, ns);
         server.use(i18nextMiddleware.handle(i18nInstance));
         server.use('/locales', express.static(path.join(
-            global.appRoot,
+            global.aquila.appRoot,
             'themes',
-            global.envConfig.environment.currentTheme,
+            global.aquila.envConfig.environment.currentTheme,
             'assets/i18n'
         )));
     }
@@ -458,7 +457,7 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
 
 const listTheme = async () => {
     const allTheme    = [];
-    const pathToTheme = path.join(global.appRoot, 'themes');
+    const pathToTheme = path.join(global.aquila.appRoot, 'themes');
     const listOfFile  = await fs.readdir(pathToTheme);
     for (const element of listOfFile) {
         const pathToFolder = path.join(pathToTheme, element);

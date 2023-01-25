@@ -45,7 +45,6 @@ MediasSchema.pre('findOneAndUpdate', async function (next) {
 
 MediasSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, MediasSchema);
-    next();
 });
 
 aquilaEvents.emit('mediasSchemaInit', MediasSchema);
