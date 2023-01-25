@@ -102,8 +102,7 @@ const migration_5_isActive = async () => {
     console.log('Applying migration script "migration_5_isActive"...');
     const user = await mongoose.connection.collection('users').findOne({});
     if (user && !user.isActive) {
-        const test = await mongoose.connection.collection('users').updateMany({}, {$set: {isActive: 'true'}});
-        console.log(test);
+        await mongoose.connection.collection('users').updateMany({}, {$set: {isActive: 'true'}});
     }
 };
 

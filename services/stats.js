@@ -125,7 +125,7 @@ const buildStats = async () => {
                         result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     return `Ok - But metrics not sent : ${error}`;
                 }
             }

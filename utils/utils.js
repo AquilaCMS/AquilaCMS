@@ -34,10 +34,11 @@ const checkModuleRegistryKey = async (moduleName) => {
                 aquilaVersion
             });
         }
-        return true;
     } catch (err) {
-        return true;
+        console.error(err);
     }
+
+    return true;
 };
 
 const checkOrCreateAquilaRegistryKey = async () => {

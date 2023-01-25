@@ -59,9 +59,6 @@ const sortAttribs = async () => {
         const _products = await Products.find({});
 
         for (let i = 0, leni = _products.length; i < leni; i++) {
-            // console.log(`${i}/${_products.length}`);
-            // const attribs = _products[i].attributes;
-
             _products[i].attributes.sort(function (first, second) {
                 if (first.code < second.code) {
                     return -1;
@@ -73,7 +70,6 @@ const sortAttribs = async () => {
             });
 
             await _products[i].save();
-            // await Products.updateOne({_id: _products[i]._id}, {attributes: attribs});
         }
 
         console.log('End of sorting');
