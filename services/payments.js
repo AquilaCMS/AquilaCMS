@@ -376,6 +376,7 @@ async function deleteFailedPayment() {
         console.log('==> End removing failed payment from orders <==');
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 

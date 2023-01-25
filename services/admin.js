@@ -82,7 +82,7 @@ const controlAllDatas = async () => {
         // Categories
         const categories = await Categories.find({}).lean();
         for (const category of categories) {
-            // Code control
+        // Code control
             if (typeof category.code === 'undefined' || category.code === '') {
                 returnErrors += `<b>Category ${category._id}</b> : Code undefined<br/>`;
                 continue;
@@ -127,7 +127,7 @@ const controlAllDatas = async () => {
 
             // Verify children (exists and valid)
             for (const child of category.children) {
-                // Does this child really exist?
+            // Does this child really exist?
                 const logs    = await existAndValid(child, category, returnErrors, returnWarning, 'child');
                 returnErrors  = logs.returnErrors;
                 returnWarning = logs.returnWarning;
@@ -136,7 +136,7 @@ const controlAllDatas = async () => {
             // Verify ancestors (exists and valid)
             await fixCatAncestors(category);
             for (const ancestor of category.ancestors) {
-                // Does this ancestor really exist?
+            // Does this ancestor really exist?
                 const logs    = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
                 returnErrors  = logs.returnErrors;
                 returnWarning = logs.returnWarning;
@@ -155,8 +155,8 @@ const controlAllDatas = async () => {
 
         return returnErrors + returnWarning;
     } catch (error) {
-        if (error.message) {return error.message;}
-        return error;
+        console.error(error);
+        throw error;
     }
 };
 

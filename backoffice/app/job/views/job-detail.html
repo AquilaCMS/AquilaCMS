@@ -70,7 +70,7 @@
                 <div class="col-sm-11">
                     <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.httpMeth</label>
                     <div class="col-sm-6" ng-show="job.data.flag != 'system'">
-                        <select value="{{job.data.method ? job.data.method: 'get'}}" class="form-control" name="method" id="method" ng-model="job.data.method">
+                        <select ng-change="handleChangeType()" value="{{job.data.method ? job.data.method: 'get'}}" class="form-control" name="method" id="method" ng-model="job.data.method">
                             <option value="service" translate>job.detail.function</option>
                             <option value="get" translate>job.detail.get</option>
                             <option value="post" translate>job.detail.post</option>
@@ -101,13 +101,13 @@
             <div class="form-group">
                 <div class="col-sm-11">
                     <label for="api" class="col-sm-2 control-label" translate>job.detail.onMainThread</label>
-                    <div class="col-sm-6" ng-show="job.data.flag != 'system'">
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system' && !['post','get','ftp'].includes(job.data.method)">
                         <ns-switch id="onMainThread" name="onMainThread" ng-model="job.data.onMainThread"></ns-switch>
                         <div class="ns-error-message" ng-show="form.api.$touched || form.nsSubmitted">
                             <div ng-show="form.api.$error.required" translate>job.detail.fieldRequired</div>
                         </div>
                     </div>
-                    <div class="col-sm-6" ng-show="job.data.flag == 'system'">
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system' || ['post','get','ftp'].includes(job.data.method)">
                         <span ng-if="job.data.onMainThread === false" translate>job.detail.no</span>
                         <span ng-if="job.data.onMainThread !== false" translate>job.detail.yes</span>
                     </div>

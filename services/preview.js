@@ -93,6 +93,7 @@ const removePreviews = async () => {
         await NewsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
     } catch (err) {
         console.error(err);
+        throw err;
     }
 };
 

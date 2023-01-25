@@ -6,7 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {spawn, exec} = require('child_process');
+const {spawn, exec, fork} = require('child_process');
+const NSErrors            = require('./errors/NSErrors');
 
 /**
  * @description Launch a command on the defined path
@@ -77,6 +78,36 @@ exports.execSh = async function (cde, param = [], path = global.aquila.appRoot) 
             console.log(`%scommand : ${cde} with params : [${param}] ended%s`, '\x1b[33m', '\x1b[0m');
             resolve({code, signal, stdout, stderr});
         });
+    });
+};
+/**
+ * @description Launch a shell command on the defined path using fork
+ * @param {string} cde Command to execute.
+ * @param {array} param parameter of the cde.
+ * @param {string} path Path of the command.
+ */
+exports.execCron = async function (apiParams, params) {
+    const result = {};
+    console.log(`%scommand : node -e  'require('.${apiParams.modulePath}').${apiParams.funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot}) on a child process %s`, '\x1b[33m', '\x1b[0m');
+    return new Promise((resolve, reject) => {
+        const cmd = fork(
+            `${global.aquila.appRoot}/services/jobChild.js`,
+            [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+            {cwd: global.aquila.appRoot, shell: true}
+        );
+        cmd.on('error', (err) => {
+            reject(err);
+        });
+        cmd.on('message', (data) => {
+            result.message = data;
+        });
+        cmd.on('close', (code) => {
+            console.log(`%scommand : node -e 'require("${apiParams.modulePath}").${apiParams.funcName}(${apiParams.option})' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
+            return resolve({code});
+        });
+    }).then(async (data) => {
+        if (data.code) result.error = NSErrors.JobErrorInChildNode;
+        return {result};
     });
 };
 

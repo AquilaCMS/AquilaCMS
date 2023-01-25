@@ -12,7 +12,6 @@ const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
 const fs                      = require('./fsp');
-const NSErrors                = require('./errors/NSErrors');
 
 /**
  *
@@ -308,24 +307,26 @@ const isJsonString = (str) => {
 };
 
 /**
+ * return a string from a JSON object
+ * @param {object}
+ * @returns {string}
+ */
+const stringifyError = (err, filter, space) => {
+    const plainObject = {};
+    Object.getOwnPropertyNames(err).forEach(function (key) {
+        if (key !== 'stack') {
+            plainObject[key] = err[key];
+        }
+    });
+    return JSON.stringify(plainObject, filter, space);
+};
+
+/**
  * Check if user is admin
  * @param {object | undefined} info
  * @returns {boolean}
  */
 const isAdmin = (info) => info && info.isAdmin;
-
-/**
- * Init child process Globals and Database
- */
-const initChildProcess = async () => {
-    const utilsDB = require('./database');
-    try {
-        global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
-        await utilsDB.connect();
-    } catch (err) {
-        throw NSErrors.InitChildProcessError;
-    }
-};
 
 module.exports = {
     downloadFile,
@@ -339,5 +340,5 @@ module.exports = {
     isEqual,
     isJsonString,
     isAdmin,
-    initChildProcess
+    stringifyError
 };

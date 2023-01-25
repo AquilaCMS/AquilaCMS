@@ -26,7 +26,6 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
     JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
     function ($scope, $rootScope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById, $translate) {
         $scope.lang = $rootScope.adminLang;
-        $scope.test = 1;
         $scope.runImmediate = true;
         if ($routeParams.jobId != 'new') {
             $scope.isEditMode = true;
@@ -42,6 +41,11 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
                 onMainThread: true
             }
         };
+        $scope.handleChangeType = function () {
+            if(['get','post','ftp'].includes($scope.job.data.method)) {
+                $scope.job.data.onMainThread = true;
+            }
+        }
         $scope.trustHtml = function(){
             return $sce.trustAsHtml($scope.job.data.lastExecutionResult);
         }

@@ -399,7 +399,7 @@ const execCanonical = async () => {
         return `${productsNotCanonicalised.length} products not canonicalised : ${productsNotCanonicaliedString}`;
     } catch (error) {
         console.error(error);
-        return error.message;
+        throw error;
     }
 };
 

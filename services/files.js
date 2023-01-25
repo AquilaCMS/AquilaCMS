@@ -25,6 +25,7 @@ const removeTempFile = async () => {
                     await fs.unlink(path.resolve(tempFolder, file));
                 } catch (err) {
                     console.error(err);
+                    throw err;
                 }
             }
         }
