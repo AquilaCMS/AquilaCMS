@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -19,7 +19,7 @@ const mongooseOptions = {
 };
 
 const connect = async () => {
-    if (!global.envFile || !global.envFile.db) {
+    if (!global.aquila.envFile || !global.aquila.envFile.db) {
         return mongoose;
     }
     // see : https://github.com/Automattic/mongoose/blob/master/lib/connectionstate.js
@@ -31,19 +31,19 @@ const connect = async () => {
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
         const checkConnect = async () => new Promise((resolve, reject) => {
-            mongoose.connect(global.envFile.db, mongooseOptions, (error) => {
+            mongoose.connect(global.aquila.envFile.db, mongooseOptions, (error) => {
                 if (typeof error === 'undefined' || error === null) {
                     connection = true;
                     resolve(true);
                 } else {
-                    reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
+                    reject(new Error(`Unable to connect to" ${global.aquila.envFile.db}, ${error.toString()}`));
                 }
             });
         });
         await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
-
+    mongoose.plugin(require('../orm/plugins/generateID'));
     return mongoose;
 };
 
@@ -86,18 +86,30 @@ const checkIfReplicaSet = async () => {
 const checkSlugExist = async (doc, modelName) => {
     const query = {$or: []};
     if (!doc || !doc.translation) return;
-
     for (const [lang] of Object.entries(doc.translation)) {
         if (doc.translation[lang]) {
             query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
         }
     }
     if (doc._id) {
-        query._id = {$nin: [doc._id]};
+        query._id = {$ne: doc._id};
     }
-
     if (await mongoose.model(modelName).exists(query)) {
         throw NSErrors.SlugAlreadyExist;
+    }
+};
+
+/**
+ * Check if slug is not too short for this collection and language
+ * @param {*} doc
+ * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
+ */
+const checkSlugLength = async (doc) => {
+    if (!doc || !doc.translation) return;
+    for (const [lang] of Object.entries(doc.translation)) {
+        if (doc.translation[lang] && doc.translation[lang].slug && doc.translation[lang].slug.length <= 2) {
+            throw NSErrors.SlugTooShort;
+        }
     }
 };
 
@@ -137,7 +149,7 @@ const initDBValues = async () => {
         });
         await defaultLang.save();
     }
-    global.defaultLang = defaultLang.code;
+    global.aquila.defaultLang = defaultLang.code;
 
     /* ********** Attributes ********** */
     await SetAttributes.findOneAndUpdate(
@@ -152,7 +164,7 @@ const initDBValues = async () => {
             code        : 'home',
             type        : 'home',
             active      : true,
-            translation : {[global.defaultLang]: {name: 'home', slug: 'home'}}
+            translation : {[global.aquila.defaultLang]: {name: 'home', slug: 'home'}}
         }
     }, {new: true, upsert: true});
 
@@ -2051,11 +2063,11 @@ const preUpdates = async (that, next, schema) => {
             const {
                 checkCode,
                 checkSlugExist,
+                checkSlugLength,
                 translationValidation
             } = schema.statics;
-            let errors = [];
             if (typeof translationValidation === 'function' && elem._id) {
-                errors = await translationValidation(elem, that);
+                await translationValidation(that, elem);
             }
             if (typeof checkCode === 'function') {
                 await checkCode(elem);
@@ -2063,7 +2075,9 @@ const preUpdates = async (that, next, schema) => {
             if (typeof checkSlugExist === 'function') {
                 await checkSlugExist(elem);
             }
-            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+            if (typeof checkSlugLength === 'function') {
+                await checkSlugLength(elem);
+            }
         }
         return next();
     } catch (error) {
@@ -2081,5 +2095,6 @@ module.exports = {
     preUpdates,
     testdb,
     checkSlugExist,
+    checkSlugLength,
     checkCode
 };

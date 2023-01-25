@@ -24,6 +24,7 @@
         "slug": "Slug",
         "downloadLink": "Liens de téléchargement",
         "downloadInfos": "Informations au téléchargement",
+        "filename": "Nom du fichier (affichage uniquement)",
         "autoGen": "Generation automatique par le nom si vide",
         "jeuAttr": "Jeu d'attributs",
         "jeuOpt": "Jeu d'options",
@@ -170,7 +171,9 @@
         "displayImage": "Afficher en image",
         "displayRadio": "Radio boutons",
         "displayList": "Listes des valeurs",
-        "displayList2": "Liste des déclinaisons"
+        "displayList2": "Liste des déclinaisons",
+        "activateAllVariants": "Activer toutes les déclinaisons",
+        "disableAllVariants": "Désactiver toutes les déclinaisons"
     },
     "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories"
 }

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -13,7 +13,6 @@ const {
     Cart,
     Orders,
     Products,
-    Languages,
     Configuration
 }                       = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -29,7 +28,7 @@ const servicesMail      = require('./mail');
 const ServiceJob        = require('./job');
 
 const restrictedFields = [];
-const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
+const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt', 'customer'];
 const queryBuilder     = new QueryBuilder(Cart, restrictedFields, defaultFields);
 
 const getCarts = async (PostBody) => queryBuilder.find(PostBody);
@@ -40,7 +39,7 @@ const getCarts = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
-const getCartById = async (id, PostBody = null, user = null, lang = null, userInfo = null) => {
+const getCartById = async (id, PostBody = null, user = null) => {
     if (PostBody && PostBody.structure) {
         // Need to have all the fields for the discount rules
         const structure = PostBody.structure;
@@ -50,26 +49,25 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, userIn
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let cart = await queryBuilder.findById(id, PostBody);
+    if (!PostBody) PostBody = {};
+    PostBody.filter = {
+        ...PostBody.filter,
+        _id : mongoose.Types.ObjectId(id)
+    };
+
+    let cart = await queryBuilder.findOne(PostBody);
 
     if (cart) {
-        await utilsDatabase.populateItems(cart.items);
-        const products        = cart.items.map((product) => product.id);
-        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
-        if (productsCatalog) {
-            for (let i = 0; i < cart.items.length; i++) {
-                let item = cart.items[i];
-                if (item.type !== 'bundle' && !item.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-                item          = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item, PostBody, cart}, async () => item);
-                cart.items[i] = item;
-            }
-            cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
-            await cart.save();
+        // if the cart belongs to a customer and none is login
+        if (cart.customer?.email && !user) {
+            return null;
         }
+
         if (user && !user.isAdmin) {
-            cart = await linkCustomerToCart(cart, userInfo);
+            cart = await linkCustomerToCart(cart, user);
         }
     }
+
     return cart;
 };
 
@@ -78,7 +76,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, userIn
  * @param {*} cartId cart's id
  * @param {*} addresses delivery and / or billing address
  */
-const setCartAddresses = async (cartId, addresses) => {
+const setCartAddresses = async (cartId, addresses, userInfo) => {
     const addressesType = [{type: 'delivery', name: 'livraison'}, {type: 'billing', name: 'facturation'}];
     const update        = {};
     let err;
@@ -94,7 +92,13 @@ const setCartAddresses = async (cartId, addresses) => {
     if (err) throw err;
     let resp;
     try {
-        resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
+        // Force matching current user and the cart's customer
+        const filter = {
+            _id : mongoose.Types.ObjectId(cartId),
+            ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+        };
+
+        resp = await Cart.findOneAndUpdate(filter, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
             await utilsDatabase.populateItems(newCart.items);
@@ -108,19 +112,32 @@ const setCartAddresses = async (cartId, addresses) => {
     }
 };
 
-const setComment = async (cartId, comment) => {
-    const resp = await Cart.findOneAndUpdate({_id: cartId}, {comment}, {new: true});
+const setComment = async (cartId, comment, userInfo) => {
+    // Force matching current user and the cart's customer
+    const filter = {
+        _id : mongoose.Types.ObjectId(cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+    const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
 };
 
-const deleteCartItem = async (cartId, itemId) => {
-    let cart = await Cart.findOne({_id: cartId});
+const deleteCartItem = async (cartId, itemId, userInfo) => {
+    // Force matching current user and the cart's customer
+    const filter = {
+        _id : mongoose.Types.ObjectId(cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+
+    let cart = await Cart.findOne(filter);
+
     if (!cart) throw NSErrors.CartNotFound;
-    cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
+    filter.status = 'IN_PROGRESS';
+    cart          = await Cart.findOne(filter);
     if (!cart) throw NSErrors.CartInactive;
     const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId);
     if (itemIndex > -1) {
-        if (global.envConfig.stockOrder.bookingStock === 'panier') {
+        if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
@@ -146,7 +163,20 @@ const deleteCartItem = async (cartId, itemId) => {
     } else {
         throw NSErrors.CartItemNotFound;
     }
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: undefined, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+    }
 
+    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
@@ -154,8 +184,15 @@ const deleteCartItem = async (cartId, itemId) => {
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
-const addItem = async (postBody, userInfo) => {
-    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'}).populate('items.id');
+const addItem = async (postBody, userInfo, lang = '') => {
+    // Force matching current user and the cart's customer
+    const filter = {
+        status : 'IN_PROGRESS',
+        _id    : mongoose.Types.ObjectId(postBody.cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+
+    let cart = await Cart.findOne(filter).populate('items.id');
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
@@ -167,7 +204,8 @@ const addItem = async (postBody, userInfo) => {
     if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
-    const _lang = await Languages.findOne({defaultLanguage: true});
+
+    const _lang = await servicesLanguages.getDefaultLang(lang);
 
     if (_product.hasVariantsValue(_product) && !postBody.item.selected_variant) {
         throw NSErrors.InvalidParameters;
@@ -183,7 +221,6 @@ const addItem = async (postBody, userInfo) => {
         }
     }
     if (cart.items && cart.items.length) {
-        // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
         const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
@@ -197,23 +234,19 @@ const addItem = async (postBody, userInfo) => {
             ) {
                 continue;
             } else {
-                if (typeof postBody.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                    // check if same variant
-                    const variantOfItemInCart = cart.items[index].selected_variant;
-                    if (postBody.item.selected_variant._id === variantOfItemInCart.id.toString()) {
-                        isANewProduct = index;
-                        break;
-                    } else {
-                        isANewProduct = true;
-                    }
+                if (
+                    (
+                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                    ) || (
+                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                    )
+                ) {
+                    // then it's the same product in the cart
+                    isANewProduct = index;
+                    break;
                 } else {
-                    if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    } else  if (typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
-                        isANewProduct = index;
-                        break;
-                    }
+                    // else, it's a new product in the cart
+                    isANewProduct = true;
                 }
             }
         }
@@ -229,12 +262,12 @@ const addItem = async (postBody, userInfo) => {
             return updateQty(postBody, userInfo);
         }
     }
-    if (_product.translation[_lang.code]) {
-        postBody.item.name = _product.translation[_lang.code].name;
-        postBody.item.slug = _product.translation[_lang.code].slug;
+    if (_product.translation[_lang]) {
+        postBody.item.name = _product.translation[_lang].name;
+        postBody.item.slug = _product.translation[_lang].slug;
     }
     postBody.item.code  = _product.code;
-    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product) || 'no-name';
+    postBody.item.image = require('../utils/medias').getProductImageId(variant || _product);
     const idGift        = mongoose.Types.ObjectId();
     if (postBody.item.parent) {
         postBody.item._id = idGift;
@@ -244,25 +277,42 @@ const addItem = async (postBody, userInfo) => {
         ...postBody.item,
         weight       : _product.weight,
         price        : _product.price,
-        description1 : _product.translation[_lang.code].description1,
-        description2 : _product.translation[_lang.code].description2,
-        canonical    : _product.translation[_lang.code].canonical,
+        description1 : _product.translation[_lang].description1,
+        description2 : _product.translation[_lang].description2,
+        canonical    : _product.translation[_lang].canonical,
         attributes   : _product.attributes
     };
 
-    if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (_product.type !== 'virtual') {
+        item.stock = _product.stock;
+    } else {
+        item.filename      = _product.filename;
+        item.downloadInfos = _product.downloadInfos;
+    }
     if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
     // Here you can change any information of a product before adding it to the user's cart
     item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
-    const data = await _product.addToCart(cart, item, userInfo, _lang.code);
+    const data = await _product.addToCart(cart, item, userInfo, _lang);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
-    cart           = data;
-    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang.code);
+    cart = data;
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang, false);
+    }
+    cart           = await ServicePromo.checkForApplyPromo(postBody, cart, _lang);
     const _newCart = await cart.save();
     if (postBody.item.parent) {
         _newCart.items.find((item) => item._id.toString() === postBody.item.parent).children.push(idGift);
@@ -278,7 +328,13 @@ const updateQty = async (postBody, userInfo) => {
     if (!postBody.item || postBody.item.quantity <= 0) {
         return {code: 'BAD_REQUEST', status: 400}; // res status 400
     }
-    let cart = await Cart.findOne({_id: postBody.cartId, status: 'IN_PROGRESS'});
+    // Force matching current user and the cart's customer
+    const filter = {
+        status : 'IN_PROGRESS',
+        _id    : mongoose.Types.ObjectId(postBody.cartId),
+        ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
+    };
+    let cart     = await Cart.findOne(filter);
     if (!cart) {
         throw NSErrors.InactiveCart;
     }
@@ -286,7 +342,7 @@ const updateQty = async (postBody, userInfo) => {
     const item     = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
     const _product = await Products.findOne({_id: item.id});
 
-    if (global.envConfig.stockOrder.bookingStock === 'panier') {
+    if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
         const ServicesProducts = require('./products');
 
         const quantityToAdd = postBody.item.quantity - item.quantity;
@@ -321,13 +377,25 @@ const updateQty = async (postBody, userInfo) => {
 
     // Manage stock
     // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
-    await cart.updateOne({
+    cart = await Cart.findOneAndUpdate({_id: cart._id}, {
         $set : {'items.$[item].quantity': postBody.item.quantity}
     }, {
         arrayFilters : [{'item._id': postBody.item._id}],
         new          : true
     });
     await linkCustomerToCart(cart, userInfo);
+    await utilsDatabase.populateItems(cart.items);
+    const products        = cart.items.map((product) => product.id);
+    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+    if (productsCatalog) {
+        for (let i = 0; i < cart.items.length; i++) {
+            let itemCart = cart.items[i];
+            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            cart.items[i] = itemCart;
+        }
+        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+    }
     cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
@@ -348,7 +416,7 @@ const checkCountryTax = async (_cart, _user) => {
                 if (_country.taxeFree) { // No tax
                     paidTax = false; // Pay in ET
                 } else {
-                    const {websiteCountry} = global.envConfig.environment;
+                    const {websiteCountry} = global.aquila.envConfig.environment;
                     if (websiteCountry && websiteCountry !== countryCode && _user.company && _user.company.intracom) {
                         paidTax = false;
                     }
@@ -371,7 +439,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             throw NSErrors.CartInactive;
         }
         aquilaEvents.emit('cartToOrder', _cart);
-        lang = servicesLanguages.getDefaultLang(lang);
+        lang = await servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
         const result = validateForCheckout(_cart);
         if (result.code !== 'VALID') {
@@ -407,7 +475,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             }
         }
         // We check that the products in the basket are orderable
-        const {bookingStock} = global.envConfig.stockOrder;
+        const {bookingStock} = global.aquila.envConfig.stockOrder;
         if (bookingStock === 'commande') {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
@@ -499,7 +567,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 };
 
 const removeOldCarts = async () => {
-    const {bookingStock} = global.envConfig.stockOrder;
+    const {bookingStock} = global.aquila.envConfig.stockOrder;
     const dateAgo        = new Date();
     const params         = {$or: [{createdAt: null}, {createdAt: {$lt: dateAgo}}]};
     const carts          = await Cart.find(params);
@@ -660,8 +728,12 @@ const mailPendingCarts = async () => {
             let nbMails = 0;
             for (const cart of carts) {
                 try {
-                    await servicesMail.sendMailPendingCarts(cart);
-                    nbMails++;
+                    // Verify that an order has not already been generated after the creation of the cart
+                    const orders = await Orders.find({createdAt: {$gte: cart.createdAt}, 'customer.id': cart.customer.id});
+                    if (!orders || orders.length === 0) {
+                        await servicesMail.sendMailPendingCarts(cart);
+                        nbMails++;
+                    }
                 } catch (error) {
                     console.error(error);
                     throw error;

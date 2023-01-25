@@ -30,7 +30,7 @@
               },
               {
                 "key": "itsnumber",
-                "value": 2021,
+                "value": 2022,
                 "name": "Number",
                 "description": "Ceci est un exemple pour un nombre",
                 "group": "Exemple"
@@ -69,7 +69,7 @@
               },
               {
                 "key": "itsnumber",
-                "value": 2021,
+                "value": 2022,
                 "name": "Number",
                 "description": "This is an example for numbers",
                 "group": "Exemple"

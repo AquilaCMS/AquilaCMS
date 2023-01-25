@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -139,12 +139,37 @@ const deletePromoCodeById = async (promoId, codeId) => {
     }
 };
 
+const checkPromoVariants = async (req, res, datas, populate) => {
+    // Just for product variants
+    for (let i = 0; i < datas.length; i++) {
+        const data = datas[i];
+        if (data.variants_values) {
+            for (let j = 0; j < data.variants_values.length; j++) {
+                const variantsValues           = data.variants_values[j];
+                variantsValues.price.priceSort = {
+                    et  : variantsValues.price.et.special || variantsValues.price.et.normal,
+                    ati : variantsValues.price.ati.special || variantsValues.price.ati.normal
+                };
+
+                const resVariantValues  = await checkPromoCatalog([variantsValues], req.info, req.body.lang, false, populate, false, res.keepPromos);
+                data.variants_values[j] = resVariantValues[0];
+                if (data.variants_values[j].default) {
+                    data.price = data.variants_values[j].price;
+                }
+            }
+        }
+        datas[i] = data;
+    }
+};
+
 const middlewarePromoCatalog = async (req, res) => {
     try {
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
             if (res.locals.datas) {
                 const datas = await checkPromoCatalog(res.locals.datas, req.info, req.body.lang, false, populate, res.keepPromos);
+                await checkPromoVariants(req, res, datas, populate);
+
                 if (res.keepPromos) {
                     return {...res.locals, datas: datas.products, promos: datas.promos};
                 }
@@ -152,6 +177,8 @@ const middlewarePromoCatalog = async (req, res) => {
             }
 
             const datas = await checkPromoCatalog([res.locals], req.info, req.body.lang, false, populate, false, res.keepPromos);
+            await checkPromoVariants(req, res, datas, populate);
+
             if (res.keepPromos) {
                 return {datas};
             }
@@ -189,7 +216,8 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             ],
             actif : true,
             type  : '2'
-        }, null,
+        },
+        null,
         {sort: {priority: -1}}
     ).populate('rules_id').lean();
     if (!promos.length) {
@@ -245,6 +273,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 products[i] = appliedPromoProduct;
             }
         }
+
         if (!keepObject) {
             products[i].isNew = false;
             if (products[i]._doc && products[i].associated_prds) {
@@ -292,7 +321,7 @@ const applyRelevantDiscount = (product, discount) => {
     };
 };
 
-const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
+const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo = null) => {
     let oCart;
     try {
         let user = null;
@@ -344,7 +373,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
     if (!cart) throw NSErrors.CartInactiveNotFound;
     // Looking for promos of type cart (type: "1") and quantitybreak
-    const promos = await Promo.find({discountType: 'QtyB', actif: true, type: '1'}, null, {sort: {priority: -1}});
+    const promos = await Promo.find({discountType: 'QtyB', actif: true, type: '1'}, null, {sort: {priority: -1}}).populate('actions');
     if (!promos || !promos.length) {
         return cart;
     }
@@ -369,16 +398,12 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
     let promoIndex     = 0;
     const promosLen    = promos.length;
     while (applyNextRules && promoIndex < promosLen) {
-        let promo                  = promos[promoIndex];
+        const promo                = promos[promoIndex];
         const {dateStart, dateEnd} = promo;
 
         // Validation of the quantity break
         if ((dateStart === null || dateStart < currentDate) && (dateEnd === null || dateEnd > currentDate) && promo.actions.length > 0) {
-            // promo = await promo.populate("rules_id").execPopulate();
-
             if (promo.actions.length > 0) {
-                promo = await promo.populate('actions').execPopulate();
-
                 await utilsDatabase.populateItems(copyCart.items);
 
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
@@ -387,7 +412,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
                     for (let j = 0, lenj = copyCart.items.length; j < lenj; j++) {
                         const itemId      = copyCart.items[j].id._id;
                         const baseProduct = await ProductSimple.findOne({_id: itemId}).lean();
-                        const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j]]});
+                        const action      = await ServiceRules.applyRecursiveRulesDiscount(promo.actions[i], user, {items: [copyCart.items[j].id]});
 
                         try {
                             // We test if the eval can return an error
@@ -518,7 +543,6 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // -----------------------------------------------------------------------------
     // We need to apply the rules of this discount to know if the user
     // can use this promo code depending on what is in the cart
-    const validCartProduct = [];
     if (promo.rules_id) {
         const promoRules = await promo.populate('rules_id').execPopulate();
         if (promoRules.rules_id.conditions.length > 0 || promoRules.rules_id.other_rules.length > 0) {
@@ -538,17 +562,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             // }
         }
     }
-    // -----------------------------------------------------------------------------
-    // --------------------- Calculate and creat the promo code --------------------
-    // -----------------------------------------------------------------------------
-    // const oldProductsId = [];
-    // if (cart.promos && cart.promos.length && cart.promos[0].productsId && cart.promos[0].productsId.length && validCartProduct.length) {
-    //     for (let i = 0; i < validCartProduct.length; i++) {
-    //         const idx = cart.promos[0].productsId.findIndex(prd => prd.productId.toString() === validCartProduct[i].id);
-    //         if (idx === -1) continue;
-    //         oldPromo = [cart.promo[0].productsId];
-    //     }
-    // }
+
     // At the moment the user can enter only one promo code, so we force the promos to be an array of one element
     cart.promos = [{
         promoId     : promo._id,
@@ -576,38 +590,13 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             cart.promos[0].gifts.push({id: _id, name: translation[lang].name, price, quantity: 1, atts: attributes, opts: []});
         });
     } else {
-        // If validCartProduct contains products then we must apply the discount
-        // on these products and not on the total amount of the cart
-        if (validCartProduct.length > 0) {
-            // We set the discountATI and discountET to 0 because there is no discount on the cart total
-            cart.promos[0].discountATI = 0;
-            cart.promos[0].discountET  = 0;
-            for (let i = 0; i < validCartProduct.length; i++) {
-                const {discountATI, discountET, basePriceATI, basePriceET} = calculCartDiscountItem(validCartProduct[i], promo, cart);
-                cart.promos[0].productsId.push({productId: validCartProduct[i].id.id, discountATI, discountET, basePriceATI, basePriceET});
-            }
-        } else {
-            // If validCartProduct contains products then we must apply the discount
-            // on these products and not on the total amount of the cart
-            if (validCartProduct.length > 0) {
-                // We set the discountATI and discountET to 0 because there is no discount on the cart total
-                cart.promos[0].discountATI = 0;
-                cart.promos[0].discountET  = 0;
-                for (let i = 0; i < validCartProduct.length; i++) {
-                    const baseProduct                                          = await ProductSimple.findOne({code: validCartProduct[i].code}).lean();
-                    const {discountATI, discountET, basePriceATI, basePriceET} = await calculDiscountItem(baseProduct, promo);
-                    cart.promos[0].productsId.push({productId: validCartProduct[i].id.id, discountATI, discountET, basePriceATI, basePriceET});
-                }
-            } else {
-                // The user can use this code, so we must register the promo code in his cart
-                const {discountATI, discountET} = await calculCartDiscount(cart, promo);
-                if (discountATI !== null) {
-                    cart.promos[0].discountATI = discountATI;
-                }
-                if (discountET !== null) {
-                    cart.promos[0].discountET = discountET;
-                }
-            }
+        // The user can use this code, so we must register the promo code in his cart
+        const {discountATI, discountET} = await calculCartDiscount(cart, promo);
+        if (discountATI !== null) {
+            cart.promos[0].discountATI = discountATI;
+        }
+        if (discountET !== null) {
+            cart.promos[0].discountET = discountET;
         }
     }
     const resultCart = await cart.save();
@@ -769,7 +758,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
 function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
     let discountET  = 0;
     let discountATI = 0;
-    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(2));
+    const rate      = prices.et === 0 ? 1 :  Number((prices.ati / prices.et).aqlRound(5));
 
     if (discountValueET) {
         discountET  = prices.et - discountValueET;

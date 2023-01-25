@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -64,7 +64,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
     }
     // On gère le stock
     // Commandable et on gère la reservation du stock
-    if (global.envConfig.stockOrder.bookingStock === 'panier') {
+    if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
         if (!(await prdServices.checkProductOrderable(this.stock, item.quantity, item.selected_variant)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
         await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variant);

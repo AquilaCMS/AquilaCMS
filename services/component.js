@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -12,9 +12,10 @@ const NSErrors = require('../utils/errors/NSErrors');
  * get component
  * @param {string} componentName always starts with "ns-"
  * @param {string} code
+ * @param {string} params (from payload) for some extra params
  * @param {string} [authorization]
  */
-const getComponent = async (componentName, code, user = null) => {
+const getComponent = async (componentName, code, user = null, params = {}) => {
     if (code === null) throw NSErrors.ComponentCodeNotFound;
     // The component must start with ns- otherwise this component is not valid
     if (!componentName.startsWith('ns-')) throw NSErrors.ComponentNotAllowed;
@@ -28,7 +29,7 @@ const getComponent = async (componentName, code, user = null) => {
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const categorie         = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
+        const categorie         = await categorieServices.getCategoryTreeForMenu(code, user, params?.levels);
         return categorie;
     case 'cms':
         models                 = require('../orm/models/cmsBlocks');

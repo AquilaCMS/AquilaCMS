@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
+    "$scope", "ConfigV2", "$rootScope", "System", "$http", "toastService", "$interval", "EnvBlocks", "$translate",
+    function ($scope, ConfigV2, $rootScope, System, $http, toastService, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
         $scope.showModuleLoading = false;
         $scope.log = {
@@ -23,6 +23,11 @@ SystemControllers.controller("systemGeneralController", [
             content: [],
             newPolicy: ""
         };
+        $scope.sslFiles = {
+            cert:null,
+            key: null,
+            active: false
+        }
 
         $scope.switchCsp = function (value) {
             if (value == true) {
@@ -60,10 +65,36 @@ SystemControllers.controller("systemGeneralController", [
             if ($scope.system.environment.contentSecurityPolicy.values) {
                 $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicy.values;
             }
-            $scope.ssl = {
-                cert: $scope.system.environment.ssl.cert || '',
-                key: $scope.system.environment.ssl.key || '',
+            $scope.sslFiles = {
+                cert: {
+                    name:$scope.system.environment.ssl.cert || ''
+                },
+                key:{
+                    name: $scope.system.environment.ssl.key || ''
+                },
                 active: $scope.system.environment.ssl.active || false
+            }
+            if(!$scope.system.environment.searchSettings) {
+                $scope.system.environment.searchSettings = {
+                    shouldSort         : true,
+                    ignoreLocation     : true,
+                    findAllMatches     : true,
+                    ignoreFieldNorm    : true,
+                    includeScore       : true,
+                    useExtendedSearch  : true,
+                    minMatchCharLength : 2,
+                    threshold          : 0.2
+                }
+            }
+            if(!$scope.system.environment.searchSettings.keys) {
+                $scope.system.environment.searchSettings.keys = [
+                    {name: 'code', label: 'Code', weight: 20},
+                    {name: 'translation.{lang}.name', label: 'Nom', weight: 10},
+                    {name: 'description1.{lang}.title', label: 'Titre description 1', weight: 3},
+                    {name: 'description1.{lang}.text', label: 'Texte description 1', weight: 2.5},
+                    {name: 'description2.{lang}.title', label: 'Titre description 2', weight: 2},
+                    {name: 'description2.{lang}.text', label: 'Texte description 2', weight: 1.5}
+                ]
             }
             delete $scope.system.$promise;
         });
@@ -198,6 +229,35 @@ SystemControllers.controller("systemGeneralController", [
                 console.error(ex);
             }
         };
+        $scope.uploadFile = function (name, file) {
+            $http({
+                method: 'POST' , url: 'v2/config/ssl/' + name,
+                data: {file, filename: file.name},
+                headers: {'Content-Type': undefined},
+                transformRequest: function (data, headersGetter) {
+                    const formData = new FormData();
+                    angular.forEach(data, function (value, key) {
+                        formData.append(key, value);
+                    });
+                    return formData;
+                }
+            }).success(function(response) {
+                toastService.toast('success', $translate.instant('mail.detail.fileSaved'))
+            }).catch(function(err) {
+                toastService.toast('danger', $translate.instant('global.standardError'))
+            })
+        };
+
+        $scope.sendSSLFiles = function (that) {
+            const {files, name} = that;
+            if(files?.length === 0) return
+            if($scope.sslFiles.cert) {
+                $scope.sslFiles.cert = files[0];
+            } else if($scope.sslFiles.key) {
+                $scope.sslFiles.key = files[0];
+            }
+            $scope.uploadFile(name, files[0]);
+        }
 
         $scope.validate = function () {
             $scope.showModuleLoading = true;
@@ -208,18 +268,7 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.environment.appUrl += "/";
             }
             let file = {};
-            if ($scope.system.environment.ssl.active) {
-                if ($scope.system.environment.ssl.cert instanceof File || $scope.system.environment.ssl.cert instanceof File) {
-                    if ($scope.system.environment.ssl.cert instanceof File) {
-                        file.cert = $scope.system.environment.ssl.cert;
-                        $scope.system.environment.ssl.cert = $scope.system.environment.ssl.cert.name;
-                    }
-                    if ($scope.system.environment.ssl.key instanceof File) {
-                        file.key = $scope.system.environment.ssl.key;
-                        $scope.system.environment.ssl.key = $scope.system.environment.ssl.key.name;
-                    }
-                }
-            }
+            $scope.system.environment.ssl.active = $scope.sslFiles.active
             if ($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)) {
                 $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
                 $scope.contentPolicy.newPolicy = "";
@@ -229,16 +278,12 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.showThemeLoading = true;
                 $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
 
-                Upload.upload({
-                    url: 'v2/config',
-                    method: 'PUT',
-                    data: {
-                        ...file,
-                        ...$scope.system
-                    }
-                }).then((response) => {
+                ConfigV2.save({
+                    ...file,
+                    ...$scope.system
+                }, (response) => {
                     toastService.toast("success", $translate.instant("global.saveDone"));
-                    if (response.data.data.needRestart) {
+                    if (response.data.needRestart) {
                         $scope.showLoading = true;
                         $scope.showThemeLoading = false;
                         $interval(() => {

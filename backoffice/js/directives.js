@@ -411,6 +411,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 insertDBMediaUpload: true,
                                 search: ""
                             };
+                            $scope.media = {};
 
                                 $scope.generateFilter = function () {
                                     const filter = {};
@@ -482,7 +483,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $modalInstance.close(url);
                             };
 
-                            $scope.media = {};
 
                         }],
                         resolve: {
@@ -515,7 +515,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.lang = lang;
                                 $scope.selected = {};
 
-                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 0 } }, function (staticsList) {
                                     $scope.pages = {};
                                     $scope.pages = staticsList.datas;
                                     if ($scope.pages[0]) {
@@ -525,7 +525,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         $scope.group = staticsList.datas.getAndSortGroups()[0];
                                     }
                                 });
-                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 0 } }, function (response) {
                                     $scope.categories = {};
                                     $scope.categories = response.datas;
                                     if ($scope.categories[0]) {
@@ -730,7 +730,8 @@ adminCatagenDirectives.directive("nsBox", function ()
             editHref: "@?",
             editClick: "&?",
             newHref: "@?",
-            newClick: "&?"
+            newClick: "&?",
+            massClick: "&?"
         },
         templateUrl: "views/templates/nsBox.html",
         link: function (scope, element, attrs)
@@ -742,6 +743,7 @@ adminCatagenDirectives.directive("nsBox", function ()
             scope.hasAdd = attrs.addHref || attrs.addClick;
             scope.hasClose = attrs.closeHref || attrs.closeClick;
             scope.hasNew = attrs.newHref || attrs.newClick;
+            scope.hasMassClick = attrs.massClick;
             scope.hasEdit = attrs.editHref || attrs.editClick;
 
             let type;
@@ -864,6 +866,26 @@ adminCatagenDirectives.directive("numericbinding", function ()
         }
     };
 });
+adminCatagenDirectives.directive("restrictInput", function ()
+{
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attr, ctrl) {
+          ctrl.$parsers.unshift(function(viewValue) {
+            var options = scope.$eval(attr.restrictInput);
+            var reg = new RegExp(options.regex);
+            if (reg.test(viewValue)) { //if valid view value, return it
+              return viewValue;
+            } else { //if not valid view value, use the model value (or empty string if that's also invalid)
+              var overrideValue = (reg.test(ctrl.$modelValue) ? ctrl.$modelValue : '');
+              element.val(overrideValue);
+              return overrideValue;
+            }
+          });
+        }
+      };
+});
 adminCatagenDirectives.directive("nsAttributes", function ($compile)
 {
     return {
@@ -872,7 +894,11 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
         link: function (scope, element, attrs)
         {
             var el;
-            scope.$watch('att.type', function(newValue, oldValue, elScope) {
+            scope.selectColor = function (colorString) {
+                scope.att.translation[scope.lang].value = colorString
+            }
+
+            /* scope.$watch('att.type', function(newValue, oldValue, elScope) { */
                 el = angular.element("<span/>");
                 scope.optionColor = {
                     format: "hexString",
@@ -954,11 +980,20 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                             "</div>"
                         );
                         break;
+                    case "listcolor":
+                        el.append("<div class='col-sm-10'>" +
+                            "    <ul style='list-style: none;padding: 5px;'>" +
+                            "    <li style='width: 90px; display: inline-block; margin-right: 10px;padding: 2px; border-radius: 5px;{{value === att.translation[lang].value ? \"border: 2px solid #576fa1;\": \"\"}}' ng-click='selectColor(value)' ng-repeat='value in att.translation[lang].values'>"+
+                            "       <p style='box-sizing: border-box; text-align: center; cursor: pointer; border-radius: 5px; padding: 5px; background-color: {{value}};'>{{value}}</p>"+
+                            "    </li>" +
+                            "    </ul>" +
+                            "</div>");
+                        break;
                 }
                 $compile(el)(scope);
                 element.append(el);
                 
-            })
+            /* }) */
         }
     };
 });
@@ -1575,13 +1610,13 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     // on recup les univers
                     $scope.attributesClassed = [];
-                    SuppliersV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    SuppliersV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values.supplier_ref = response.datas;
                     })
-                    TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                    TrademarksV2.list({PostBody: {filter: {}, limit: 0, structure: '*'}}, function(response) {
                         $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
                     })
-                    PictoApi.list({PostBody: {filter: {}, limit: 99}}, function (response) {
+                    PictoApi.list({PostBody: {filter: {}, limit: 0}}, function (response) {
                         $scope.attributesClassed.push(
                         {
                             value: "pictos.code",
@@ -1594,7 +1629,7 @@ adminCatagenDirectives.directive("nsRule", [
                         })
 
                     })
-                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                    AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 0}}, function (response)
                     {
                         response.datas.map(function (element)
                         {
@@ -1808,7 +1843,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             )
                         }
-                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 99}}, function (response)
+                        AttributesV2.list({PostBody: {filter: {_type: 'users', usedInRules: true}, structure: '*', limit: 0}}, function (response)
                         {
                             response.datas.map(function (element) {
                                 var type = (function (type)
@@ -2199,7 +2234,7 @@ adminCatagenDirectives.directive("nsRule", [
                         }
 
                         if((['family', 'subfamily', 'universe']).includes(attr.value)) {
-                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*', populate: {
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 0, structure: '*', populate: {
                                 path : 'parent',
                                 populate : {
                                     path : 'parent'
@@ -2258,7 +2293,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 entity: "=",
                 showalt: '@',
                 accepttype: '@',
-                beforeFunction: '&',
+                beforeFunction: '=',
                 afterFunction: '=',
                 onError: '&',
                 styleProp: '=',
@@ -2308,7 +2343,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                             for (var i = 0; i < files.length; i++) {
                                 var file = files[i];
                                 if (!file.$error) {
-                                    $scope.beforeFunction();
+                                    if(typeof $scope.beforeFunction === 'function') $scope.beforeFunction();
                                     if ($scope.type === "module"){
                                         $scope.up = Upload.upload({
                                             url: 'v2/modules/upload',
@@ -2390,63 +2425,63 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             case 'productsVariant':
                                             case 'products': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'picto': {
                                                 $scope.entity.filename = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'trademark': {
                                                 $scope.entity.logo = response.data.name;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'language': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'article': {
                                                 $scope.entity.img = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'media': {
                                                 $scope.entity.link = response.data.path;
                                                 $scope.entity._id = response.data.id;
                                                 $scope.idOptional = response.data.id;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'gallery': {
                                                 $scope.entity = response.data;
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'slider': {
                                                 $scope.images.push(response.data);
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'module': {
-                                                $scope.afterFunction({module: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({module: response.data});
                                                 break;
                                             }
                                             case 'attribute': {
                                                 $scope.entity.value = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             case 'option': {
                                                 $scope.entity.value[$scope.entity.line] = response.data.path;
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                             }
                                             default:
-                                                $scope.afterFunction({data: response.data});
+                                                if(typeof $scope.afterFunction === 'function') $scope.afterFunction({data: response.data});
                                                 break;
                                         }
                                         $scope.disableUpload = false;
@@ -2455,7 +2490,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         if (err && err.data && err.data.message) {
                                             toastService.toast('danger', err.data.message);
                                         }
-                                        $scope.onError(err);
+                                        if(typeof $scope.onError === 'function') $scope.onError(err);
                                     }, function (evt) {
                                         $scope.disableUpload = true;
                                         $scope.progress[evt.config.data.file.$ngfBlobUrl] = parseInt(100.0 * evt.loaded / evt.total);
@@ -2542,6 +2577,7 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 max: true,
                 keepRatio: true,
                 ratio: 1,
+                relativeLink: true,
     
                 crop:false,
                 position:"center",
@@ -2564,11 +2600,9 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                 const quality = $scope.info.quality;
                 let filename = "";
                 if ($scope.info.name !== undefined) {
-                    filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
-                        + "." + $scope.media.link.replace(`medias/`, "")
-                            .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
+                    filename = $scope.info.name
                 } else {
-                    filename = $scope.media.link.replace(`medias/`, "");
+                    filename = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
                 }
     
                 let background  = '';
@@ -2596,8 +2630,8 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
                         crop = `-crop-${$scope.info.position}`;
                     }
                     toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                    $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                    return $scope.link
+                    $scope.link = `${!$scope.info.relativeLink ? window.location.origin : ''}/images/${$scope.media.type || 'medias'}/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
+                    return $scope.link;
                 }
             };
     
@@ -2613,20 +2647,21 @@ adminCatagenDirectives.directive('nsFormImageCache', function () {
     
             $scope.getMeta = function (url) {
                 const img = new Image();
-                $scope.info.name = $scope.media.name
                 img.src = url;
                 img.onload = function() { 
-                    $scope.info.ratio = this.width / this.height;
-                    $scope.info.width = this.width;
-                    $scope.info.height = this.height;
-                    $scope.$apply()
+                    const that = this;
+                    $scope.$apply(function () {
+                        $scope.info.ratio = that.width / that.height;
+                        $scope.info.width = that.width;
+                        $scope.info.height = that.height;
+                        $scope.info.name = $scope.media.link.trim().replace(/^.*[\\\/]/, '')
+                    })
                 }
             }
 
-            $scope.$watch('media', function(newValue, oldValue) {
-                if (newValue)
-                    $scope.getMeta(newValue.link)
-            }, true);
+            $scope.$watch(function (scp) {return scp.media}, function(newValue, oldValue) {
+                if (newValue?.link)  $scope.getMeta(newValue.link)
+            });
 
         }]
     }

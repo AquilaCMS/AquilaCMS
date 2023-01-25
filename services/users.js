@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -14,6 +14,7 @@ const servicesMail                       = require('./mail');
 const QueryBuilder                       = require('../utils/QueryBuilder');
 const utilsModules                       = require('../utils/modules');
 const NSErrors                           = require('../utils/errors/NSErrors');
+const modulesUtils                       = require('../utils/modules');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -37,12 +38,20 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
         PostBody.filter._id = id;
     }
-    return queryBuilder.findOne(PostBody, true);
+    const user = await queryBuilder.findOne(PostBody, true);
+
+    return modulesUtils.modulesLoadFunctions('postGetUserById', {user}, async function () {
+        return user;
+    });
 };
 
-const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+const getUserByAccountToken = async (activateAccountToken) => {
+    if (!activateAccountToken) throw NSErrors.Unauthorized;
+    const user = await Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
+    return {isActiveAccount: user?.isActiveAccount};
+};
 
-const setUser = async (id, info, isAdmin = false, lang) => {
+const setUser = async (id, info, isAdmin, lang) => {
     try {
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
@@ -157,7 +166,7 @@ const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunc
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
-    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+    servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
     aquilaEvents.emit('aqUserCreated', newUser);
@@ -191,11 +200,12 @@ const getUserTypes = async (query) => {
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
-    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
+    const emailRegex     = new RegExp(`^${email}$`, 'i');
+    const user           = await Users.findOneAndUpdate({email: emailRegex}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
-    const {appUrl, adminPrefix} = global.envConfig.environment;
+    const {appUrl, adminPrefix} = global.aquila.envConfig.environment;
     let link;
     if (user.isAdmin) {
         link = `${appUrl}${adminPrefix}/login`;
@@ -222,7 +232,6 @@ const changePassword = async (email, password) => {
         user.password = password;
         await user.save();
         await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-        // await Users.updateOne({_id: user._id}, {password, $unset: {resetPassToken: 1}}, {runValidators: true});
     } catch (err) {
         if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
             throw NSErrors.LoginSubscribePasswordInvalid;

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -119,7 +119,6 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     if (dateStart && dateEnd) {
         periodeStart = moment(dateStart);
         periodeEnd   = moment(dateEnd);
-        // periodeEnd = moment({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     } else {
         periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
@@ -168,7 +167,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
             for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
                 attendance += attendanceTab[i].value;
             }
-        } else { // if (periode === "TODAY") {
+        } else { // periode === "TODAY"
             const statsToday = await serviceStats.getStatstoday();
             if (statsToday != null && statsToday.visit) {
                 attendance = statsToday.visit.length;
@@ -201,13 +200,13 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
  */
 exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd) {
     const granularityQuery = {
-        year : {$substr: ['$oldCart.date', 0, 4]}// {$year: "$oldCart.date"}
+        year : {$substr: ['$oldCart.date', 0, 4]}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$substr: ['$oldCart.date', 5, 2]};// {$month: "$oldCart.date"};
+        granularityQuery.month = {$substr: ['$oldCart.date', 5, 2]};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};// {$dayOfMonth: "$oldCart.date"};
+        granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};
     }
 
     const attendanceTab = await serviceStats.getHistory('oldCart', periodeStart, periodeEnd, granularityQuery);

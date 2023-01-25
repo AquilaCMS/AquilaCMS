@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -74,6 +74,7 @@ async function getNewsTags(req, res, next) {
 async function saveNew(req, res, next) {
     try {
         await ServicesPreview.deleteNewPreview(req.body.code);
+        if (req.body.pervImage) await servicesNews.deleteImage(req.body.pervImage);
         return res.json(await servicesNews.saveNew(req.body));
     } catch (err) {
         return next(err);
@@ -104,11 +105,9 @@ async function previewNew(req, res, next) {
         }
         const _config = (await require('../orm/models/configuration').find({}))[0];
         if (req.body.lang) {
-            // console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}`));
             return res.json({url: URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}?preview=${preview._id}`)});
         }
         const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-        // console.log(URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
         return res.json({url: URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
     } catch (err) {
         next(err);

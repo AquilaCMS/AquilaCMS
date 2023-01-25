@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -12,6 +12,7 @@ const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
 const fs                      = require('./fsp');
+const NSErrors                = require('./errors/NSErrors');
 
 /**
  *
@@ -20,33 +21,32 @@ const fs                      = require('./fsp');
  */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
-        let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
-        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        let registryFile    = path.resolve(global.aquila.appRoot, 'modules', moduleName, 'licence.json');
+        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
-            const result = await axios.post('https://stats.aquila-cms.com/api/v1/register', {
+            await axios.post('https://stats.aquila-cms.com/api/v1/register', {
                 registryKey : registryFile.code,
                 aquilaVersion
             });
-            if (!result.data.data) return true;
-            return true;
+        } else {
+            await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
+                registryKey : registryFile.code,
+                aquilaVersion
+            });
         }
-        const result = await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
-            registryKey : registryFile.code,
-            aquilaVersion
-        });
-        if (!result.data.data) return true;
-        return true;
     } catch (err) {
-        return true;
+        console.error(err);
     }
+
+    return true;
 };
 
 const checkOrCreateAquilaRegistryKey = async () => {
     try {
         const {Configuration, Users} = require('../orm/models');
         const configuration          = await Configuration.findOne({});
-        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         const moment                 = require('moment');
         if (!configuration.licence || !configuration.licence.registryKey) {
             configuration.licence = {
@@ -117,6 +117,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
             && !checkForValidMongoDbID.test(value)
             && value
             && value !== {}
+            && !(data[key] instanceof Date)
         ) {
             // in case of an object =>
             fields = getJSONKeys(fields, value, `${parentKey}${key}.`);
@@ -128,7 +129,7 @@ const getJSONKeys = (fields, data, parentKey = '') => {
     return fields;
 };
 
-const checkForValidMongoDbID = new RegExp('^[0-9a-fA-F]{24}$');
+const checkForValidMongoDbID = /^[0-9a-fA-F]{24}$/;
 
 /**
  * Detect if array contain duplicated values
@@ -314,6 +315,19 @@ const isJsonString = (str) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Init child process Globals and Database
+ */
+const initChildProcess = async () => {
+    const utilsDB = require('./database');
+    try {
+        global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
+        await utilsDB.connect();
+    } catch (err) {
+        throw NSErrors.InitChildProcessError;
+    }
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -325,5 +339,6 @@ module.exports = {
     checkOrCreateAquilaRegistryKey,
     isEqual,
     isJsonString,
-    isAdmin
+    isAdmin,
+    initChildProcess
 };

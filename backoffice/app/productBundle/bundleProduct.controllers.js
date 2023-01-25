@@ -2,8 +2,8 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs", "$translate",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs, $translate)
+    "BundleSectionDisplayModes", "ProductsV2","SetAttributesV2", "ProductsTabs", "$translate",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, SetAttributesV2, ProductsTabs, $translate)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -313,7 +313,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     });
                 }
             }else{
-                strInvalidFields = checkForm(["code", "name"]);
+                strInvalidFields = checkForm(["name"]);
             }
             //we remove ", "
             if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
@@ -460,9 +460,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 text: 'product.button.dup',
                 onClick: function (){
                     var clone = angular.copy($scope.product);
-                    clone.code = prompt("Saisir le code: ");
-                    clone.id = clone._id;
-                    delete clone._id;
+                    clone.code = prompt($translate.instant("bundle.product.inputCode"));
                     ProductsV2.duplicate(clone, function (savedPrd)
                     {
                         if(!savedPrd)

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -31,8 +31,7 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const _path       = require('../utils/server').getUploadDirectory();
-    const cacheFolder = `${_path}/cache/`;
+    const cacheFolder = path.join(require('../utils/server').getUploadDirectory(), 'cache');
     let fileName      = '';
     let filePathCache = '';
 
@@ -50,8 +49,8 @@ const deleteCacheImage = (type, datas) => {
         deleteFileCache(filePathCache);
         break;
     case 'category':
-        const extension = path.extname(datas.img);
-        fileName        = path.basename(datas.img, extension);
+        const extension = datas.extension || path.extname(datas.filename);
+        fileName        = path.basename(datas.filename, extension);
         filePathCache   = `${cacheFolder}category/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
@@ -83,7 +82,7 @@ function deleteFileCache(filePathCache) {
 
 const cacheSetting = () => {
     const CacheService = require('../utils/CacheService');
-    const cacheTTL     = global.envConfig.environment.cacheTTL ? global.envConfig.environment.cacheTTL : 0;
+    const cacheTTL     = global.aquila.envConfig.environment.cacheTTL ? global.aquila.envConfig.environment.cacheTTL : 0;
     utilsModules.modulesLoadFunctions('useCacheModule', {cacheTTL}, () => {
         global.cache = new CacheService(cacheTTL);
     });

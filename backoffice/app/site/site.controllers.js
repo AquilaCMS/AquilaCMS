@@ -227,11 +227,8 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         {
             if (confirm($translate.instant("confirm.deleteImage")))
             {
+                $scope.articles.pervImage = articles.img;
                 $scope.articles.img = "";
-                SiteDeleteImage.deleteImage({_id: articles._id}, function (response)
-                {
-                    toastService.toast("success", $translate.instant("site.detail.imgDelete"));
-                });
             }
         };
 
@@ -321,7 +318,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         };
 
         $scope.getImage = function (img) {
-            const filename = img.split('/')[img.split('/').length -1]
+            const filename = img.split('\\').pop().split('/').pop();
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
 

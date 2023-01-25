@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -16,6 +16,7 @@ const bcrypt         = require('bcrypt');
 const rimraf         = require('rimraf');
 const path           = require('path');
 const faker          = require('faker');
+const moment         = require('moment');
 const {aquilaEvents} = require('aql-utils');
 const fs             = require('../utils/fsp');
 const {execCmd}      = require('../utils/packageManager');
@@ -54,7 +55,7 @@ const getOrdersByUser = async (id) => Orders.find({'customer.id': id}, '-__v').l
 const anonymizeOrdersByUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email     = faker.internet.email();
+    const email     = `${faker.internet.email()}_`;
     return Orders.updateMany({'customer.id': id}, {
         $set : {
             'customer.email'    : email,
@@ -85,7 +86,7 @@ const getReviewsByUser = async (id) => {
 
 const anonymizeCartsByUser = async (id) => Cart.updateMany({'customer.id': id}, {
     $set : {
-        'customer.email' : faker.internet.email(),
+        'customer.email' : `${faker.internet.email()}_`,
         'customer.phone' : faker.phone.phoneNumber()
     }
 });
@@ -96,17 +97,15 @@ const getBillsByUser = async (id) => Bills.find({client: id}, '-__v').lean();
 
 const anonymizeModulesByUser = async (user) => {
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const module of _modules) {
-            await new Promise(async (resolve, reject) => {
-                // Retrieves rgpd.js files from modules
-                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                    await rgpd.anonymize(user, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const module of _modules) {
+        await new Promise(async (resolve, reject) => {
+            // Retrieves rgpd.js files from modules
+            if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                await rgpd.anonymize(user, resolve, reject);
+            }
+            resolve();
+        });
     }
 };
 
@@ -116,7 +115,7 @@ const anonymizeBillsByUser = async (id) => Bills.updateMany({client: id}, {
         prenom      : faker.name.firstName(),
         societe     : faker.random.word(),
         coordonnees : faker.phone.phoneNumber(),
-        email       : faker.internet.email()
+        email       : `${faker.internet.email()}_`
     }
 });
 
@@ -132,7 +131,7 @@ const anonymizeReviewsByUser = async (id) => Products.updateMany({}, {
 const anonymizeUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email     = faker.internet.email();
+    const email     = `${faker.internet.email()}_`;
     return Users.updateOne({_id: id}, {
         $set : {
             email,
@@ -160,20 +159,24 @@ const anonymizeUser = async (id) => {
 const copyDatabase = async () => {
     // Connection to the database
     try {
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
         try {
-            await mongodump(global.envFile.db);
-            await mongorestore(global.envFile.db);
+            await mongodump(global.aquila.envFile.db);
+            await mongorestore(global.aquila.envFile.db);
         } catch (error) {
             throw NSErrors.CommandsMayNotInPath;
         }
-        await new Promise((resolve, reject) => rimraf('dump', (err) => {
-            if (err) return reject(err);
-            resolve();
-        }));
+        await new Promise((resolve, reject) => {
+            rimraf('dump', (err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
 
         // Anonymization of the copied database
         await anonymizeDatabase();
@@ -205,7 +208,7 @@ async function mongorestore(uri) {
  */
 const anonymizeDatabase = async () => {
     // Connection to the new database
-    const data     = mongoURI.parse(global.envFile.db);
+    const data     = mongoURI.parse(global.aquila.envFile.db);
     data.database += '_anonymized';
     const client   = new MongoClient(
         mongoURI.format(data),
@@ -309,16 +312,14 @@ const anonymizeDatabase = async () => {
         }
     }
     const _modules = await Modules.find({active: true});
-    if (_modules.length >= 0) {
-        for (const mod of _modules) {
-            await new Promise(async (resolve, reject) => {
-                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
-                    const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
-                    await rgpd.anonymizeDatabase(database, resolve, reject);
-                }
-                resolve();
-            });
-        }
+    for (const mod of _modules) {
+        await new Promise(async (resolve, reject) => {
+            if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
+                const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
+                await rgpd.anonymizeDatabase(database, resolve, reject);
+            }
+            resolve();
+        });
     }
     await client.close();
 };
@@ -327,7 +328,7 @@ const anonymizeDatabase = async () => {
 * Deletes the copy database
 */
 const dropDatabase = async () => {
-    const mongodbUri     = mongoURI.parse(global.envFile.db);
+    const mongodbUri     = mongoURI.parse(global.aquila.envFile.db);
     mongodbUri.database += '_anonymized';
     const client         = new MongoClient(
         mongoURI.format(mongodbUri),
@@ -442,10 +443,10 @@ const generateFakeAddresses = async (options) => {
     return addr;
 };
 
-const dumpAnonymizedDatabase = async (res) => {
+const dumpAnonymizedDatabase = async () => {
     try {
         await copyDatabase();
-        let uri = global.envFile.db;
+        let uri = global.aquila.envFile.db;
         // ReplicaSet management
         if (uri.includes('replicaSet')) {
             uri = uri.replace('?', '_anonymized?');
@@ -461,14 +462,67 @@ const dumpAnonymizedDatabase = async (res) => {
         // Removal of the copy database
         await dropDatabase();
         // Download the dump file
-        res.set({'content-type': 'application/gzip'});
-        const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
-        return res.download(pathToArchive);
+        const pathToArchive = path.join(global.aquila.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        const temp          = fs.readFile(pathToArchive, 'binary');
+        fs.unlink(pathToArchive, function () {
+            console.log('File was deleted'); // Callback
+        });
+        return temp;
     } catch (error) {
         if (error && error.name && error.name === 'NSError') {
             throw error;
         }
         throw NSErrors.InternalError;
+    }
+};
+
+const anonymizeBillsById = async (id) => Bills.updateOne({_id: id}, {
+    $set : {
+        client      : new ObjectID(),
+        nom         : faker.name.lastName(),
+        prenom      : faker.name.firstName(),
+        societe     : faker.random.word(),
+        coordonnees : faker.phone.phoneNumber(),
+        email       : faker.internet.email(),
+        address     : {
+            firstname      : faker.name.firstName(),
+            lastname       : faker.name.lastName(),
+            phone_mobile   : faker.phone.phoneNumber(),
+            line1          : faker.address.streetAddress(),
+            zipcode        : faker.address.zipCode(),
+            city           : faker.address.city(),
+            isoCountryCode : faker.address.countryCode()
+        }
+    }
+});
+
+// Check the age of the bills for RGPD restrictions
+const checkDateBills = async () =>  {
+    // 1.get all the bills from the database
+    const bills = await Bills.find({});
+    // 2.browse the array of bills
+    for (let i = 0; i < bills.length; i++) {
+        // 3.get the date of the bill
+        const creationDate = moment(bills[i].createdAt);
+        const now          = moment();
+        // 4.calculate the difference between the current date and the date of the bill
+        const diff = now.diff(creationDate, 'months');
+        // 5.if the difference is superior to 120 months, the bill is deleted
+        if (diff > 120 && bills[i].anonymized === false) {
+            anonymizeBillsById(bills[i]._id);
+            await Bills.updateOne({_id: bills[i]._id}, {$set: {anonymized: true}});
+        }
+    }
+};
+
+// Check the last connexion of the user for RGPD restrictions
+const checkLastConnexion = async () => {
+    // 1.get all the users from the database
+    const users = await Users.find({$or: [{anonymized: {$exists: false}}, {anonymized: false}], isAdmin: false, lastConnexion: {$lte: new Date(Date.now() - (/* 3 ans */ 3 * 365) * 24 * 60 * 60 * 1000)}});
+    // 2.browse the array of users
+    for (let i = 0; i < users.length; i++) {
+        anonymizeUser(users[i]._id);
+        await Users.updateOne({_id: users[i]._id}, {$set: {anonymized: true}});
     }
 };
 
@@ -489,5 +543,8 @@ module.exports = {
     anonymizeDatabase,
     dropDatabase,
     deleteUserDatas,
-    anonymizeUserDatas
+    anonymizeUserDatas,
+    checkDateBills,
+    anonymizeBillsById,
+    checkLastConnexion
 };

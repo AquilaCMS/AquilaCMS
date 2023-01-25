@@ -238,7 +238,12 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
                 }
-                $scope.createPrds()
+                if($scope.product?.variants?.length > 0) {
+                    $scope.createPrds()
+                } else {
+                    $scope.product.variants_values = []
+                    $scope.product.variants = []
+                }
             }
 
             $scope.selectVariantValue = function (variantValue, index) {
@@ -289,13 +294,35 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
 
             $scope.getProductVariantIndex = function (code) {
                 return $scope.product.variants.findIndex(v => v.code === code)
-            }     
+            }
+
+            $scope.updateVariantType = function (value) {
+                if (value === 'list2') {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        $scope.product.variants[i].type = value;
+                    }
+                } else {
+                    for (let i = 0; i < $scope.product.variants.length; i++) {
+                        if ($scope.product.variants[i].type === 'list2') {
+                            $scope.product.variants[i].type = value;
+                        }
+                    }
+                }
+            }
 
             $scope.getImageUrl = function (variant) {
                 let defaultImage = variant.images.find(img => img.default)
                 if(!defaultImage) defaultImage = variant.images[0] || {}
                 return `images/${variant._id ? 'productsVariant' : 'products'}/150x150-50/${defaultImage._id}/${defaultImage.title || 'img'}${defaultImage.extension || '.jpg'}`;
             };
+
+            $scope.activateAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = true; return vv})
+            }
+
+            $scope.disableAllVariants = function () {
+                $scope.product.variants_values = $scope.product.variants_values.map(function(vv) {vv.active = false; return vv})
+            }
         }]
     };
 });
@@ -503,9 +530,10 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     }
                 };
 
-                $scope.removeImage = function (index) {
+                $scope.removeImage = function (imgUrl) {
+                    const index = $scope.product.images.findIndex(img => img.url === imgUrl)
                     let defaultImage = $scope.product.images[index].default;
-                    $scope.product.images.sort((a, b) => a.position - b.position).splice(index, 1);
+                    $scope.product.images.splice(index, 1);
                     if ($scope.product.images.length > 0 && defaultImage) {
                         $scope.product.images[0].default = true;
                     }

@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label class="control-label col-sm-1" translate>medias.new.media</label>
                     <div class="col-sm-5">
-                    <ns-upload-files id="id" is-selected="nsUploadFiles.isSelected" multiple="false" type="media" entity="media" on-error="onErrorUploadMedia"></ns-upload-files>
+                    <ns-upload-files id="id" is-selected="nsUploadFiles.isSelected" multiple="false" type="media" entity="media" on-error="onErrorUploadMedia()"></ns-upload-files>
                     </div>
                     <div class="col-sm-5 img-responsive" ng-show="isPicture(media)">
                         <img ng-src="{{media.link ? '/' + media.link : ''}}" width="300" height="100">

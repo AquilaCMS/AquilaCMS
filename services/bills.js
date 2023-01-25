@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -117,12 +117,13 @@ const orderToBill = async (idOrder, isAvoir = false) => {
 };
 
 const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
-    let bill = await queryBuilder.findOne(PostBody);
+    const invoiceTranslate = require('../utils/translate/invoice');
+    let bill               = await queryBuilder.findOne(PostBody);
     if (!bill) {
         throw NSErrors.AccessUnauthorized;
     }
     bill              = bill.toObject();
-    const lang        = bill.lang || global.defaultLang;
+    const lang        = bill.lang || global.aquila.defaultLang;
     const oldChecksum = bill.checksum;
     delete bill.checksum;
     const obj      = cleanBillObject(bill);
@@ -136,10 +137,12 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     if (!html) {
         throw NSErrors.CmsBlockNotFound;
     }
-    const withNoTaxes = lang === 'fr' ? 'HT' : 'ET';
-    const withTaxes   = lang === 'fr' ? 'TTC' : 'ATI';
-    const unpaid      = lang === 'fr' ? 'Non payé' : 'Unpaid';
-    const paid        = lang === 'fr' ? 'Payé' : 'Paid';
+
+    const apiLang     = lang === 'fr' ? 'fr' : 'en';
+    const withNoTaxes = invoiceTranslate.et[apiLang];
+    const withTaxes   = invoiceTranslate.ati[apiLang];
+    const unpaid      = invoiceTranslate.unpaid[apiLang];
+    const paid        = invoiceTranslate.paid[apiLang];
     const currency    = ' &euro;';
     const datas       = {
         '{{number}}'                 : bill.facture,
@@ -204,7 +207,7 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     const htmlToGenerate = html.translation[bill.lang].html ? html.translation[bill.lang].html : html.translation[bill.lang].content;
     let content          = generateHTML( htmlToGenerate, newData);
     let items            = '';
-    // eslint-disable-next-line no-useless-escape
+    // eslint-disable-next-line no-useless-escape, prefer-regex-literals
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');

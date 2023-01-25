@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -58,7 +58,7 @@ const setMailType = async (body, _id = null) => {
     }
 };
 
-const deleteMailType = async (code) => {
+const deleteMailType = async (code, removeInMailRef = true) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});
@@ -67,7 +67,7 @@ const deleteMailType = async (code) => {
     const mail = await Mail.findOne({type: code});
     if (!mail) return doc;
     mail.type = '';
-    await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
+    if (removeInMailRef) await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
     return doc;
 };
 

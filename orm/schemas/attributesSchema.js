@@ -1,16 +1,18 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const {aquilaEvents} = require('aql-utils');
-const utilsDatabase  = require('../../utils/database');
-const Schema         = mongoose.Schema;
-const {ObjectId}     = Schema.Types;
+const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
+const utilsDatabase       = require('../../utils/database');
+const {checkCustomFields} = require('../../utils/translation');
+const Schema              = mongoose.Schema;
+const {ObjectId}          = Schema.Types;
+const NSErrors            = require('../../utils/errors/NSErrors');
 
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: false},
@@ -28,6 +30,8 @@ const AttributesSchema = new Schema({
     visible        : {type: Boolean, default: true},
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
+    usedInSearch   : {type: Boolean, default: false},
+    parents        : [{type: ObjectId, ref: 'attributes'}],
     translation    : {},
     isVariantable  : Boolean
 }, {
@@ -37,15 +41,13 @@ const AttributesSchema = new Schema({
 AttributesSchema.index({code: 1, _type: 1}, {unique: true});
 
 AttributesSchema.statics.translationValidation = async function (self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -53,18 +55,14 @@ AttributesSchema.statics.translationValidation = async function (self) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.name === undefined) {
-                errors.push('name manquant');
+                throw NSErrors.NameMissing;
             }
-
-            const {checkCustomFields} = require('../../utils/translation');
-            errors                    = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'name'},
                 {key: 'values', type: 'object'}
-            ]));
+            ]);
         }
     }
-
-    return errors;
 };
 
 AttributesSchema.statics.checkCode = async function (data) {
@@ -87,11 +85,11 @@ AttributesSchema.post('remove', async function (doc, next) {
 });
 
 AttributesSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 AttributesSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, AttributesSchema);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 /**
@@ -99,7 +97,6 @@ AttributesSchema.pre('findOneAndUpdate', async function (next) {
  * @deprecated seem like it's not used, because the service setAttribute handle all modifications
  */
 AttributesSchema.post('updateOne', async function ({next}) {
-    console.warn("If you see that, AttributesSchema.post('updateOne') is not deprecated. Please remove this message");
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {

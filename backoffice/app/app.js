@@ -31,6 +31,7 @@ var aqModules = [
     "adminCatagenServices",
     "adminCatagenDirectives",
     "pascalprecht.translate",
+    "schemaForm",
     "ngSanitize",
     "xeditable",
     "ngFileUpload",
@@ -39,10 +40,8 @@ var aqModules = [
     "infinite-scroll",
     'ui.tinymce',
     "angular-bind-html-compile",
-    "ngMessages",
     "aquilaCmsBlocks",
     "ui.tree",
-    "angular-clipboard",
     "color.picker",
     "inputDropdown",
     "googlechart",
@@ -93,7 +92,7 @@ var aqModules = [
     "aq.system",
     "aq.invoices",
     "aq.adminList",
-    'aq.dependencies'
+    "aq.dependencies"
 ]
 
 /* App Module */
@@ -332,10 +331,7 @@ adminCatagenApp.run(function ($rootScope, $http, $window)
         window.localStorage.removeItem("jwtAdmin");
         $rootScope.userInfo = {};
         $rootScope.message = "Logged out.";
-        $http.post("/v2/auth/logout/admin").then(function ()
-        {
-            $window.location.href = $window.location.pathname + "/login";
-        });
+        $window.location.href = $window.location.pathname + "/login";
     };
 });
 

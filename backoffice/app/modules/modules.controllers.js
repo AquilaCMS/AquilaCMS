@@ -1,4 +1,4 @@
-var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 'ui.bootstrap']);
+var ModulesControllers = angular.module('aq.modules.controllers', ['ui.bootstrap']);
 
 ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', '$translate', 'ModuleServiceV2', 'ModuleService',
 function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate, ModuleServiceV2, ModuleService) {
@@ -326,9 +326,9 @@ ModulesControllers.controller("PluginsNewCtrl", [
                     page      : null
                 }
             }, function (response) {
-                if (module.active) {
+                if (module.module.active) {
                     toastService.toast('success', $translate.instant("modules.addModule"));
-                    toggleActive(module._id, module.name, true);
+                    window.location.reload();
                 } else {
                     $scope.showModuleLoading = false;
                     toastService.toast('success', $translate.instant("modules.activateModule"));

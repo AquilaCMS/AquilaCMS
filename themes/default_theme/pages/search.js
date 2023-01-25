@@ -15,6 +15,7 @@ import routes, { Link, Router } from 'routes';
  */
 
 class PageSearch extends NSPageSearch {
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -63,9 +64,8 @@ class PageSearch extends NSPageSearch {
                         <div className="main">
                             <div className="shell">
                                 <NSBreadcrumb gNext={{ routes, Link }} />
-
                                 <div className="page-head visible-xs-block">
-                                    <h2>Recherche <span>({count})</span></h2>
+                                    <h2>{t('common:search')}<span>({count})</span></h2>
                                 </div>{/* <!-- /.page-head --> */}
                                 <div className={`tab-filter${this.state.tab === 'filter1' ? ' current' : ''}`} id="filter1">
                                     <div className="bar-filters">
@@ -119,13 +119,13 @@ class PageSearch extends NSPageSearch {
                                             <ul>
                                                 <li>
                                                     <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: true }, () => { window.localStorage.setItem('gridDisplay', 'true'); })}>
-                                                        <i className={`ico-grid${gridDisplay ? ' active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">apps</span>
                                                     </button>
                                                 </li>
 
                                                 <li>
                                                     <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: false }, () => { window.localStorage.setItem('gridDisplay', 'false'); })}>
-                                                        <i className={`ico-list${!gridDisplay ? '-active' : ''}`} />
+                                                        <span className="material-symbols-outlined gridview">format_list_bulleted</span>
                                                     </button>
                                                 </li>
                                             </ul>

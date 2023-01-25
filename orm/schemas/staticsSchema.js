@@ -1,16 +1,18 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose            = require('mongoose');
+const {aquilaEvents}      = require('aql-utils');
 const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
+const NSErrors            = require('../../utils/errors/NSErrors');
 
 const StaticsSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -31,11 +33,9 @@ const StaticsSchema = new Schema({
  content
  */
 
-StaticsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
+StaticsSchema.statics.translationValidation = async function (self, updateQuery) {
     if (updateQuery) {
-        if (updateQuery.translation === undefined) return errors; // No translation
+        if (updateQuery.translation === undefined) return;
 
         const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
@@ -49,22 +49,16 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
             } else {
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
-            if (updateQuery.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
-                return errors;
-            }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${utils.slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    errors.push('slug déjà existant');
+                    throw NSErrors.SlugAlreadyExist;
                 }
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
-            ]));
+            checkCustomFields(lang, [{key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}]);
         }
     } else {
-        if (self.translation === undefined) return errors; // No translation
+        if (self.translation === undefined) return; // No translation
         const translationKeys = Object.keys(self.translation);
         const languages       = await mongoose.model('languages').find({});
         for (const lang of languages) {
@@ -77,39 +71,33 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
             } else {
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
-            if (self.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
-                return errors;
-            }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
+                throw NSErrors.SlugAlreadyExist;
             }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
-            ]));
         }
     }
-    return errors;
 };
 
 StaticsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('statics', that._id, that.code);
 };
 
-StaticsSchema.statics.checkSlugExist = async function (that) {
-    await utilsDatabase.checkSlugExist(that, 'statics');
+StaticsSchema.statics.checkSlugLength = async function (that) {
+    await utilsDatabase.checkSlugLength(that, 'statics');
 };
 
 StaticsSchema.pre('updateOne', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
 
 StaticsSchema.pre('save', async function (next) {
-    await utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema, true);
 });
+
+aquilaEvents.emit('staticsSchemaInit', StaticsSchema);
 
 module.exports = StaticsSchema;

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -50,11 +50,11 @@ const getErrorText = (err) => {
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
-            const wkhtmlInstalled = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'wkhtmltopdf.js'));
-            const sharpInstalled  = await execScript(path.join(global.appRoot, 'installer', 'scripts', 'sharp.js'));
-            const html            = (await fs.readFile(path.join(global.appRoot, 'installer', 'install.html'))).toString()
+            const wkhtmlInstalled = await execScript(path.join(global.aquila.appRoot, 'installer', 'scripts', 'wkhtmltopdf.js'));
+            const sharpInstalled  = await execScript(path.join(global.aquila.appRoot, 'installer', 'scripts', 'sharp.js'));
+            const html            = (await fs.readFile(path.join(global.aquila.appRoot, 'installer', 'install.html'))).toString()
                 .replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`)
-                .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.appRoot, './package.json'))).version)
+                .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, './package.json'))).version)
                 .replace('{{wkhtmltopdf}}', wkhtmlInstalled)
                 .replace('{{sharp}}', sharpInstalled);
             res.send(html, {}, (err) => {
@@ -68,6 +68,7 @@ module.exports = (installRouter) => {
 
     installRouter.post('/config', async (req, res) => {
         try {
+            global.aquila.envConfig = {environment: {appUrl: req.body.appUrl}}; // We take the appUrl info as soon as possible
             await require('./install').firstLaunch(req, true);
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();

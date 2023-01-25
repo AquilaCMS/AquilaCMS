@@ -1,15 +1,16 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const {slugify}     = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const {slugify}      = require('../../utils/utils');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
     code        : {type: String, unique: true},
@@ -27,8 +28,10 @@ TrademarksSchema.statics.checkCode = async function (that) {
 };
 
 TrademarksSchema.pre('save', async function (next) {
-    this.code = slugify(this.name);
+    if (!this.code) this.code = slugify(this.name);
     await utilsDatabase.preUpdates(this, next, TrademarksSchema);
 });
+
+aquilaEvents.emit('trademarksSchemaInit', TrademarksSchema);
 
 module.exports = TrademarksSchema;

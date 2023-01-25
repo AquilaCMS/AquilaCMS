@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -66,6 +66,7 @@ const UserSchema = new Schema({
         },
         validate : {
             validator(email) {
+                // eslint-disable-next-line prefer-regex-literals
                 return (new RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i)).test(email);
             },
             message : () => 'BAD_EMAIL_FORMAT'
@@ -131,7 +132,8 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ],
-    lastConnexion : Date
+    lastConnexion : Date,
+    anonymized    : {type: Boolean, default: false}
 }, {
     timestamps : true,
     id         : false

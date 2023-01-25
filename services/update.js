@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -19,7 +19,7 @@ const tmpPath                  = path.resolve('./uploads/temp');
  * Compare local version with distant version
  */
 const verifyingUpdate = async () => {
-    const actualVersion = JSON.parse(fsp.readFileSync(path.resolve(global.appRoot, './package.json'))).version;
+    const actualVersion = JSON.parse(fsp.readFileSync(path.resolve(global.aquila.appRoot, './package.json'))).version;
 
     // Create the /uploads/temp folder if it doesn't exist
     if (!fsp.existsSync(tmpPath)) {
@@ -79,7 +79,7 @@ const update = async () => {
     const filePath = `${tmpPath}//Aquila-${version}.zip`;
     let aquilaPath = './';
 
-    const devMode = global.envFile.devMode;
+    const devMode = global.aquila.envFile.devMode;
     if (typeof devMode !== 'undefined') {
         aquilaPath = tmpPath;
     }

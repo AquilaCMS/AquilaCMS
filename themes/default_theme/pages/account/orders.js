@@ -39,7 +39,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                         <section className="section-client-area">
                                             <header className="section__head">
                                                 <h2 className="section__title">
-                                                    <i className="ico-profile-large" />
+                                                <span className="material-symbols-outlined client_account">account_circle</span>
                                                     {t('account:account.page.title')}
                                                 </h2>
                                             </header>

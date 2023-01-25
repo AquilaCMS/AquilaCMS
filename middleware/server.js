@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -12,9 +12,7 @@ const cors                            = require('cors');
 const express                         = require('express');
 const helmet                          = require('helmet');
 const morgan                          = require('morgan');
-const multer                          = require('multer');
 const path                            = require('path');
-const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
 
@@ -47,8 +45,10 @@ const serverUseRequest = async (req, res, next) => {
         }
 
         if (json) {
-            let lang = global.defaultLang;
-            if (req.body && req.body.lang) {
+            let lang = global.aquila.defaultLang;
+            if (req.headers && req.headers.lang) {
+                lang = req.headers.lang;
+            } else if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
             json = translation.translateDocument(json, lang, keepOriginalAttribs);
@@ -82,8 +82,8 @@ const serverUseRequest = async (req, res, next) => {
 
 const useHelmet = async (server) => {
     let envContentSecurityPolicy = {values: [], active: false};
-    if (global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy) {
-        envContentSecurityPolicy = global.envConfig.environment.contentSecurityPolicy;
+    if (global.aquila.envConfig && global.aquila.envConfig.environment && global.aquila.envConfig.environment.contentSecurityPolicy) {
+        envContentSecurityPolicy = global.aquila.envConfig.environment.contentSecurityPolicy;
     }
 
     // If security is active
@@ -95,18 +95,18 @@ const useHelmet = async (server) => {
             "'unsafe-inline'",
             "'unsafe-eval'"
         ];
-        if (global.envConfig && global.envConfig.environment) {
-            if (global.envConfig.environment.appUrl) {
-                contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
+        if (global.aquila.envConfig && global.aquila.envConfig.environment) {
+            if (global.aquila.envConfig.environment.appUrl) {
+                contentSecurityPolicyValues.push(global.aquila.envConfig.environment.appUrl);
             }
-            if (global.envConfig.environment.contentSecurityPolicy.values) {
+            if (global.aquila.envConfig.environment.contentSecurityPolicy.values) {
                 contentSecurityPolicyValues = [
                     ...contentSecurityPolicyValues,
-                    ...global.envConfig.environment.contentSecurityPolicy.values
+                    ...global.aquila.envConfig.environment.contentSecurityPolicy.values
                 ];
             }
         }
-        const contentSecurityPolicyString = envContentSecurityPolicy.values ? global.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
+        const contentSecurityPolicyString = envContentSecurityPolicy.values ? global.aquila.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
         server.use(helmet.contentSecurityPolicy({
             directives : {
                 ...helmet.contentSecurityPolicy.getDefaultDirectives(),
@@ -136,19 +136,19 @@ const useHelmet = async (server) => {
  * @param {passport.PassportStatic} passport passport
  */
 const initExpress = async (server, passport) => {
-    server.set('port', global.port);
+    server.set('port', global.aquila.port);
 
     useHelmet(server);
 
     const photoPath = serverUtils.getUploadDirectory();
-    server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
-    server.use(express.static(path.join(global.appRoot, 'acme'), {dotfiles: 'allow'}));
-    server.use('/', express.static(path.join(global.appRoot, photoPath))); // Photos
-    server.use('/bo', express.static(path.join(global.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
+    server.use(express.static(path.join(global.aquila.appRoot, 'backoffice'))); // BackOffice V1
+    server.use(express.static(path.join(global.aquila.appRoot, 'acme'), {dotfiles: 'allow'}));
+    server.use('/', express.static(path.join(global.aquila.appRoot, photoPath))); // Photos
+    server.use('/bo', express.static(path.join(global.aquila.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
 
-    server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
+    server.set('views', path.join(global.aquila.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');
-    if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.envFile.logs && global.envFile.logs.http) {
+    if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.aquila.envFile.logs && global.aquila.envFile.logs.http) {
         server.use(morgan('combined', {stream: require('../utils/logger').stream}));
         server.use(morgan('dev'));
     }
@@ -177,27 +177,19 @@ const initExpress = async (server, passport) => {
         next();
     });
 
-    const storage = multer.diskStorage({
-        destination : path.resolve(photoPath, 'temp'),
-        filename(req, file, cb) {
-            cb(null, uuidv1() + path.extname(file.originalname));
-        }
-    });
-
-    server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
-        require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
-        JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
+        require(path.resolve(global.aquila.appRoot, 'documentations/swagger/swagger.js')),
+        JSON.parse(await fsp.readFile(path.resolve(global.aquila.appRoot, 'documentations/swagger/config.json')))
     ));
 };
 
 const maintenance = async (req, res, next) => {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     if (
-        global.envConfig.environment.maintenance
-            && global.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
+        global.aquila.envConfig.environment.maintenance
+            && global.aquila.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
-        const maintenanceFile = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'maintenance.html');
+        const maintenanceFile = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'maintenance.html');
         if (fsp.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }

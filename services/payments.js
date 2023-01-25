@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -14,6 +14,7 @@ const QueryBuilder                                    = require('../utils/QueryB
 const ServiceOrders                                   = require('./orders');
 const ServiceMail                                     = require('./mail');
 const ServicesProducts                                = require('./products');
+const modulesUtils                                    = require('../utils/modules');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
@@ -91,8 +92,6 @@ const savePaymentMethod = async (pm) => {
 
 const deletePaymentMethod = async (_id) => PaymentMethods.findOneAndDelete({_id});
 
-// --------------------------------------------------- POST REFACTOR
-
 const successfulPayment = async (query, updateObject, paymentCode = '') => {
     console.log('service order successfulPayment()');
 
@@ -132,7 +131,7 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
             console.error(e);
         }
         // We check that the products of the basket are well orderable
-        const {bookingStock} = global.envConfig.stockOrder;
+        const {bookingStock} = global.aquila.envConfig.stockOrder;
         if (bookingStock === 'payment') {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
@@ -229,19 +228,6 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
-        // const orderdata = [];
-        // const datas = {
-        //     number : _order.number
-        // };
-
-        // for(let i = 0; i < returnData.products.length; i++) {
-        //     orderdata.push(`${returnData.products[i].product_code} (${returnData.products[i].qty_returned})`);
-        // }
-
-        // datas.orderdata = orderdata.join(", ");
-        /**
-         * DO NOT DELETE THE COMMENTED CODE ABOVE
-         */
         if (returnData.type === 'DEBIT') {
             const datas = {
                 ..._order,
@@ -287,6 +273,7 @@ const updatePayment = async (body) => {
 };
 
 async function orderPayment(req) {
+    await modulesUtils.modulesLoadFunctions('orderPayment', {orderNumber: req.params.orderNumber}, async () => {});
     try {
         const query  = {...req.body.filterPayment};
         query.active = true;
@@ -354,8 +341,8 @@ function createDeferredPayment(order, method, lang) {
 
 async function immediateCashPayment(req, method) {
     try {
-        const modulePath     = path.join(global.appRoot, `modules/${method.moduleFolderName}`);
-        const paymentService = require(`${modulePath}/services/${req.body.paymentMethod}`);
+        const modulePath     = path.join(global.aquila.appRoot, `modules/${method.moduleFolderName}`);
+        const paymentService = require(`${modulePath}/services/${method.paymentServiceFileName ? method.paymentServiceFileName : req.body.paymentMethod}`);
         // We set the same value in several places to fit all modules
         req.query.orderId      = req.params.orderNumber;
         req.params.paymentCode = req.body.paymentMethod;
@@ -373,7 +360,7 @@ async function deleteFailedPayment() {
     console.log('==> Start removing failed payment from orders <==');
     try {
         const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - (global.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
+        dateToDelete.setDate(dateToDelete.getDate() - (global.aquila.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
         const orders = await Orders.find({
             payment : {
                 $elemMatch : {

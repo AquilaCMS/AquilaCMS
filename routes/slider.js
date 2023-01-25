@@ -1,19 +1,20 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 const ServiceSlider    = require('../services/slider');
 
 module.exports = function (app) {
     app.post('/v2/sliders', getSliders);
     app.post('/v2/slider', getSlider);
     app.post('/v2/slider/:id', getSliderById);
-    app.put('/v2/slider/:id?', adminAuthRight('slider'), setSlider);
+    app.put('/v2/slider/:id?', adminAuthRight('slider'), autoFillCode, setSlider);
     app.delete('/v2/slider/:id', adminAuthRight('slider'), deleteSlider);
     app.delete('/v2/slider/:_id/:_id_item', adminAuthRight('slider'), deleteItemSlider);
 };

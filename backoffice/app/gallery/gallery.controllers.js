@@ -179,7 +179,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         };
 
         $scope.getImage = function(img) {
-            const filename = img.src.split('/')[img.src.split('/').length -1];
+            const filename = img.src.split('\\').pop().split('/').pop();
             return `/images/gallery/200x200/${img._id}/${filename}`;
         }
     }
@@ -244,7 +244,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         };
 
         $scope.getImage = function(img) {
-            const filename = img.src.split('/')[img.src.split('/').length -1];
+            const filename = img.src.split('\\').pop().split('/').pop();
             return `/images/gallery/200x200/${img._id}/${filename}`;
         }
     }

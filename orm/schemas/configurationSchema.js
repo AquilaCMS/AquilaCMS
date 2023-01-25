@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -54,8 +54,95 @@ const ConfigurationSchema = new Schema({
             values : {type: [String]},
             active : {type: Boolean, default: false}
         },
-        needRestart : {type: Boolean, default: false},
-        needRebuild : {type: Boolean, default: false}
+        needRestart    : {type: Boolean, default: false},
+        needRebuild    : {type: Boolean, default: false},
+        searchSettings : {
+            shouldSort         : {type: Boolean, default: true},
+            ignoreLocation     : {type: Boolean, default: true},
+            findAllMatches     : {type: Boolean, default: true},
+            ignoreFieldNorm    : {type: Boolean, default: true},
+            includeScore       : {type: Boolean, default: true},
+            useExtendedSearch  : {type: Boolean, default: true},
+            minMatchCharLength : {type: Number, default: 2},
+            threshold          : {type: Number, default: 0.2},
+            keys               : {
+                type    : [{name: {type: String, required: true}, weight: {type: Number, required: true}, translation: {}}],
+                default : [
+                    {
+                        name        : 'code',
+                        weight      : 20,
+                        translation : {
+                            fr : {
+                                label : 'Code'
+                            },
+                            en : {
+                                label : 'Code'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.name',
+                        weight      : 10,
+                        translation : {
+                            fr : {
+                                label : 'Nom'
+                            },
+                            en : {
+                                label : 'Name'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description1.title',
+                        weight      : 3,
+                        translation : {
+                            fr : {
+                                label : 'Titre description 1'
+                            },
+                            en : {
+                                label : 'Title description 1'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description1.text',
+                        weight      : 2.5,
+                        translation : {
+                            fr : {
+                                label : 'Texte descripiton 1'
+                            },
+                            en : {
+                                label : 'Text descripiton 1'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description2.title',
+                        weight      : 2,
+                        translation : {
+                            fr : {
+                                label : 'Titre description 2'
+                            },
+                            en : {
+                                label : 'Title description 2'
+                            }
+                        }
+                    },
+                    {
+                        name        : 'translation.{lang}.description2.text',
+                        weight      : 1.5,
+                        translation : {
+                            fr : {
+                                label : 'Texte description 2'
+                            },
+                            en : {
+                                label : 'Text description 2'
+                            }
+                        }
+                    }
+                ]
+            }
+        }
 
     },
     taxerate : {
@@ -101,7 +188,8 @@ const ConfigurationSchema = new Schema({
                         fr : {value: 'Produit définitivement épuisé'}
                     }
                 }
-            ]},
+            ]
+        },
         additionnalFees : {
             tax : {type: Number, default: 0},
             et  : {type: Number, default: 0}
@@ -130,15 +218,15 @@ ConfigurationSchema.pre('updateOne', async function () {
 });
 
 ConfigurationSchema.post('updateOne', async function () {
-    global.envConfig = (await this.findOne({})).toObject();
+    global.aquila.envConfig = (await this.findOne({})).toObject();
 });
 
 ConfigurationSchema.post('findOne', async function (doc) {
     if (doc && doc.environment && doc.environment.mailPass) {
         try {
             doc.environment.mailPass = encryption.decipher(doc.environment.mailPass);
-        // eslint-disable-next-line no-empty
-        } catch (err) {}
+            // eslint-disable-next-line no-empty
+        } catch (err) { }
     }
 });
 

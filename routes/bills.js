@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -83,7 +83,8 @@ async function generatePDF(req, res, next) {
         const response         = await ServiceBills.generatePDF(PostBodyVerified);
         if (response instanceof stream.Readable) {
             return response.pipe(res);
-        } if (Buffer.isBuffer(response) || typeof response === 'string') {
+        }
+        if (Buffer.isBuffer(response) || typeof response === 'string') {
             return res.end(response);
         }
         return res.end('ERROR_WK-HTML-TO-PDF');

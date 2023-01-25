@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate", "$rootScope",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate, $rootScope) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$q", "$translate", "$rootScope",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $q, $translate, $rootScope) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
@@ -165,7 +165,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 }
             },(err) => {
                 toastService.toast("danger", err.data.message);
-                console.log(err);
+                console.error(err);
             });
 
             

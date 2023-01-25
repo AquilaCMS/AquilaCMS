@@ -75,10 +75,7 @@
                     <div class="col-md-10">
                         <label translate>mail.detail.attachment</label>
                         <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before"
-                            after-function="after" lang="lang" on-error="uploadError"></ns-upload-files>
-                        <!-- <ns-upload-files is-selected="nsUploadFiles.isSelected" ng-if="!mail.translation[lang].attachments || mail.translation[lang].attachments.length < 1" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
-                                after-function="after()" lang="lang" on-error="uploadError()"></ns-upload-files> -->
-
+                            after-function="after" lang="lang" on-error="uploadError()"></ns-upload-files>
                         <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">
                             <tr ng-repeat-start="file in mail.translation[lang].attachments">
                                 <td></td>
@@ -99,7 +96,7 @@
                     <div class="col-sm-11">
                         <label class="col-sm-2 control-label" translate>mail.detail.html</label>
                         <div class="col-sm-12 tinyeditor-big" ng-if='mail.type === "" || mail.type'>
-                            <ns-tinymce lang="'lang'" mail="mail.type === '' ? 'none' : mail.type"
+                            <ns-tinymce lang="lang" mail="mail.type === '' ? 'none' : mail.type"
                                 text="mail.translation[lang].content"></ns-tinymce>
                             <br />
                         </div>

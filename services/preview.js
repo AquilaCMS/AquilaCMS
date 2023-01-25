@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -44,10 +44,12 @@ const {
 }                             = require('../orm/models');
 
 const preview = async (body) => {
-    let preview = {};
-    if (await ProductsPreview.findOne({code: body.code})) {
+    let preview      = {};
+    const oldPreview = await ProductsPreview.findOne({code: body.code});
+    if (oldPreview) {
         body.updatedAt = new Date();
-        preview        = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+        delete body._id;
+        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
     } else {
         let newPreview;
         switch (body.type) {
@@ -74,10 +76,10 @@ const preview = async (body) => {
         }
     }
     if (body.lang) {
-        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
+        return URL.resolve(global.aquila.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
     }
     const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
+    return URL.resolve(global.aquila.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
 };
 
 /**

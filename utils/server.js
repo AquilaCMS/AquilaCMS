@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -39,37 +39,37 @@ const isProd = getEnv('NODE_ENV') === 'production';
 const dev = getEnv('NODE_ENV') === 'development';
 
 const updateEnv = async () => {
-    const pathToEnvPath = path.join(global.appRoot, 'config', 'envPath');
+    const pathToEnvPath = path.join(global.aquila.appRoot, 'config', 'envPath');
     const file          = await fs.readFile(pathToEnvPath);
     let envPath         = file.toString();
-    envPath             = path.join(global.appRoot, envPath);
+    envPath             = path.join(global.aquila.appRoot, envPath);
     if (!(await fs.hasAccess(envPath))) {
         console.error(`Cannot access to ${envPath}`);
     }
     const envFile = JSON.parse(await fs.readFile(envPath, {encoding: 'utf8'}));
     await fs.writeFile(envPath, JSON.stringify(envFile, null, 2));
-    global.envFile = envFile[getEnv('AQUILA_ENV')];
+    global.aquila.envFile = envFile[getEnv('AQUILA_ENV')];
 };
 
 /**
- * Get assign global.envFile if envFile exists else stay null
+ * Get assign global.aquila.envFile if envFile exists else stay null
  */
 const getOrCreateEnvFile = async () => {
     try {
-        global.envPath = (await fs.readFile(path.join(global.appRoot, 'config/envPath'))).toString();
+        global.aquila.envPath = (await fs.readFile(path.join(global.aquila.appRoot, 'config/envPath'))).toString();
     } catch (err) {
-        await fs.writeFile(path.join(global.appRoot, 'config/envPath'), 'config/env.json');
-        global.envPath = path.join(global.appRoot, 'config/env.json');
+        await fs.writeFile(path.join(global.aquila.appRoot, 'config/envPath'), 'config/env.json');
+        global.aquila.envPath = path.join(global.aquila.appRoot, 'config/env.json');
     }
 
     try {
         let envFile;
         const envExample = JSON.parse(await fs.readFile(
-            path.join(global.appRoot, 'config/env.template.json'),
+            path.join(global.aquila.appRoot, 'config/env.template.json'),
             {encoding: 'utf8'}
         ));
-        if (fs.existsSync(path.resolve(global.envPath))) {
-            envFile = await fs.readFile(global.envPath, {encoding: 'utf8'});
+        if (fs.existsSync(path.resolve(global.aquila.envPath))) {
+            envFile = await fs.readFile(global.aquila.envPath, {encoding: 'utf8'});
             if (envFile === '') {
                 envFile = {};
             } else {
@@ -77,9 +77,9 @@ const getOrCreateEnvFile = async () => {
                     envFile = JSON.parse(envFile);
                 } catch (error) {
                     console.error('Access to the env file is possible but the file is invalid');
-                    const newPathTemp = `${global.envPath}.temp`;
+                    const newPathTemp = `${global.aquila.envPath}.temp`;
                     await fs.writeFile(newPathTemp, envFile);
-                    console.error(`The content of ${global.envPath} has been copied to ${newPathTemp}`);
+                    console.error(`The content of ${global.aquila.envPath} has been copied to ${newPathTemp}`);
                     envFile = {};
                 }
             }
@@ -97,8 +97,8 @@ const getOrCreateEnvFile = async () => {
         } else {
             envFile = generateNewEnv(envExample);
         }
-        await fs.writeFile(global.envPath, JSON.stringify(envFile, null, 2));
-        global.envFile = envFile[getEnv('AQUILA_ENV')];
+        await fs.writeFile(global.aquila.envPath, JSON.stringify(envFile, null, 2));
+        global.aquila.envFile = envFile[getEnv('AQUILA_ENV')];
     } catch (err) {
         console.error(err);
         process.exit(1);
@@ -145,7 +145,7 @@ const showAquilaLogo = () => {
 
 const controlNodeVersion = async () => {
     try {
-        const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
+        const packageJSON = JSON.parse(await fs.readFile(path.join(global.aquila.appRoot, 'package.json'), {encoding: 'utf8'}));
         const check       = (hilo) => outside(process.version, packageJSON.engines.node, hilo);
 
         let errorVersion;
@@ -168,20 +168,20 @@ const logVersion = async () => {
     console.log(`%s@@ NodeJS version : ${process.version}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ NODE_ENV : ${getEnv('NODE_ENV')}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ AQUILA_ENV : ${getEnv('AQUILA_ENV')}%s`, '\x1b[32m', '\x1b[0m');
-    if (global.envFile.db) {
-        console.log(`%s@@ Database : ${global.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
+    if (global.aquila.envFile.db) {
+        console.log(`%s@@ Database : ${global.aquila.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
     }
     controlNodeVersion();
 };
 
 const startListening = async (server) => {
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active) {
-        const {key, cert} = global.envFile.ssl;
+    if (global.aquila.envFile && global.aquila.envFile.ssl && global.aquila.envFile.ssl.active) {
+        const {key, cert} = global.aquila.envFile.ssl;
         if (!key || !cert) {
             throw new Error('SSL Error - need a cert and a key file');
         }
-        const keyPath  = path.resolve(global.appRoot, key);
-        const certPath = path.resolve(global.appRoot, cert);
+        const keyPath  = path.resolve(global.aquila.appRoot, key);
+        const certPath = path.resolve(global.aquila.appRoot, cert);
         try {
             await fs.access(keyPath);
             await fs.access(certPath);
@@ -192,16 +192,16 @@ const startListening = async (server) => {
         }
         try {
             spdy.createServer({
-                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                key  : await fs.readFile(path.resolve(global.aquila.appRoot, global.aquila.envFile.ssl.key)),
+                cert : await fs.readFile(path.resolve(global.aquila.appRoot, global.aquila.envFile.ssl.cert)),
                 spdy : {
                     protocols : ['h2', 'http/1.1'],
                     plain     : false
                 }
-            }, server).listen(global.port, (err) => {
+            }, server).listen(global.aquila.port, (err) => {
                 if (err) throw err;
-                global.isServerSecure = true;
-                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+                global.aquila.isServerSecure = true;
+                console.log(`%sserver listening on port ${global.aquila.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
                 server.emit('started');
             });
         } catch (error) {
@@ -209,9 +209,9 @@ const startListening = async (server) => {
             throw new Error('SSL Error - Cert or Key file are invalid');
         }
     } else {
-        server.listen(global.port, (err) => {
+        server.listen(global.aquila.port, (err) => {
             if (err) throw err;
-            console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
+            console.log(`%sserver listening on port ${global.aquila.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
             server.emit('started');
         });
     }
@@ -226,21 +226,21 @@ const getAppUrl = async (req) => {
     if (!req) {
         throw NSErrors.InvalidRequest;
     }
-    const config = global.envConfig.environment;
+    const config = global.aquila.envConfig.environment;
 
     if (config.adminPrefix === undefined) {
         config.adminPrefix = 'admin';
     }
 
     return {
-        appUrl      : `${req.protocol}://${req.get('host')}/`,
+        appUrl      : `${req.protocol}://${req.hostname}/`,
         adminPrefix : config.adminPrefix
     };
 };
 
 const getUploadDirectory = () => {
-    if (global.envConfig && global.envConfig.environment) {
-        const {photoPath} = global.envConfig.environment;
+    if (global.aquila.envConfig && global.aquila.envConfig.environment) {
+        const {photoPath} = global.aquila.envConfig.environment;
         if (photoPath) {
             return photoPath;
         }

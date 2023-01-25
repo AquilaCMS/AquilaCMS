@@ -44,7 +44,7 @@
                                 name="type_{{$index}}" id="type_{{$index}}" 
                                 ng-model="product.variants[getProductVariantIndex(declinaison.code)].type" 
                                 ng-click="$event.stopPropagation()"
-                                ng-show="getProductVariantIndex(declinaison.code) === 0"
+                                ng-change="updateVariantType(product.variants[getProductVariantIndex(declinaison.code)].type)">
                             >
                                 <option selected value="image" translate>product.declinaisons.displayImage</option>
                                 <option selected value="list" translate>product.declinaisons.displayList</option>
@@ -62,7 +62,11 @@
         <div class="col-sm-12">
             <div style="margin: 20px 0; font-weight: bold; width: 100%;">
                 <p translate>product.declinaisons.title2</p>
-            </div>    
+            </div>  
+            <div>
+                <button class="btn btn-default" ng-show="product.variants_values && product.variants_values[0]" type="button" ng-click="activateAllVariants()" translate>product.declinaisons.activateAllVariants</button>  
+                <button class="btn btn-default" ng-show="product.variants_values && product.variants_values[0]" type="button" ng-click="disableAllVariants()" translate>product.declinaisons.disableAllVariants</button>  
+            </div>
             <div>
                 <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                     <thead>

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -85,10 +85,6 @@ const CartSchema = new Schema({
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
 
-/* CartSchema.pre('findOneAndUpdate', function () {
- this.findOneAndUpdate({},{ $set: { updated: Date.now() } });
- }); */
-
 const itemsSchema = CartSchema.path('items');
 
 itemsSchema.discriminator('simple', ItemSimpleSchema);
@@ -133,8 +129,7 @@ CartSchema.virtual('delivery.price').get(function () {
 });
 
 CartSchema.virtual('additionnalFees').get(function () {
-    // const self = this;
-    const {et, tax} = global.envConfig.stockOrder.additionnalFees;
+    const {et, tax} = global.aquila.envConfig.stockOrder.additionnalFees;
     return {
         ati : Number(et + (et * (tax / 100))),
         et  : Number(et),
@@ -180,8 +175,8 @@ CartSchema.virtual('priceTotal').get(function () {
         priceTotal.ati += self.delivery.price.ati || 0;
     }
     // ajout additional
-    if (global.envConfig.stockOrder.additionnalFees) {
-        const {et, tax} = global.envConfig.stockOrder.additionnalFees;
+    if (global.aquila.envConfig.stockOrder.additionnalFees) {
+        const {et, tax} = global.aquila.envConfig.stockOrder.additionnalFees;
         priceTotal.ati += et + (et * (tax / 100));
         priceTotal.et  += et;
     }
@@ -189,7 +184,6 @@ CartSchema.virtual('priceTotal').get(function () {
 });
 
 CartSchema.virtual('priceSubTotal').get(function () {
-    // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;
@@ -236,8 +230,8 @@ async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
-            const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
+        if (await fs.hasAccess(`${global.aquila.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+            const updateCart = require(`${global.aquila.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }
     }

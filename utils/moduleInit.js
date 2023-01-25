@@ -22,7 +22,7 @@ const fetchModules = async () => {
     console.log('Required modules :');
     for (let i = 0; i < loadedModules.length; i++) {
         console.log(`- ${loadedModules[i].name}`);
-        const infoFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/info.json`);
+        const infoFile = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/info.json`);
         if (fs.existsSync(infoFile)) {
             loadedModules[i] = {...loadedModules[i], ...require(infoFile)};
             loadedModules[i] = await checkModule(loadedModules[i]);
@@ -44,18 +44,18 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                 if (!loadedModules[i].info.init.steps[moduleStep]) {
                     console.log(`Module ${loadedModules[i].name} has no step ${step}`);
                 } else {
-                    const filePath = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init/${loadedModules[i].info.init.steps[moduleStep]}`);
+                    const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/init/${loadedModules[i].info.init.steps[moduleStep]}`);
                     await runStepFile(loadedModules[i], filePath, params);
                 }
             } else {
                 // ------- The old way with init.js and initAfter.js
                 if (step === 1) { // init.js
-                    const filePath = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
+                    const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/init.js`);
                     await runStepFile(loadedModules[i], filePath, params);
                 } else if (step === 4) { // initAfter.js
                     await new Promise(async (resolve, reject) => {
                         try {
-                            const filePath = path.join(global.appRoot, `/modules/${loadedModules[i].name}/initAfter.js`);
+                            const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/initAfter.js`);
                             if (fs.existsSync(filePath)) {
                                 require(filePath)(resolve, reject, '', params.apiRouter, params.passport);
                             } else {

@@ -11,7 +11,9 @@
                     additionnal-buttons="additionnalButtons"
                     more-buttons="moreButtons"
                     >
-            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            <div style="height: 40px" ng-show='languages.length > 1'>
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
             <div class="scrollmenu">
                 <ul class="nav nav-tabs" hook-product-detail-tab>
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
@@ -29,6 +31,10 @@
                 </ul>
             </div>
             <div class="tab-content">
+                <span class="pull-right" style="margin-bottom:30px;">
+                    <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookProductInfo" style="display:block;"></span>
+                </span>
+
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'simple'" form="form"></ns-product-general>
                 </div>
@@ -148,7 +154,7 @@
                         <span translate>simple.beforeConfig</span>
                     </span>
                     <div class="form-group" style="margin-top: 20px;" ng-show="product.code != null">
-                        <ns-attributes ng-show="product.attributes && product.attributes.length" class="col-sm-11" ng-if="att.type" ng-repeat="att in product.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                        <ns-attributes ng-show="product.attributes && product.attributes.length" class="col-sm-11" ng-if="att.type" ng-repeat="att in product.attributes track by att.code | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
                         <p ng-show="!product.attributes || !product.attributes.length" class="col-sm-11" style="margin-top: 20px;"><em translate>product.general.noAttribs</em></p>
                     </div>
                 </div>

@@ -11,13 +11,13 @@
                     <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
+                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" ng-click="getCatPrdList()" translate>category.detail.listPdt</a>
                 </li>
                 <li>
                     <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" ng-click="getCatFilters()" translate>category.detail.filtres</a>
                 </li>
             </ul>
         </div>
@@ -70,6 +70,8 @@
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'container'"
                                         translate>category.detail.container</label>
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'categorylist'"
+                                        translate>category.detail.categorie</label>
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                         translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
@@ -85,13 +87,13 @@
                                 <input ng-model="category.translation[lang].name" name="name" class="form-control" required />
                             </td>
                         </tr>
-                        <tr  ng-if="category.action == 'catalog'">
+                        <tr  ng-if="category.action == 'catalog' || category.action == 'categorylist'">
                             <td translate>category.detail.metaDesc</td>
                             <td>
                                 <input ng-model="category.translation[lang].metaDescription" name="description" class="form-control" />
                             </td>
                         </tr>
-                        <tr id="slug" ng-if="category.action == 'catalog'">
+                        <tr id="slug" ng-if="category.action == 'catalog' || category.action == 'categorylist'">
                             <td translate>category.detail.slugCat</td>
                             <td>
                                 <input ng-model="category.translation[lang].slug" name="slug" class="form-control" required/>
@@ -161,10 +163,15 @@
                         <tr>
                             <td translate>category.detail.headerImg</td>
                             <td style="text-align: center;">
-                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin-bottom: 10px;" />
-                                <button ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
-                                    category.detail.delete
-                                </button>
+                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" style="max-width: 100%;max-height:200px;margin: 10px  auto;display: block;" />
+                                <div style="padding: 0 20px;display: flex; flex-wrap: wrap;justify-content: space-between; font-size: 0">
+                                    <button type="button" style="width: 49%;" ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
+                                        category.detail.delete
+                                    </button>
+                                    <button type="button" style="width: 49%;margin: 0" ng-show="category.img" class="btn btn-default btn-block" ng-click="copyLink($event)" translate>
+                                        medias.medias.cpLien
+                                    </button>
+                                </div>
 
                                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close"></ns-upload-files>
@@ -173,7 +180,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog'">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" ng-if="category.action === 'catalog' || category.action == 'categorylist'">
                     <tbody>
                         <tr id="text1">
                             <td translate>
@@ -205,6 +212,10 @@
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'" hook-category-detail-productList>
                 <div class="tableWrapperOverflow">
+                    
+                    <div ng-show="loadPrds" id="overlayModule">
+                        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                    </div>
                     <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
                     aria-describedby="DataTables_Table_0_info">
                     <thead>
@@ -212,7 +223,7 @@
                             <th role="columnheader" style="width: 7%;" translate>category.detail.inORout</th>
                             <!--<th role="columnheader" style="width: 1%;">Position</th>-->
                             <th role="columnheader" style="width: 1%;">
-                                <a ng-click="local.sortType = 'sortWeight'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'sortWeight'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.pos
                                     <span ng-show="local.sortType == 'sortWeight' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -220,7 +231,7 @@
                                 </a>
                             </th>
                             <th role="columnheader" style="width: 8%;">
-                                <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.code
                                     <span ng-show="local.sortType == 'code' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -229,7 +240,7 @@
                             </th>
                             <th role="columnheader" style="width: 8%" translate>category.detail.img</th>
                             <th role="columnheader" style="width: 38%;">
-                                <a ng-click="local.sortType = 'translation.fr.name'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'translation.fr.name'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.nom
                                     <span ng-show="local.sortType == 'translation.fr.name' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -237,7 +248,7 @@
                                 </a>
                             </th>
                             <th role="columnheader" style="width: 10%;">
-                                <a ng-click="local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.price
                                     <span ng-show="local.sortType == 'price.ati.normal' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -245,7 +256,7 @@
                                 </a>
                             </th>
                             <th role="columnheader" style="width: 4%;">
-                                <a ng-click="local.sortType = 'qty'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'qty'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.quantity
                                     <span ng-show="local.sortType == 'qty' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -254,7 +265,7 @@
                             </th>
                             <th role="columnheader" style="width: 8%;" translate>category.detail.typePdt</th>
                             <th role="columnheader" style="width: 8%;">
-                                <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.actif
                                     <span ng-show="local.sortType == 'active' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -262,7 +273,7 @@
                                 </a>
                             </th>
                             <th role="columnheader" style="width: 8%;">
-                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();"
+                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; pageChanged(1);"
                                    translate>
                                     category.detail.visible
                                     <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
@@ -270,7 +281,7 @@
                                 </a>
                             </th>
                             <th role="columnheader" style="width: 8%;">
-                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; pageChanged(1);" translate>
                                     category.detail.action
                                     <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
                                     <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
@@ -279,31 +290,32 @@
                         </tr>
                         <tr role="row">
                             <th>
-                                <select ng-model="searchObj.productInCategory" ng-change="getProducts()" class="form-control">
+                                <!-- <select ng-model="searchObj.productInCategory" ng-change="currentPage = 1; getProducts(true)" class="form-control"> -->
+                                <select ng-model="searchObj.productInCategory" ng-change="pageChanged(1, true)" class="form-control">
                                     <option value="true" translate>category.detail.oui</option>
                                     <option value="false" translate>category.detail.non</option>
                                 </select>
                             </th>
                             <th></th>
                             <th>
-                                <input type="text" ng-change="getProducts()" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
+                                <input ng-model-options="{debounce: 500}" type="text" ng-change="pageChanged(1)" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
                             </th>
                             <th>
                             </th>
                             <th>
-                                <input type="text" ng-change="getProducts()" ng-model="searchObj.translation.name"
+                                <input ng-model-options="{debounce: 500}" type="text" ng-change="pageChanged(1)" ng-model="searchObj.translation.name"
                                        translate translate-attr-placeholder='category.detail.ph1' class="form-control" />
                             </th>
                             <th>
-                                <input ng-model="searchObj['price.ati.normal'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
-                                <input ng-model="searchObj['price.ati.normal'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['price.ati.normal'].$gte" ng-change="pageChanged(1)" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['price.ati.normal'].$lt" ng-change="pageChanged(1)" class="form-control" type="number" style="width: 65px;" placeholder="max" />
                             </th>
                             <th>
-                                <input ng-model="searchObj['stock.qty'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
-                                <input ng-model="searchObj['stock.qty'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['stock.qty'].$gte" ng-change="pageChanged(1)" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model-options="{debounce: 500}" ng-model="searchObj['stock.qty'].$lt" ng-change="pageChanged(1)" class="form-control" type="number" style="width: 65px;" placeholder="max" />
                             </th>
                             <th>
-                                <select ng-model="searchObj.type" ng-change="getProducts()" class="form-control">
+                                <select ng-model="searchObj.type" ng-change="pageChanged(1)" class="form-control">
                                     <option value="" translate>category.detail.indifferent</option>
                                     <option value="simple" translate>category.detail.simple</option>
                                     <option value="bundle" translate>category.detail.compose</option>
@@ -311,14 +323,14 @@
                                 </select>
                             </th>
                             <th>
-                                <select ng-model="searchObj.active" ng-change="getProducts()" class="form-control">
+                                <select ng-model="searchObj.active" ng-change="pageChanged(1)" class="form-control">
                                     <option value="" translate>category.detail.indifferent</option>
                                     <option value="true" translate>category.detail.actif</option>
                                     <option value="false" translate>category.detail.nonActif</option>
                                 </select>
                             </th>
                             <th>
-                                <select ng-model="searchObj._visible" ng-change="getProducts()" class="form-control">
+                                <select ng-model="searchObj._visible" ng-change="pageChanged(1)" class="form-control">
                                     <option value="" translate>category.detail.indifferent</option>
                                     <option value="true" translate>category.detail.visible</option>
                                     <option value="false" translate>category.detail.nonVisible</option>

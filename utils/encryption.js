@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2022 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -10,8 +10,8 @@ const crypto    = require('crypto');
 const IV_LENGTH = 16;
 
 const cipher = (dataToEncrypt) => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const {method, password} = global.envFile.encryption;
+    if (global.aquila.envFile.encryption && global.aquila.envFile.encryption.method && global.aquila.envFile.encryption.password) {
+        const {method, password} = global.aquila.envFile.encryption;
         const iv                 = crypto.randomBytes(IV_LENGTH);
         const cipher             = crypto.createCipheriv(method, password, iv); // password need to be at least 32 char in aes-256-cbc
         let encrypted            = cipher.update(dataToEncrypt);
@@ -24,8 +24,8 @@ const cipher = (dataToEncrypt) => {
 };
 
 const decipher = (dataToDecrypt) => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const {method, password} = global.envFile.encryption;
+    if (global.aquila.envFile.encryption && global.aquila.envFile.encryption.method && global.aquila.envFile.encryption.password) {
+        const {method, password} = global.aquila.envFile.encryption;
         const textParts          = dataToDecrypt.split(':');
         const iv                 = Buffer.from(textParts[0], 'hex');
         const encryptedText      = Buffer.from(textParts[1], 'hex');
@@ -38,7 +38,7 @@ const decipher = (dataToDecrypt) => {
 };
 
 const EncryptionConfigInfo = () => {
-    if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
+    if (global.aquila.envFile.encryption && global.aquila.envFile.encryption.method && global.aquila.envFile.encryption.password) {
         return;
     }
 

@@ -142,7 +142,6 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
             data["update"] = true;
             data.type = $scope.type;
             SetAttributesV2.save(data, function (msg) {
-                console.log(msg)
                 if(msg.status)
                 {
                     toastService.toast("success", $translate.instant("setAttribute.detail.saveDone"));
