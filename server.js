@@ -218,9 +218,9 @@ const initServer = async () => {
 
 const startServer = async () => {
     server.use(expressErrorHandler);
-    await utilsModuleInit.moduleInitSteps(5, {server}); // [step 5] Module Init Pre Start
+    if (global.aquila.envFile.db) await utilsModuleInit.moduleInitSteps(5, {server}); // [step 5] Module Init Pre Start
     await serverUtils.startListening(server);
-    await utilsModuleInit.moduleInitSteps(6, {server}); // [step 6] Module Init Post Start
+    if (global.aquila.envFile.db) await utilsModuleInit.moduleInitSteps(6, {server}); // [step 6] Module Init Post Start
     serverUtils.showAquilaLogo();
 };
 
