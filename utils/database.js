@@ -2107,7 +2107,7 @@ const populateStockData = async (_id) => {
     const {stock}    = await Products.findById(_id.toString());
     delete stock.$init;
 
-    if (global.envConfig?.stockOrder?.returnStockToFront === false) {
+    if (global.aquila.envConfig?.stockOrder?.returnStockToFront === false) {
         const {qty_booked, qty_real, qty, $init, ...rest} = stock;
         return rest;
     }
