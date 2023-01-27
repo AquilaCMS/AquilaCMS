@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -79,7 +79,7 @@ const updateEnvFile = async () => {
     const absoluteEnvPath = path.join(global.aquila.appRoot, global.aquila.envPath);
     let oldEnvFile        = await fs.readFile(absoluteEnvPath);
     oldEnvFile            = JSON.parse(oldEnvFile);
-    if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
+    if (!utils.isEqual(oldEnvFile[aquila_env], global.aquila.envFile)) {
         oldEnvFile[aquila_env] = global.aquila.envFile;
         global.aquila.envFile  = oldEnvFile[aquila_env];
         await fs.writeFile(absoluteEnvPath, JSON.stringify(oldEnvFile, null, 4));
