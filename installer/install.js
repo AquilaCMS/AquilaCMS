@@ -155,12 +155,14 @@ const createConfiguration = async (datas, bOverride) => {
 
     datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
 
+    global.aquila.defaultLang = datas.language;
+
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
             currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
-            websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
+            websiteCountry  : datas.language && datas.language.toLowerCase() === 'en' ? 'GB' : 'FR',
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
