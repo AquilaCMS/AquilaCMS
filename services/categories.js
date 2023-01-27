@@ -169,12 +169,10 @@ const generateFilters = async (res, lang = '', selectedAttributes = [], isInSear
 
                 for (const attr of prd.attributes) {
                     let usedAttr = false;
-                    if (!isInSearchContext) {
-                        usedAttr = true;
-                    } else if (attr.usedInSearch) { // If we are in a search context and the attribute can be used in search
+                    // If we are not in a search context or if we are in a search context and the attribute can be used in search
+                    if (!isInSearchContext || (isInSearchContext && attr.usedInSearch)) {
                         usedAttr = true;
                     }
-
                     if (usedAttr && attributes.includes(attr.id.toString())) {
                         if (!attr.parents || attr.parents.length === 0) {
                             populateAttributesValues(attr, lang, attrWithoutParents);
