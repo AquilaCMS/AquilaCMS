@@ -70,8 +70,6 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                 // ------- Delete the above code when all modules are up to date
             }
         }
-    } else {
-        console.log('No modules to load');
     }
 };
 
