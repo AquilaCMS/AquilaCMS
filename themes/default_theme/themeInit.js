@@ -9,6 +9,8 @@ const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server');
 const dev = serverUtils.dev;
 
+if (global.aquila && typeof global.aquila !== 'object') global.aquila = JSON.parse(Buffer.from(global.aquila, 'base64').toString('utf8'));
+
 const themeName = path.basename(__dirname);
 const pathToTheme = path.join(global.aquila.appRoot, "themes", themeName, "/");
 

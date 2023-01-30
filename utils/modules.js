@@ -1,18 +1,15 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path     = require('path');
 const {fs}     = require('aql-utils');
-const utils    = require('./utils');
 const NSError  = require('./errors/NSError');
 const NSErrors = require('./errors/NSErrors');
-
-let loadedModules;
 
 /**
  * Module : Load the functions in the init.js of the modules if necessary
@@ -196,94 +193,6 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
     }
 };
 
-/**
- * Module : Load the init.js files of the modules if necessary
- * @param {any} server
- */
-const modulesLoadInit = async (server, runInit = true) => {
-    const Modules  = require('../orm/models/modules');
-    const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
-    loadedModules  = [..._modules].map((lmod) => ({...lmod, init: true, valid: false}));
-    for (let i = 0; i < loadedModules.length; i++) {
-        if (i === 0) {
-            console.log('Required modules :');
-        }
-        console.log(`- ${loadedModules[i].name}`);
-    }
-    if (loadedModules.length > 0) {
-        console.log('Start init loading modules');
-    }
-    for (let i = 0; i < loadedModules.length; i++) {
-        const initModuleFile = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/init.js`);
-        if (fs.existsSync(initModuleFile)) {
-            try {
-                const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
-                if (!isValid) {
-                    throw new Error('Error checking licence');
-                }
-                loadedModules[i].valid = true;
-                if (runInit) {
-                    require(initModuleFile)(server);
-                }
-                console.log(`- ${loadedModules[i].name}\x1b[32m \u2713 \x1b[0m`);
-            } catch (err) {
-                loadedModules[i].init = false;
-                console.log(`- ${loadedModules[i].name}\x1b[31m \u274C An error has occurred \x1b[0m\n`);
-                console.error(err);
-                return false;
-            }
-        }
-    }
-    if (loadedModules.length > 0) {
-        console.log('Finish init loading modules');
-    } else {
-        console.log('No modules to load');
-    }
-};
-
-/**
- * Module : Loads initAfter.js files for active modules
- * @param {any} apiRouter
- * @param {any} server
- * @param {any} passport
- */
-const modulesLoadInitAfter = async (apiRouter, server, passport) => {
-    loadedModules = loadedModules.filter((mod) => mod.init) || [];
-    if (loadedModules.length > 0) {
-        console.log('Start initAfter loading modules');
-        for (const mod of loadedModules) {
-            try {
-                // Get the initAfter.js files of the modules
-                await new Promise(async (resolve, reject) => {
-                    try {
-                        if (fs.existsSync(path.join(global.aquila.appRoot, `/modules/${mod.name}/initAfter.js`))) {
-                            if (!mod.valid) {
-                                const isValid = await utils.checkModuleRegistryKey(mod.name);
-                                if (!isValid) {
-                                    throw new Error('Error checking licence');
-                                }
-                            }
-                            require(path.join(global.aquila.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
-                        } else {
-                            console.log(`- ${mod.name}\x1b[33m (can't access to initAfter.js or no initAfter.js)\x1b[32m \u2713 \x1b[0m`);
-                            resolve();
-                        }
-                        console.log(`- ${mod.name}\x1b[32m \u2713 \x1b[0m`);
-                        resolve();
-                    } catch (err) {
-                        console.log(`- ${mod.name}\x1b[31m \u274C \x1b[0m\n`);
-                        reject(err);
-                    }
-                });
-            } catch (err) {
-                console.error(err);
-            }
-        }
-        loadedModules = undefined;
-        console.log('Finish initAfter loading modules');
-    }
-};
-
 module.exports = {
     modulesLoadFunctions,
     createListModuleFile,
@@ -291,7 +200,5 @@ module.exports = {
     errorModule,
     compareDependencies,
     checkModuleDepencendiesAtInstallation,
-    checkModuleDepencendiesAtUninstallation,
-    modulesLoadInit,
-    modulesLoadInitAfter
+    checkModuleDepencendiesAtUninstallation
 };

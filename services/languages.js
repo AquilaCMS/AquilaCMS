@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -16,6 +16,8 @@ const QueryBuilder  = require('../utils/QueryBuilder');
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
+
+const warningMsg = 'you must rebuild the theme and restart the server to apply the change.';
 
 const getLanguages = async (PostBody) => queryBuilder.find(PostBody, true);
 
@@ -37,6 +39,11 @@ const saveLang = async (lang) => {
     }
 
     await require('./themes').languageManagement();
+    if (lang._id) {
+        console.log(`Language '${result.name}' updated, ${warningMsg}`);
+    } else if (result.status === 'visible') {
+        console.log(`Language '${result.name}' created, ${warningMsg}`);
+    }
     return result;
 };
 
@@ -44,6 +51,9 @@ const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
 
     await require('./themes').languageManagement();
+    if (deletedLang.status === 'visible') {
+        console.log(`Language '${deletedLang.name}' deleted, ${warningMsg}`);
+    }
     return deletedLang;
 };
 

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -131,6 +131,7 @@ const initDBValues = async () => {
         MailType,
         Languages,
         PaymentMethods,
+        Shipments,
         Statics,
         AdminRights
     } = require('../orm/models');
@@ -1533,14 +1534,12 @@ const initDBValues = async () => {
     }
 
     /* ********** Payment methods ********** */
-    const imgTrans              = '/medias/paiement-virement-logo.png';
-    const imgCheck              = '/medias/paiement-cheque-logo.png ';
     const defaultPaymentMethods = [
         {
             code        : 'transfer',
             translation : {
-                fr : {name: 'Virement', urlLogo: imgTrans, description: 'Virement bancaire requis dans un délais de 5 jours'},
-                en : {name: 'Bank transfer', urlLogo: imgTrans, description: 'Bank transfer required within 5 days'}
+                fr : {name: 'Virement', description: 'Virement bancaire requis dans un délais de 5 jours'},
+                en : {name: 'Bank transfer', description: 'Bank transfer required within 5 days'}
             },
             active     : true,
             isDeferred : true
@@ -1548,8 +1547,8 @@ const initDBValues = async () => {
         {
             code        : 'cheque',
             translation : {
-                fr : {name: 'Chèque', urlLogo: imgCheck, description: 'Paiement par chèque à nous envoyer dans les 5 jours'},
-                en : {name: 'Check', urlLogo: imgCheck, description: 'Payment by check to be sent to us within 5 days'}
+                fr : {name: 'Chèque', description: 'Paiement par chèque à nous envoyer dans les 5 jours'},
+                en : {name: 'Check', description: 'Payment by check to be sent to us within 5 days'}
             },
             active     : true,
             isDeferred : true
@@ -1567,6 +1566,60 @@ const initDBValues = async () => {
     for (const paymentMethod of defaultPaymentMethods) {
         await PaymentMethods.findOneAndUpdate({code: paymentMethod.code}, {$setOnInsert: paymentMethod}, {new: true, upsert: true});
     }
+
+    /* ********** Shipments ********** */
+    const defaultCarrier = {
+        preparation : {
+            delay : 1,
+            unit  : 'day'
+        },
+        type      : 'DELIVERY',
+        active    : true,
+        forAllPos : false,
+        countries : [
+            {
+                country : 'FR',
+                prices  : [
+                    {
+                        weight_min : 0,
+                        weight_max : 99999,
+                        price      : 2
+                    }
+                ],
+                delay : 1,
+                unit  : 'day'
+            },
+            {
+                country : 'GB',
+                prices  : [
+                    {
+                        weight_min : 0,
+                        weight_max : 99999,
+                        price      : 2
+                    }
+                ],
+                delay : 1,
+                unit  : 'day'
+            }
+        ],
+        code        : 'default-carrier',
+        translation : {
+            en : {
+                name : 'My carrier'
+            },
+            fr : {
+                name : 'Mon transporteur'
+            }
+        },
+        url_logo       : '',
+        freePriceLimit : 50,
+        vat_rate       : 20
+    };
+    await Shipments.findOneAndUpdate(
+        {code: 'default-carrier'},
+        {$setOnInsert: defaultCarrier},
+        {new: true, upsert: true}
+    );
 
     /* ********** Admin acces rights ********** */
     const allRights = [
