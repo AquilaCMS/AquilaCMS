@@ -104,6 +104,10 @@ TranslationControllers.controller('LanguageEditCtrl',
                         } else if (oldLang.visible !== lang.visible) {
                             toastService.toast("warning", $translate.instant("translation.toast.needActions"));
                         }
+                    }else{
+                        if (lang.status === 'visible') {
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        }
                     }
                     LanguagesApiV2.save({lang}, function () {
                         var event = new CustomEvent("updateLangs", {detail: {languages: $scope.languages}});
