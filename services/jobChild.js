@@ -29,7 +29,6 @@ const initChildProcess = async () => {
             const message = typeof error === 'string' ? error : stringifyError(error, null, '\t');
             process.send(message);
         }
-        // const message = typeof error === 'string' ? error : JSON.stringify(error, Object.getOwnPropertyNames(error));
         process.exit(1);
     }
 })();
