@@ -390,8 +390,8 @@ const execDefineService = async (modulePath, funcName, option) => {
 
 const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
     const response = await execCron(modulePath, funcName, params, option);
-    if (response.result.error) throw response.result.error;
-    return typeof response.result.message === 'string' ? response.result.message : JSON.stringify(response.result.message, null, 2);
+    if (response.error) throw response.error;
+    return typeof response.message === 'string' ? response.message : JSON.stringify(response.message, null, 2);
 };
 
 const execDefineAPI = async (httpMethod, api, params) => {
@@ -426,11 +426,18 @@ async function execDefine(job, option) {
         } else {
             lastExecutionResult = await execDefineAPI(httpMethod, api, params);
         }
-        job.attrs.data.lastExecutionResult = lastExecutionResult;
     } catch (error) {
-        finalError                         = NSErrors.JobError;
-        job.attrs.data.lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(error, null, 2);
+        if (typeof error === 'string') {
+            finalError = new Error(error);
+        } else if (NSErrors[error.code]) {
+            finalError = NSErrors[error.code];
+        } else {
+            console.error(error);
+            finalError = NSErrors.JobError;
+        }
+        lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(error, null, 2);
     }
+    job.attrs.data.lastExecutionResult = lastExecutionResult;
     await job.save();
     if (finalError) throw finalError;
 }

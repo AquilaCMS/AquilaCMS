@@ -87,7 +87,7 @@ exports.execSh = async function (cde, param = [], path = global.aquila.appRoot) 
  * @param {string} path Path of the command.
  */
 exports.execCron = async function (modulePath, funcName, params, option) {
-    const result    = {};
+    let message     = '';
     const apiParams = {modulePath, funcName, option};
     return new Promise((resolve, reject) => {
         const cmd = fork(
@@ -95,16 +95,17 @@ exports.execCron = async function (modulePath, funcName, params, option) {
             [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
             {cwd: global.aquila.appRoot, shell: true}
         );
-        cmd.on('error', (err) => {
-            reject(err);
-        });
+        cmd.on('error', (err) => reject(err));
         cmd.on('message', (data) => {
-            result.message = data;
+            message = data;
         });
         cmd.on('close', (code) => resolve({code}));
     }).then(async (data) => {
-        if (data.code) result.error = NSErrors.JobErrorInChildNode;
-        return {result};
+        const error = data.code;
+        return {
+            message,
+            ...(error === 1 && {error: typeof message === 'string' ? message : NSErrors[message.code] || NSErrors.JobError})
+        };
     });
 };
 

@@ -35,7 +35,7 @@ module.exports = {
         fr : 'Interdit',
         en : 'Forbidden'
     },
-    DemoModeActivate : {
+    DemoMode : {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },

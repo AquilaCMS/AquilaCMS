@@ -27,10 +27,10 @@ const initChildProcess = async () => {
         if (response) process.send(response);
         process.exit(0);
     } catch (error) {
-        console.error(error);
-        if (error) {
-            const message = typeof error === 'string' ? error : stringifyError(error, null, '\t');
-            process.send(message);
+        if (NSErrors[error.code]) {
+            process.send(error);
+        } else {
+            process.send(stringifyError(error));
         }
         process.exit(1);
     }
