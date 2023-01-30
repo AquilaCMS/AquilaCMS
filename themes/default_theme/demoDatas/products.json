@@ -2218,8 +2218,9 @@
     },
     {
       "stock": {
-        "orderable": false,
-        "status": "liv"
+        "orderable": true,
+        "status": "liv",
+        "label": "available"
       },
       "price": {
         "et": {
