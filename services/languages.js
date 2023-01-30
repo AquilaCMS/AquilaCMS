@@ -37,6 +37,11 @@ const saveLang = async (lang) => {
     }
 
     await require('./themes').languageManagement();
+    if (lang._id) {
+        console.log(`Language '${result.name}' updated, you must rebuild the theme and restart the server to apply the change`);
+    } else if (result.status === 'visible') {
+        console.log(`Language '${result.name}' created, you must rebuild the theme and restart the server to apply the change`);
+    }
     return result;
 };
 
@@ -44,6 +49,9 @@ const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
 
     await require('./themes').languageManagement();
+    if (deletedLang.status === 'visible') {
+        console.log(`Language '${deletedLang.name}' deleted, you must rebuild the theme and restart the server to apply the change`);
+    }
     return deletedLang;
 };
 
