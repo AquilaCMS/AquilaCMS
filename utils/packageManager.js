@@ -86,7 +86,7 @@ exports.execSh = async function (cde, param = [], path = global.aquila.appRoot) 
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execCron = async function (modulePath, funcName, params, option) {
+exports.execCronInThread = async function (modulePath, funcName, params, option) {
     let message     = '';
     const apiParams = {modulePath, funcName, option};
     return new Promise((resolve, reject) => {

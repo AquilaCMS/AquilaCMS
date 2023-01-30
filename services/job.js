@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const Agenda     = require('agenda');
-const axios      = require('axios');
-const mongoose   = require('mongoose');
-const {execCron} = require('../utils/packageManager');
-const NSErrors   = require('../utils/errors/NSErrors');
-const utils      = require('../utils/utils');
+const Agenda             = require('agenda');
+const axios              = require('axios');
+const mongoose           = require('mongoose');
+const {execCronInThread} = require('../utils/packageManager');
+const NSErrors           = require('../utils/errors/NSErrors');
+const utils              = require('../utils/utils');
 
 /** @type {Agenda} */
 let agenda;
@@ -389,7 +389,7 @@ const execDefineService = async (modulePath, funcName, option) => {
 };
 
 const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
-    const response = await execCron(modulePath, funcName, params, option);
+    const response = await execCronInThread(modulePath, funcName, params, option);
     if (response.error) throw response.error;
     return typeof response.message === 'string' ? response.message : JSON.stringify(response.message, null, 2);
 };
@@ -411,7 +411,7 @@ const execDefineAPI = async (httpMethod, api, params) => {
  * @param {string} job.attrs.api
  * @param {string} job.attrs.params
  */
-async function execDefine(job, option) {
+const execDefine = async (job, option) => {
     let finalError;
     const {api, params, onMainThread, funcName, modulePath, typeApi, httpMethod} = extractDataFromJob(job);
 
@@ -440,7 +440,7 @@ async function execDefine(job, option) {
     job.attrs.data.lastExecutionResult = lastExecutionResult;
     await job.save();
     if (finalError) throw finalError;
-}
+};
 
 /**
  * Function allowing to deactivate the execution of a job
