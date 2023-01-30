@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -78,7 +78,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
         await require('../services/medias').getImageStream(req.url, res);
     } else if (
-        global.aquila.envConfig.environment.adminPrefix?.length >= 0
+        global.aquila.envConfig?.environment?.adminPrefix?.length >= 0
         && req.url.length > global.aquila.envConfig.environment.adminPrefix.length + 2
         && req.url.indexOf(`/${global.aquila.envConfig.environment.adminPrefix}/`)  > -1
         && req.url.split('/')[req.url.split('/').length - 1].indexOf('.') > -1
