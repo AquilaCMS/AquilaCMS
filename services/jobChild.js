@@ -16,6 +16,9 @@ const initChildProcess = async () => {
     }
 };
 
+/**
+ * Self-executing function because it is called by the child_process.fork() method, which does not support calling a specific function in a file
+ */
 (async () => {
     try {
         await initChildProcess();
