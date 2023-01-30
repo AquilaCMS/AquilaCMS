@@ -333,74 +333,69 @@ const execRules = async () => ServiceRules.execRules('category');
  * Allows you to update the canonicals of all products
  */
 const execCanonical = async () => {
-    try {
-        // All active categories
-        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
-        const products_canonicalised = [];
-        const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
-        const tabLang                = languages.datas.map((_lang) => _lang.code);
+    // All active categories
+    const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}).lean(); // le poid le plus lourd d'abord
+    const products_canonicalised = [];
+    const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
+    const tabLang                = languages.datas.map((_lang) => _lang.code);
 
-        // For each category
-        for (let iCat = 0; iCat < categories.length; iCat++) {
-            const current_category = categories[iCat];
+    // For each category
+    for (let iCat = 0; iCat < categories.length; iCat++) {
+        const current_category = categories[iCat];
 
-            // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-            const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
+        // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
+        const current_category_slugs = await getSlugFromAncestorsRecurcivly(current_category._id, tabLang);
 
-            // Don't do populate here, heap of memory on big categories
-            // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
+        // Don't do populate here, heap of memory on big categories
+        // const cat_with_products        = await current_category.populate({path: 'productsList.id'}).execPopulate();
 
-            // For each product in this category
-            for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
-                const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
-                if (!product) continue;
+        // For each product in this category
+        for (let iProduct = 0; iProduct < current_category.productsList.length; iProduct++) {
+            const product = await Products.findOne({_id: current_category.productsList[iProduct].id}).lean();
+            if (!product) continue;
 
-                // Construction of the slug
-                let bForceForOtherLang = false;
-                for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                    const currentLang = tabLang[iLang];
-                    if (
-                        product
+            // Construction of the slug
+            let bForceForOtherLang = false;
+            for (let iLang = 0; iLang < tabLang.length; iLang++) {
+                const currentLang = tabLang[iLang];
+                if (
+                    product
                         && (
                             bForceForOtherLang
                             || products_canonicalised.indexOf(product._id.toString()) === -1
                         )
                         && typeof product.translation[currentLang] !== 'undefined'
                         && typeof product.translation[currentLang].slug !== 'undefined'
-                    ) { // The product exists and we haven't already processed for this language
-                        const finalCanonical = `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`;
-                        // Check if the canonical is not the same
-                        if (product.translation[currentLang]?.canonical !== finalCanonical) {
-                            await Products.updateOne(
-                                {_id: product._id},
-                                {$set: {[`translation.${currentLang}.canonical`]: finalCanonical}}
-                            );
-                        }
-                        products_canonicalised.push(product._id.toString());
-                        bForceForOtherLang = true; // We passed once, we pass for other languages
+                ) { // The product exists and we haven't already processed for this language
+                    const finalCanonical = `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`;
+                    // Check if the canonical is not the same
+                    if (product.translation[currentLang]?.canonical !== finalCanonical) {
+                        await Products.updateOne(
+                            {_id: product._id},
+                            {$set: {[`translation.${currentLang}.canonical`]: finalCanonical}}
+                        );
                     }
+                    products_canonicalised.push(product._id.toString());
+                    bForceForOtherLang = true; // We passed once, we pass for other languages
                 }
             }
         }
-
-        // Set the canonical to empty for all untreated products
-        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
-        let   productsNotCanonicaliedString = '';
-        for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
-            for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                if (typeof productsNotCanonicalised[productNC].translation[tabLang[iLang]] !== 'undefined') {
-                    productsNotCanonicalised[productNC].translation[tabLang[iLang]].canonical = '';
-                }
-            }
-            await productsNotCanonicalised[productNC].save();
-            productsNotCanonicaliedString += `${productsNotCanonicalised[productNC].code}, `;
-        }
-
-        return `${productsNotCanonicalised.length} products not canonicalised : ${productsNotCanonicaliedString}`;
-    } catch (error) {
-        console.error(error);
-        throw error;
     }
+
+    // Set the canonical to empty for all untreated products
+    const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
+    let   productsNotCanonicaliedString = '';
+    for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
+        for (let iLang = 0; iLang < tabLang.length; iLang++) {
+            if (typeof productsNotCanonicalised[productNC].translation[tabLang[iLang]] !== 'undefined') {
+                productsNotCanonicalised[productNC].translation[tabLang[iLang]].canonical = '';
+            }
+        }
+        await productsNotCanonicalised[productNC].save();
+        productsNotCanonicaliedString += `${productsNotCanonicalised[productNC].code}, `;
+    }
+
+    return `${productsNotCanonicalised.length} products not canonicalised : ${productsNotCanonicaliedString}`;
 };
 
 const getSlugFromAncestorsRecurcivly = async (categorie_id, tabLang, defaultLang = '') => {

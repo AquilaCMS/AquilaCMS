@@ -389,7 +389,6 @@ const execDefineService = async (modulePath, funcName, option) => {
 };
 
 const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
-    // { modulePath, funcName, option: option || '' }
     const response = await execCron(modulePath, funcName, params, option);
     if (response.result.error) throw response.result.error;
     return typeof response.result.message === 'string' ? response.result.message : JSON.stringify(response.result.message, null, 2);
