@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -155,12 +155,14 @@ const createConfiguration = async (datas, bOverride) => {
 
     datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
 
+    global.aquila.defaultLang = datas.language;
+
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
             currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
-            websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
+            websiteCountry  : datas.language && datas.language.toLowerCase() === 'en' ? 'GB' : 'FR',
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
@@ -249,15 +251,30 @@ const createDefaultCountries = async () => {
     const {Territory} = require('../orm/models');
     try {
         await Territory.insertMany([{
-            code : 'FR',
-            name : 'France',
-            type : 'country'
+            code        : 'FR',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'France'
+                },
+                en : {
+                    name : 'France'
+                }
+            }
         },
         {
-            code : 'GB',
-            name : 'United Kingdom',
-            type : 'country'
-        }]);
+            code        : 'GB',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'Royaume-uni'
+                },
+                en : {
+                    name : 'United Kingdom'
+                }
+            }
+        }
+        ]);
     } catch (err) {
         console.error('Countries cannot be created');
     }

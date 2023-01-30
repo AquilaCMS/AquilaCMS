@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -35,10 +35,9 @@ const checkModuleRegistryKey = async (moduleName) => {
                 aquilaVersion
             });
         }
-        return true;
-    } catch (err) {
-        return true;
-    }
+    } catch (err) { /* TODO improve module registry */ }
+
+    return true;
 };
 
 const checkOrCreateAquilaRegistryKey = async () => {

@@ -59,11 +59,13 @@
         function NextStep() {
             document.getElementById("firstStep").style.display  = 'none';
             document.getElementById("secondStep").style.display = 'block';
+            isRefreshable = false;
         }
 
         function RecoverConfiguration() {
             document.getElementById("firstStep").style.display   = 'none';
             document.getElementById("recoverStep").style.display = 'block';
+            isRefreshable = false;
         }
 
         function Configuration() {
@@ -114,8 +116,9 @@
                 success: (response, status) => {
 
                     if(response === "ManualRestart") {
-                        document.getElementById("loadingPanel").innerHTML   = "Please restart your server and refresh this page.";
+                        document.getElementById("loadingPanel").innerHTML   = "Congratulations, install is done !<br/>Please restart your server and refresh this page.";
                         document.getElementById("loadingPanel").style.color = "red";
+                        isRefreshable = true;
                     }
                     else {
                         setTimeout(() => {
@@ -238,9 +241,12 @@
             });
         };
 
+        let isRefreshable = true;
         window.addEventListener('beforeunload', function (e) {
-            e.preventDefault();
-            e.returnValue = '';
+            if(!isRefreshable) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
         });
 
     </script>

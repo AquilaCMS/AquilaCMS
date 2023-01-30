@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -18,11 +18,10 @@ global.aquila.appRoot      = path.resolve(__dirname);
 global.aquila.port         = Number(process.env.PORT || 3010);
 global.aquila.defaultLang  = '';
 global.aquila.moduleExtend = {};
-global.aquila.translate    = require('./utils/translate');
 const utils                = require('./utils/utils');
 const fs                   = require('./utils/fsp');
 const serverUtils          = require('./utils/server');
-const utilsModules         = require('./utils/modules');
+const utilsModuleInit      = require('./utils/moduleInit');
 const utilsThemes          = require('./utils/themes');
 const {
     middlewarePassport,
@@ -66,14 +65,20 @@ const init = async () => {
 
 const initDatabase = async () => {
     if (global.aquila.envFile.db) {
+        // DB Layer
         const utilsDB = require('./utils/database');
         await utilsDB.connect();
         utilsDB.getMongdbVersion();
         await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
-        await utilsModules.modulesLoadInit(server);
-        await utilsDB.initDBValues();
+
+        // Schema Layer
+        await utilsModuleInit.moduleInitSteps(1, {server}); // [step 1] : Module Init Pre Schemas
+        await utilsDB.initDBValues(); // Schema are loaded here so the schema events are emitted here
         await require('./services/shortcodes').initDBValues();
+
+        // DB Layer (thanks to the schema layer)
+        await utilsModuleInit.moduleInitSteps(2, {server}); // [step 2] : Module Init DB Values
     }
 };
 
@@ -167,24 +172,27 @@ const initFrontFramework = async (themeName = null) => {
 
 const initServer = async () => {
     if (global.aquila.envFile.db) {
+        // Config Layer
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-
         console.log(`%s@@ Admin : '/${global.aquila.envConfig.environment?.adminPrefix}'%s`, '\x1b[32m', '\x1b[0m');
+        await utilsModuleInit.moduleInitSteps(3, {server}); // [step 3] Module Init Post Env Config
 
-        // we check if we compile (default: true)
-        const compile = (typeof global?.aquila?.envFile?.devMode?.compile === 'undefined' || (typeof global?.aquila?.envFile?.devMode?.compile !== 'undefined' && global.aquila.envFile.devMode.compile === true));
-
+        // Routes Layer
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
-        await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport}); // [step 4] Module Init Post Routes
+
         if (dev) {
             const {hotReloadAPI} = require('./services/devFunctions');
             await hotReloadAPI(express, server, passport);
         }
 
+        // Theme Layer
+        // we check if we compile (default: true)
+        const compile = (typeof global?.aquila?.envFile?.devMode?.compile === 'undefined' || (typeof global?.aquila?.envFile?.devMode?.compile !== 'undefined' && global.aquila.envFile.devMode.compile === true));
         if (compile) {
             const {currentTheme} = global.aquila.envConfig.environment;
             const themeFolder    = path.join(global.aquila.appRoot, 'themes', currentTheme, '/');
@@ -210,7 +218,9 @@ const initServer = async () => {
 
 const startServer = async () => {
     server.use(expressErrorHandler);
+    if (global.aquila.envFile.db) await utilsModuleInit.moduleInitSteps(5, {server}); // [step 5] Module Init Pre Start
     await serverUtils.startListening(server);
+    if (global.aquila.envFile.db) await utilsModuleInit.moduleInitSteps(6, {server}); // [step 6] Module Init Post Start
     serverUtils.showAquilaLogo();
 };
 

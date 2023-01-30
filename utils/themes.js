@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -52,19 +52,17 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
  * Do a yarn run build
  */
 const yarnBuildCustom = async (themeName = '') => {
-    const linkToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
-    const pathToInit  = path.join(linkToTheme, 'themeInit.js');
+    const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
+    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
     let returnValues;
     try {
         if (fs.existsSync(pathToInit)) {
             const process = require('process');
-            process.chdir(linkToTheme); // protect require of the frontFrameWork
+            process.chdir(pathToTheme); // protect require of the frontFrameWork
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                const appRoot         = slash(global.aquila.appRoot);
-                const globalAppUrl    = global.aquila.envConfig.environment.appUrl;
-                const globalEnvConfig = JSON.stringify({environment: {appUrl: globalAppUrl}}).replace(/"/g, '#') || '{}';
-                returnValues          = await packageManager.execCmd(`node -e "global.aquila.appRoot = '${appRoot}'; global.aquila.envConfig = '${globalEnvConfig}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
+                returnValues = await execThemeFile(pathToInit, 'build()', pathToTheme);
+
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
@@ -77,7 +75,7 @@ const yarnBuildCustom = async (themeName = '') => {
                 returnValues = await yarnBuild(themeName);
             }
         } else {
-            const pathToPackage = path.join(linkToTheme, 'package.json');
+            const pathToPackage = path.join(pathToTheme, 'package.json');
             const isExist       = fs.existsSync(pathToPackage);
             if (isExist) {
                 returnValues = await yarnBuild(themeName);
@@ -162,11 +160,28 @@ const loadThemeInfo = (theme) => {
     }
     return null;
 };
+
+/**
+ * @description execThemeFile
+ * @param pathToFile : path to the file that contains the function to call
+ * @param functionToCall : the function to call
+ * @param pathToTheme : path the root of the theme
+ */
+const execThemeFile = async (pathToFile, functionToCall, pathToTheme) => {
+    const appRoot = global.aquila.appRoot;
+    slash(global.aquila.appRoot);
+    const objectsTab      = [global.aquila];
+    const returnValues    = await packageManager.execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToFile)}').${functionToCall}"`, objectsTab, slash(path.join(pathToTheme, '/')));
+    global.aquila.appRoot = appRoot;
+    return returnValues;
+};
+
 module.exports = {
     themeInstallAndCompile,
     yarnBuildCustom,
     yarnInstall,
     yarnBuild,
     yarnDeleteNodeModulesContent,
-    loadThemeInfo
+    loadThemeInfo,
+    execThemeFile
 };
