@@ -251,15 +251,30 @@ const createDefaultCountries = async () => {
     const {Territory} = require('../orm/models');
     try {
         await Territory.insertMany([{
-            code : 'FR',
-            name : 'France',
-            type : 'country'
+            code        : 'FR',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'France'
+                },
+                en : {
+                    name : 'France'
+                }
+            }
         },
         {
-            code : 'GB',
-            name : 'United Kingdom',
-            type : 'country'
-        }]);
+            code        : 'GB',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'Royaume-uni'
+                },
+                en : {
+                    name : 'United Kingdom'
+                }
+            }
+        }
+        ]);
     } catch (err) {
         console.error('Countries cannot be created');
     }
