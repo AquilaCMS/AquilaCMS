@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2022 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -169,12 +169,10 @@ const generateFilters = async (res, lang = '', selectedAttributes = [], isInSear
 
                 for (const attr of prd.attributes) {
                     let usedAttr = false;
-                    if (!isInSearchContext) {
-                        usedAttr = true;
-                    } else if (attr.usedInSearch) { // If we are in a search context and the attribute can be used in search
+                    // If we are not in a search context or if we are in a search context and the attribute can be used in search
+                    if (!isInSearchContext || (isInSearchContext && attr.usedInSearch)) {
                         usedAttr = true;
                     }
-
                     if (usedAttr && attributes.includes(attr.id.toString())) {
                         if (!attr.parents || attr.parents.length === 0) {
                             populateAttributesValues(attr, lang, attrWithoutParents);
