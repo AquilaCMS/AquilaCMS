@@ -17,6 +17,8 @@ const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
+const warningMsg = 'you must rebuild the theme and restart the server to apply the change.';
+
 const getLanguages = async (PostBody) => queryBuilder.find(PostBody, true);
 
 const getLang = async (PostBody) => queryBuilder.findOne(PostBody, true);
@@ -38,9 +40,9 @@ const saveLang = async (lang) => {
 
     await require('./themes').languageManagement();
     if (lang._id) {
-        console.log(`Language '${result.name}' updated, you must rebuild the theme and restart the server to apply the change`);
+        console.log(`Language '${result.name}' updated, ${warningMsg}`);
     } else if (result.status === 'visible') {
-        console.log(`Language '${result.name}' created, you must rebuild the theme and restart the server to apply the change`);
+        console.log(`Language '${result.name}' created, ${warningMsg}`);
     }
     return result;
 };
@@ -50,7 +52,7 @@ const removeLang = async (_id) => {
 
     await require('./themes').languageManagement();
     if (deletedLang.status === 'visible') {
-        console.log(`Language '${deletedLang.name}' deleted, you must rebuild the theme and restart the server to apply the change`);
+        console.log(`Language '${deletedLang.name}' deleted, ${warningMsg}`);
     }
     return deletedLang;
 };
