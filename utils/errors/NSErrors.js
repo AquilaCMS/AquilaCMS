@@ -143,7 +143,7 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
-    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
+    static get JobError() { return this.makeErrorAlias(NSErrors.NotFound, 'JobError'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }

@@ -88,7 +88,7 @@ const initAgendaDB = async () => {
                 'RGPD users'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
-            // If a "system" job does not exist in the database then it is created
+                // If a "system" job does not exist in the database then it is created
                 if (!tJobsName.includes(tJobsSystem[i])) {
                     try {
                         if (tJobsSystem[i] === 'Sitemap') {
@@ -383,6 +383,27 @@ const getPlayImmediateJob = async (_id, option) => {
     }
 };
 
+const execDefineService = async (modulePath, funcName, option) => {
+    const response = await require(`..${modulePath}`)[funcName](option);
+    return JSON.stringify(response, null, 2);
+};
+
+const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
+    // { modulePath, funcName, option: option || '' }
+    const response = await execCron(modulePath, funcName, params, option);
+    if (response.result.error) throw response.result.error;
+    return typeof response.result.message === 'string' ? response.result.message : JSON.stringify(response.result.message, null, 2);
+};
+
+const execDefineAPI = async (httpMethod, api, params) => {
+    const response = await axios({
+        method : httpMethod.toUpperCase(),
+        url    : api,
+        ...(params && {data: params})
+    });
+    return JSON.stringify(response.data, null, 2);
+};
+
 /**
  * Function called in agendaDefine and getPlayImmediateJob
  * @param {Agenda.Job} job cron job
@@ -395,43 +416,21 @@ async function execDefine(job, option) {
     let finalError;
     const {api, params, onMainThread, funcName, modulePath, typeApi, httpMethod} = extractDataFromJob(job);
 
-    // Directly call a service without going through an API
-    if (typeApi === 'service') {
-        if (onMainThread) {
-            try {
-                const response                     = await require(`..${modulePath}`)[funcName](option);
-                job.attrs.data.lastExecutionResult = JSON.stringify(response, null, 2);
-            } catch (error) {
-                console.error(error);
-                const message                      = typeof error === 'string' ? error : utils.stringifyError(error, null, '\t');
-                finalError                         = error;
-                job.attrs.data.lastExecutionResult = message;
+    let lastExecutionResult = '';
+    try {
+        if (typeApi === 'service') {
+            if (onMainThread) {
+                lastExecutionResult = await execDefineService(modulePath, funcName, option);
+            } else {
+                lastExecutionResult = await execDefineServiceOnChildProcess(modulePath, funcName, params, option);
             }
         } else {
-            const apiParams = {modulePath, funcName, option: option || ''};
-            try {
-                const response                     = await execCron(apiParams, params);
-                finalError                         = response.result.error;
-                job.attrs.data.lastExecutionResult = typeof response.result.message === 'string' ? response.result.message : JSON.stringify(response.result.message, null, 2);
-            }  catch (error) {
-                console.error(error);
-                finalError                         = error;
-                job.attrs.data.lastExecutionResult = JSON.stringify(error, null, 2);
-            }
+            lastExecutionResult = await execDefineAPI(httpMethod, api, params);
         }
-    } else {
-        try {
-            const result                       = await axios({
-                method : httpMethod.toUpperCase(),
-                url    : api,
-                ...(params && {data: params})
-            });
-            job.attrs.data.lastExecutionResult = JSON.stringify(result.data, null, 2);
-        } catch (error) {
-            console.error(error);
-            finalError                         = error;
-            job.attrs.data.lastExecutionResult = JSON.stringify(error, null, 2);
-        }
+        job.attrs.data.lastExecutionResult = lastExecutionResult;
+    } catch (error) {
+        finalError                         = NSErrors.JobError;
+        job.attrs.data.lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(error, null, 2);
     }
     await job.save();
     if (finalError) throw finalError;

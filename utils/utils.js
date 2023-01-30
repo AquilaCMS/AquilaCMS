@@ -319,7 +319,11 @@ const stringifyError = (err, filter, space) => {
             plainObject[key] = err[key];
         }
     });
-    return JSON.stringify(plainObject, filter, space);
+    try {
+        return JSON.stringify(plainObject, filter, space);
+    } catch (e) {
+        return JSON.stringify(err, filter, space);
+    }
 };
 
 /**

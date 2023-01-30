@@ -86,9 +86,9 @@ exports.execSh = async function (cde, param = [], path = global.aquila.appRoot) 
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execCron = async function (apiParams, params) {
-    const result = {};
-    console.log(`%scommand : node -e  'require('.${apiParams.modulePath}').${apiParams.funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot}) on a child process %s`, '\x1b[33m', '\x1b[0m');
+exports.execCron = async function (modulePath, funcName, params, option) {
+    const result    = {};
+    const apiParams = {modulePath, funcName, option};
     return new Promise((resolve, reject) => {
         const cmd = fork(
             `${global.aquila.appRoot}/services/jobChild.js`,
@@ -101,10 +101,7 @@ exports.execCron = async function (apiParams, params) {
         cmd.on('message', (data) => {
             result.message = data;
         });
-        cmd.on('close', (code) => {
-            console.log(`%scommand : node -e 'require("${apiParams.modulePath}").${apiParams.funcName}(${apiParams.option})' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
-            return resolve({code});
-        });
+        cmd.on('close', (code) => resolve({code}));
     }).then(async (data) => {
         if (data.code) result.error = NSErrors.JobErrorInChildNode;
         return {result};

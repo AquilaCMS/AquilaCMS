@@ -66,11 +66,7 @@ const deletePicto = async (id) => {
 };
 
 const execRules = async () => {
-    try {
-        return await ServiceRules.execRules('picto');
-    } catch (error) {
-        return `Erreur : ${error.message}`;
-    }
+    await ServiceRules.execRules('picto');
 };
 
 module.exports = {
