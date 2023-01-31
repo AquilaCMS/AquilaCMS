@@ -1,5 +1,5 @@
 const path  = require('path');
-const fs    = require('./fsp');
+const {fs}  = require('aql-utils');
 const utils = require('./utils');
 
 let loadedModules = '';

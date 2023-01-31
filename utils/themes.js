@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path      = require('path');
-const slash     = require('slash');
-const fs        = require('fs');
-const {execCmd} = require('aql-utils');
+const path                     = require('path');
+const slash                    = require('slash');
+const fs                       = require('fs');
+const {execCmd, execCmdBase64} = require('aql-utils');
 /* /!\ Do not require models so as not to break the order of initiation of models with modules */
 
 /**
@@ -171,7 +171,7 @@ const execThemeFile = async (pathToFile, functionToCall, pathToTheme) => {
     const appRoot = global.aquila.appRoot;
     slash(global.aquila.appRoot);
     const objectsTab      = [global.aquila];
-    const returnValues    = await packageManager.execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToFile)}').${functionToCall}"`, objectsTab, slash(path.join(pathToTheme, '/')));
+    const returnValues    = await execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToFile)}').${functionToCall}"`, objectsTab, slash(path.join(pathToTheme, '/')));
     global.aquila.appRoot = appRoot;
     return returnValues;
 };
