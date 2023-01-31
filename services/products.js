@@ -6,30 +6,29 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment                  = require('moment-business-days');
-const path                    = require('path');
-const Fuse                    = require('fuse.js');
-const mongoose                = require('mongoose');
-const {aquilaEvents}          = require('aql-utils');
-const fs                      = require('../utils/fsp');
-const QueryBuilder            = require('../utils/QueryBuilder');
-const utils                   = require('../utils/utils');
-const utilsServer             = require('../utils/server');
-const utilsMedias             = require('../utils/medias');
-const NSErrors                = require('../utils/errors/NSErrors');
-const servicesLanguages       = require('./languages');
-const ServicesDownloadHistory = require('./downloadHistory');
-const servicesCategory        = require('./categories');
-const serviceSetAttributs     = require('./setAttributes');
-const servicePromos           = require('./promo');
-const serviceReviews          = require('./reviews');
+const moment                      = require('moment-business-days');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const Fuse                        = require('fuse.js');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const utils                       = require('../utils/utils');
+const utilsServer                 = require('../utils/server');
+const utilsMedias                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const servicesLanguages           = require('./languages');
+const ServicesDownloadHistory     = require('./downloadHistory');
+const servicesCategory            = require('./categories');
+const serviceSetAttributs         = require('./setAttributes');
+const servicePromos               = require('./promo');
+const serviceReviews              = require('./reviews');
 const {
     Configuration,
     Products,
     ProductsPreview,
     Categories,
     Attributes
-}                             = require('../orm/models');
+}                                 = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values', 'filename'];
@@ -487,7 +486,11 @@ const duplicateProduct = async (idProduct, newCode) => {
     for (const lang of Object.entries(doc.translation)) {
         if (doc.translation[lang[0]].canonical) {
             delete doc.translation[lang[0]].canonical;
-            delete doc.translation[lang[0]].slug;
+            if (languages.find((dbLang) => dbLang.code === lang[0])) {
+                delete doc.translation[lang[0]].slug;
+            } else {
+                doc.translation[lang[0]].slug = `dup-${doc.translation[lang[0]].slug}`;
+            }
         }
     }
 
@@ -495,7 +498,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
-        doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
+        doc.translation[lang.code].slug = slugify(doc._id.toString());
     }
     doc.isNew    = true;
     doc.images   = [];
@@ -872,7 +875,7 @@ const setProduct = async (req) => {
     if (!product) throw NSErrors.ProductNotFound;
     if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     await ProductsPreview.deleteOne({code: req.body.code});
     return Products.findOne({code: result.code}).populate(['bundle_sections.products.id']);
@@ -886,8 +889,8 @@ const createProduct = async (req) => {
     if (body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(body);
     }
-    body.code = utils.slugify(body.code);
-    const res = await Products.create(body);
+    req.body.code = slugify(req.body.code);
+    const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };

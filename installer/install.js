@@ -7,8 +7,8 @@
  */
 
 const path                     = require('path');
+const {fs}                     = require('aql-utils');
 const themeServices            = require('../services/themes');
-const fs                       = require('../utils/fsp');
 const serverUtils              = require('../utils/server');
 const {themeInstallAndCompile} = require('../utils/themes');
 const {createListModuleFile}   = require('../utils/modules');
@@ -251,15 +251,30 @@ const createDefaultCountries = async () => {
     const {Territory} = require('../orm/models');
     try {
         await Territory.insertMany([{
-            code : 'FR',
-            name : 'France',
-            type : 'country'
+            code        : 'FR',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'France'
+                },
+                en : {
+                    name : 'France'
+                }
+            }
         },
         {
-            code : 'GB',
-            name : 'United Kingdom',
-            type : 'country'
-        }]);
+            code        : 'GB',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'Royaume-uni'
+                },
+                en : {
+                    name : 'United Kingdom'
+                }
+            }
+        }
+        ]);
     } catch (err) {
         console.error('Countries cannot be created');
     }

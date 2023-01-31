@@ -11,7 +11,7 @@ const Json2csvParser          = require('json2csv').Parser;
 const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
-const fs                      = require('./fsp');
+const {fs}                    = require('aql-utils');
 const NSErrors                = require('./errors/NSErrors');
 
 /**
@@ -180,30 +180,6 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text = '') => {
-    const slug = require('slug');
-    slug.extend({_: '_'});
-    return slug(text, {lower: true});
-};
-
-/**
- * transform a price in ATI to ET
- * @param {number|undefined} ATIPrice
- * @param {number|undefined} VAT ex: VAT is 20 if it is 20%
- * @returns {number|undefined}
- */
-const toET = (ATIPrice, VAT) => {
-    if ((ATIPrice !== undefined) && (VAT !== undefined)) {
-        if (VAT === 0) {
-            return ATIPrice;
-        }
-
-        return Math.round(ATIPrice * 100 * 100 / (100 + VAT)) / 100;
-    }
-
-    return undefined;
-};
-
 /**
  *
  * @param {any} obj
@@ -331,8 +307,6 @@ module.exports = {
     json2csv,
     getObjFromDotStr,
     detectDuplicateInArray,
-    slugify,
-    toET,
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,

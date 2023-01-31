@@ -6,13 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                         = require('path');
-const url                          = require('url');
-const ServiceContacts              = require('../services/contacts');
-const {getUploadDirectory}         = require('../utils/server');
-const {adminAuthRight}             = require('../middleware/authentication');
-const {fsp, modules: modulesUtils} = require('../utils');
-const {multerUpload}               = require('../middleware/multer');
+const path                    = require('path');
+const url                     = require('url');
+const {fs}                    = require('aql-utils');
+const ServiceContacts         = require('../services/contacts');
+const {getUploadDirectory}    = require('../utils/server');
+const {adminAuthRight}        = require('../middleware/authentication');
+const {modules: modulesUtils} = require('../utils');
+const {multerUpload}          = require('../middleware/multer');
 
 module.exports = function (app) {
     app.post('/v2/contacts', adminAuthRight('contacts'), getContacts);
@@ -71,8 +72,8 @@ async function setContact(req, res, next) {
                     target_path_full = path.resolve(pathUpload, target_path_full);
 
                     try {
-                        await fsp.copyRecursive(tmp_path, target_path_full);
-                        await fsp.deleteRecursive(tmp_path);
+                        await fs.copyRecursive(tmp_path, target_path_full);
+                        await fs.deleteRecursive(tmp_path);
                     } catch (err) {
                         return next(err);
                     }

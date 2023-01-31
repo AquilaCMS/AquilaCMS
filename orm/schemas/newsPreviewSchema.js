@@ -6,10 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const News          = require('./newsSchema');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('aql-utils');
+const News           = require('./newsSchema');
+const utilsDatabase  = require('../../utils/database');
+const Schema         = mongoose.Schema;
 
 /**
  * @typedef {NewsSchema} NewsPreviewSchema
@@ -30,7 +31,6 @@ NewsPreviewSchema.pre('save', async function (next) {
 });
 
 NewsPreviewSchema.post('save', async function (doc) {
-    const {aquilaEvents} = require('aql-utils');
     aquilaEvents.emit('aqNewPreviewArticle', doc);
 });
 

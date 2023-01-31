@@ -6,23 +6,21 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip           = require('adm-zip');
-const path             = require('path');
-const mongoose         = require('mongoose');
-const rimraf           = require('rimraf');
-const slash            = require('slash');
-const semver           = require('semver');
-const {aquilaEvents}   = require('aql-utils');
-const {isEqual}        = require('../utils/utils');
-const packageManager   = require('../utils/packageManager');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const modulesUtils     = require('../utils/modules');
-const themesUtils      = require('../utils/themes');
-const {isProd, getEnv} = require('../utils/server');
-const fs               = require('../utils/fsp');
-const NSErrors         = require('../utils/errors/NSErrors');
-const {Modules}        = require('../orm/models');
-const themesService    = require('./themes');
+const AdmZip                      = require('adm-zip');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const rimraf                      = require('rimraf');
+const semver                      = require('semver');
+const slash                       = require('slash');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const utilsThemes                 = require('../utils/themes');
+const {isEqual}                   = require('../utils/utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const modulesUtils                = require('../utils/modules');
+const {isProd, getEnv}            = require('../utils/server');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Modules}                   = require('../orm/models');
+const themesService               = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -490,8 +488,8 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
-                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -612,8 +610,8 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await packageManager.execCmd('yarn install', installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd('yarn install', installPath);
+                await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -651,7 +649,7 @@ const removeModule = async (idModule) => {
 };
 
 const retrieveModuleComponentType = async (theme) => {
-    const themeInfo = await themesUtils.loadThemeInfo(theme);
+    const themeInfo = await utilsThemes.loadThemeInfo(theme);
     if (themeInfo?.moduleComponentType) return themeInfo.moduleComponentType;
     return '';
 };

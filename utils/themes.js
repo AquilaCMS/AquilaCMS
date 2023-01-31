@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const slash          = require('slash');
-const fs             = require('fs');
-const packageManager = require('./packageManager');
-/* /!\ Ne pas faire de require sur des models pour ne pas casser l'ordre d'initilaisation des modeles avec les modules */
+const path                     = require('path');
+const slash                    = require('slash');
+const fs                       = require('fs');
+const {execCmd, execCmdBase64} = require('aql-utils');
+/* /!\ Do not require models so as not to break the order of initiation of models with modules */
 
 /**
  * Do a yarn install and compile the theme passed as a parameter or the current theme
@@ -44,7 +44,7 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
     if (devDependencies === true || require('./server').dev) {
         command = 'yarn install --production=false';
     }
-    const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+    const returnValues = await execCmd(command, path.join(linkToTheme, '/'));
     return returnValues;
 };
 
@@ -102,7 +102,7 @@ const yarnBuildCustom = async (themeName = '') => {
  */
 const yarnBuild = async (themeName = '') => {
     const linkToTheme  = path.join(global.aquila.appRoot, 'themes', themeName);
-    const returnValues = await packageManager.execCmd('yarn run build', path.join(linkToTheme, '/'));
+    const returnValues = await execCmd('yarn run build', path.join(linkToTheme, '/'));
     return returnValues;
 };
 
@@ -114,12 +114,12 @@ const yarnDeleteNodeModulesContent = async (themeName = '') => {
     const linkToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
     const themePath   = path.join(linkToTheme, '/');
     try {
-        const createYarnCleanFile = await packageManager.execCmd('yarn autoclean --init', themePath);
+        const createYarnCleanFile = await execCmd('yarn autoclean --init', themePath);
         if (createYarnCleanFile) {
             const yarnCleanFilePath = path.join(themePath, '.yarnclean');
             fs.truncateSync(yarnCleanFilePath, 0);
             fs.writeFileSync(yarnCleanFilePath, '*');
-            const deleteNodeModulesContent = await packageManager.execCmd('yarn autoclean --force', themePath);
+            const deleteNodeModulesContent = await execCmd('yarn autoclean --force', themePath);
             if (deleteNodeModulesContent) {
                 returnValues = {stdout: `The contents of the ${themeName} node_modules folder has been deleted`};
             } else {
@@ -171,7 +171,7 @@ const execThemeFile = async (pathToFile, functionToCall, pathToTheme) => {
     const appRoot = global.aquila.appRoot;
     slash(global.aquila.appRoot);
     const objectsTab      = [global.aquila];
-    const returnValues    = await packageManager.execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToFile)}').${functionToCall}"`, objectsTab, slash(path.join(pathToTheme, '/')));
+    const returnValues    = await execCmdBase64(`node -e "global.aquila = '#OBJECT0#'; require('${slash(pathToFile)}').${functionToCall}"`, objectsTab, slash(path.join(pathToTheme, '/')));
     global.aquila.appRoot = appRoot;
     return returnValues;
 };

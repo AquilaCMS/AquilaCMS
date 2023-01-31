@@ -6,15 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const swaggerUi                       = require('swagger-ui-express-updated');
-const cookieParser                    = require('cookie-parser');
-const cors                            = require('cors');
-const express                         = require('express');
-const helmet                          = require('helmet');
-const morgan                          = require('morgan');
-const path                            = require('path');
-const {fsp, translation, serverUtils} = require('../utils');
-const {retrieveUser}                  = require('./authentication');
+const swaggerUi                  = require('swagger-ui-express-updated');
+const cookieParser               = require('cookie-parser');
+const cors                       = require('cors');
+const express                    = require('express');
+const helmet                     = require('helmet');
+const morgan                     = require('morgan');
+const path                       = require('path');
+const {fs}                       = require('aql-utils');
+const {translation, serverUtils} = require('../utils');
+const {retrieveUser}             = require('./authentication');
 
 const getUserFromRequest = async (req) => {
     const user = null;
@@ -179,7 +180,7 @@ const initExpress = async (server, passport) => {
 
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
         require(path.resolve(global.aquila.appRoot, 'documentations/swagger/swagger.js')),
-        JSON.parse(await fsp.readFile(path.resolve(global.aquila.appRoot, 'documentations/swagger/config.json')))
+        JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'documentations/swagger/config.json')))
     ));
 };
 
@@ -190,7 +191,7 @@ const maintenance = async (req, res, next) => {
             && global.aquila.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
         const maintenanceFile = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'maintenance.html');
-        if (fsp.existsSync(maintenanceFile)) {
+        if (fs.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }
         return res.status(301).send('<h1>Maintenance</h1>');

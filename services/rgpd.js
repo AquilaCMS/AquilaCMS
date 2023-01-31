@@ -10,17 +10,17 @@ const {
     Types: {ObjectId: ObjectID},
     mongo: {MongoClient}
 } = require('mongoose');
-const {v4: uuidv4}   = require('uuid');
-const mongoURI       = require('mongodb-uri');
-const bcrypt         = require('bcrypt');
-const rimraf         = require('rimraf');
-const path           = require('path');
-const faker          = require('faker');
-const moment         = require('moment');
-const {aquilaEvents} = require('aql-utils');
-const fs             = require('../utils/fsp');
-const {execCmd}      = require('../utils/packageManager');
-const NSErrors       = require('../utils/errors/NSErrors');
+const {v4: uuidv4}                = require('uuid');
+const mongoURI                    = require('mongodb-uri');
+const bcrypt                      = require('bcrypt');
+const rimraf                      = require('rimraf');
+const path                        = require('path');
+const faker                       = require('faker');
+const moment                      = require('moment');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const appdirname                  = path.dirname(require.main.filename);
+faker.locale                      = 'fr';
 const {
     Bills,
     Orders,
@@ -29,9 +29,7 @@ const {
     Users,
     Modules,
     Newsletters
-}                  = require('../orm/models');
-const appdirname     = path.dirname(require.main.filename);
-faker.locale         = 'fr';
+} = require('../orm/models');
 /*
 RGPD : Example of a function to implement in a module using users data
 */

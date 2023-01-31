@@ -6,19 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const nodemailer       = require('nodemailer');
-const moment           = require('moment-timezone');
-const mongoose         = require('mongoose');
-const path             = require('path');
-const {aquilaEvents}   = require('aql-utils');
-const ServiceLanguages = require('./languages');
-const utils            = require('../utils/utils');
-const mediasUtils      = require('../utils/medias');
-const modulesUtils     = require('../utils/modules');
-const NSErrors         = require('../utils/errors/NSErrors');
-const utilsServer      = require('../utils/server');
-const fs               = require('../utils/fsp');
-const translate        = require('../utils/translate/common');
+const nodemailer                  = require('nodemailer');
+const moment                      = require('moment-timezone');
+const mongoose                    = require('mongoose');
+const path                        = require('path');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const ServiceLanguages            = require('./languages');
+const mediasUtils                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const utilsServer                 = require('../utils/server');
+const modulesUtils                = require('../utils/modules');
+const translate                   = require('../utils/translate/common');
 const {
     Users,
     Mail,
@@ -91,7 +89,7 @@ const setMail = async (body, _id = null) => {
                 await checkUniqueType(body.type);
             }
 
-            body.code = utils.slugify(body.code);
+            body.code = slugify(body.code);
             result    = await Mail.create(body);
             if (!result) {
                 throw NSErrors.MailCreateError;

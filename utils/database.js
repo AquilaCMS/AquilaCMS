@@ -2089,16 +2089,6 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Allows you to populate specific fields of each item
- * @param {any[]} items
- */
-const populateItems = async (items) => {
-    for (const item of items) {
-        if (item.populateItem) await item.populateItem();
-    }
-};
-
-/**
  * Allows you to populate cart items stock
  * @param {any[]} items
  */
@@ -2160,7 +2150,6 @@ module.exports = {
     initDBValues,
     getMongdbVersion,
     applyMigrationIfNeeded,
-    populateItems,
     preUpdates,
     testdb,
     checkSlugExist,
