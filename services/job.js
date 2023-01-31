@@ -12,6 +12,7 @@ const mongoose           = require('mongoose');
 const {execCronInThread} = require('../utils/packageManager');
 const NSErrors           = require('../utils/errors/NSErrors');
 const utils              = require('../utils/utils');
+const errorMessage       = require('../utils/translate/errors');
 
 /** @type {Agenda} */
 let agenda;
@@ -427,15 +428,9 @@ const execDefine = async (job, option) => {
             lastExecutionResult = await execDefineAPI(httpMethod, api, params);
         }
     } catch (error) {
-        if (typeof error === 'string') {
-            finalError = new Error(error);
-        } else if (NSErrors[error.code]) {
-            finalError = NSErrors[error.code];
-        } else {
-            console.error(error);
-            finalError = NSErrors.JobError;
-        }
-        lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(error, null, 2);
+        finalError          = NSErrors[error.code] || NSErrors.JobError;
+        finalError.message  = errorMessage[finalError.code] ? errorMessage[finalError.code][global.aquila.defaultLang] : '';
+        lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(finalError, null, 2);
     }
     job.attrs.data.lastExecutionResult = lastExecutionResult;
     await job.save();
