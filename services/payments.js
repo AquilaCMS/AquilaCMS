@@ -358,25 +358,21 @@ async function immediateCashPayment(req, method) {
 // delete failed payment from orders older than nbDaysToDeleteOlderFailedPayment days
 async function deleteFailedPayment() {
     console.log('==> Start removing failed payment from orders <==');
-    try {
-        const dateToDelete = new Date();
-        dateToDelete.setDate(dateToDelete.getDate() - (global.aquila.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
-        const orders = await Orders.find({
-            payment : {
-                $elemMatch : {
-                    status       : 'FAILED',
-                    creationDate : {$lte: dateToDelete}
-                }
+    const dateToDelete = new Date();
+    dateToDelete.setDate(dateToDelete.getDate() - (global.aquila.envConfig.stockOrder.nbDaysToDeleteOlderFailedPayment || 30));
+    const orders = await Orders.find({
+        payment : {
+            $elemMatch : {
+                status       : 'FAILED',
+                creationDate : {$lte: dateToDelete}
             }
-        });
-        for (const order of orders) {
-            order.payment = order.payment.filter((payment) => (payment.status !== 'FAILED' || (new Date(payment.creationDate) > dateToDelete)));
-            await order.save();
         }
-        console.log('==> End removing failed payment from orders <==');
-    } catch (e) {
-        console.error(e);
+    });
+    for (const order of orders) {
+        order.payment = order.payment.filter((payment) => (payment.status !== 'FAILED' || (new Date(payment.creationDate) > dateToDelete)));
+        await order.save();
     }
+    console.log('==> End removing failed payment from orders <==');
 }
 
 module.exports = {

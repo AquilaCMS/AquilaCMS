@@ -35,13 +35,13 @@ module.exports = {
         fr : 'Interdit',
         en : 'Forbidden'
     },
-    DemoModeActivate : {
+    DemoMode : {
         fr : 'Mode démo Activé',
         en : 'Demo mode activate'
     },
-    JobErrorInChildNode : {
-        fr : 'Erreur dans le job',
-        en : 'Job error'
+    JobError : {
+        fr : 'Une erreur est survenue dans le job',
+        en : 'An error occurred in the job'
     },
     NotFound : {
         fr : 'Item non trouvé',

@@ -6,15 +6,52 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const Agenda   = require('agenda');
-const axios    = require('axios');
-const mongoose = require('mongoose');
-const {fork}   = require('child_process');
-const NSErrors = require('../utils/errors/NSErrors');
-const utils    = require('../utils/utils');
+const Agenda       = require('agenda');
+const axios        = require('axios');
+const {fork}       = require('child_process');
+const mongoose     = require('mongoose');
+const NSErrors     = require('../utils/errors/NSErrors');
+const utils        = require('../utils/utils');
+const errorMessage = require('../utils/translate/errors');
 
 /** @type {Agenda} */
 let agenda;
+
+/**
+ * Function to extract data from job
+ * @param {Agenda.Job} job
+ * @return {{typeApi: string, api: string, params: string, onMainThread: boolean, funcName: string, modulePath: string, httpMethod: string}}
+ */
+const extractDataFromJob = (job) => {
+    let httpMethod;
+    let typeApi        = 'service';
+    let api            = job.attrs.data.api;
+    const params       = job.attrs.data.params;
+    const onMainThread = job.attrs.data.onMainThread !== false;
+    const funcName     = api.substr(api.lastIndexOf('/') + 1);
+    const modulePath   = api.substr(0, api.lastIndexOf('/'));
+
+    if (api.startsWith('/services') || api.startsWith('/modules')) {
+        if (api.endsWith('/')) api = api.substr(0, api.length - 1);
+    } else {
+        typeApi        = 'api';
+        const {method} = job.attrs.data;
+        httpMethod     = method.toLowerCase();
+        if (!['get', 'post'].includes(httpMethod)) {
+            const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
+            throw error_method;
+        }
+        if (!api.includes('://')) {
+            if (api.startsWith('/')) api = api.substr(1);
+            api = global.aquila.envConfig.environment.appUrl + api;
+        }
+        if (params && !utils.isJsonString(params)) {
+            throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
+        }
+    }
+
+    return {typeApi, api, params, onMainThread, funcName, modulePath, httpMethod};
+};
 
 /**
  * Connect Agenda to mongodb
@@ -52,7 +89,7 @@ const initAgendaDB = async () => {
                 'RGPD users'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
-            // If a "system" job does not exist in the database then it is created
+                // If a "system" job does not exist in the database then it is created
                 if (!tJobsName.includes(tJobsSystem[i])) {
                     try {
                         if (tJobsSystem[i] === 'Sitemap') {
@@ -347,6 +384,49 @@ const getPlayImmediateJob = async (_id, option) => {
     }
 };
 
+const execDefineService = async (modulePath, funcName, option) => {
+    const response = await require(`..${modulePath}`)[funcName](option);
+    return JSON.stringify(response, null, 2);
+};
+
+const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
+    const execCronInThread = async (modulePath, funcName, params, option) => {
+        let message     = '';
+        const apiParams = {modulePath, funcName, option};
+        return new Promise((resolve, reject) => {
+            const cmd = fork(
+                `${global.aquila.appRoot}/services/jobChild.js`,
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                {cwd: global.aquila.appRoot, shell: true}
+            );
+            cmd.on('error', (err) => reject(err));
+            cmd.on('message', (data) => {
+                message = data;
+            });
+            cmd.on('close', (code) => resolve({code}));
+        }).then(async (data) => {
+            const error = data.code;
+            return {
+                message,
+                ...(error === 1 && {error: typeof message === 'string' ? message : NSErrors[message.code] || NSErrors.JobError})
+            };
+        });
+    };
+
+    const response = await execCronInThread(modulePath, funcName, params, option);
+    if (response.error) throw response.error;
+    return typeof response.message === 'string' ? response.message : JSON.stringify(response.message, null, 2);
+};
+
+const execDefineAPI = async (httpMethod, api, params) => {
+    const response = await axios({
+        method : httpMethod.toUpperCase(),
+        url    : api,
+        ...(params && {data: params})
+    });
+    return JSON.stringify(response.data, null, 2);
+};
+
 /**
  * Function called in agendaDefine and getPlayImmediateJob
  * @param {Agenda.Job} job cron job
@@ -355,93 +435,30 @@ const getPlayImmediateJob = async (_id, option) => {
  * @param {string} job.attrs.api
  * @param {string} job.attrs.params
  */
-async function execDefine(job, option) {
-    let api                 = job.attrs.data.api;
-    const params            = job.attrs.data.params;
-    const onMainThread      = job.attrs.data.onMainThread !== false;
-    let errorData           = null;
-    let lastExecutionResult = null;
-    let result;
-    // Directly call a service without going through an API
-    if (api.startsWith('/services') || api.startsWith('/modules')) {
-        if (api.endsWith('/')) api = api.substr(0, api.length - 1);
-        const funcName   = api.substr(api.lastIndexOf('/') + 1);
-        const modulePath = api.substr(0, api.lastIndexOf('/'));
-        const apiParams  = {modulePath, funcName, option: option || ''};
+const execDefine = async (job, option) => {
+    let finalError;
+    const {api, params, onMainThread, funcName, modulePath, typeApi, httpMethod} = extractDataFromJob(job);
 
-        if (onMainThread) {
-            try {
-                console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}]  (Path : ${global.aquila.appRoot}) on the main process %s`, '\x1b[33m', '\x1b[0m');
-                result                             = await require(`..${modulePath}`)[funcName](option);
-                job.attrs.data.lastExecutionResult = JSON.stringify(result);
-            } catch (error) {
-                // If the service returns an error then we have to write it to job.attrs.data.lastExecutionResult and
-                // save it in order to have a persistent error on the front side
-                if (!error.code) result = error;
-                if (error.code) result = (error && error.translations && error.translations.fr) ? error.translations.fr : error;
-                errorData = error;
+    let lastExecutionResult = '';
+    try {
+        if (typeApi === 'service') {
+            if (onMainThread) {
+                lastExecutionResult = await execDefineService(modulePath, funcName, option);
+            } else {
+                lastExecutionResult = await execDefineServiceOnChildProcess(modulePath, funcName, params, option);
             }
         } else {
-            console.log(`%scommand : node -e  'require('.${modulePath}').${funcName}(${apiParams.option})" with param : [${params}] (Path : ${global.aquila.appRoot}) on a child process %s`, '\x1b[33m', '\x1b[0m');
-            return new Promise((resolve, reject) => {
-                const cmd = fork(
-                    `${global.aquila.appRoot}/services/jobChild.js`,
-                    [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
-                    {cwd: global.aquila.appRoot, shell: true}
-                );
-                cmd.on('error', (err) => {
-                    reject(err);
-                });
-                cmd.on('message', (data) => {
-                    lastExecutionResult = data.message;
-                });
-                cmd.on('close', (code) => {
-                    console.log(`%scommand : node -e 'require("${modulePath}").${funcName}(${apiParams.option})' with param : [${params}] ended%s`, '\x1b[33m', '\x1b[0m');
-                    return resolve({code});
-                });
-            }).then(async (data) => {
-                const error = data.code;
-                if (typeof lastExecutionResult === 'string') {
-                    job.attrs.data.lastExecutionResult = lastExecutionResult;
-                } else {
-                    job.attrs.data.lastExecutionResult = lastExecutionResult ? JSON.stringify(lastExecutionResult, null, 2) : null;
-                }
-                await job.save();
-                if (error) throw NSErrors.JobErrorInChildNode;
-            });
+            lastExecutionResult = await execDefineAPI(httpMethod, api, params);
         }
-    } else {
-        const {method}   = job.attrs.data;
-        const httpMethod = method.toLowerCase();
-        if (!['get', 'post'].includes(httpMethod)) {
-            const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};
-            throw error_method;
-        }
-        if (!api.includes('://')) {
-            // API's format /api/monapi
-            // Delete '/'
-            if (api.startsWith('/')) api = api.substr(1);
-            api = global.aquila.envConfig.environment.appUrl + api;
-        }
-        if (!utils.isJsonString(params)) {
-            throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
-        }
-
-        try {
-            result = await axios({
-                method : httpMethod.toUpperCase(),
-                url    : api,
-                data   : JSON.parse(params)
-            });
-        } catch (err) {
-            result = {status: err.response.status, data: err.response.data};
-        }
-        // Get the response from the API
-        job.attrs.data.lastExecutionResult = JSON.stringify(result);
+    } catch (error) {
+        finalError          = NSErrors[error.code] || NSErrors.JobError;
+        finalError.message  = errorMessage[finalError.code] ? errorMessage[finalError.code][global.aquila.defaultLang] : '';
+        lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(finalError, null, 2);
     }
+    job.attrs.data.lastExecutionResult = lastExecutionResult;
     await job.save();
-    if (errorData !== null) throw errorData;
-}
+    if (finalError) throw finalError;
+};
 
 /**
  * Function allowing to deactivate the execution of a job
