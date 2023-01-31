@@ -2089,6 +2089,22 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
+ * Allows you to populate cart items stock
+ * @param {any[]} items
+ */
+const populateStockData = async (_id) => {
+    const {Products} = require('../orm/models');
+    const {stock}    = await Products.findById(_id.toString());
+    delete stock.$init;
+
+    if (global.aquila.envConfig?.stockOrder?.returnStockToFront === false) {
+        const {qty_booked, qty_real, qty, $init, ...rest} = stock;
+        return rest;
+    }
+    return stock;
+};
+
+/**
  * called during pre hooks for `findOneAndUpdate` and/or `updateOne`
  * @param {mongoose.Query|mongoose.Model} that query to check
  * @param {mongoose.HookNextFunction} next hooks function
@@ -2138,5 +2154,6 @@ module.exports = {
     testdb,
     checkSlugExist,
     checkSlugLength,
-    checkCode
+    checkCode,
+    populateStockData
 };

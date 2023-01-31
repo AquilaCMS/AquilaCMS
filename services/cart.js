@@ -64,8 +64,8 @@ const getCartById = async (id, PostBody = null, user = null) => {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
+        return cart.getItemsStock();
     }
-
     return cart;
 };
 
@@ -100,10 +100,10 @@ const setCartAddresses = async (cartId, addresses, userInfo) => {
         if (!resp) {
             const newCart = await Cart.create(update);
             await populateItems(newCart.items);
-            return {code: 'CART_CREATED', data: {cart: newCart}};
+            return {code: 'CART_CREATED', data: {cart: await newCart.getItemsStock()}};
         }
         await populateItems(resp.items);
-        return {code: 'CART_UPDATED', data: {cart: resp}};
+        return {code: 'CART_UPDATED', data: {cart: await resp.getItemsStock()}};
     } catch (err) {
         console.error(err);
         throw err;
@@ -117,7 +117,8 @@ const setComment = async (cartId, comment, userInfo) => {
         ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
     };
     const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
-    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
+    if (!resp) return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: null}};
+    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: await resp.getItemsStock()}};
 };
 
 const deleteCartItem = async (cartId, itemId, userInfo) => {
@@ -179,7 +180,7 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
     await populateItems(cart.items);
-    return {code: 'CART_ITEM_DELETED', data: {cart}};
+    return {code: 'CART_ITEM_DELETED', data: {cart: await cart.getItemsStock()}};
 };
 
 const addItem = async (postBody, userInfo, lang = '') => {
@@ -219,45 +220,47 @@ const addItem = async (postBody, userInfo, lang = '') => {
         }
     }
     if (cart.items && cart.items.length) {
-        const indexes     = cart.items.toObject()
-            .map((val, index) => ({val, index}))
-            .filter(({val}) => val.id._id.toString() === _product._id.toString())
-            .map(({index}) => index);
-        let isANewProduct = false;
-        for (const index of indexes) {
-            if (
-                cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
-            // eslint-disable-next-line no-empty
-            ) {
-                continue;
-            } else {
+        if (typeof cart.items.toObject === 'function') {
+            const indexes     = cart.items.toObject()
+                .map((val, index) => ({val, index}))
+                .filter(({val}) => val.id._id.toString() === _product._id.toString())
+                .map(({index}) => index);
+            let isANewProduct = false;
+            for (const index of indexes) {
                 if (
-                    (
-                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
-                    ) || (
-                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
-                    )
+                    cart.items[index].type === 'bundle'
+            && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
+                // eslint-disable-next-line no-empty
                 ) {
-                    // then it's the same product in the cart
-                    isANewProduct = index;
-                    break;
+                    continue;
                 } else {
-                    // else, it's a new product in the cart
-                    isANewProduct = true;
+                    if (
+                        (
+                            postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                        ) || (
+                            typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                        )
+                    ) {
+                        // then it's the same product in the cart
+                        isANewProduct = index;
+                        break;
+                    } else {
+                        // else, it's a new product in the cart
+                        isANewProduct = true;
+                    }
                 }
             }
-        }
-        if (typeof isANewProduct === 'number') {
-            postBody.item._id = cart.items[isANewProduct]._id.toString();
+            if (typeof isANewProduct === 'number') {
+                postBody.item._id = cart.items[isANewProduct]._id.toString();
 
-            postBody.item.quantity += cart.items[isANewProduct].quantity;
+                postBody.item.quantity += cart.items[isANewProduct].quantity;
 
-            delete postBody.item.id;
+                delete postBody.item.id;
 
-            delete postBody.item.weight;
+                delete postBody.item.weight;
 
-            return updateQty(postBody, userInfo);
+                return updateQty(postBody, userInfo);
+            }
         }
     }
     if (_product.translation[_lang]) {
@@ -319,7 +322,7 @@ const addItem = async (postBody, userInfo, lang = '') => {
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
     await populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const updateQty = async (postBody, userInfo) => {
@@ -400,7 +403,7 @@ const updateQty = async (postBody, userInfo) => {
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
     await populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const checkCountryTax = async (_cart, _user) => {
@@ -508,7 +511,9 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         const newOrder = {
             ...cartObj,
-            items          : cartObj.items.filter((it) => it.quantity > 0),
+            items : cartObj.items.filter((it) => it.quantity > 0).map(function ({stock, ...rest}) {
+                return {...rest};
+            }),
             promos         : cartObj.promos,
             cartId         : cartObj._id,
             quantityBreaks : cartObj.quantityBreaks,
@@ -679,12 +684,12 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
             await cart.save();
         }
     }
-    return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
+    return {code: 'CART_DELIVERY_UPDATED', data: {cart: await cart.getItemsStock()}};
 };
 
 const removeDelivery = async (body) => {
     const cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
-    return cart;
+    return cart.getItemsStock();
 };
 
 const removeDiscount = async (id) => {
@@ -692,7 +697,7 @@ const removeDiscount = async (id) => {
     if (!updCart) {
         throw NSErrors.InactiveCart;
     }
-    return {code: 'CART_DISCOUNT_REMOVE', data: {cart: updCart}};
+    return {code: 'CART_DISCOUNT_REMOVE', data: {cart: await updCart.getItemsStock()}};
 };
 
 const validateForCheckout = (cart) => {

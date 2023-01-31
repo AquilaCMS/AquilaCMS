@@ -51,7 +51,17 @@ const ItemBundle = new Schema({
             minSelect  : Number,
             maxSelect  : Number
         }
-    ]
+    ],
+    stock : {
+        qty          : {type: Number, default: 0},
+        qty_booked   : {type: Number, default: 0},
+        date_selling : Date,
+        date_supply  : Date,
+        orderable    : {type: Boolean, default: false},
+        status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
+        label        : String,
+        translation  : {}
+    }
 }, {
     discriminatorKey : 'type',
     id               : false
@@ -97,9 +107,7 @@ ItemBundle.methods.populateItem = async function () {
     const self       = this;
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {
-            if (selection.products[index].type === undefined) {
-                selection.products[index] = await Products.findById(_product);
-            }
+            if (selection.products[index].type === undefined) selection.products[index] = await Products.findById(_product);
         }
     }
     if (self.id._id === undefined) self.id = await Products.findById(self.id);
