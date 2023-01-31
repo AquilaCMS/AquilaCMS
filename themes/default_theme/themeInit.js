@@ -4,9 +4,9 @@ const next = require('next').default;
 const express = require('express');
 const i18nextMiddleware = require('i18next-http-middleware');
 const fileSystemBackend = require('i18next-fs-backend');
+const {execCmd} = require('aql-utils');
 const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server');
-const packageManager = require('../../utils/packageManager');
 const dev = serverUtils.dev;
 
 if (global.aquila && typeof global.aquila !== 'object') global.aquila = JSON.parse(Buffer.from(global.aquila, 'base64').toString('utf8'));
@@ -78,7 +78,7 @@ const start = async (server) => {
 
 
 const build = async () => {
-    await packageManager.execCmd(`npx next build`, pathToTheme);
+    await execCmd(`npx next build`, pathToTheme);
 }
 
 module.exports = {

@@ -6,15 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose          = require('mongoose');
-const {aquilaEvents}    = require('aql-utils');
-const fs                = require('../../utils/fsp');
-const ItemSchema        = require('./itemSchema');
-const ItemSimpleSchema  = require('./itemSimpleSchema');
-const ItemBundleSchema  = require('./itemBundleSchema');
-const ItemVirtualSchema = require('./itemVirtualSchema');
-const AddressSchema     = require('./addressSchema');
-const utils             = require('../../utils/utils');
+const mongoose                 = require('mongoose');
+const {toET, fs, aquilaEvents} = require('aql-utils');
+const ItemSchema               = require('./itemSchema');
+const ItemSimpleSchema         = require('./itemSimpleSchema');
+const ItemBundleSchema         = require('./itemBundleSchema');
+const ItemVirtualSchema        = require('./itemVirtualSchema');
+const AddressSchema            = require('./addressSchema');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -122,7 +120,7 @@ CartSchema.virtual('delivery.price').get(function () {
 
         if (!self.delivery.freePriceLimit || priceTotal.ati < self.delivery.freePriceLimit) {
             deliveryPrice.ati = self.delivery.value.ati;
-            deliveryPrice.et  = utils.toET(self.delivery.value.ati, defaultVAT);
+            deliveryPrice.et  = toET(self.delivery.value.ati, defaultVAT);
         }
         return deliveryPrice;
     }

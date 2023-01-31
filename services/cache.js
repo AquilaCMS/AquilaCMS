@@ -8,7 +8,7 @@
 
 const glob           = require('glob');
 const path           = require('path');
-const fs             = require('../utils/fsp');
+const {fs}           = require('aql-utils');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
 

@@ -7,6 +7,7 @@
  */
 
 const path             = require('path');
+const {fs}             = require('aql-utils');
 const {adminAuthRight} = require('../middleware/authentication');
 const mediasServices   = require('../services/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
@@ -155,7 +156,7 @@ async function downloadAllDocuments(req, res, next) {
             if (err) {
                 console.log(err);
             }
-            require('../utils/fsp').unlink(path, function () {
+            fs.unlink(path, function () {
                 console.log('File was deleted'); // Callback
             });
         });

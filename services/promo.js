@@ -6,20 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {cloneDeep}   = require('lodash');
-const mongoose      = require('mongoose');
+const {cloneDeep}     = require('lodash');
+const mongoose        = require('mongoose');
+const {populateItems} = require('aql-utils');
 const {
     Promo,
     Rules,
     Languages,
     ProductSimple,
     Cart
-}                  = require('../orm/models');
-const ServiceRules  = require('./rules');
-const QueryBuilder  = require('../utils/QueryBuilder');
-const promoUtils    = require('../utils/promo');
-const utilsDatabase = require('../utils/database');
-const NSErrors      = require('../utils/errors/NSErrors');
+}                     = require('../orm/models');
+const ServiceRules    = require('./rules');
+const QueryBuilder    = require('../utils/QueryBuilder');
+const promoUtils      = require('../utils/promo');
+const NSErrors        = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -404,7 +404,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
         // Validation of the quantity break
         if ((dateStart === null || dateStart < currentDate) && (dateEnd === null || dateEnd > currentDate) && promo.actions.length > 0) {
             if (promo.actions.length > 0) {
-                await utilsDatabase.populateItems(copyCart.items);
+                await populateItems(copyCart.items);
 
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
                     // we test every action on every product

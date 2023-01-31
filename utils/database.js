@@ -2089,16 +2089,6 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Allows you to populate specific fields of each item
- * @param {any[]} items
- */
-const populateItems = async (items) => {
-    for (const item of items) {
-        if (item.populateItem) await item.populateItem();
-    }
-};
-
-/**
  * called during pre hooks for `findOneAndUpdate` and/or `updateOne`
  * @param {mongoose.Query|mongoose.Model} that query to check
  * @param {mongoose.HookNextFunction} next hooks function
@@ -2144,7 +2134,6 @@ module.exports = {
     initDBValues,
     getMongdbVersion,
     applyMigrationIfNeeded,
-    populateItems,
     preUpdates,
     testdb,
     checkSlugExist,
