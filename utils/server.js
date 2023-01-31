@@ -11,8 +11,8 @@ const spdy         = require('spdy');
 const mongoose     = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 const {outside}    = require('semver');
+const {fs}         = require('aql-utils');
 const NSErrors     = require('./errors/NSErrors');
-const fs           = require('./fsp');
 
 /**
  * return current value of property

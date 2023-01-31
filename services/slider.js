@@ -8,8 +8,8 @@
 
 const path         = require('path');
 const mongoose     = require('mongoose');
+const {slugify}    = require('aql-utils');
 const {Slider}     = require('../orm/models');
-const utils        = require('../utils/utils');
 const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -53,7 +53,7 @@ const setSlider = async (id, datas) => {
 };
 
 const createSlider = async (datas) => {
-    datas.code = utils.slugify(datas.code);
+    datas.code = slugify(datas.code);
     return Slider.create(datas);
 };
 

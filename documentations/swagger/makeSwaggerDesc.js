@@ -1,4 +1,4 @@
-const fs   = require('fs');
+const {fs} = require('aql-utils');
 const path = require('path');
 
 const make = () => {

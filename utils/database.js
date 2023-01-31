@@ -2089,13 +2089,19 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Allows you to populate specific fields of each item
+ * Allows you to populate cart items stock
  * @param {any[]} items
  */
-const populateItems = async (items) => {
-    for (const item of items) {
-        if (item.populateItem) await item.populateItem();
+const populateStockData = async (_id) => {
+    const {Products} = require('../orm/models');
+    const {stock}    = await Products.findById(_id.toString());
+    delete stock.$init;
+
+    if (global.aquila.envConfig?.stockOrder?.returnStockToFront === false) {
+        const {qty_booked, qty_real, qty, $init, ...rest} = stock;
+        return rest;
     }
+    return stock;
 };
 
 /**
@@ -2144,10 +2150,10 @@ module.exports = {
     initDBValues,
     getMongdbVersion,
     applyMigrationIfNeeded,
-    populateItems,
     preUpdates,
     testdb,
     checkSlugExist,
     checkSlugLength,
-    checkCode
+    checkCode,
+    populateStockData
 };

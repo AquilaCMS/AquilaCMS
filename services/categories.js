@@ -8,6 +8,7 @@
 
 const mongoose         = require('mongoose');
 const path             = require('path');
+const {fs}             = require('aql-utils');
 const {
     Categories,
     Products,
@@ -15,7 +16,6 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
-const fsp              = require('../utils/fsp');
 const ServiceRules     = require('./rules');
 const ServiceCache     = require('./cache');
 const ServiceLanguages = require('./languages');
@@ -223,8 +223,8 @@ const setCategory = async (postBody) => {
     if (typeof postBody.img !== 'undefined' && oldCat.img !== postBody.img) {
         const imgPath = path.join(require('../utils/server').getUploadDirectory(), oldCat.img);
         ServiceCache.deleteCacheImage('category', {filename: path.basename(oldCat.img)});
-        if (await fsp.existsSync(imgPath)) {
-            await fsp.unlinkSync(imgPath);
+        if (await fs.existsSync(imgPath)) {
+            await fs.unlinkSync(imgPath);
         }
     }
     return Categories.findOne({_id: postBody._id}).lean();

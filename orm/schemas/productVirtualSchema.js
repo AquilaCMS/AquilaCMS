@@ -14,7 +14,11 @@ const Schema               = mongoose.Schema;
 const ProductVirtualSchema = new Schema({
     downloadLink  : {type: String, default: null},
     downloadInfos : {type: String, default: null},
-    filename      : {type: String, default: null}
+    filename      : {type: String, default: null},
+    stock         : {
+        qty        : {type: Number, default: 0},
+        qty_booked : {type: Number, default: 0}
+    }
 }, {
     discriminatorKey : 'type',
     toObject         : {virtuals: true},
