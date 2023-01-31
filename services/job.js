@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const Agenda             = require('agenda');
-const axios              = require('axios');
-const mongoose           = require('mongoose');
-const {execCronInThread} = require('../utils/packageManager');
-const NSErrors           = require('../utils/errors/NSErrors');
-const utils              = require('../utils/utils');
-const errorMessage       = require('../utils/translate/errors');
+const Agenda       = require('agenda');
+const axios        = require('axios');
+const {fork}       = require('child_process');
+const mongoose     = require('mongoose');
+const NSErrors     = require('../utils/errors/NSErrors');
+const utils        = require('../utils/utils');
+const errorMessage = require('../utils/translate/errors');
 
 /** @type {Agenda} */
 let agenda;
@@ -390,6 +390,29 @@ const execDefineService = async (modulePath, funcName, option) => {
 };
 
 const execDefineServiceOnChildProcess = async (modulePath, funcName, params, option) => {
+    const execCronInThread = async (modulePath, funcName, params, option) => {
+        let message     = '';
+        const apiParams = {modulePath, funcName, option};
+        return new Promise((resolve, reject) => {
+            const cmd = fork(
+                `${global.aquila.appRoot}/services/jobChild.js`,
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                {cwd: global.aquila.appRoot, shell: true}
+            );
+            cmd.on('error', (err) => reject(err));
+            cmd.on('message', (data) => {
+                message = data;
+            });
+            cmd.on('close', (code) => resolve({code}));
+        }).then(async (data) => {
+            const error = data.code;
+            return {
+                message,
+                ...(error === 1 && {error: typeof message === 'string' ? message : NSErrors[message.code] || NSErrors.JobError})
+            };
+        });
+    };
+
     const response = await execCronInThread(modulePath, funcName, params, option);
     if (response.error) throw response.error;
     return typeof response.message === 'string' ? response.message : JSON.stringify(response.message, null, 2);
