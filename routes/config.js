@@ -91,7 +91,7 @@ async function saveEnvConfig(req, res, next) {
  */
 const restartServer = async (req, res, next) => {
     try {
-        await restart();
+        return res.send(await restart());
     } catch (err) {
         return next(err);
     }

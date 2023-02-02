@@ -213,7 +213,11 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
         ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
             $scope.config = config;
             $scope.showLoading = true;
-            $http.get('/restart').catch(function(error) {
+            $http.get('/restart').then(function(response) {
+                if(response.data === "ManualRestart") {
+                    toastService.toast("danger", $translate.instant("modules.restartFail"));
+                }
+            }).catch(function(error) {
                 console.error(error);
                 toastService.toast("danger", $translate.instant("modules.restartFail"));
             });
