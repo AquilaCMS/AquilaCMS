@@ -58,8 +58,7 @@
                 </div>
             </div>
             <div id="vPictures" class="tab-pane">
-                <p ng-show="!selectedVariantValue._id" translate>product.general.saveFirst</p>
-                <div ng-show="selectedVariantValue._id">
+                <div>
                     <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" variant-id="selectedVariantValue._id" ></ns-product-photo>
                 </div>
             </div>
