@@ -6,6 +6,7 @@ import { Link } from '../routes';
 import getAPIUrl from './getAPIUrl';
 
 /* string to slug */
+// @Deprecated
 function slugify(string) {
     return string
         .toString()
