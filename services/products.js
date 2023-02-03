@@ -642,7 +642,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         const arrayUnfilteredPriceSort = {et: [], ati: []};
 
         for (const prd of prds) {
-            if (prd.price) {
+            if (prd.variants_values?.length > 0) {
+                arrayPrice.et.push(...prd.variants_values.map((it) => it.price.et.normal));
+                arrayPrice.ati.push(...prd.variants_values.map((it) => it.price.ati.normal));
+            } else if (prd.price) {
                 arrayPrice.et.push(prd.price.et.normal);
                 arrayPrice.ati.push(prd.price.ati.normal);
             }
@@ -652,7 +655,22 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
         for (const prd of prdsPrices) {
-            if (prd.price) {
+            if (prd.variants_values?.length > 0) {
+                for (const prdVariant of prd.variants_values) {
+                    if (prdVariant.price.et.special) {
+                        arraySpecialPrice.et.push(prdVariant.price.et.special);
+                    }
+                    if (prdVariant.price.ati.special) {
+                        arraySpecialPrice.ati.push(prdVariant.price.ati.special);
+                    }
+                    if (typeof prdVariant.price.priceSort.et !== 'undefined') {
+                        arrayUnfilteredPriceSort.et.push(prdVariant.price.priceSort.et);
+                    }
+                    if (typeof prdVariant.price.priceSort.ati !== 'undefined') {
+                        arrayUnfilteredPriceSort.ati.push(prdVariant.price.priceSort.ati);
+                    }
+                }
+            } else if (prd.price) {
                 if (prd.price.et.special) {
                     arraySpecialPrice.et.push(prd.price.et.special);
                 }
@@ -705,13 +723,20 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
             const filteredPrdId = await Products.find(filters).lean().select('_id');
             const filteredId    = filteredPrdId.map((res) => res._id.toString());
             prds                = prds.filter((item) => {
+                if (item.variants_values?.length > 0) {
+                    const isFilterd = item.variants_values.filter((it) => it.price.priceSort.ati >= formatedPriceFilter.gte && it.price.priceSort.ati <= formatedPriceFilter.lte).length > 0;
+                    return filteredId.includes(item._id.toString()) && isFilterd;
+                }
                 const res = filteredId.includes(item._id.toString()) && (item.price.priceSort.ati >= formatedPriceFilter.gte && item.price.priceSort.ati <= formatedPriceFilter.lte);
                 return res;
             });
 
             const arrayPriceSort = {et: [], ati: []};
             for (const prd of prds) {
-                if (prd.price) {
+                if (prd.variants_values?.length > 0) {
+                    arrayPriceSort.et.push(...prd.variants_values.map((it) => it.price.et.normal));
+                    arrayPriceSort.ati.push(...prd.variants_values.map((it) => it.price.ati.normal));
+                } else if (prd.price) {
                     if (prd.price.priceSort.et) {
                         arrayPriceSort.et.push(prd.price.priceSort.et);
                     }

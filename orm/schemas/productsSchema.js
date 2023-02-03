@@ -181,10 +181,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
 };
 
 ProductsSchema.methods.updateData = async function (data) {
-    data.price.priceSort = {
-        et  : data.price.et.special || data.price.et.normal,
-        ati : data.price.ati.special || data.price.ati.normal
-    };
+    setPriceSort(data);
 
     // Slugify images name
     if (data.images) {
@@ -340,12 +337,26 @@ ProductsSchema.pre('updateOne', async function (next) {
 });
 
 ProductsSchema.pre('save', async function (next) {
-    this.price.priceSort = {
-        et  : this.price.et.special || this.price.et.normal,
-        ati : this.price.ati.special || this.price.ati.normal
-    };
+    setPriceSort(this);
+
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
+
+const setPriceSort = async (data) => {
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
+
+    if (data.variants_values?.length > 0) {
+        data.variants_values.forEach((variant) => {
+            variant.price.priceSort = {
+                et  : variant.price.et.special || variant.price.et.normal,
+                ati : variant.price.ati.special || variant.price.ati.normal
+            };
+        });
+    }
+};
 
 aquilaEvents.emit('productSchemaInit', ProductsSchema);
 
