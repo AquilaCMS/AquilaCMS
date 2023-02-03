@@ -545,18 +545,12 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
     // Set PostBody.filter and PostBody.structure
     if (!PostBody.filter) PostBody.filter = {};
 
-    PostBody.filter = {
-        ...PostBody.filter,
-        [`translation.${lang}`] : {$exists: true}
-    };
+    PostBody.filter[`translation.${lang}`] = {$exists: true};
 
-    if (!PostBody.structure) {
-        PostBody.structure = {};
-    }
     PostBody.structure = {
         type  : 1,
         price : 1,
-        ...PostBody.structure
+        ...(PostBody.structure || {})
     };
 
     const menu = await Categories.findById(id).lean();
@@ -567,12 +561,7 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
     // If admin then we populate all documents without visibility or asset restriction
     if (isAdmin && PostBody && PostBody.filter && PostBody.filter.inProducts !== undefined) {
         // We delete products from productsList depending on inProducts (true or false)
-        for (let i = menu.productsList.length - 1; i >= 0; i--) {
-            const prd = menu.productsList[i];
-            if (prd.checked !== PostBody.filter.inProducts) {
-                menu.productsList.splice(i, 1);
-            }
-        }
+        menu.productsList = menu.productsList.filter((prd) => prd.checked === PostBody.filter.inProducts);
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
@@ -587,10 +576,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
 
     let prds;
 
-    let priceMin               = {et: 0, ati: 0}; // Deprecated
-    let priceMax               = {et: 0, ati: 0}; // Deprecated
-    let specialPriceMin        = {et: 0, ati: 0}; // Deprecated
-    let specialPriceMax        = {et: 0, ati: 0}; // Deprecated
+    let priceMin               = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let priceMax               = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let specialPriceMin        = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let specialPriceMax        = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
     let priceSortMin           = {et: 0, ati: 0};
     let priceSortMax           = {et: 0, ati: 0};
     let unfilteredPriceSortMin = {et: 0, ati: 0};
@@ -598,19 +587,18 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
 
     // If we don't need the price information, we can bypass a lot of processes
     if (PostBody.structure.price === 0) {
-        PostBody.filter     = {
+        PostBody.filter = {
             ...PostBody.filter,
             _visible : true,
-            active   : true
+            active   : true,
+            _id      : {$in: menu.productsList.map((item) => item.id.toString())}
         };
-        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
-        let querySelect = '';
-        for (const [key, value] of Object.entries(PostBody.structure)) {
-            if (value === 0) {
-                querySelect = `${querySelect}-${key} `;
-            }
-        }
+        const querySelect = Object.entries(PostBody.structure)
+            .filter(([, value]) => value === 0)
+            .map(([key]) => `-${key}`)
+            .join(' ');
+
         prds = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
@@ -622,10 +610,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
             filters         = JSON.parse(JSON.stringify(PostBody.filter));
             PostBody.filter = {
                 _visible : true,
-                active   : true
+                active   : true,
+                _id      : {$in: menu.productsList.map((item) => item.id.toString())}
             };
         }
-        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
         prds = await Products
             .find(PostBody.filter)
@@ -763,26 +751,20 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         const selectedAttributes = [];
         if (PostBody.filter.$and) {
             const filterArray = PostBody.filter.$and;
-            for (let i = 0; i < filterArray.length; i++) {
-                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
-            }
+            selectedAttributes.push(
+                ...filterArray.filter((item) => Object.keys(item)[0] === 'attributes').map((item) => item.attributes.$elemMatch)
+            );
         }
 
         // Re-generate filters after the new products list has been calculated
-        const attributes = [];
-        const menuAttr   = menu.filters.attributes;
-        for (let i = 0; i < menuAttr.length; i++) {
-            const attr      = menuAttr[i];
-            const attribute = {
-                code        : attr.code,
-                id_attribut : attr.id_attribut,
-                name        : attr.translation[lang].name,
-                position    : attr.position,
-                type        : attr.type,
-                values      : attr.translation[lang].values
-            };
-            attributes.push(attribute);
-        }
+        const attributes = menu.filters.attributes.map((attr) => ({
+            code        : attr.code,
+            id_attribut : attr.id_attribut,
+            name        : attr.translation[lang].name,
+            position    : attr.position,
+            type        : attr.type,
+            values      : attr.translation[lang].values
+        }));
 
         res.filters = {attributes};
         await servicesCategory.generateFilters(res, lang, selectedAttributes);
