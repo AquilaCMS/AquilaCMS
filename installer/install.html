@@ -114,13 +114,14 @@
                 type: 'POST',
                 data: form.serialize(),
                 success: (response, status) => {
+                    isRefreshable = true;
+                    document.getElementById("loadingPanel").style.color = "red";
 
                     if(response === "ManualRestart") {
                         document.getElementById("loadingPanel").innerHTML   = "Congratulations, install is done !<br/>Please restart your server and refresh this page.";
-                        document.getElementById("loadingPanel").style.color = "red";
-                        isRefreshable = true;
                     }
                     else {
+                        document.getElementById("loadingPanel").innerHTML   = "Congratulations, install is done !<br/>Please wait while your server restarts.";
                         setTimeout(() => {
                             window.location.href = `${window.location.origin}/`;
                         }, 30000);
