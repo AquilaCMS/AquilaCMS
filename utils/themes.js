@@ -62,13 +62,9 @@ const yarnBuildCustom = async (themeName = '') => {
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
                 returnValues = await execThemeFile(pathToInit, 'build()', pathToTheme);
+                console.log(returnValues.stdout);
+                console.error(returnValues.stderr);
 
-                if (returnValues.stderr === '') {
-                    console.log('Build command log : ', returnValues.stdout);
-                } else {
-                    returnValues.stdout = 'Build failed';
-                    console.error(returnValues.stderr);
-                }
                 process.chdir(global.aquila.appRoot);
             } else {
                 process.chdir(global.aquila.appRoot);
