@@ -409,55 +409,68 @@ const activateModule = async (idModule, toBeChanged) => {
 const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     const {currentTheme}       = global.aquila.envConfig.environment;
     const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+
     if (themeModuleComponent === 'no-installation') {
         console.log(`No component installation is required by this theme (${currentTheme})`);
-    } else {
-        if (myModule.loadTranslationFront) {
-            console.log('Front translation for module : Loading ...');
-            try {
-                const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
-                const hasAccess           = await fs.hasAccess(pathToTranslateFile);
-                if (hasAccess) {
-                    const files      = await fs.readdir(pathToTranslateFile);
-                    const fileLength = files.length;
-                    for (let i = 0; i < fileLength; i++) {
-                        const lang = files[i];
-                        if (lang === 'index.js') {
-                            continue;
+        return copyTab;
+    }
+    if (!myModule.component_template_front) {
+        console.log(`No component template is defined by this module (${myModule.name})`);
+        return copyTab;
+    }
+
+    let pathToComponents = 'theme_components';
+    if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+    const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
+
+    // Control compatibility between the module and the theme
+    if (!fs.existsSync(pathToThemeComponents)) {
+        throw NSErrors.ModuleAquilaVersionNotSatisfied;
+    }
+
+    if (myModule.loadTranslationFront) {
+        console.log('Front translation for module : Loading ...');
+        try {
+            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
+            const hasAccess           = await fs.hasAccess(pathToTranslateFile);
+            if (hasAccess) {
+                const files      = await fs.readdir(pathToTranslateFile);
+                const fileLength = files.length;
+                for (let i = 0; i < fileLength; i++) {
+                    const lang = files[i];
+                    if (lang === 'index.js') {
+                        continue;
+                    }
+                    const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
+                    const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                    if (await fs.hasAccess(src)) {
+                        try {
+                            await fs.copyRecursive(src, dest, true);
+                        } catch (err) {
+                            console.error(err);
                         }
-                        const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
-                        const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
-                        if (await fs.hasAccess(src)) {
-                            try {
-                                await fs.copyRecursive(src, dest, true);
-                            } catch (err) {
-                                console.error(err);
-                            }
-                            copyTab.push(dest);
-                        }
+                        copyTab.push(dest);
                     }
                 }
-                console.log('Front translation for module : Success');
-            } catch (errorLoadTranslationFront) {
-                console.log('Front translation for module : Failed');
             }
+            console.log('Front translation for module : Success');
+        } catch (errorLoadTranslationFront) {
+            console.log('Front translation for module : Failed');
         }
-
-        // If the module contains dependencies usable in the front
-        // then we run the install to install the dependencies in aquila
-        if (myModule.packageDependencies) {
-            await installModulesDependencies(myModule, toBeChanged);
-        }
-
-        // If the module must import components into the front
-        let pathToComponents = 'theme_components';
-        if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
-        const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
-        await addOrRemoveThemeFiles(
-            pathToThemeComponents,
-            false
-        );
     }
+
+    // If the module contains dependencies usable in the front
+    // then we run the install to install the dependencies in aquila
+    if (myModule.packageDependencies) {
+        await installModulesDependencies(myModule, toBeChanged);
+    }
+
+    // If the module must import components into the front
+    await addOrRemoveThemeFiles(
+        pathToThemeComponents,
+        false
+    );
+
     return copyTab;
 };
 

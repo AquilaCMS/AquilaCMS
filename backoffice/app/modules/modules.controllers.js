@@ -135,7 +135,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             console.error(err);
             if(err) {
                 if(err.data && err.data != null){
-                    if(err.data.datas && err.data.datas != null){
+                    if(err.data.datas && err.data.datas != null && err.data.code !== 'ModuleAquilaVersionNotSatisfied'){
                         if (err.data.datas.missingDependencies && err.data.datas.needActivation) {
                             $scope.modules.find((elem) => elem._id === id).active = false;
                             let messageToast = "";
@@ -168,7 +168,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                         }
                     }else{
                         if(err.data.message) {
-                            toastService.toast('danger', err.message);
+                            toastService.toast('danger', err.data.message);
                         }
                     }
                     $scope.modules.find((elem) => elem._id === id).active = false;
