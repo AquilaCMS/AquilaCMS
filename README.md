@@ -18,7 +18,7 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 To install the latest AquilaCMS, you need :
 
-- [`node.js 14+`](https://nodejs.org/) (tested in v14.17.1)
+- [`node.js 14+`](https://nodejs.org/) (tested in v16.18.1)
 - [`mongoDB 4.2.5+`](https://www.mongodb.com/try/download)
 - [`yarn 1.22.4+`](https://classic.yarnpkg.com/en/docs/install/) package manager
 

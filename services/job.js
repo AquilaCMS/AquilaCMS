@@ -93,7 +93,6 @@ const initAgendaDB = async () => {
                 if (!tJobsName.includes(tJobsSystem[i])) {
                     try {
                         if (tJobsSystem[i] === 'Sitemap') {
-                            // await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
                             await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', {en: 'Sitemap generations', fr: 'Génération du sitemap'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'Segmentation cat') {
                             await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', {fr: 'Catégorisation automatique', en: 'Automatic categorization'}, 'service', 'system', '', true, '', false);

@@ -115,7 +115,7 @@ class PageCategory extends NSPageCategory {
                                                         <option value={JSON.stringify({ field: 'sortWeight', sortValue: '-1' })}>{t('category:pertinence')}</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '1' })}>A-Z</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '-1' })}>Z-A</option>
-                                                        <option value={JSON.stringify({ field: `price.priceSort.${taxDisplay}`, sortValue: '1' })}>{t('category:prix')} -</option> {/* TODO: trier par prix normal & discount */}
+                                                        <option value={JSON.stringify({ field: `price.priceSort.${taxDisplay}`, sortValue: '1' })}>{t('category:prix')} -</option>
                                                         <option value={JSON.stringify({ field: `price.priceSort.${taxDisplay}`, sortValue: '-1' })}>{t('category:prix')} +</option>
                                                         <option value={JSON.stringify({ field: 'is_new', sortValue: '-1' })}>{t('category:new')}</option>
                                                         <option value={JSON.stringify({ field: 'reviews.average', sortValue: '-1' })}>{t('category:grade')}</option>

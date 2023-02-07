@@ -114,7 +114,7 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
         const paymentMethod = await PaymentMethods.findOne({code: filterCode});
         const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
-            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.'); // TODO Englais
+            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.'); // TODO translate that
         }
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {

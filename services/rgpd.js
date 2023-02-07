@@ -35,14 +35,14 @@ RGPD : Example of a function to implement in a module using users data
 */
 
 // const {aquilaEvents} = require('aql-utils');
-// // On catch l'évènement de suppression d'un user
+// // We catch the event delete of a user
 // aquilaEvents.on('aqRemoveUser', function(doc){
-//     // Remplacer "id_user" par le nom du champ faisant référence à l'user dans le modèle du module
+//     // Replace "id_user" by the name of the field referring to the user in the module model
 //     model.find({'id_user': doc._id}).then(function (obj) {
 //         for (let i = 0; i < obj.length; i++) {
-//             // On supprime le hamp faisant référence à l'user dans le modèle du module
+//             // We delete the hamp referring to the user in the module model
 //             obj[i].id_user = undefined;
-//             // Si besoin, anonymiser d'autres données
+//             // If necessary, anonymize other data
 //             obj[i].save();
 //         }
 //     });

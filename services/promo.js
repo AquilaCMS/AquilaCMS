@@ -63,7 +63,7 @@ const clonePromo = async (_id) => {
     promoCloned.actif     = false;
     promoCloned.createdAt = new Date().toISOString();
     promoCloned.updatedAt = new Date().toISOString();
-    // TODO P5 (chaud) : clone of the ".gifts"
+    // TODO : clone of the ".gifts"
     promoCloned = await Promo.create(promoCloned);
 
     // Clone the rule

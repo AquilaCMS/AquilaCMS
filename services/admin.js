@@ -68,7 +68,7 @@ const welcome = async () => {
 };
 
 /**
- * Consistency check (everything except product) | TODO: to fix
+ * Consistency check (everything except product)
  * @returns {object}  Information on inconsistencies
  */
 const controlAllDatas = async () => {

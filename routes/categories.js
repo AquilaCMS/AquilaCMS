@@ -107,18 +107,6 @@ async function applyTranslatedAttribs(req, res, next) {
     }
 }
 
-/**
- * @deprecated
- */
-// eslint-disable-next-line no-unused-vars
-function checkPostBody(postBody, req_headers_authorization) {
-    postBody = securityForceActif(postBody, req_headers_authorization, ['active']);
-
-    // TODO : lors de la canonicalisation, prendre aussi en comptes les dates et ne pas mettre de produit dedans si en dehors des dates, ou si inactive
-
-    return postBody;
-}
-
 async function importCategoryProducts(req, res, next) {
     try {
         const {data, category} = req.body;

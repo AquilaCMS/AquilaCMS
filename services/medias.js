@@ -717,13 +717,10 @@ const getImageStream = async (url, res) => {
         let imagePath = '';
 
         try {
-            // TODO : rename "getImagePathCache" ?
             imagePath = await getImagePathCache(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
         } catch (e) {
-            console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
+            console.log(NSErrors.MediaNotFound);
             res.status(404);
-            // TODO : voir pour le mettre dans la dimension demandé !? */
-            // next(NSErrors.MediaNotFound);
         }
         if (imagePath && imagePath.includes('default_image_cache')) {
             res.status(404);
