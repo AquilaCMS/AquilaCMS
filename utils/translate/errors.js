@@ -35,9 +35,9 @@ module.exports = {
         fr : 'Interdit',
         en : 'Forbidden'
     },
-    DemoMode : {
-        fr : 'Mode démo Activé',
-        en : 'Demo mode activate'
+    NoCronDemoMode : {
+        fr : 'Impossible de lancer cette tâche en mode démo',
+        en : 'Unable to run this task in demo mode'
     },
     JobError : {
         fr : 'Une erreur est survenue dans le job',

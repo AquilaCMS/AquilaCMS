@@ -57,7 +57,7 @@ class NSErrors {
 
     static get Forbidden() { return new NSError(403, 'Forbidden'); }
     static get AccessUnauthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'AccessUnauthorized'); }
-    static get DemoMode() { return this.makeErrorAlias(NSErrors.Forbidden, 'DemoMode'); }
+    static get NoCronDemoMode() { return this.makeErrorAlias(NSErrors.Forbidden, 'NoCronDemoMode'); }
     static get OperatorRestricted() { return this.makeErrorAlias(NSErrors.Forbidden, 'OperatorRestricted'); }
     static get PromoCodePromoNotAuthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'PromoCodePromoNotAuthorized'); }
     static get ComponentNotAllowed() { return this.makeErrorAlias(NSErrors.Forbidden, 'ComponentNotAllowed'); }

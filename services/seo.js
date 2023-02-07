@@ -32,7 +32,7 @@ const sitemapConf = {
 const genSitemap = async () => {
     // Check that we are not in "demoMode"
     if (await isDemoMode()) {
-        throw NSErrors.DemoMode;
+        throw NSErrors.NoCronDemoMode;
     }
 
     await manageRobotsTxt(true);
