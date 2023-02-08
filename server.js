@@ -183,7 +183,7 @@ const initServer = async () => {
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
-        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport}); // [step 4] Module Init Post Routes
+        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport, server}); // [step 4] Module Init Post Routes
 
         if (dev) {
             const {hotReloadAPI} = require('./services/devFunctions');

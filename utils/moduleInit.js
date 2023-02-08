@@ -57,7 +57,7 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                         try {
                             const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/initAfter.js`);
                             if (fs.existsSync(filePath)) {
-                                require(filePath)(resolve, reject, '', params.apiRouter, params.passport);
+                                require(filePath)(resolve, reject, params.server, params.apiRouter, params.passport);
                             } else {
                                 console.error(`File ${filePath} is not present`);
                             }
