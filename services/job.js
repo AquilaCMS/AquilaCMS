@@ -354,7 +354,7 @@ const getPlayJob = async (_id) => {
  * @param {string} _id : job id in the agendaJob collection
  * @return {Agenda.Job} cron job
  */
-const getPlayImmediateJob = async (_id, option) => {
+const getPlayImmediateJob = async (_id, option, lang) => {
     const foundJobs = await agenda.jobs({_id: mongoose.Types.ObjectId(_id)});
     const job       = foundJobs[0];
     try {
@@ -379,6 +379,9 @@ const getPlayImmediateJob = async (_id, option) => {
         if (err.error && err.error.code) {
             console.error(`Error -> ${err.error.code.toString()}`);
         }
+
+        err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : err.message;
+
         throw err;
     }
 };
@@ -451,7 +454,7 @@ const execDefine = async (job, option) => {
         }
     } catch (error) {
         finalError          = NSErrors[error.code] || NSErrors.JobError;
-        finalError.message  = errorMessage[finalError.code] ? errorMessage[finalError.code][global.aquila.defaultLang] : '';
+        finalError.message  = errorMessage[finalError.code] ? errorMessage[finalError.code].en : '';
         lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(finalError, null, 2);
     }
     job.attrs.data.lastExecutionResult = lastExecutionResult;

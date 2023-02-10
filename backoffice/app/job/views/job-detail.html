@@ -159,7 +159,41 @@
             <div class="form-group">
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>job.detail.fqDoc</label>
-<pre class="col-sm-7">
+<pre class="col-sm-7" ng-hide="lang == 'fr'">
+    - <b>00 30 08 10 06 * *</b> : June 10 at 08:30 AM
+        00 – 0th second (beginning of the minute)
+        30 – 30th minute
+        08 – 8 am (cron works in 24 hours)
+        10 – 10th day
+        06 – 6th month (June)
+        * – any day of the week
+        * – any year
+    - <b>00 00 09-18 * * * *</b> : every hour of every day, from 9am to 6pm
+        00 – 0th second (beginning of the minute)
+        00 – 0th minute (start of the hour)
+        09-18 – 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 hours
+        * – every day
+        * – every months
+        * – any day of the week
+        * – any day of the year
+    - <b>* */10 * * * *</b> : Run the cron every 10 minutes.
+
+    * * * * * * *
+    | | | | | | |
+    | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnal (7 fields)
+    | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
+    | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
+    | | | +-------- Day of the Month  (range: 1-31)
+    | | +---------- Hour              (range: 0-23)
+    | +------------ Minute            (range: 0-59)
+    +-------------- Seconde           (range: 0-59) /!\ Optionnal (6 fields)
+
+    /The interval can be noted in different formats:
+        - 7 fields: 00 00 08 1-31 * * * => Second Minute Hour MonthDay Year MonthYear WeekDay
+        - 6 fields: 00 00 08 1-31 * * => Second Minute Hour Month Day Year Month Week Day
+        - 5 fields: 00 08 1-31 * * => Minute Hour DayMonth MonthYear DayWeek
+</pre>
+<pre class="col-sm-7" ng-hide="lang == 'en'">
     - <b>00 30 08 10 06 * *</b> : le 10 juin à 08:30 du matin
         00 – 0ème seconde (début de la minute)
         30 – 30ème minute
@@ -180,13 +214,13 @@
 
     * * * * * * *
     | | | | | | |
-    | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnel (7 champs)
-    | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
-    | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
-    | | | +-------- Day of the Month  (range: 1-31)
-    | | +---------- Hour              (range: 0-23)
-    | +------------ Minute            (range: 0-59)
-    +-------------- Seconde           (range: 0-59) /!\ Optionnel (6 champs)
+    | | | | | | +-- Année               (plage: 1900-3000) /!\ Optionnel (7 champs)
+    | | | | | +---- Jours de la semaine (plage: 1-7, 1 est le lundi)
+    | | | | +------ Mois de l'année     (plage: 1-12) NOTE: Difference
+    | | | +-------- Jour du mois        (plage: 1-31)
+    | | +---------- Heure               (plage: 0-23)
+    | +------------ Minute              (plage: 0-59)
+    +-------------- Seconde             (plage: 0-59) /!\ Optionnel (6 champs)
 
     /!\ L'interval peut être noté sous differents formats:
         - 7 champs: 00 00 08 1-31 * * *  => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine Année
