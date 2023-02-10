@@ -393,6 +393,12 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
+        // If the module contains dependencies usable in the front or api
+        // then we run the install to install the dependencies in aquila
+        if (myModule.packageDependencies) {
+            await installModulesDependencies(myModule, toBeChanged);
+        }
+
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
 
@@ -431,7 +437,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     if (myModule.loadTranslationFront) {
         console.log('Front translation for module : Loading ...');
         try {
-            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
+            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n');
             const hasAccess           = await fs.hasAccess(pathToTranslateFile);
             if (hasAccess) {
                 const files      = await fs.readdir(pathToTranslateFile);
@@ -457,12 +463,6 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
         } catch (errorLoadTranslationFront) {
             console.log('Front translation for module : Failed');
         }
-    }
-
-    // If the module contains dependencies usable in the front
-    // then we run the install to install the dependencies in aquila
-    if (myModule.packageDependencies) {
-        await installModulesDependencies(myModule, toBeChanged);
     }
 
     // If the module must import components into the front
@@ -502,7 +502,7 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
                 await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                await execCmd('yarn upgrade', installPath);
+                // await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -624,7 +624,7 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 await execCmd('yarn install', installPath);
-                await execCmd('yarn upgrade', installPath);
+                // await execCmd('yarn upgrade', installPath);
             }
         }
     }
