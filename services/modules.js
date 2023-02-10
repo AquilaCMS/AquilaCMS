@@ -437,7 +437,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     if (myModule.loadTranslationFront) {
         console.log('Front translation for module : Loading ...');
         try {
-            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
+            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n');
             const hasAccess           = await fs.hasAccess(pathToTranslateFile);
             if (hasAccess) {
                 const files      = await fs.readdir(pathToTranslateFile);
