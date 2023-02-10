@@ -25,7 +25,7 @@ AQUILA_ENV="test"
 {
     ...
     "test": {
-        "db": "mongodb://localhost:27017/NAME_OF_DATABASE",
+        "db": "mongodb://127.0.0.1:27017/NAME_OF_DATABASE",
         "devMode": {
             "mailTo": "fill an email",
             "compile": false,
