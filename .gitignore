@@ -126,7 +126,7 @@ log
 /themes/default_theme/assets/i18n/*/modules/
 
 # Themes exceptions
-!/themes/default_theme
+!/themes/default_theme_2
 !/themes/README.md
 !/themes/.gitignore
 package-lock.json

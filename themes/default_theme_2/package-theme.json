@@ -1,0 +1,24 @@
+{
+    "dependencies": {
+        "@aquilacms/aquila-connector": "1.1.17",
+        "@reduxjs/toolkit": "1.9.1",
+        "aql-utils": "1.5.3",
+        "cookie": "0.5.0",
+        "cookies": "0.8.0",
+        "html-react-parser": "3.0.8",
+        "jwt-decode": "3.1.2",
+        "lightbox-react": "0.3.8",
+        "next": "13.1.4",
+        "next-absolute-url": "1.2.2",
+        "next-seo": "5.15.0",
+        "next-translate": "1.6.0",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-infinite-scroll-component": "6.1.0",
+        "react-paginate": "8.1.4",
+        "react-range": "1.8.14",
+        "react-redux": "8.0.5",
+        "react-responsive-carousel": "3.2.23",
+        "react-responsive-modal": "6.4.1"
+    }
+}

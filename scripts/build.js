@@ -19,12 +19,12 @@ const buildOneTheme = async () => {
         } else {
             console.error(`Can't access to ${pathToTheme}`);
             console.error(`> "${args[0]}" does not seem to be present`);
-            console.log('Example of use: `npm run build default_theme`');
+            console.log('Example of use: `npm run build default_theme_2`');
         }
     } else {
         console.error('This command is used to build a theme');
         console.error('> No theme specified in parameter of the command');
-        console.log('Example of use: `npm run build default_theme`');
+        console.log('Example of use: `npm run build default_theme_2`');
     }
 };
 

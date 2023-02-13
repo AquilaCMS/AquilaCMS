@@ -90,17 +90,17 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/themes').languageManagement('default_theme');
+        await require('../services/themes').languageManagement('default_theme_2');
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
-            await themeServices.copyDatas('default_theme', true, configuration);
+            await themeServices.copyDatas('default_theme_2', true, configuration);
             console.log('Installer : end installation of the default theme datas');
         }
-        await createListModuleFile('default_theme');
+        await createListModuleFile('default_theme_2');
         // Compilation du theme par default
         console.log('Installer : start default theme compilation');
-        await themeInstallAndCompile('default_theme');
+        await themeInstallAndCompile('default_theme_2');
         console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
@@ -160,7 +160,7 @@ const createConfiguration = async (datas, bOverride) => {
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
-            currentTheme    : 'default_theme',
+            currentTheme    : 'default_theme_2',
             adminPrefix     : datas.adminPrefix,
             websiteCountry  : datas.language && datas.language.toLowerCase() === 'en' ? 'GB' : 'FR',
             siteName        : datas.siteName,
