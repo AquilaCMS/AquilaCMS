@@ -42,7 +42,49 @@ const testdb = async (req) => {
     }
 };
 
-// Only for installation purpose, will be inaccessible after first installation
+/**
+ * Silent installation (only if env variable exists)
+ */
+const handleSilentInstaller = async () => {
+    try {
+        console.log('-= Process silent installer =-');
+
+        const datas = {
+            databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+            language    : serverUtils.getEnv('LANGUAGE'),
+            firstname   : serverUtils.getEnv('FIRSTNAME'),
+            lastname    : serverUtils.getEnv('LASTNAME'),
+            email       : serverUtils.getEnv('EMAIL'),
+            appUrl      : serverUtils.getEnv('APPURL'),
+            adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+            siteName    : serverUtils.getEnv('SITENAME'),
+            password    : Math.random().toString(20),
+            envPath     : 'config/env.json',
+            override    : 'on',
+            demoData    : true
+        };
+
+        if (!datas.databaseAdd || !datas.language || !datas.firstname || !datas.lastname || !datas.email || !datas.appUrl || !datas.adminPrefix || !datas.siteName) {
+            throw new Error('Missing env variable for silent installation');
+        }
+
+        await postConfiguratorDatas({body: datas});
+
+        await require('../services/job').initAgendaDB();
+        await require('../utils/database').initDBValues();
+        await require('../services/admin').welcome();
+
+        const {restart} = require('aql-utils');
+        await restart();
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+/**
+ * Only for installation purpose, will be inaccessible after first installation
+ */
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
     global.aquila.installMode = true;
@@ -283,5 +325,6 @@ const createDefaultCountries = async () => {
 module.exports = {
     firstLaunch,
     handleInstaller,
-    testdb
+    testdb,
+    handleSilentInstaller
 };

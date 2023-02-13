@@ -39,7 +39,7 @@ g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nas
 
 ## Installation
 
-You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
+You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the interactive installer.
 
 - With npm :
 
@@ -82,6 +82,18 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - run a MongoDB image next to the AquilaCMS image like in the example above (and use this mongodb container as hostname : `mongodb://mongo:27017/`)
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of `127.0.0.1`)
+
+### Silent installation
+
+To start a silent installation, you need to set the following environment variables, then start aquila :
+- `MONGODB_URI` : MongoDB URI
+- `LANGUAGE` : Default language. "en" for English or "fr" for French
+- `FIRSTNAME` : Administrator's firstname
+- `LASTNAME` : Administrator's lastname
+- `EMAIL` : Administrator's email
+- `APPURL` : URL of the website (ie http://localhost:3010)
+- `ADMIN_PREFIX` : Admin subpath (ie : admin)
+- `SITENAME` : Website's name
 
 ### Have the installation page again
 

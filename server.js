@@ -210,8 +210,13 @@ const initServer = async () => {
             server.use('/', (req, res) => res.end('No compilation for the theme'));
             console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
+        return;
+    }
+
+    // Install mode : Only for installation purpose, will be inaccessible after first installation
+    if (serverUtils.getEnv('SILENT_MODE') === 'true') { // Detect if the installer is in silent mode
+        require('./installer/install').handleSilentInstaller();
     } else {
-        // Only for installation purpose, will be inaccessible after first installation
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
     }
 };
