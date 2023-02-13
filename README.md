@@ -12,7 +12,7 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 - A complete back office to manage everything in your website
 - A plateform to add modules and themes from [Aquila's Shop](https://shop.aquila-cms.com/)
 
-![AquilaCMS](https://www.aquila-cms.com/medias/aquilacms_pres.gif)
+![AquilaCMS](https://www.aquila-cms.com/medias/aquila-landing.gif)
 
 ## Server configuration
 
