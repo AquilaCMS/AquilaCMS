@@ -1,0 +1,46 @@
+{
+  "cart": {
+    "title": "Ma commande - Panier",
+    "description": "Ma commande - Panier",
+    "titleH1" : "Mon panier",
+    "subTotal": "Sous-total",
+    "discount": "Réduction",
+    "delivery": "Livraison",
+    "total": "Total",
+    "empty": "Votre Panier est vide",
+    "goToHome": "Découvrir notre Carte",
+    "ordering" : "COMMANDER",
+    "orderingLoading": "COMMANDE..."
+  },
+  "login": {
+    "title": "Ma commande - Connexion",
+    "description": "Ma commande - Connexion",
+    "titleH1" : "Ma commande",
+    "step" : "Connexion / Inscription"
+  },
+  "address": {
+    "title" : "Ma commande - Adresse",
+    "description" : "Ma commande - Adresse",
+    "titleH1" : "Ma commande",
+    "step" : "Adresse"
+  },
+  "delivery" : {
+    "title" : "Ma commande - Livraison",
+    "description" : "Ma commande - Livraison",
+    "titleH1" : "Ma commande",
+    "step" : "Livraison"
+  },
+  "payment" : {
+    "title" : "Ma commande - Paiement",
+    "description" : "Ma commande - Paiement",
+    "titleH1" : "Ma commande",
+    "step" : "Paiement"
+  },
+  "confirmation" : {
+    "title" : "Ma commande - Confirmation",
+    "description" : "Ma commande - Confirmation",
+    "titleH1" : "Merci pour votre commande !",
+    "summary" : "Récapitulatif de ma commande",
+    "viewOrders" : "Voir mes commandes"
+  }
+}

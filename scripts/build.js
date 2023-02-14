@@ -1,5 +1,5 @@
 const path        = require('path');
-const fs          = require('fs');
+const {fs}        = require('aql-utils');
 const utilsThemes = require('../utils/themes');
 
 /**
@@ -10,7 +10,9 @@ const buildOneTheme = async () => {
     const [nodePath, filePath, ...args] = process.argv;
     // simulate global
     global = {
-        appRoot : path.join(__dirname, '../')
+        aquila : {
+            appRoot : path.join(__dirname, '../')
+        }
     };
     if (args && args[0]) {
         const pathToTheme = path.join(global.aquila.appRoot, 'themes', args[0], '/');
@@ -19,12 +21,12 @@ const buildOneTheme = async () => {
         } else {
             console.error(`Can't access to ${pathToTheme}`);
             console.error(`> "${args[0]}" does not seem to be present`);
-            console.log('Example of use: `npm run build default_theme`');
+            console.log('Example of use: `npm run build default_theme_2`');
         }
     } else {
         console.error('This command is used to build a theme');
         console.error('> No theme specified in parameter of the command');
-        console.log('Example of use: `npm run build default_theme`');
+        console.log('Example of use: `npm run build default_theme_2`');
     }
 };
 

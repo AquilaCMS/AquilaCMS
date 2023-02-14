@@ -43,7 +43,7 @@
         "finished": "Finished",
         "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product",
-        "saveFirst": "Save the product before adding images",
+        "saveFirst": "Save the product before editing variant(s)",
         "changeType": "Change product type",
         "type": "Type",
         "typeTooltip": "Change the type of product (requires save)",

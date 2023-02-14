@@ -1,0 +1,173 @@
+{
+  "collection": "medias",
+  "datas": [
+    {
+      "group": "slider",
+      "extension": ".png",
+      "_id": "6081a1f449391e1ff816537a",
+      "link": "medias/home-info-slider1-content1.png",
+      "name": "home-info-slider1-content1"
+    },
+    {
+      "group": "slider",
+      "extension": ".jpg",
+      "_id": "60819ebf49391e1ff8165378",
+      "link": "medias/info-slider2.jpg",
+      "name": "home-info-slider2"
+    },
+    {
+      "group": "home",
+      "extension": ".png",
+      "_id": "6081a50949391e1ff816537e",
+      "link": "medias/home-promote-product-2-step01.png",
+      "name": "home-promote-product-2-step01"
+    },
+    {
+      "group": "home",
+      "extension": ".png",
+      "_id": "6081a52149391e1ff8165380",
+      "link": "medias/home-promote-product-2-step03.png",
+      "name": "home-promote-product-2-step03"
+    },
+    {
+      "group": "home",
+      "extension": ".png",
+      "_id": "6081a51949391e1ff816537f",
+      "link": "medias/home-promote-product-2-step02.png",
+      "name": "home-promote-product-2-step02"
+    },
+    {
+      "group": "home",
+      "extension": ".png",
+      "_id": "6081a5fc49391e1ff8165381",
+      "link": "medias/home-bottom-faq.png",
+      "name": "home-bottom-faq"
+    },
+    {
+      "group": "home",
+      "extension": ".png",
+      "_id": "6081a6ab49391e1ff8165382",
+      "link": "medias/home-bottom-call.png",
+      "name": "home-bottom-call"
+    },
+    {
+      "group": "catégorie",
+      "extension": ".jpeg",
+      "_id": "6081acf949391e1ff81653a0",
+      "link": "medias/cat-desserts.jpeg",
+      "name": "cat-desserts"
+    },
+    {
+      "group": "catégorie",
+      "extension": ".jpeg",
+      "_id": "6081a8d449391e1ff8165385",
+      "link": "medias/cat-burger.jpeg",
+      "name": "cat-burger"
+    },
+    {
+      "group": "pages",
+      "extension": ".jpg",
+      "_id": "6081b44349391e1ff81653a3",
+      "link": "medias/restaurent.jpg",
+      "name": "restaurent"
+    },
+    {
+      "group": "catégorie",
+      "extension": ".jpeg",
+      "_id": "6081ac9c49391e1ff816539f",
+      "link": "medias/cat-boisson.jpeg",
+      "name": "cat-boisson"
+    },
+    {
+      "group": "pages",
+      "extension": ".jpg",
+      "_id": "6081b63f49391e1ff81653a4",
+      "link": "medias/legal.jpg",
+      "name": "legal"
+    },
+    {
+      "group": "pages",
+      "extension": ".jpeg",
+      "_id": "6081ad5649391e1ff81653a1",
+      "link": "medias/nouscontacter.jpeg",
+      "name": "nouscontacter"
+    },
+    {
+      "group": "",
+      "extension": ".jpg",
+      "_id": "6149abbe1571581268c6f5d8",
+      "link": "medias/no-image.png",
+      "name": "noimage"
+    },
+    {
+      "group": "",
+      "extension": ".jpg",
+      "_id": "605363104b9ac91f54fcabac",
+      "link": "medias/Logo.jpg",
+      "name": "Logo"
+    },
+    {
+      "group": "slider",
+      "extension": ".jpg",
+      "_id": "60819f2e49391e1ff8165379",
+      "link": "medias/info-slider3.jpg",
+      "name": "home-info-slider3"
+    },
+    {
+      "group": "slider",
+      "extension": ".jpg",
+      "_id": "60819c4d49391e1ff8165377",
+      "link": "medias/info-slider1.jpg",
+      "name": "home-info-slider1"
+    },
+    {
+      "group": "slider",
+      "extension": ".jpeg",
+      "_id": "6081a31e49391e1ff816537c",
+      "link": "medias/home-info-slider3-content.jpeg",
+      "name": "home-info-slider3-content"
+    },
+    {
+      "group": "home",
+      "extension": ".jpeg",
+      "_id": "6081a82849391e1ff8165384",
+      "link": "medias/info-bottom-1.jpeg",
+      "name": "info-bottom-1"
+    },
+    {
+      "group": "pages",
+      "extension": ".jpeg",
+      "_id": "6081ae2e49391e1ff81653a2",
+      "link": "medias/bottom-parallax.jpeg",
+      "name": "bottom-parallax"
+    },
+    {
+      "group": "slider",
+      "extension": ".jpeg",
+      "_id": "6081a27849391e1ff816537b",
+      "link": "medias/home-info-slider2-content.jpeg",
+      "name": "home-info-slider2-content"
+    },
+    {
+      "group": "home",
+      "extension": ".jpeg",
+      "_id": "6081a3e649391e1ff816537d",
+      "link": "medias/home-promote-product-1.jpeg",
+      "name": "home-promote-product-1"
+    },
+    {
+      "group": "general",
+      "extension": ".jpg",
+      "_id": "6225d0a6cb19f643185016a0",
+      "link": "medias/logo2.png",
+      "name": "logo2"
+    },
+    {
+      "group": "general",
+      "extension": ".jpg",
+      "_id": "6270fb9d340829255c5206fa",
+      "link": "medias/logoMarker.png",
+      "name": "logoMarker"
+    }
+  ]
+}

@@ -6,30 +6,29 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment                  = require('moment-business-days');
-const path                    = require('path');
-const Fuse                    = require('fuse.js');
-const mongoose                = require('mongoose');
-const {aquilaEvents}          = require('aql-utils');
-const fs                      = require('../utils/fsp');
-const QueryBuilder            = require('../utils/QueryBuilder');
-const utils                   = require('../utils/utils');
-const utilsServer             = require('../utils/server');
-const utilsMedias             = require('../utils/medias');
-const NSErrors                = require('../utils/errors/NSErrors');
-const servicesLanguages       = require('./languages');
-const ServicesDownloadHistory = require('./downloadHistory');
-const servicesCategory        = require('./categories');
-const serviceSetAttributs     = require('./setAttributes');
-const servicePromos           = require('./promo');
-const serviceReviews          = require('./reviews');
+const moment                      = require('moment-business-days');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const Fuse                        = require('fuse.js');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const utils                       = require('../utils/utils');
+const utilsServer                 = require('../utils/server');
+const utilsMedias                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const servicesLanguages           = require('./languages');
+const ServicesDownloadHistory     = require('./downloadHistory');
+const servicesCategory            = require('./categories');
+const serviceSetAttributs         = require('./setAttributes');
+const servicePromos               = require('./promo');
+const serviceReviews              = require('./reviews');
 const {
     Configuration,
     Products,
     ProductsPreview,
     Categories,
     Attributes
-}                             = require('../orm/models');
+}                                 = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values', 'filename'];
@@ -487,7 +486,11 @@ const duplicateProduct = async (idProduct, newCode) => {
     for (const lang of Object.entries(doc.translation)) {
         if (doc.translation[lang[0]].canonical) {
             delete doc.translation[lang[0]].canonical;
-            delete doc.translation[lang[0]].slug;
+            if (languages.find((dbLang) => dbLang.code === lang[0])) {
+                delete doc.translation[lang[0]].slug;
+            } else {
+                doc.translation[lang[0]].slug = `dup-${doc.translation[lang[0]].slug}`;
+            }
         }
     }
 
@@ -495,7 +498,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         if (!doc.translation[lang.code]) {
             doc.translation[lang.code] = {};
         }
-        doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
+        doc.translation[lang.code].slug = slugify(doc._id.toString());
     }
     doc.isNew    = true;
     doc.images   = [];
@@ -514,7 +517,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         orderable  : false,
         status     : 'liv'
     };
-    doc.code     = utils.slugify(newCode);
+    doc.code     = slugify(newCode);
     doc.active   = false;
     doc._visible = false;
     await doc.save();
@@ -542,18 +545,12 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
     // Set PostBody.filter and PostBody.structure
     if (!PostBody.filter) PostBody.filter = {};
 
-    PostBody.filter = {
-        ...PostBody.filter,
-        [`translation.${lang}`] : {$exists: true}
-    };
+    PostBody.filter[`translation.${lang}`] = {$exists: true};
 
-    if (!PostBody.structure) {
-        PostBody.structure = {};
-    }
     PostBody.structure = {
         type  : 1,
         price : 1,
-        ...PostBody.structure
+        ...(PostBody.structure || {})
     };
 
     const menu = await Categories.findById(id).lean();
@@ -564,12 +561,7 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
     // If admin then we populate all documents without visibility or asset restriction
     if (isAdmin && PostBody && PostBody.filter && PostBody.filter.inProducts !== undefined) {
         // We delete products from productsList depending on inProducts (true or false)
-        for (let i = menu.productsList.length - 1; i >= 0; i--) {
-            const prd = menu.productsList[i];
-            if (prd.checked !== PostBody.filter.inProducts) {
-                menu.productsList.splice(i, 1);
-            }
-        }
+        menu.productsList = menu.productsList.filter((prd) => prd.checked === PostBody.filter.inProducts);
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
@@ -584,10 +576,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
 
     let prds;
 
-    let priceMin               = {et: 0, ati: 0}; // Deprecated
-    let priceMax               = {et: 0, ati: 0}; // Deprecated
-    let specialPriceMin        = {et: 0, ati: 0}; // Deprecated
-    let specialPriceMax        = {et: 0, ati: 0}; // Deprecated
+    let priceMin               = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let priceMax               = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let specialPriceMin        = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
+    let specialPriceMax        = {et: 0, ati: 0}; // Deprecated (only use in TPD1)
     let priceSortMin           = {et: 0, ati: 0};
     let priceSortMax           = {et: 0, ati: 0};
     let unfilteredPriceSortMin = {et: 0, ati: 0};
@@ -595,19 +587,18 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
 
     // If we don't need the price information, we can bypass a lot of processes
     if (PostBody.structure.price === 0) {
-        PostBody.filter     = {
+        PostBody.filter = {
             ...PostBody.filter,
             _visible : true,
-            active   : true
+            active   : true,
+            _id      : {$in: menu.productsList.map((item) => item.id.toString())}
         };
-        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
-        let querySelect = '';
-        for (const [key, value] of Object.entries(PostBody.structure)) {
-            if (value === 0) {
-                querySelect = `${querySelect}-${key} `;
-            }
-        }
+        const querySelect = Object.entries(PostBody.structure)
+            .filter(([, value]) => value === 0)
+            .map(([key]) => `-${key}`)
+            .join(' ');
+
         prds = await Products
             .find(PostBody.filter)
             .populate(PostBody.populate)
@@ -619,10 +610,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
             filters         = JSON.parse(JSON.stringify(PostBody.filter));
             PostBody.filter = {
                 _visible : true,
-                active   : true
+                active   : true,
+                _id      : {$in: menu.productsList.map((item) => item.id.toString())}
             };
         }
-        PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
 
         prds = await Products
             .find(PostBody.filter)
@@ -639,7 +630,10 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         const arrayUnfilteredPriceSort = {et: [], ati: []};
 
         for (const prd of prds) {
-            if (prd.price) {
+            if (prd.variants_values?.length > 0) {
+                arrayPrice.et.push(...prd.variants_values.map((it) => it.price.et.normal));
+                arrayPrice.ati.push(...prd.variants_values.map((it) => it.price.ati.normal));
+            } else if (prd.price) {
                 arrayPrice.et.push(prd.price.et.normal);
                 arrayPrice.ati.push(prd.price.ati.normal);
             }
@@ -649,7 +643,22 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
         for (const prd of prdsPrices) {
-            if (prd.price) {
+            if (prd.variants_values?.length > 0) {
+                for (const prdVariant of prd.variants_values) {
+                    if (prdVariant.price.et.special) {
+                        arraySpecialPrice.et.push(prdVariant.price.et.special);
+                    }
+                    if (prdVariant.price.ati.special) {
+                        arraySpecialPrice.ati.push(prdVariant.price.ati.special);
+                    }
+                    if (typeof prdVariant.price.priceSort.et !== 'undefined') {
+                        arrayUnfilteredPriceSort.et.push(prdVariant.price.priceSort.et);
+                    }
+                    if (typeof prdVariant.price.priceSort.ati !== 'undefined') {
+                        arrayUnfilteredPriceSort.ati.push(prdVariant.price.priceSort.ati);
+                    }
+                }
+            } else if (prd.price) {
                 if (prd.price.et.special) {
                     arraySpecialPrice.et.push(prd.price.et.special);
                 }
@@ -702,13 +711,20 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
             const filteredPrdId = await Products.find(filters).lean().select('_id');
             const filteredId    = filteredPrdId.map((res) => res._id.toString());
             prds                = prds.filter((item) => {
+                if (item.variants_values?.length > 0) {
+                    const isFilterd = item.variants_values.filter((it) => it.price.priceSort.ati >= formatedPriceFilter.gte && it.price.priceSort.ati <= formatedPriceFilter.lte).length > 0;
+                    return filteredId.includes(item._id.toString()) && isFilterd;
+                }
                 const res = filteredId.includes(item._id.toString()) && (item.price.priceSort.ati >= formatedPriceFilter.gte && item.price.priceSort.ati <= formatedPriceFilter.lte);
                 return res;
             });
 
             const arrayPriceSort = {et: [], ati: []};
             for (const prd of prds) {
-                if (prd.price) {
+                if (prd.variants_values?.length > 0) {
+                    arrayPriceSort.et.push(...prd.variants_values.map((it) => it.price.et.normal));
+                    arrayPriceSort.ati.push(...prd.variants_values.map((it) => it.price.ati.normal));
+                } else if (prd.price) {
                     if (prd.price.priceSort.et) {
                         arrayPriceSort.et.push(prd.price.priceSort.et);
                     }
@@ -735,26 +751,20 @@ const getProductsByCategoryId = async (id, user, lang, PostBody = {}, isAdmin = 
         const selectedAttributes = [];
         if (PostBody.filter.$and) {
             const filterArray = PostBody.filter.$and;
-            for (let i = 0; i < filterArray.length; i++) {
-                if (Object.keys(filterArray[i])[0] === 'attributes') selectedAttributes.push(filterArray[i].attributes.$elemMatch);
-            }
+            selectedAttributes.push(
+                ...filterArray.filter((item) => Object.keys(item)[0] === 'attributes').map((item) => item.attributes.$elemMatch)
+            );
         }
 
         // Re-generate filters after the new products list has been calculated
-        const attributes = [];
-        const menuAttr   = menu.filters.attributes;
-        for (let i = 0; i < menuAttr.length; i++) {
-            const attr      = menuAttr[i];
-            const attribute = {
-                code        : attr.code,
-                id_attribut : attr.id_attribut,
-                name        : attr.translation[lang].name,
-                position    : attr.position,
-                type        : attr.type,
-                values      : attr.translation[lang].values
-            };
-            attributes.push(attribute);
-        }
+        const attributes = menu.filters.attributes.map((attr) => ({
+            code        : attr.code,
+            id_attribut : attr.id_attribut,
+            name        : attr.translation[lang].name,
+            position    : attr.position,
+            type        : attr.type,
+            values      : attr.translation[lang].values
+        }));
 
         res.filters = {attributes};
         await servicesCategory.generateFilters(res, lang, selectedAttributes);
@@ -872,7 +882,7 @@ const setProduct = async (req) => {
     if (!product) throw NSErrors.ProductNotFound;
     if (product.type !== req.body.type) product = await changeProductType(product, req.body.type);
     // We update the product slug
-    if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.code)}-${req.body.id}`;
+    if (req.body.autoSlug) req.body._slug = `${slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     await ProductsPreview.deleteOne({code: req.body.code});
     return Products.findOne({code: result.code}).populate(['bundle_sections.products.id']);
@@ -886,8 +896,8 @@ const createProduct = async (req) => {
     if (body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(body);
     }
-    body.code = utils.slugify(body.code);
-    const res = await Products.create(body);
+    req.body.code = slugify(req.body.code);
+    const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };

@@ -1,0 +1,53 @@
+{
+    "root": true,
+    "extends": [
+        "next",
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
+    "env": {
+        "es6": true,
+        "node": true,
+        "browser": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "react-hooks",
+        "jsx-a11y",
+        "align-assignments",
+        "align-import"
+    ],
+    "settings": {
+        "import/resolver": {
+            "alias": {
+                "paths": [
+                    "."
+                ]
+            }
+        },
+        "react": {
+            "version": "17"
+        }
+    },
+    "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": 0,
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "semi":"error",
+        "quotes": ["error", "single"],
+        "indent":["error", 4],
+        "key-spacing": ["error", { "align": "colon" }], // Align colon
+        "align-assignments/align-assignments": [2, { "requiresOnly": false } ], // Align equal
+        "align-import/align-import": "error", // Align import
+        "@next/next/no-img-element":"off",
+        "react-hooks/exhaustive-deps":"off"
+    },
+    "ignorePatterns": ["modules/list_modules.js"]
+}

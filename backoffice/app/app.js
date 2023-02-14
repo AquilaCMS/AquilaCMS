@@ -184,6 +184,7 @@ adminCatagenApp.config([
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
                         config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
+                        config.headers.lang = window.localStorage.getItem("adminLang");
                     }
                     if(config.url.indexOf("/") === 0)
                     {

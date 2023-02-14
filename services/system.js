@@ -1,5 +1,5 @@
 const path = require('path');
-const fs   = require('../utils/fsp');
+const {fs} = require('aql-utils');
 
 const getLogsContent = async (fileName, page = 1) => {
     const linePerPage = 300;

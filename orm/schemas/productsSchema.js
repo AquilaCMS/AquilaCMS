@@ -6,19 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const {aquilaEvents} = require('aql-utils');
-const path           = require('path');
-const fs             = require('../../utils/fsp');
-const NSErrors       = require('../../utils/errors/NSErrors');
-const utils          = require('../../utils/utils');
+const mongoose                    = require('mongoose');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const path                        = require('path');
+const NSErrors                    = require('../../utils/errors/NSErrors');
 const {
     checkCustomFields,
     checkTranslations
 } = require('../../utils/translation');
-const utilsDatabase  = require('../../utils/database');
-const reviewService  = require('../../services/reviews');
-const helper         = require('../../utils/utils');
+const utilsDatabase               = require('../../utils/database');
+const reviewService               = require('../../services/reviews');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -184,15 +181,12 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
 };
 
 ProductsSchema.methods.updateData = async function (data) {
-    data.price.priceSort = {
-        et  : data.price.et.special || data.price.et.normal,
-        ati : data.price.ati.special || data.price.ati.normal
-    };
+    setPriceSort(data);
 
     // Slugify images name
     if (data.images) {
         for (const image of data.images) {
-            image.title = helper.slugify(image.title);
+            image.title = slugify(image.title);
         }
         for (const prdImage of this.images) {
             if (!data.images.find((img) => img._id.toString() === prdImage._id.toString()) && prdImage.url) {
@@ -267,12 +261,12 @@ ProductsSchema.statics.translationValidation = async function (self, updateQuery
                 } else {
                     correctCode = updateQuery.code;
                 }
-                updateQuery.translation[lang.code] = {slug: utils.slugify(correctCode)};
+                updateQuery.translation[lang.code] = {slug: slugify(correctCode)};
             }
             if (!updateQuery.translation[lang.code].slug) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
             } else {
-                updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
+                updateQuery.translation[lang.code].slug = slugify(updateQuery.translation[lang.code].slug);
             }
             checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
@@ -295,12 +289,12 @@ ProductsSchema.statics.translationValidation = async function (self, updateQuery
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                self.translation[lang.code] = {slug: utils.slugify(self.code)};
+                self.translation[lang.code] = {slug: slugify(self.code)};
             }
             if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].name ? utils.slugify(self.translation[lang.code].name) : updateQuery.code;
+                self.translation[lang.code].slug = self.translation[lang.code].name ? slugify(self.translation[lang.code].name) : updateQuery.code;
             } else {
-                self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+                self.translation[lang.code].slug = slugify(self.translation[lang.code].slug);
             }
             checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
@@ -343,12 +337,26 @@ ProductsSchema.pre('updateOne', async function (next) {
 });
 
 ProductsSchema.pre('save', async function (next) {
-    this.price.priceSort = {
-        et  : this.price.et.special || this.price.et.normal,
-        ati : this.price.ati.special || this.price.ati.normal
-    };
+    setPriceSort(this);
+
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
+
+const setPriceSort = async (data) => {
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
+
+    if (data.variants_values?.length > 0) {
+        data.variants_values.forEach((variant) => {
+            variant.price.priceSort = {
+                et  : variant.price.et.special || variant.price.et.normal,
+                ati : variant.price.ati.special || variant.price.ati.normal
+            };
+        });
+    }
+};
 
 aquilaEvents.emit('productSchemaInit', ProductsSchema);
 

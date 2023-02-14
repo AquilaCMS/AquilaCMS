@@ -1,0 +1,90 @@
+{
+  "collection": "rules",
+  "datas": [
+    {
+      "_id": "6054ad326153ac1a34d43350",
+      "owner_type": "category",
+      "owner_id": "6054a7c86153ac1a34d4334c",
+      "conditions": [
+        {
+          "_id": "6054ad326153ac1a34d43351",
+          "target": "universe",
+          "type": "select",
+          "value": "autre-autre",
+          "operator": "eq"
+        }
+      ],
+      "other_rules": [],
+      "operand": "OU",
+      "effects": []
+    },
+    {
+      "_id": "605369a84b9ac91f54fcabf7",
+      "owner_type": "category",
+      "owner_id": "605360a24d77e748945f27f2",
+      "conditions": [
+        {
+          "_id": "605369a84b9ac91f54fcabf8",
+          "target": "universe",
+          "type": "select",
+          "value": "desserts-desserts",
+          "operator": "eq"
+        }
+      ],
+      "other_rules": [],
+      "operand": "OU",
+      "effects": []
+    },
+    {
+      "_id": "605369984b9ac91f54fcabf4",
+      "owner_type": "category",
+      "owner_id": "605360974d77e748945f27f1",
+      "conditions": [
+        {
+          "_id": "605369984b9ac91f54fcabf5",
+          "target": "universe",
+          "type": "select",
+          "value": "boissons-boissons",
+          "operator": "eq"
+        }
+      ],
+      "other_rules": [],
+      "operand": "OU",
+      "effects": []
+    },
+    {
+      "_id": "612f48686253e44490f71bdf",
+      "owner_type": "picto",
+      "owner_id": "612f47f56253e44490f71bde",
+      "conditions": [
+        {
+          "_id": "612f48686253e44490f71be0",
+          "target": "code",
+          "type": "text",
+          "value": "chickenburger",
+          "operator": "eq"
+        }
+      ],
+      "other_rules": [],
+      "operand": "OU",
+      "effects": []
+    },
+    {
+      "_id": "605369874b9ac91f54fcabf2",
+      "owner_type": "category",
+      "owner_id": "6053608c4d77e748945f27f0",
+      "conditions": [
+        {
+          "_id": "605369874b9ac91f54fcabf3",
+          "target": "universe",
+          "type": "select",
+          "value": "burger-burger",
+          "operator": "eq"
+        }
+      ],
+      "other_rules": [],
+      "operand": "OU",
+      "effects": []
+    }
+  ]
+}

@@ -11,6 +11,7 @@ require('aql-utils');
 const express              = require('express');
 const passport             = require('passport');
 const path                 = require('path');
+const {fs}                 = require('aql-utils');
 global.aquila              = {};
 global.aquila.envPath      = null;
 global.aquila.envFile      = null;
@@ -19,7 +20,6 @@ global.aquila.port         = Number(process.env.PORT || 3010);
 global.aquila.defaultLang  = '';
 global.aquila.moduleExtend = {};
 const utils                = require('./utils/utils');
-const fs                   = require('./utils/fsp');
 const serverUtils          = require('./utils/server');
 const utilsModuleInit      = require('./utils/moduleInit');
 const utilsThemes          = require('./utils/themes');
@@ -183,7 +183,7 @@ const initServer = async () => {
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
-        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport}); // [step 4] Module Init Post Routes
+        await utilsModuleInit.moduleInitSteps(4, {apiRouter, passport, server}); // [step 4] Module Init Post Routes
 
         if (dev) {
             const {hotReloadAPI} = require('./services/devFunctions');
@@ -210,8 +210,24 @@ const initServer = async () => {
             server.use('/', (req, res) => res.end('No compilation for the theme'));
             console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
+        return;
+    }
+
+    // Install mode : Only for installation purpose, will be inaccessible after first installation
+    const silentInstall = {
+        databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+        language    : serverUtils.getEnv('LANGUAGE'),
+        firstname   : serverUtils.getEnv('FIRSTNAME'),
+        lastname    : serverUtils.getEnv('LASTNAME'),
+        email       : serverUtils.getEnv('EMAIL'),
+        appUrl      : serverUtils.getEnv('APPURL'),
+        adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+        siteName    : serverUtils.getEnv('SITENAME')
+    };
+    // Detect if the installer is in silent mode
+    if (silentInstall.databaseAdd && silentInstall.language && silentInstall.firstname  && silentInstall.lastname && silentInstall.email && silentInstall.appUrl && silentInstall.adminPrefix && silentInstall.siteName) {
+        require('./installer/install').handleSilentInstaller();
     } else {
-        // Only for installation purpose, will be inaccessible after first installation
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
     }
 };

@@ -12,7 +12,7 @@ const {isAdmin} = require('../utils/utils');
  * Add the fields to true to the filter
  */
 const securityForceActif = (arrayFieldsToActivate) => (req, res, next) => {
-    // TODO : appeler securityForceFilter() pour factoriser
+    // TODO : call securityForceFilter() to refactor
     if (!isAdmin(req.info)) {
         if (!req.body.PostBody) req.body.PostBody = {};
         const {PostBody} = req.body;

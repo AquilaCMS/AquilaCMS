@@ -1,0 +1,16 @@
+{
+    "mandatory" : "Mandatory",
+    "titleBilling":"Billing address",
+    "titleDelivery":"Delivery address",
+    "firstname":"First Name",
+    "lastname":"Last Name",
+    "line1":"Address",
+    "line2":"Address 2",
+    "city":"City",
+    "postal":"Zip Code",
+    "country":"Country",
+    "sameAddress": "Same billing address",
+    "previous": "PREVIOUS",
+    "next": "NEXT",
+    "nextLoading": "LOADING..."
+}

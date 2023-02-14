@@ -1,0 +1,103 @@
+{
+  "collection": "attributes",
+  "datas": [
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "visible": true,
+      "usedInRules": false,
+      "usedInFilters": false,
+      "_id": "60d09b837fc52b22e0c3d94d",
+      "param": "Non",
+      "code": "couverts",
+      "translation": {
+        "fr": {
+          "name": "Couverts"
+        },
+        "en": {
+          "name": "Covered"
+        }
+      },
+      "type": "number"
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "visible": true,
+      "usedInRules": false,
+      "usedInFilters": false,
+      "_id": "60d06ea4e197fd1fc0d9b6ec",
+      "param": "Non",
+      "code": "sauce-ketchup",
+      "translation": {
+        "fr": {
+          "name": "Ketchup"
+        },
+        "en": {
+          "name": "Ketchup"
+        }
+      },
+      "type": "number"
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "visible": true,
+      "usedInRules": false,
+      "usedInFilters": false,
+      "_id": "60d097677fc52b22e0c3d83b",
+      "param": "Non",
+      "code": "sauce-mayonnaise",
+      "translation": {
+        "fr": {
+          "name": "Mayonnaise"
+        },
+        "en": {
+          "name": "Mayonnaise"
+        }
+      },
+      "type": "number"
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+          "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "visible": true,
+      "usedInRules": true,
+      "usedInFilters": true,
+      "_id": "ff06a08a6350becbd5d0adea",
+      "param": "Non",
+      "code": "viande",
+      "translation": {
+        "fr": {
+          "name": "Viande",
+          "values": [
+            "Poulet",
+            "Boeuf",
+            "Bacon"
+          ]
+        },
+        "en": {
+          "name": "Meat",
+          "values": [
+            "Chicken",
+            "Beef",
+            "Bacon"
+          ]
+        }
+      },
+      "type": "multiselect"
+    }
+  ]
+}

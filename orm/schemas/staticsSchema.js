@@ -7,8 +7,8 @@
  */
 
 const mongoose            = require('mongoose');
+const {slugify}           = require('aql-utils');
 const {aquilaEvents}      = require('aql-utils');
-const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
@@ -42,15 +42,15 @@ StaticsSchema.statics.translationValidation = async function (self, updateQuery)
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+                updateQuery.translation[lang.code] = {slug: slugify(updateQuery.code)};
             }
             if (!updateQuery.translation[lang.code].slug) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? utils.slugify(updateQuery.translation[lang.code].title) : updateQuery.code;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? slugify(updateQuery.translation[lang.code].title) : updateQuery.code;
             } else {
-                updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
+                updateQuery.translation[lang.code].slug = slugify(updateQuery.translation[lang.code].slug);
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${utils.slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
                 if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                     throw NSErrors.SlugAlreadyExist;
                 }
@@ -64,12 +64,12 @@ StaticsSchema.statics.translationValidation = async function (self, updateQuery)
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                self.translation[lang.code] = {slug: utils.slugify(self.code)};
+                self.translation[lang.code] = {slug: slugify(self.code)};
             }
             if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].title ? utils.slugify(self.translation[lang.code].title) : self.code;
+                self.translation[lang.code].slug = self.translation[lang.code].title ? slugify(self.translation[lang.code].title) : self.code;
             } else {
-                self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+                self.translation[lang.code].slug = slugify(self.translation[lang.code].slug);
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
                 throw NSErrors.SlugAlreadyExist;
