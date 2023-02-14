@@ -1,0 +1,53 @@
+import { useEffect }       from 'react';
+import Script              from 'next/script';
+import { useRouter }       from 'next/router';
+import * as fbq            from '@lib/common/fb-pixel/fpixel';
+import { useCookieNotice } from '@lib/hooks';
+
+const FacebookPixel = ({ children }) => {
+    const { cookieNotice } = useCookieNotice();
+    const router           = useRouter();
+
+    useEffect(() => {
+        const handleRouteChange = (url) => {
+            fbq.pageview(url);
+        };
+        
+        if (cookieNotice === 'true') {
+            // This pageview only trigger first time (it is important for Pixel to have real information)
+            fbq.pageview(router.asPath);
+            router.events.on('routeChangeComplete', handleRouteChange);
+        }
+        
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange);
+        };
+    }, [router.event]);
+
+    if (!fbq.FB_PIXEL_ID || cookieNotice !== 'true') return children;
+    return (
+        <>
+            {/* Global Site Code Pixel - Facebook Pixel */}
+            <Script
+                id="facebookpixel-script"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                    __html: `
+                    !function(f,b,e,v,n,t,s)
+                    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                    n.queue=[];t=b.createElement(e);t.async=!0;
+                    t.src=v;s=b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t,s)}(window, document,'script',
+                    'https://connect.facebook.net/en_US/fbevents.js');
+                    fbq('init', ${fbq.FB_PIXEL_ID});
+                `,
+                }}
+            />
+            { children }
+        </>
+    );
+};
+
+export default FacebookPixel;

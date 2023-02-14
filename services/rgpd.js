@@ -10,17 +10,17 @@ const {
     Types: {ObjectId: ObjectID},
     mongo: {MongoClient}
 } = require('mongoose');
-const {v4: uuidv4}   = require('uuid');
-const mongoURI       = require('mongodb-uri');
-const bcrypt         = require('bcrypt');
-const rimraf         = require('rimraf');
-const path           = require('path');
-const faker          = require('faker');
-const moment         = require('moment');
-const {aquilaEvents} = require('aql-utils');
-const fs             = require('../utils/fsp');
-const {execCmd}      = require('../utils/packageManager');
-const NSErrors       = require('../utils/errors/NSErrors');
+const {v4: uuidv4}                = require('uuid');
+const mongoURI                    = require('mongodb-uri');
+const bcrypt                      = require('bcrypt');
+const rimraf                      = require('rimraf');
+const path                        = require('path');
+const faker                       = require('faker');
+const moment                      = require('moment');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const appdirname                  = path.dirname(require.main.filename);
+faker.locale                      = 'fr';
 const {
     Bills,
     Orders,
@@ -29,22 +29,20 @@ const {
     Users,
     Modules,
     Newsletters
-}                  = require('../orm/models');
-const appdirname     = path.dirname(require.main.filename);
-faker.locale         = 'fr';
+} = require('../orm/models');
 /*
 RGPD : Example of a function to implement in a module using users data
 */
 
 // const {aquilaEvents} = require('aql-utils');
-// // On catch l'évènement de suppression d'un user
+// // We catch the event delete of a user
 // aquilaEvents.on('aqRemoveUser', function(doc){
-//     // Remplacer "id_user" par le nom du champ faisant référence à l'user dans le modèle du module
+//     // Replace "id_user" by the name of the field referring to the user in the module model
 //     model.find({'id_user': doc._id}).then(function (obj) {
 //         for (let i = 0; i < obj.length; i++) {
-//             // On supprime le hamp faisant référence à l'user dans le modèle du module
+//             // We delete the hamp referring to the user in the module model
 //             obj[i].id_user = undefined;
-//             // Si besoin, anonymiser d'autres données
+//             // If necessary, anonymize other data
 //             obj[i].save();
 //         }
 //     });

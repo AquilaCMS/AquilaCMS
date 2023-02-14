@@ -1,0 +1,9 @@
+{
+    "titleH1" : "Mon compte",
+    "navigation": {
+        "myInformations": "Mes Informations",
+        "myOrders": "Mes commandes",
+        "rgpd": "RGPD",
+        "logout": "Se déconnecter"
+    }
+}

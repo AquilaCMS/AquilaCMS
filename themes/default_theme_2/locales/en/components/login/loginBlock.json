@@ -1,0 +1,15 @@
+{
+  "forgotPass": "Forgot password?",
+  "title1": "Connect me",
+  "title2": "I already have an account",
+  "signin": "Sign in",
+  "signinLoading": "IDENTIFICATION...",
+  "password": "Password",
+  "forgot" : {
+    "email" : "Enter your email",
+    "send" : "Send",
+    "sendLoading" : "Sending...",
+    "back": "Back",
+    "infoGetMail" : "You will receive an email to reset your password!"
+  }
+}

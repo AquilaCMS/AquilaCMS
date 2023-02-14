@@ -11,8 +11,7 @@ const Json2csvParser          = require('json2csv').Parser;
 const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
-const fs                      = require('./fsp');
-const NSErrors                = require('./errors/NSErrors');
+const {fs}                    = require('aql-utils');
 
 /**
  *
@@ -180,30 +179,6 @@ const downloadFile = async (url, dest) => {
     });
 };
 
-const slugify = (text = '') => {
-    const slug = require('slug');
-    slug.extend({_: '_'});
-    return slug(text, {lower: true});
-};
-
-/**
- * transform a price in ATI to ET
- * @param {number|undefined} ATIPrice
- * @param {number|undefined} VAT ex: VAT is 20 if it is 20%
- * @returns {number|undefined}
- */
-const toET = (ATIPrice, VAT) => {
-    if ((ATIPrice !== undefined) && (VAT !== undefined)) {
-        if (VAT === 0) {
-            return ATIPrice;
-        }
-
-        return Math.round(ATIPrice * 100 * 100 / (100 + VAT)) / 100;
-    }
-
-    return undefined;
-};
-
 /**
  *
  * @param {any} obj
@@ -307,36 +282,40 @@ const isJsonString = (str) => {
 };
 
 /**
+ * return a string from a JSON object
+ * @param {object}
+ * @returns {string}
+ */
+const stringifyError = (err, filter, space) => {
+    const plainObject = {};
+    Object.getOwnPropertyNames(err).forEach(function (key) {
+        if (key !== 'stack') {
+            plainObject[key] = err[key];
+        }
+    });
+    try {
+        return JSON.stringify(plainObject, filter, space);
+    } catch (e) {
+        return JSON.stringify(err, filter, space);
+    }
+};
+
+/**
  * Check if user is admin
  * @param {object | undefined} info
  * @returns {boolean}
  */
 const isAdmin = (info) => info && info.isAdmin;
 
-/**
- * Init child process Globals and Database
- */
-const initChildProcess = async () => {
-    const utilsDB = require('./database');
-    try {
-        global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
-        await utilsDB.connect();
-    } catch (err) {
-        throw NSErrors.InitChildProcessError;
-    }
-};
-
 module.exports = {
     downloadFile,
     json2csv,
     getObjFromDotStr,
     detectDuplicateInArray,
-    slugify,
-    toET,
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
     isJsonString,
     isAdmin,
-    initChildProcess
+    stringifyError
 };

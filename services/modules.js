@@ -6,23 +6,21 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip           = require('adm-zip');
-const path             = require('path');
-const mongoose         = require('mongoose');
-const rimraf           = require('rimraf');
-const slash            = require('slash');
-const semver           = require('semver');
-const {aquilaEvents}   = require('aql-utils');
-const {isEqual}        = require('../utils/utils');
-const packageManager   = require('../utils/packageManager');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const modulesUtils     = require('../utils/modules');
-const themesUtils      = require('../utils/themes');
-const {isProd, getEnv} = require('../utils/server');
-const fs               = require('../utils/fsp');
-const NSErrors         = require('../utils/errors/NSErrors');
-const {Modules}        = require('../orm/models');
-const themesService    = require('./themes');
+const AdmZip                      = require('adm-zip');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const rimraf                      = require('rimraf');
+const semver                      = require('semver');
+const slash                       = require('slash');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const utilsThemes                 = require('../utils/themes');
+const {isEqual}                   = require('../utils/utils');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const modulesUtils                = require('../utils/modules');
+const {isProd, getEnv}            = require('../utils/server');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Modules}                   = require('../orm/models');
+const themesService               = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -395,6 +393,12 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
+        // If the module contains dependencies usable in the front or api
+        // then we run the install to install the dependencies in aquila
+        if (myModule.packageDependencies) {
+            await installModulesDependencies(myModule, toBeChanged);
+        }
+
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
 
@@ -411,55 +415,62 @@ const activateModule = async (idModule, toBeChanged) => {
 const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     const {currentTheme}       = global.aquila.envConfig.environment;
     const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+
     if (themeModuleComponent === 'no-installation') {
         console.log(`No component installation is required by this theme (${currentTheme})`);
-    } else {
-        if (myModule.loadTranslationFront) {
-            console.log('Front translation for module : Loading ...');
-            try {
-                const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', 'currentTheme', 'assets', 'i18n');
-                const hasAccess           = await fs.hasAccess(pathToTranslateFile);
-                if (hasAccess) {
-                    const files      = await fs.readdir(pathToTranslateFile);
-                    const fileLength = files.length;
-                    for (let i = 0; i < fileLength; i++) {
-                        const lang = files[i];
-                        if (lang === 'index.js') {
-                            continue;
+        return copyTab;
+    }
+    if (!myModule.component_template_front) {
+        console.log(`No component template is defined by this module (${myModule.name})`);
+        return copyTab;
+    }
+
+    let pathToComponents = 'theme_components';
+    if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+    const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
+
+    // Control compatibility between the module and the theme
+    if (!fs.existsSync(pathToThemeComponents)) {
+        throw NSErrors.ModuleAquilaVersionNotSatisfied;
+    }
+
+    if (myModule.loadTranslationFront) {
+        console.log('Front translation for module : Loading ...');
+        try {
+            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n');
+            const hasAccess           = await fs.hasAccess(pathToTranslateFile);
+            if (hasAccess) {
+                const files      = await fs.readdir(pathToTranslateFile);
+                const fileLength = files.length;
+                for (let i = 0; i < fileLength; i++) {
+                    const lang = files[i];
+                    if (lang === 'index.js') {
+                        continue;
+                    }
+                    const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
+                    const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                    if (await fs.hasAccess(src)) {
+                        try {
+                            await fs.copyRecursive(src, dest, true);
+                        } catch (err) {
+                            console.error(err);
                         }
-                        const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
-                        const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
-                        if (await fs.hasAccess(src)) {
-                            try {
-                                await fs.copyRecursive(src, dest, true);
-                            } catch (err) {
-                                console.error(err);
-                            }
-                            copyTab.push(dest);
-                        }
+                        copyTab.push(dest);
                     }
                 }
-                console.log('Front translation for module : Success');
-            } catch (errorLoadTranslationFront) {
-                console.log('Front translation for module : Failed');
             }
+            console.log('Front translation for module : Success');
+        } catch (errorLoadTranslationFront) {
+            console.log('Front translation for module : Failed');
         }
-
-        // If the module contains dependencies usable in the front
-        // then we run the install to install the dependencies in aquila
-        if (myModule.packageDependencies) {
-            await installModulesDependencies(myModule, toBeChanged);
-        }
-
-        // If the module must import components into the front
-        let pathToComponents = 'theme_components';
-        if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
-        const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
-        await addOrRemoveThemeFiles(
-            pathToThemeComponents,
-            false
-        );
     }
+
+    // If the module must import components into the front
+    await addOrRemoveThemeFiles(
+        pathToThemeComponents,
+        false
+    );
+
     return copyTab;
 };
 
@@ -490,8 +501,8 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
-                await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                // await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -612,8 +623,8 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await packageManager.execCmd('yarn install', installPath);
-                await packageManager.execCmd('yarn upgrade', installPath);
+                await execCmd('yarn install', installPath);
+                // await execCmd('yarn upgrade', installPath);
             }
         }
     }
@@ -651,7 +662,7 @@ const removeModule = async (idModule) => {
 };
 
 const retrieveModuleComponentType = async (theme) => {
-    const themeInfo = await themesUtils.loadThemeInfo(theme);
+    const themeInfo = await utilsThemes.loadThemeInfo(theme);
     if (themeInfo?.moduleComponentType) return themeInfo.moduleComponentType;
     return '';
 };

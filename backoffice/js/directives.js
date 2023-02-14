@@ -1719,7 +1719,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: 'createdAt'
                             },
                             {
-                                value: "visible",
+                                value: "_visible",
                                 type: "bool",
                                 params: {},
                                 name: 'visible'

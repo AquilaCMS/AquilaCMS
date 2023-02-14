@@ -1,0 +1,24 @@
+{
+  "collection": "setAttributes",
+  "datas": [
+    {
+      "attributes": [
+        "60d06ea4e197fd1fc0d9b6ec",
+        "60d097677fc52b22e0c3d83b",
+        "60d09b837fc52b22e0c3d94d"
+      ],
+      "_id": "5c5abe92c1f87b5f46c451fa",
+      "code": "defaut",
+      "name": "Défaut",
+      "questions": []
+    },
+    {
+      "attributes": [],
+      "_id": "5d443c7cede1945f660282d8",
+      "code": "defautUser",
+      "name": "DéfautUser",
+      "type": "users",
+      "questions": []
+    }
+  ]
+}

@@ -57,7 +57,7 @@ class NSErrors {
 
     static get Forbidden() { return new NSError(403, 'Forbidden'); }
     static get AccessUnauthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'AccessUnauthorized'); }
-    static get DemoMode() { return this.makeErrorAlias(NSErrors.Forbidden, 'DemoModeActivate'); }
+    static get NoCronDemoMode() { return this.makeErrorAlias(NSErrors.Forbidden, 'NoCronDemoMode'); }
     static get OperatorRestricted() { return this.makeErrorAlias(NSErrors.Forbidden, 'OperatorRestricted'); }
     static get PromoCodePromoNotAuthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'PromoCodePromoNotAuthorized'); }
     static get ComponentNotAllowed() { return this.makeErrorAlias(NSErrors.Forbidden, 'ComponentNotAllowed'); }
@@ -143,7 +143,7 @@ class NSErrors {
     static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get ThemeInstallation() { return this.makeErrorAlias(NSErrors.BadRequest, 'ThemeInstallation'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
-    static get JobErrorInChildNode() { return this.makeErrorAlias(NSErrors.NotFound, 'JobErrorInChildNode'); }
+    static get JobError() { return this.makeErrorAlias(NSErrors.NotFound, 'JobError'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }

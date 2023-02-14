@@ -135,7 +135,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             console.error(err);
             if(err) {
                 if(err.data && err.data != null){
-                    if(err.data.datas && err.data.datas != null){
+                    if(err.data.datas && err.data.datas != null && err.data.code !== 'ModuleAquilaVersionNotSatisfied'){
                         if (err.data.datas.missingDependencies && err.data.datas.needActivation) {
                             $scope.modules.find((elem) => elem._id === id).active = false;
                             let messageToast = "";
@@ -168,7 +168,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                         }
                     }else{
                         if(err.data.message) {
-                            toastService.toast('danger', err.message);
+                            toastService.toast('danger', err.data.message);
                         }
                     }
                     $scope.modules.find((elem) => elem._id === id).active = false;
@@ -213,7 +213,11 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
         ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
             $scope.config = config;
             $scope.showLoading = true;
-            $http.get('/restart').catch(function(error) {
+            $http.get('/restart').then(function(response) {
+                if(response.data === "ManualRestart") {
+                    toastService.toast("danger", $translate.instant("modules.restartFail"));
+                }
+            }).catch(function(error) {
                 console.error(error);
                 toastService.toast("danger", $translate.instant("modules.restartFail"));
             });

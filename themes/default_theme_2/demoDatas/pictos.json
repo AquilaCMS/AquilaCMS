@@ -1,0 +1,14 @@
+{
+  "collection": "pictos",
+  "datas": [
+    {
+      "enabled": true,
+      "usedInFilters": false,
+      "_id": "612f47f56253e44490f71bde",
+      "location": "TOP_LEFT",
+      "code": "veggie",
+      "title": "Veggie",
+      "filename": "veggie.png"
+    }
+  ]
+}

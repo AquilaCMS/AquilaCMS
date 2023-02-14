@@ -48,7 +48,8 @@ const ItemSimple = new Schema(
                     extension        : {type: String, default: '.jpg'}
                 }
             ],
-            stock : {
+            weight : Number,
+            stock  : {
                 qty          : {type: Number, default: 0},
                 qty_booked   : {type: Number, default: 0},
                 date_selling : Date,
@@ -57,8 +58,7 @@ const ItemSimple = new Schema(
                 status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
                 label        : String,
                 translation  : {}
-            },
-            weight : Number
+            }
         }, {strict: false})
     },
     {

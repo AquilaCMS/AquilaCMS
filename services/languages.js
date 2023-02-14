@@ -7,7 +7,7 @@
  */
 
 const path          = require('path');
-const fs            = require('../utils/fsp');
+const {fs}          = require('aql-utils');
 const ServiceConfig = require('./config');
 const {Languages}   = require('../orm/models');
 const NSErrors      = require('../utils/errors/NSErrors');
@@ -16,6 +16,8 @@ const QueryBuilder  = require('../utils/QueryBuilder');
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
+
+const warningMsg = 'you must rebuild the theme and restart the server to apply the change.';
 
 const getLanguages = async (PostBody) => queryBuilder.find(PostBody, true);
 
@@ -37,6 +39,11 @@ const saveLang = async (lang) => {
     }
 
     await require('./themes').languageManagement();
+    if (lang._id) {
+        console.log(`Language '${result.name}' updated, ${warningMsg}`);
+    } else if (result.status === 'visible') {
+        console.log(`Language '${result.name}' created, ${warningMsg}`);
+    }
     return result;
 };
 
@@ -44,6 +51,9 @@ const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
 
     await require('./themes').languageManagement();
+    if (deletedLang.status === 'visible') {
+        console.log(`Language '${deletedLang.name}' deleted, ${warningMsg}`);
+    }
     return deletedLang;
 };
 
@@ -100,19 +110,33 @@ const translateGet = async (filePath, lang) => {
  */
 const translateList = async () => {
     try {
-        const lang          = 'fr';
+        const lang          = await getDefaultLang();
         const translateList = [];
         const translatePath = await getTranslatePath(lang);
-        const listDir       = await fs.readdir(translatePath);
-        for (const file of listDir) {
-            if (file.endsWith('.json')) {
-                translateList.push(file.substring(0, file.lastIndexOf('.json')));
-            }
-        }
+        await getListOfAllTranslationFiles(translatePath, translateList);
 
-        return translateList;
+        return translateList.map((translate) => translate.replace(`${translatePath}\\`, '').replace(/\\/g, '/'));
     } catch (error) {
         throw NSErrors.TranslationError;
+    }
+};
+
+const getListOfAllTranslationFiles = async (dir, translateList) => {
+    try {
+        const files = await fs.readdir(dir);
+
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            const stat     = await fs.stat(filePath);
+
+            if (stat.isFile() && path.extname(filePath) === '.json') {
+                translateList.push(filePath.substring(0, filePath.lastIndexOf('.json')));
+            } else if (stat.isDirectory()) {
+                await getListOfAllTranslationFiles(filePath, translateList);
+            }
+        }
+    } catch (err) {
+        console.error('Could not list the directory.', err);
     }
 };
 
@@ -120,6 +144,10 @@ const translateList = async () => {
  *
  */
 async function getTranslatePath(lang) {
+    const newPath = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'locales', lang);
+    if (await fs.existsSync(newPath)) {
+        return newPath;
+    }
     return path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 

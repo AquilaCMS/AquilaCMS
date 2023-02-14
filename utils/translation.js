@@ -96,7 +96,6 @@ function checkCustomFields(customObject, fields) {
                 // eslint-disable-next-line valid-typeof
                 && ((typeof customObject[customKeys[i]]) !== fields[j].type.toString())
             ) {
-                // TODO P4 "Error management": put the code system
                 throw NSErrors.InvalidInputString();
             }
         }
