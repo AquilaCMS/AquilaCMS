@@ -29,7 +29,7 @@ const themeInstallAndCompile = async (theme) => {
 /**
  * Do a yarn install
  */
-const yarnInstall = async (themeName = '', devDependencies = false) => {
+const yarnInstall = async (themeName = ''/* , devDependencies = false */) => {
     const linkToTheme   = path.join(global.aquila.appRoot, 'themes', themeName);
     const pathToPackage = path.join(linkToTheme, 'package.json');
     const isExist       = fs.existsSync(pathToPackage);
@@ -39,12 +39,8 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
             stderr : "No 'package.json' found - no yarn"
         };
     }
-    let command = 'yarn install --production=true';
-    // If the NODE_ENV variable is not equal to 'production', yarn install will always install the devDependencies
-    if (devDependencies === true || require('./server').dev) {
-        command = 'yarn install --production=false';
-    }
-    const returnValues = await execCmd(command, path.join(linkToTheme, '/'));
+
+    const returnValues = await execCmd('yarn install', path.join(linkToTheme, '/'));
     return returnValues;
 };
 
