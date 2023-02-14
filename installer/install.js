@@ -49,6 +49,21 @@ const handleSilentInstaller = async () => {
     try {
         console.log('-= Process silent installer =-');
 
+        const generateTmpPass = () => {
+            const characters     = 'abcdefghijklmnopqrstuvwxyz';
+            const charactersUp   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const charactersNum  = '0123456789';
+            const charactersSpec = '#.!@,?*';
+            const allChar        = [characters, characters, characters, charactersNum, charactersUp, charactersUp, charactersSpec, characters];
+            let result           = '';
+
+            for (let i = 0; i < allChar.length; i++) {
+                result += allChar[i].charAt(Math.floor(Math.random() * allChar[i].length));
+            }
+
+            return result;
+        };
+
         const datas = {
             databaseAdd : serverUtils.getEnv('MONGODB_URI'),
             language    : serverUtils.getEnv('LANGUAGE'),
@@ -58,7 +73,7 @@ const handleSilentInstaller = async () => {
             appUrl      : serverUtils.getEnv('APPURL'),
             adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
             siteName    : serverUtils.getEnv('SITENAME'),
-            password    : Math.random().toString(20),
+            password    : generateTmpPass(),
             envPath     : 'config/env.json',
             override    : 'on',
             demoData    : true
