@@ -214,7 +214,18 @@ const initServer = async () => {
     }
 
     // Install mode : Only for installation purpose, will be inaccessible after first installation
-    if (serverUtils.getEnv('SILENT_MODE') === 'true') { // Detect if the installer is in silent mode
+    const silentInstall = {
+        databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+        language    : serverUtils.getEnv('LANGUAGE'),
+        firstname   : serverUtils.getEnv('FIRSTNAME'),
+        lastname    : serverUtils.getEnv('LASTNAME'),
+        email       : serverUtils.getEnv('EMAIL'),
+        appUrl      : serverUtils.getEnv('APPURL'),
+        adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+        siteName    : serverUtils.getEnv('SITENAME')
+    };
+    // Detect if the installer is in silent mode
+    if (silentInstall.databaseAdd && silentInstall.language && silentInstall.firstname  && silentInstall.lastname && silentInstall.email && silentInstall.appUrl && silentInstall.adminPrefix && silentInstall.siteName) {
         require('./installer/install').handleSilentInstaller();
     } else {
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);

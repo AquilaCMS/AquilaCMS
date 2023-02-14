@@ -64,12 +64,7 @@ const handleSilentInstaller = async () => {
             demoData    : true
         };
 
-        if (!datas.databaseAdd || !datas.language || !datas.firstname || !datas.lastname || !datas.email || !datas.appUrl || !datas.adminPrefix || !datas.siteName) {
-            throw new Error('Missing env variable for silent installation');
-        }
-
         await postConfiguratorDatas({body: datas});
-
         await require('../services/job').initAgendaDB();
         await require('../utils/database').initDBValues();
         await require('../services/admin').welcome();
