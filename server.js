@@ -210,8 +210,24 @@ const initServer = async () => {
             server.use('/', (req, res) => res.end('No compilation for the theme'));
             console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
+        return;
+    }
+
+    // Install mode : Only for installation purpose, will be inaccessible after first installation
+    const silentInstall = {
+        databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+        language    : serverUtils.getEnv('LANGUAGE'),
+        firstname   : serverUtils.getEnv('FIRSTNAME'),
+        lastname    : serverUtils.getEnv('LASTNAME'),
+        email       : serverUtils.getEnv('EMAIL'),
+        appUrl      : serverUtils.getEnv('APPURL'),
+        adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+        siteName    : serverUtils.getEnv('SITENAME')
+    };
+    // Detect if the installer is in silent mode
+    if (silentInstall.databaseAdd && silentInstall.language && silentInstall.firstname  && silentInstall.lastname && silentInstall.email && silentInstall.appUrl && silentInstall.adminPrefix && silentInstall.siteName) {
+        require('./installer/install').handleSilentInstaller();
     } else {
-        // Only for installation purpose, will be inaccessible after first installation
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
     }
 };

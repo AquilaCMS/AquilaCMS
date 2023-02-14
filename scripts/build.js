@@ -10,7 +10,9 @@ const buildOneTheme = async () => {
     const [nodePath, filePath, ...args] = process.argv;
     // simulate global
     global = {
-        appRoot : path.join(__dirname, '../')
+        aquila : {
+            appRoot : path.join(__dirname, '../')
+        }
     };
     if (args && args[0]) {
         const pathToTheme = path.join(global.aquila.appRoot, 'themes', args[0], '/');
