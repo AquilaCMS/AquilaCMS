@@ -1,0 +1,14 @@
+{
+    "tab1": "Description",
+    "tab2": "Additional information",
+    "true": "Yes",
+    "false": "No",
+    "otherProducts": "Additional products",
+    "return": "Back",
+    "addToBasket": "Add to cart",
+    "compose": "Compose",
+    "download": "Download",
+    "unavailable": "Unavailable",
+    "downloading": "Downloading...",
+    "addToCartLoading": "Add..."
+}

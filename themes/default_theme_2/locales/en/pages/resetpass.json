@@ -1,0 +1,11 @@
+{
+    "title" : "Password recovery",
+    "description" : "Password recovery",
+    "titleH1" : "Password recovery",
+    "information" : "ENTER YOUR NEW PASSWORD",
+    "password" : "Password",
+    "password2" : "Password (confirmation)",
+    "validate" : "Confirm",
+    "validateLoading" : "Register...",
+    "passNotMatching" : "Passwords do not match !"
+}

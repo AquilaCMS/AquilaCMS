@@ -18,7 +18,7 @@ The NodeJS script `build.js` is used when we use the `build` command of the `pac
 Examples of use :
 
 ```sh
-npm run build default_theme
+npm run build default_theme_2
 # and also
-yarn build default_theme
+yarn build default_theme_2
 ```

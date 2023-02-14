@@ -1,0 +1,5 @@
+{
+    "noGallery": "Impossible de charger la gallerie [{{nsCode}}]",
+    "noItem": "Aucun élément dans la gallerie [{{nsCode}}]",
+    "loadMore": "Voir plus"
+}

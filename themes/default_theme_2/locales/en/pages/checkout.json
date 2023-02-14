@@ -1,0 +1,46 @@
+{
+  "cart": {
+    "title": "My order - Cart",
+    "description": "My order - Cart",
+    "titleH1" : "My Cart",
+    "subTotal": "Sub-total",
+    "discount": "Discount",
+    "delivery": "Delivery",
+    "total": "Total",
+    "empty": "Your cart is empty",
+    "goToHome": "Discover our menu",
+    "ordering" : "ORDER",
+    "orderingLoading": "ORDER..."
+  },
+  "login": {
+    "title": "My order - Log In",
+    "description": "My order - Log In",
+    "titleH1" : "My order",
+    "step" : "Log In / Sign In"
+  },
+  "address": {
+    "title" : "My order - Address",
+    "description" : "My order - Address",
+    "titleH1" : "My order",
+    "step" : "Adress"
+  },
+  "delivery" : {
+    "title" : "My order - Delivery",
+    "description" : "My order - Delivery",
+    "titleH1" : "My order",
+    "step" : "Delivery"
+  },
+  "payment" : {
+    "title" : "My order - Payment",
+    "description" : "My order - Payment",
+    "titleH1" : "My order",
+    "step" : "Payment"
+  },
+  "confirmation" : {
+    "title" : "My order - Confirmation",
+    "description" : "My order - Confirmation",
+    "titleH1" : "Thank you for your order !",
+    "summary" : "Recap of my order",
+    "viewOrders" : "View my orders"
+  }
+}

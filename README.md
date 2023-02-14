@@ -12,7 +12,7 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 - A complete back office to manage everything in your website
 - A plateform to add modules and themes from [Aquila's Shop](https://shop.aquila-cms.com/)
 
-![AquilaCMS](https://www.aquila-cms.com/medias/aquilacms_pres.gif)
+![AquilaCMS](https://www.aquila-cms.com/medias/aquila-landing.gif)
 
 ## Server configuration
 
@@ -111,7 +111,7 @@ You can define two environment variables inside AquilaCMS.
 If you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
 
 ```sh
-npm run build default_theme
+npm run build default_theme_2
 ```
 
 > - the parameter is the name of the theme folder you want to build

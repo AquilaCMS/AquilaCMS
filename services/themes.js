@@ -131,7 +131,7 @@ const installDependencies = async (theme) => {
 const deleteTheme = async (themePath) => {
     // Block delete of the current theme, or the default theme
     const currentTheme = await getThemePath();
-    if (!themePath || themePath === '' || themePath === currentTheme || themePath === 'default_theme') {
+    if (!themePath || themePath === '' || themePath === currentTheme || themePath === 'default_theme_2') {
         throw NSErrors.DesignThemeRemoveCurrent;
     }
     await removeConfigTheme(themePath);

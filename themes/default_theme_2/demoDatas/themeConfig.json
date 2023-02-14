@@ -1,0 +1,133 @@
+{
+  "collection": "themeConfig",
+  "datas": [
+    {
+      "_id": "62028c45cf8e3f3b68c6facc",
+      "name": "default_theme_2",
+      "config": {
+        "translation": {
+          "fr": {
+            "values": [
+              {
+                "key": "filters",
+                "value": "top",
+                "name": "Emplacement des filtres",
+                "description": "Permet d'afficher les filtres des catégories : En haut = 'top' | caché = 'none'",
+                "group": "Général"
+              },
+              {
+                "key": "productsPerPage",
+                "value": 15,
+                "name": "Nombre de produit par page",
+                "description": "Nombre de produit par page",
+                "group": "Général"
+              },
+              {
+                "key": "infiniteScroll",
+                "value": 0,
+                "name": "Gestion des pages",
+                "description": "0 = Normale | 1 = Infinite scroll | 2 = Infinite scroll avec bouton",
+                "group": "Général"
+              },
+              {
+                "key": "displayStockCard",
+                "value": false,
+                "name": "Disponibilité dans les encarts produit",
+                "description": "Affiche ou non la disponibilité dans les encarts produit (page catégorie, page recherche)",
+                "group": "Général"
+              },
+              {
+                "key": "displayStockProduct",
+                "value": false,
+                "name": "Disponibilité dans les pages produit",
+                "description": "Affiche ou non la disponibilité dans les pages produit",
+                "group": "Général"
+              },
+              {
+                "key": "displayStockCart",
+                "value": false,
+                "name": "Disponibilité dans le panier",
+                "description": "Affiche ou non la disponibilité dans le panier",
+                "group": "Général"
+              },
+              {
+                "key": "displaySearchBar",
+                "value": true,
+                "name": "Afficher la barre de recherche",
+                "description": "Affiche ou non la barre de recherche",
+                "group": "Général"
+              },
+              {
+                "key" : "unclickableVariants",
+                "value" : false,
+                "name" : "Déclinaisons indisponibles non cliquables",
+                "description" : "Les déclinaisons indisponibles ne sont pas cliquables ou renvoient au plus proche si possible",
+                "group" : "Général"
+              }
+            ]
+          },
+          "en": {
+            "values": [
+              {
+                "key": "filters",
+                "value": "top",
+                "name": "Filter location",
+                "description": "Allows you to display category filters : top = 'top' | none = 'none'",
+                "group": "General"
+              },
+              {
+                "key": "productsPerPage",
+                "value": 15,
+                "name": "Number of products per page",
+                "description": "Number of products per page",
+                "group": "General"
+              },
+              {
+                "key": "infiniteScroll",
+                "value": 0,
+                "name": "Pagination",
+                "description": "0 = Normal | 1 = Infinite scroll | 2 = Infinite scroll with button",
+                "group": "General"
+              },
+              {
+                "key": "displayStockCard",
+                "value": true,
+                "name": "Availability in product card",
+                "description": "Display or not the availability in the products card (category page, search page)",
+                "group": "General"
+              },
+              {
+                "key": "displayStockProduct",
+                "value": true,
+                "name": "Availability in product pages",
+                "description": "Display or not the availability in the product pages",
+                "group": "General"
+              },
+              {
+                "key": "displayStockCart",
+                "value": true,
+                "name": "Availability in cart",
+                "description": "Display or not the availability in the cart",
+                "group": "General"
+              },
+              {
+                "key": "displaySearchBar",
+                "value": true,
+                "name": "Display search bar",
+                "description": "Display or not the search bar",
+                "group": "General"
+              },
+              {
+                "key" : "unclickableVariants",
+                "value" : false,
+                "name" : "Unavailable non-clickable variants",
+                "description" : "The unavailable variants are not clickable or refer to the nearest one if possible",
+                "group" : "General"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

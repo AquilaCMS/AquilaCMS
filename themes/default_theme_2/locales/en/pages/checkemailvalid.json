@@ -1,0 +1,7 @@
+{
+    "title" : "Account activation",
+    "description" : "Account activation",
+    "titleH1" : "Account activation",
+    "accountActive" : "Your account is now activated !",
+    "accountInactive" : "This token does not exist or has already been used !"
+}
