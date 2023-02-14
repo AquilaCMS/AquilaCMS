@@ -43,3 +43,5 @@ i18n.js
 
 # styles
 /styles/custom.css
+
+!yarn.lock
