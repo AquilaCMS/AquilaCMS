@@ -73,6 +73,7 @@ const handleSilentInstaller = async () => {
             appUrl      : serverUtils.getEnv('APPURL'),
             adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
             siteName    : serverUtils.getEnv('SITENAME'),
+            compilation : serverUtils.getEnv('THEME_COMPILATION') ?? true,
             password    : generateTmpPass(),
             envPath     : 'config/env.json',
             override    : 'on',
@@ -118,6 +119,7 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : Record datas value');
         const datas     = req.body;
         const bOverride = datas.override === 'on';
+        if (datas.compilation === undefined) datas.compilation = true;
         if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
@@ -142,19 +144,21 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        global.aquila.envConfig = configuration.toObject();
-        await require('../services/themes').languageManagement('default_theme_2');
-
-        if (datas.demoData && datas.override === 'on') {
-            console.log('Installer : installation of the default theme datas');
-            await themeServices.copyDatas('default_theme_2', true, configuration);
-            console.log('Installer : end installation of the default theme datas');
+        if (datas.compilation !== 'false') {
+            global.aquila.envConfig = configuration.toObject();
+            await require('../services/themes').languageManagement('default_theme_2');
+    
+            if (datas.demoData && datas.override === 'on') {
+                console.log('Installer : installation of the default theme datas');
+                await themeServices.copyDatas('default_theme_2', true, configuration);
+                console.log('Installer : end installation of the default theme datas');
+            }
+            await createListModuleFile('default_theme_2');
+            // Compilation du theme par default
+            console.log('Installer : start default theme compilation');
+            await themeInstallAndCompile('default_theme_2');
+            console.log('Installer : end default theme compilation');
         }
-        await createListModuleFile('default_theme_2');
-        // Compilation du theme par default
-        console.log('Installer : start default theme compilation');
-        await themeInstallAndCompile('default_theme_2');
-        console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
         throw err;
