@@ -142,6 +142,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
+        global.aquila.envConfig = configuration.toObject();
         await require('../services/themes').languageManagement('default_theme_2');
 
         if (datas.demoData && datas.override === 'on') {
