@@ -501,7 +501,7 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
-                await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await execCmd('yarn install', installPath);
                 // await execCmd('yarn upgrade', installPath);
             }
         }

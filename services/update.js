@@ -101,7 +101,7 @@ const update = async () => {
     }
 
     // yarn install du aquila
-    await execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+    await execCmd('yarn install');
     const modules = await Modules.find({active: true});
 
     for (const module of modules) {
