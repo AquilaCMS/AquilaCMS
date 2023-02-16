@@ -752,12 +752,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     const filesList = resultDir.filter((file) => file.isFile());
     for (let i = 0; i < filesList.length; i++) {
         const file = filesList[i].name;
-        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : 'global'; // global is the default type
+        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : '';
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
             type = parsedInfo.info.types.find((t) => t.component === file)?.type;
         }
-        if (type === undefined || type === null || type === '') {
-            type = 'global';
+        if (type === undefined || type === null) {
+            type = '';
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
