@@ -24,6 +24,9 @@ const setLanguage = async (langs, defaultLanguage) => {
             .map((item) => item.name);
         for (const m of moduleList) {
             const modulePath = `modules/${m}`;
+            // Check if the module have translations
+            const moduleTranslationPath = path.join(pathToTheme, 'modules', m, 'translations');
+            if (!fs.existsSync(moduleTranslationPath)) continue;
             anyPages.push(modulePath);
         }
     }
