@@ -69,6 +69,7 @@ const copyTranslationFiles = async (langs, defaultLanguage, pathFrom) => {
     const srcPathTranslationFiles = fs.existsSync(srcPathTranslation) ? fs.readdirSync(srcPathTranslation) : null;
     if (!srcPathTranslationFiles || !srcPathTranslationFiles.length) {
         const rootPathTranslation      = path.join(pathFrom);
+        if(!fs.existsSync(rootPathTranslation)) return;
         const otherTranslationLangPath = fs.readdirSync(rootPathTranslation).find((lang) => lang !== defaultLanguage);
         if (!otherTranslationLangPath) return;
         srcPathTranslation = path.join(pathFrom, otherTranslationLangPath);
