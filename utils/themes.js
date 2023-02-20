@@ -17,9 +17,15 @@ const {execCmd, execCmdBase64} = require('aql-utils');
  */
 const themeInstallAndCompile = async (theme) => {
     try {
-        const themeName = theme || global.aquila.envConfig.environment.currentTheme;
-        await yarnInstall(themeName);
-        await yarnBuildCustom(themeName);
+        const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme, '/');
+        if (fs.existsSync(pathToTheme)) {
+            const themeName = theme || global.aquila.envConfig.environment.currentTheme;
+            await yarnInstall(themeName);
+            await yarnBuildCustom(themeName);
+        } else {
+            console.error(`Can't access to ${pathToTheme}`);
+            console.log('Example of use: `npm run build my_theme_folder`');
+        }
     } catch (err) {
         console.error(err);
         throw new Error(err);

@@ -147,7 +147,7 @@ const postConfiguratorDatas = async (req) => {
         if (datas.compilation !== 'false') {
             global.aquila.envConfig = configuration.toObject();
             await require('../services/themes').languageManagement('default_theme_2');
-    
+
             if (datas.demoData && datas.override === 'on') {
                 console.log('Installer : installation of the default theme datas');
                 await themeServices.copyDatas('default_theme_2', true, configuration);
