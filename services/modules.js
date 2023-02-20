@@ -17,7 +17,7 @@ const utilsThemes                 = require('../utils/themes');
 const {isEqual}                   = require('../utils/utils');
 const QueryBuilder                = require('../utils/QueryBuilder');
 const modulesUtils                = require('../utils/modules');
-const {isProd, getEnv}            = require('../utils/server');
+const {getEnv}                    = require('../utils/server');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const {Modules}                   = require('../orm/models');
 const themesService               = require('./themes');
@@ -501,7 +501,7 @@ const installModulesDependencies = async (myModule, toBeChanged) => {
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                 console.log(`Installing dependencies of the module in ${position}...`);
-                await execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                await execCmd('yarn install', installPath);
                 // await execCmd('yarn upgrade', installPath);
             }
         }
@@ -752,12 +752,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     const filesList = resultDir.filter((file) => file.isFile());
     for (let i = 0; i < filesList.length; i++) {
         const file = filesList[i].name;
-        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
+        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : '';
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
             type = parsedInfo.info.types.find((t) => t.component === file)?.type;
         }
-        if (type === undefined) {
-            continue;
+        if (type === undefined || type === null) {
+            type = '';
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
         const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;

@@ -92,6 +92,8 @@ const expressErrorHandler = (err, req, res, next) => {
         else if (req.body && req.body.lang && typeof req.body.lang === 'string') lang = req.body.lang;
         else if (global.aquila.defaultLang) lang = global.aquila.defaultLang;
 
+        if (lang === 'null' || lang == null || lang === 'undefined') lang = 'en';
+
         if (err instanceof MongoError) {
             if (getEnv('NODE_ENV') !== 'test') log(err);
             const knownError = mongoErrorCodeToNsError[err.code];

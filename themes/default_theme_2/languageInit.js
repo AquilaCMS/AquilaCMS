@@ -24,6 +24,9 @@ const setLanguage = async (langs, defaultLanguage) => {
             .map((item) => item.name);
         for (const m of moduleList) {
             const modulePath = `modules/${m}`;
+            // Check if the module have translations
+            const moduleTranslationPath = path.join(pathToTheme, 'modules', m, 'translations');
+            if (!fs.existsSync(moduleTranslationPath)) continue;
             anyPages.push(modulePath);
         }
     }
@@ -69,6 +72,7 @@ const copyTranslationFiles = async (langs, defaultLanguage, pathFrom) => {
     const srcPathTranslationFiles = fs.existsSync(srcPathTranslation) ? fs.readdirSync(srcPathTranslation) : null;
     if (!srcPathTranslationFiles || !srcPathTranslationFiles.length) {
         const rootPathTranslation      = path.join(pathFrom);
+        if(!fs.existsSync(rootPathTranslation)) return;
         const otherTranslationLangPath = fs.readdirSync(rootPathTranslation).find((lang) => lang !== defaultLanguage);
         if (!otherTranslationLangPath) return;
         srcPathTranslation = path.join(pathFrom, otherTranslationLangPath);

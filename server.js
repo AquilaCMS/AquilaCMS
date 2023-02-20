@@ -52,8 +52,12 @@ process.on('unhandledRejection', (reason, promise) => {
 
 process.on('exit', (code) => {
     if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
-        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
-        console.trace();
+        if (code === 0) {
+            console.log('Process gracefully exited');
+        } else {
+            console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+            console.trace();
+        }
     }
 });
 
@@ -242,9 +246,22 @@ const startServer = async () => {
 
 (async () => {
     try {
+        const [...args] = process.argv;
+        let mode        = 'run';
+        if (args && args[2]) {
+            mode = args[2];
+        }
+
         await init();
         await serverUtils.updateEnv();
         await initDatabase();
+
+        if (mode === 'build') {
+            if (!args[3]) throw new Error('You need to specify a theme to build');
+            await utilsThemes.themeInstallAndCompile(args[3]);
+            process.exit(0);
+        }
+
         await initServer();
         await startServer();
     } catch (err) {
