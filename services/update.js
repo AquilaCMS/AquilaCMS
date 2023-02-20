@@ -10,7 +10,6 @@ const axios                    = require('axios');
 const AdmZip                   = require('adm-zip');
 const path                     = require('path');
 const {fs, execCmd, restart}   = require('aql-utils');
-const {isProd}                 = require('../utils/server');
 const {Modules, Configuration} = require('../orm/models');
 const tmpPath                  = path.resolve('./uploads/temp');
 
