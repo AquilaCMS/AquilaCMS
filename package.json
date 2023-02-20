@@ -19,7 +19,7 @@
     "start:aws": "yarn install && yarn cache clean && pm2-runtime start server.js --env production",
     "aqstart": "yarn install && yarn cache clean && pm2-runtime start server.js --env production",
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
-    "build": "node ./scripts/build",
+    "build": "node server.js build",
     "lint:check": "eslint --ext js,jsx .",
     "lint:fix": "eslint --fix --ext js,jsx .",
     "test": "mocha --exit",

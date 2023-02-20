@@ -52,8 +52,12 @@ process.on('unhandledRejection', (reason, promise) => {
 
 process.on('exit', (code) => {
     if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
-        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
-        console.trace();
+        if (code === 0) {
+            console.log('Process gracefully exited')
+        } else {
+            console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+            console.trace();
+        }
     }
 });
 
@@ -240,13 +244,41 @@ const startServer = async () => {
     serverUtils.showAquilaLogo();
 };
 
+const buildTheme = async (args) => {
+    let themeToBuild = 'default_theme_2';
+    if (args[1]) themeToBuild = args[1];
+    
+    const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeToBuild, '/');
+    if (fs.existsSync(pathToTheme)) {
+        await utilsThemes.themeInstallAndCompile(themeToBuild)
+    } else {
+        console.error(`Can't access to ${pathToTheme}`);
+        console.log('Example of use: `npm run build my_theme_folder`');
+    }
+}
+
 (async () => {
     try {
+        const [nodePath, filePath, ...args] = process.argv;
+        let mode = "run"
+        if (args && args[0]) {
+            mode = args[0];
+        }
+
         await init();
         await serverUtils.updateEnv();
         await initDatabase();
-        await initServer();
-        await startServer();
+
+        if (mode === "build") {
+            await buildTheme(args);
+            process.exit(0);
+        } else if (mode === "run") {
+            await initServer();
+            await startServer();
+        } else {
+            console.error("Unknown mode of execution");
+            process.exit(1);
+        }
     } catch (err) {
         console.error(err);
         setTimeout(() => process.exit(1), 2000);
