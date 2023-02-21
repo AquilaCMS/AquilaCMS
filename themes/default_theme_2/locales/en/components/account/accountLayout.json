@@ -1,7 +1,7 @@
 {
     "titleH1" : "My account",
     "navigation": {
-        "myInformations": "My Information",
+        "myInformations": "My information",
         "myOrders": "My orders",
         "rgpd": "RGPD",
         "logout": "Log out"
