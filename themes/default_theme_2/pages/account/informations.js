@@ -7,7 +7,7 @@ import { deleteCartShipment, setCartAddresses }         from '@aquilacms/aquila-
 import { sendMailResetPassword }                        from '@aquilacms/aquila-connector/api/login';
 import { getNewsletter, setNewsletter }                 from '@aquilacms/aquila-connector/api/newsletter';
 import { getTerritories }                               from '@aquilacms/aquila-connector/api/territory';
-import { setUser, setAddressesUser }                    from '@aquilacms/aquila-connector/api/user';
+import { setUser as setGlobalUser, setAddressesUser }   from '@aquilacms/aquila-connector/api/user';
 import { useCart, useSiteConfig }                       from '@lib/hooks';
 import { initAxios, authProtectedPage, serverRedirect } from '@lib/utils';
 import { dispatcher }                                   from '@lib/redux/dispatcher';
@@ -29,11 +29,12 @@ export async function getServerSideProps({ locale, req, res }) {
 
     const pageProps             = await dispatcher(locale, req, res);
     pageProps.props.territories = territories;
-    pageProps.props.user        = user;
+    pageProps.props.initUser    = user;
     return pageProps;
 }
 
-export default function Account({ territories, user }) {
+export default function Account({ territories, initUser }) {
+    const [user, setUser]                       = useState(initUser);
     const [sameAddress, setSameAddress]         = useState(false);
     const [optinNewsletter, setOptinNewsletter] = useState(false);
     const [messageReset, setMessageReset]       = useState();
@@ -119,13 +120,14 @@ export default function Account({ territories, user }) {
 
         try {
             // Set user
-            await setUser(updateUser);
+            await setGlobalUser(updateUser);
 
             // Update newsletter
             await setNewsletter(user.email, 'DefaultNewsletter', optinNewsletter);
 
             // Set user addresses
-            await setAddressesUser(updateUser._id, updateUser.billing_address, updateUser.delivery_address, addresses);
+            const newUser = await setAddressesUser(updateUser._id, updateUser.billing_address, updateUser.delivery_address, addresses);
+            setUser(newUser);
 
             if (cart._id) {
                 // Set cart addresses
@@ -297,29 +299,29 @@ export default function Account({ territories, user }) {
                                 <div className="w-commerce-commercecheckoutrow">
                                     <div className="w-commerce-commercecheckoutcolumn">
                                         <label>{t('pages/account/informations:firstname')} *</label>
-                                        <input type="text" className="input-field w-input" name="billing_address_firstname" defaultValue={user.addresses[user.billing_address]?.firstname} maxLength={256} required />
+                                        <input type="text" className="input-field w-input" name="billing_address_firstname" defaultValue={user.addresses[user.billing_address]?.firstname} maxLength={256} required={!sameAddress} />
                                     </div>
                                     <div className="w-commerce-commercecheckoutcolumn">
                                         <label>{t('pages/account/informations:lastname')} *</label>
-                                        <input type="text" className="input-field w-input" name="billing_address_lastname" defaultValue={user.addresses[user.billing_address]?.lastname} maxLength={256} required />
+                                        <input type="text" className="input-field w-input" name="billing_address_lastname" defaultValue={user.addresses[user.billing_address]?.lastname} maxLength={256} required={!sameAddress} />
                                     </div>
                                 </div>
                                 <label className="field-label">{t('pages/account/informations:line1')} *</label>
-                                <input type="text" className="input-field w-input" name="billing_address_line1" defaultValue={user.addresses[user.billing_address]?.line1} maxLength={256} required />
+                                <input type="text" className="input-field w-input" name="billing_address_line1" defaultValue={user.addresses[user.billing_address]?.line1} maxLength={256} required={!sameAddress} />
                                 <label className="field-label">{t('pages/account/informations:line2')}</label>
                                 <input type="text" className="input-field w-input" name="billing_address_line2" defaultValue={user.addresses[user.billing_address]?.line2} maxLength={256} />
                                 <div className="w-commerce-commercecheckoutrow">
                                     <div className="w-commerce-commercecheckoutcolumn">
                                         <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:city')} *</label>
-                                        <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="billing_address_city" defaultValue={user.addresses[user.billing_address]?.city} required />
+                                        <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="billing_address_city" defaultValue={user.addresses[user.billing_address]?.city} required={!sameAddress} />
                                     </div>
                                     <div className="w-commerce-commercecheckoutcolumn">
                                         <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:postal')} *</label>
-                                        <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="billing_address_zipcode" defaultValue={user.addresses[user.billing_address]?.zipcode} required />
+                                        <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="billing_address_zipcode" defaultValue={user.addresses[user.billing_address]?.zipcode} required={!sameAddress} />
                                     </div>
                                 </div>
                                 <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:country')} *</label>
-                                <select ref={billingCountryRef} name="billing_address_isoCountryCode" defaultValue={user.addresses[user.billing_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required>
+                                <select ref={billingCountryRef} name="billing_address_isoCountryCode" defaultValue={user.addresses[user.billing_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required={!sameAddress}>
                                     {
                                         territories.map((territory) => (
                                             <option key={territory.code} value={territory.code}>{territory.name}</option>
