@@ -489,7 +489,7 @@
             },
             {
               "label": "Text Action",
-              "value": "Contact-us"
+              "value": "Contact us"
             },
             {
               "label": "URL Image",
@@ -500,7 +500,7 @@
               "value": "Our restaurants"
             }
           ],
-          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Our restaurants<br />‍<span class=\"brand-span\">in France</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">Our establishments</h2>\n<p>Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta</p>\n<a href=\"/contact\" class=\"button button-space w-button\">Contact-us</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg\" alt=\"Our restaurants\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>"
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Our restaurants<br />‍<span class=\"brand-span\">in France</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">Our establishments</h2>\n<p>Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta</p>\n<a href=\"/contact\" class=\"button button-space w-button\">Contact us</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg\" alt=\"Our restaurants\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>"
         }
       },
       "code": "LeRestaurant",

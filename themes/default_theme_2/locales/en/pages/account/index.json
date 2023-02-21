@@ -4,6 +4,7 @@
   "order" : "Order",
   "view" : "View",
   "orderSummary" : "Recap of my order",
+  "noOrder": "No order",
   "status": {
     "ASK_CANCEL": "Cancellation requested by the customer",
     "BILLED": "Invoiced",

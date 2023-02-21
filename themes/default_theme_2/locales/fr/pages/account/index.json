@@ -4,6 +4,7 @@
   "order" : "Commande",
   "view" : "Voir",
   "orderSummary" : "Récapitulatif de ma commande",
+  "noOrder": "Aucune commande",
   "status": {
     "ASK_CANCEL": "Annulation demandée par le client",
     "BILLED": "Facturé",

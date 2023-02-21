@@ -1225,7 +1225,7 @@
           "variables": [
             {
               "label": "Title 1",
-              "value": "Contact-us"
+              "value": "Contact us"
             },
             {
               "label": "Title 2",
@@ -1260,7 +1260,7 @@
               "value": "Click and collect"
             }
           ],
-          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">Contact-us<br />and <span class=\"text-span-6\">Collect your</span><br />order whenever<br /><span class=\"text-span-5\">you want</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"tel:00000000\" class=\"button button-space w-button\">Tel. : +33 0 00 00 00</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png\" alt=\"Click and collect\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>"
+          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">Contact us<br />and <span class=\"text-span-6\">Collect your</span><br />order whenever<br /><span class=\"text-span-5\">you want</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"tel:00000000\" class=\"button button-space w-button\">Tel. : +33 0 00 00 00</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png\" alt=\"Click and collect\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>"
         }
       },
       "code": "home-bottom-call"
@@ -1319,14 +1319,14 @@
       "translation": {
         "fr": {
           "description": "Texte légal concernant le RGPD",
-          "html": "TODO",
+          "html": "lorem ipsum pour rgpd",
           "variables": [],
-          "content": "TODO"
+          "content": "lorem ipsum pour rgpd"
         },
         "en": {
-          "html": "en-TODO",
+          "html": "lorem ipsum for rgpd",
           "variables": [],
-          "content": "en-TODO",
+          "content": "lorem ipsum for rgpd",
           "description": "Legal text concerning the RGPD"
         }
       },
