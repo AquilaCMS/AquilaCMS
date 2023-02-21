@@ -3,6 +3,6 @@
   "message": {
     "unknownError" : "Unknown Error",
     "loginRequired" : "You must be logged in for this action!",
-    "saveData" : "Saved Datas"
+    "saveData" : "Datas saved"
   }
 }

@@ -137,7 +137,7 @@ export default function Account({ limit }) {
                                     </div>
                                 </Fragment>
                             );
-                        }) : <p>Aucune commande</p>
+                        }) : <p>{t('pages/account/index:noOrder')}</p>
                     }
                 </div>
                 {

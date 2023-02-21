@@ -611,7 +611,7 @@
           "pageSlug": "mentions-legales"
         },
         "en": {
-          "name": "legal notice",
+          "name": "Legal notice",
           "pageSlug": "legal-notice"
         }
       },
@@ -644,7 +644,7 @@
           "pageSlug": "contactez-nous"
         },
         "en": {
-          "name": "Contact-us",
+          "name": "Contact us",
           "pageSlug": "contact",
           "slug": "contact"
         }
