@@ -91,6 +91,7 @@ To start a silent installation, you need to set the following environment variab
 - `FIRSTNAME` : Administrator's firstname
 - `LASTNAME` : Administrator's lastname
 - `EMAIL` : Administrator's email
+- `PASSWORD` : Administrator's password (if no password is entered, a random password will be created and shown only once in the server logs during installation)
 - `APPURL` : URL of the website (ie http://localhost:3010)
 - `ADMIN_PREFIX` : Admin subpath (ie : admin)
 - `SITENAME` : Website's name
