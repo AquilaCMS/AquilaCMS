@@ -61,6 +61,7 @@ const handleSilentInstaller = async () => {
                 result += allChar[i].charAt(Math.floor(Math.random() * allChar[i].length));
             }
 
+            console.log('/!\\ Admin password :', result);
             return result;
         };
 
@@ -74,7 +75,7 @@ const handleSilentInstaller = async () => {
             adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
             siteName    : serverUtils.getEnv('SITENAME'),
             compilation : serverUtils.getEnv('THEME_COMPILATION') ?? true,
-            password    : generateTmpPass(),
+            password    : serverUtils.getEnv('PASSWORD') ?? generateTmpPass(),
             envPath     : 'config/env.json',
             override    : 'on',
             demoData    : true
