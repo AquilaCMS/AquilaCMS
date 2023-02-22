@@ -1818,12 +1818,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aql-utils@npm:1.5.4":
-  version: 1.5.4
-  resolution: "aql-utils@npm:1.5.4"
+"aql-utils@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "aql-utils@npm:1.5.5"
   dependencies:
     slug: ^5.1.0
-  checksum: 5d97a0f7b65385d2f4f98a1501b772298e4547def80a6cced253af748de0e16bfeb7e4dfcd3aae582324a7d23101205c90dfb9b911626d8a7b1eec16f87c7c00
+  checksum: 86fb848e53be9552eeea4b9e33dc342943ae29659a87fd13e3e0ee224dca4cd1b7930e156eb819a4cfc9ae47fd7e3960e54ad49bdf7fed3b51b86923af386835
   languageName: node
   linkType: hard
 
@@ -1833,7 +1833,7 @@ __metadata:
   dependencies:
     adm-zip: 0.5.10
     agenda: 5.0.0
-    aql-utils: 1.5.4
+    aql-utils: ^1.5.5
     axios: 1.3.2
     bcrypt: 5.1.0
     chai: ^4.3.7
