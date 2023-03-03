@@ -20,6 +20,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    # Test outdated componants
+    - name: Test outdated componants
+      continue-on-error: true
+      run: npm outdated
+
     - name: Create aquila packages file
       run: |
         export scriptReturn=`node scripts/updatePackageAquila.js`
