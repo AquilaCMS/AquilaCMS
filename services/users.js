@@ -65,7 +65,10 @@ const setUser = async (id, info, isAdmin, lang) => {
             for (let i = 0; i < info.attributes.length; i++) {
                 const usrAttr = userBase.attributes.find((attr) => attr.code === info.attributes[i].code);
                 if (usrAttr && lang) {
-                    info.attributes[i].translation             = usrAttr.translation;
+                    info.attributes[i].translation = usrAttr.translation;
+                    if (!info.attributes[i].translation[lang]) {
+                        info.attributes[i].translation = {[lang]: {}};
+                    }
                     info.attributes[i].translation[lang].value = info.attributes[i].value;
                 }
             }
