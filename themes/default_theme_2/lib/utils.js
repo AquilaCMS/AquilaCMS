@@ -3,7 +3,6 @@ import Cookies                                     from 'cookies';
 import cookie                                      from 'cookie';
 import crypto                                      from 'crypto';
 import jwt_decode                                  from 'jwt-decode';
-import nsModules                                   from 'modules/list_modules';
 import { aqlRound }                                from 'aql-utils/theme';
 import { getBlockCMS, getBlocksCMS }               from '@aquilacms/aquila-connector/api/blockcms';
 import { getBlogList }                             from '@aquilacms/aquila-connector/api/blog';
@@ -535,15 +534,25 @@ export const nsComponentDataLoader = async (html, lang, data = {}) => {
     return nsComponentData;
 };
 
+export const getNsModules = () => {
+    try {
+        const nsModules = require('modules/list_modules');
+        return nsModules.default;
+    } catch (err) {
+        return null;
+    }
+};
+
 export const moduleHook = (type, props = {}) => {
-    const modules = nsModules.filter((m) => m.type === type);
-    if (!modules.length) return false;
+    const nsModules = getNsModules();
+    const modules   = nsModules?.filter((m) => m.type === type);
+    if (!modules || !modules.length) return null;
     for (let index in modules) {
         const Comp = modules[index].jsx.default;
         if (Comp) {
             return <Comp key={index + modules[index].code} {...props} />;
         } else {
-            return false;
+            return null;
         }
     }
 };

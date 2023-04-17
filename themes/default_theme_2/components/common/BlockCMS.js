@@ -11,11 +11,13 @@ import ProductCard                              from '@components/product/Produc
 import ProductList                              from '@components/product/ProductList';
 import Slider                                   from '@components/common/Slider';
 import { useCmsBlocks, useComponentData }       from '@lib/hooks';
-import nsModules                                from 'modules/list_modules';
+import { getNsModules }                         from '@lib/utils';
 
 export default function BlockCMS({ nsCode, content = '', displayerror = false, recursion = 0 }) {
     const cmsBlocks     = useCmsBlocks();
     const componentData = useComponentData();
+
+    const nsModules = getNsModules();
     
     let html = '';
     if (content) {
@@ -56,7 +58,7 @@ export default function BlockCMS({ nsCode, content = '', displayerror = false, r
             }
 
             // Replace <aq-[...]> by Next Sourcia Module
-            if (type === 'tag' && name && nsModules.find((comp) => comp.code === name)) {
+            if (type === 'tag' && name && nsModules?.find((comp) => comp.code === name)) {
                 const NsModule  = nsModules.find((comp) => comp.code === name).jsx.default;
                 const component = React.cloneElement(
                     <NsModule />,
