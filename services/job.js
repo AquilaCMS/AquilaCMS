@@ -398,7 +398,7 @@ const execDefineServiceOnChildProcess = async (modulePath, funcName, params, opt
         return new Promise((resolve, reject) => {
             const cmd = fork(
                 `${global.aquila.appRoot}/services/jobChild.js`,
-                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...(params || [])],
                 {cwd: global.aquila.appRoot, shell: true}
             );
             cmd.on('error', (err) => reject(err));
