@@ -499,9 +499,6 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             // Get product setted manually
                             if (oldCat) {
                                 cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
-
-                                // Remove duplicates based on the product id
-                                cat.productsList = cat.productsList.filter((thing, index, self) => index === self.findIndex((t) => t.id.toString() === thing.id.toString()));
                             }
 
                             // Transform the product list into an object whose key is the _id of the product
@@ -514,18 +511,20 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                                 }
                             }
                             for (let k = 0; k < productsIds.length; k++) {
-                                if (!cat.productsList.find((p) => p.id.toString() === productsIds[k].toString())) {
-                                    if (!oProductsListCat[productsIds[k].toString()]) {
-                                        cat.productsList.push({id: productsIds[k], checked: false});
-                                    } else {
-                                        cat.productsList.push({
-                                            id         : productsIds[k],
-                                            checked    : oProductsListCat[productsIds[k].toString()].checked,
-                                            sortWeight : oProductsListCat[productsIds[k].toString()].sortWeight
-                                        });
-                                    }
+                                if (!oProductsListCat[productsIds[k].toString()]) {
+                                    cat.productsList.push({id: productsIds[k], checked: false});
+                                } else {
+                                    cat.productsList.push({
+                                        id         : productsIds[k],
+                                        checked    : oProductsListCat[productsIds[k].toString()].checked,
+                                        sortWeight : oProductsListCat[productsIds[k].toString()].sortWeight
+                                    });
                                 }
                             }
+
+                            // Remove duplicates based on the product id
+                            cat.productsList = cat.productsList.filter((thing, index, self) => index === self.findIndex((t) => t.id.toString() === thing.id.toString()));
+
                             await cat.save();
                         }
                     // Segementation picto
