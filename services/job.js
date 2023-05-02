@@ -10,6 +10,7 @@ const Agenda       = require('agenda');
 const axios        = require('axios');
 const {fork}       = require('child_process');
 const mongoose     = require('mongoose');
+const moment       = require('moment');
 const NSErrors     = require('../utils/errors/NSErrors');
 const utils        = require('../utils/utils');
 const errorMessage = require('../utils/translate/errors');
@@ -86,7 +87,8 @@ const initAgendaDB = async () => {
                 'Mail to pending carts',
                 'Delete orders\' failed payments',
                 'RGPD bills',
-                'RGPD users'
+                'RGPD users',
+                'Jobs checks'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
                 // If a "system" job does not exist in the database then it is created
@@ -129,6 +131,8 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[15], '* * 1 * * *', '/services/rgpd/checkDateBills', {fr: 'Anonymise les factures de plus de 10 ans pour le RGPD', en: 'Anonymizes bills older than 10 years for RGPD'}, 'service', 'system', '', true, '', false);
                         } else if (tJobsSystem[i] === 'RGPD users') {
                             await setJob(undefined, tJobsSystem[16], '* * 1 * * *', '/services/rgpd/checkLastConnexion', {fr: 'Anonymise les utilisateurs inactifs de plus de 3 ans pour le RGPD', en: 'Anonymizes inactive users older than 3 years for RGPD'}, 'service', 'system', '', true, '', false);
+                        } else if (tJobsSystem[i] === 'Jobs checks') {
+                            await setJob(undefined, tJobsSystem[17], '0 0 1 * * *', '/services/job/checkJobsExecution', {fr: 'Verifie l\'execution des crons importants', en: 'Check execution result of important crons'}, 'service', 'system', '', true, '', true);
                         }
                     } catch (error) {
                         console.error(error);
@@ -227,7 +231,7 @@ const agendaDefine = async (name) => {
  * @param {string} [params=''] default value : "" - jobs data params
  * @param {boolean} [onMainThread=true] default value : true - if setJob is executed in the main thread or in a child thread
  */
-const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '', onMainThread = true) => {
+const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '', onMainThread = true, isImportant = undefined) => {
     let query;
     if (_id) query = {_id: mongoose.Types.ObjectId(_id)};
     else query = {name};
@@ -239,6 +243,10 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
     }
     // definition of the task to be performed by the agenda
     await agendaDefine(name);
+
+    const datas = {
+        isImportant : isImportant === undefined ? jobs[0].attrs.data.isImportant : isImportant
+    };
     // We update the job
     if (exists) {
         // Allows you to calculate the next cron launch if an error occurs and nextRunAt becomes null following the error
@@ -253,13 +261,13 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
             // If the job is not created by the server then the modification of the system type job is not authorized
             // Take the old values
             if (!fromServer) {
-                name         = jobs[0].attrs.name;
-                api          = jobs[0].attrs.data.api;
-                comment      = jobs[0].attrs.data.comment;
-                method       = jobs[0].attrs.data.method;
-                flag         = jobs[0].attrs.data.flag;
-                params       = jobs[0].attrs.data.params;
-                onMainThread = jobs[0].attrs.data.onMainThread;
+                datas.name         = jobs[0].attrs.name;
+                datas.api          = jobs[0].attrs.data.api;
+                datas.comment      = jobs[0].attrs.data.comment;
+                datas.method       = jobs[0].attrs.data.method;
+                datas.flag         = jobs[0].attrs.data.flag;
+                datas.params       = jobs[0].attrs.data.params;
+                datas.onMainThread = jobs[0].attrs.data.onMainThread;
             } else {
                 // If the server creates the job by calling the setJob service then we take lastExecutionResult
                 // because it will not be passed as a parameter of the setJob, otherwise the lastExecutionResult will be deleted
@@ -271,12 +279,20 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         }
         await jobs[0].save();
         // We must each time recreate the job so that "every" validates the new data entered by the user (cf: failReason if the repeatInterval is false)
-        const oAgenda          = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
+        datas.api                 = api;
+        datas.comment             = comment;
+        datas.method              = method;
+        datas.flag                = flag;
+        datas.lastExecutionResult = lastExecutionResult;
+        datas.params              = params;
+        datas.onMainThread        = onMainThread;
+
+        const oAgenda          = await agenda.every(repeatInterval, name, datas);
         oAgenda.attrs.disabled = jobs[0].attrs.disabled;
         return oAgenda;
     }
     // When creating an agenda
-    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
+    const oAgenda = await agenda.every(repeatInterval, name, datas);
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user enters the wrong frequency
     oAgenda.disable();
@@ -294,12 +310,22 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
  * @param job : object: the job in DB
  */
 const defineJobOnStartUp = async (job) => {
-    const {name, repeatInterval, disabled, data}                                  = job.attrs;
-    const {api, comment, method, flag, lastExecutionResult, params, onMainThread} = data;
+    const {name, repeatInterval, disabled, data}                                               = job.attrs;
+    const {api, comment, method, flag, lastExecutionResult, params, onMainThread, isImportant} = data;
     // definition of the task to be performed by the agenda
     await agendaDefine(name);
     // Create in the agendaJobs collection and add field (data, comment and flag)
-    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread});
+    const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread, isImportant});
+
+    // If job throws error, we enter this
+    agenda.on('fail', (err, job) => {
+        console.log(`- Job ${job.attrs.name} failed with error: ${err.message}`);
+        console.log(job);
+    });
+    agenda.on('complete', (job) => {
+        console.log(`- Job ${job.attrs.name} finished`);
+    });
+
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user set the wrong frequency
     if (disabled === false) oAgenda.enable();
@@ -455,7 +481,8 @@ const execDefine = async (job, option) => {
     } catch (error) {
         finalError          = NSErrors[error.code] || NSErrors.JobError;
         finalError.message  = errorMessage[finalError.code] ? errorMessage[finalError.code].en : '';
-        lastExecutionResult = typeof error === 'string' ? error : utils.stringifyError(finalError, null, 2);
+        lastExecutionResult = `Job execution failed: ${typeof error === 'string' ? error : utils.stringifyError(finalError, null, 2)}`;
+        console.log(`${new Date()} -> Error job ${job.attrs.name} -> ${finalError.message}`);
     }
     job.attrs.data.lastExecutionResult = lastExecutionResult;
     await job.save();
@@ -476,6 +503,38 @@ const getPauseJob = async (_id) => {
     return foundJobsSaved;
 };
 
+const checkJobsExecution = async () => {
+    const jobs = await agenda.jobs({'data.isImportant': true});
+
+    let jobStatus = '';
+    for (const job of jobs) {
+        const nextRunAt      = job.attrs.nextRunAt;
+        const lastFinishedAt = job.attrs.lastFinishedAt;
+
+        // if job is disabled
+        if (!nextRunAt) {
+            console.log(`- Job ${job.attrs.name} is disabled`);
+            jobStatus += `- Job ${job.attrs.name} is disabled<br/>`;
+            console.log(job);
+
+        // if job is enabled and nextRunAt is before now but not disabled
+        } else if (nextRunAt && moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
+            console.log(`- Job ${job.attrs.name} did not run at ${nextRunAt}`);
+            jobStatus += `- Job ${job.attrs.name} did not run at ${moment(nextRunAt).format('LLL')}<br/>`;
+
+        // if job is enabled and nextRunAt is before now and disabled
+        } else if (moment(nextRunAt).isBefore(moment()) && job.attrs.disabled) {
+            console.log(`- Job ${job.attrs.name} did not run at ${nextRunAt} because it is disabled`);
+            jobStatus += `- Job ${job.attrs.name} did not run at ${moment(nextRunAt).format('LLL')} because it is disabled<br/>`;
+        } else if (moment(lastFinishedAt).isBefore(moment().add(-7, 'days'))) {
+            console.log(`- Job ${job.attrs.name} did not run since ${lastFinishedAt}`);
+            jobStatus += `- Job ${job.attrs.name} did not run since ${moment(lastFinishedAt).format('LLL')}<br/>`;
+        }
+    }
+
+    return jobStatus;
+};
+
 module.exports = {
     initAgendaDB,
     getJobs,
@@ -487,5 +546,6 @@ module.exports = {
     deleteModuleJobByName,
     getPlayJob,
     getPlayImmediateJob,
-    getPauseJob
+    getPauseJob,
+    checkJobsExecution
 };
