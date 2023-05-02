@@ -38,7 +38,8 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
                 method: "get",
                 flag: "user",
                 params: "",
-                onMainThread: true
+                onMainThread: true,
+                isImportant: false
             }
         };
         $scope.handleChangeType = function () {
