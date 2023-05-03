@@ -6,26 +6,24 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment            = require('moment');
-const mongoose          = require('mongoose');
-const {aquilaEvents}    = require('aql-utils');
+const moment                                     = require('moment');
+const mongoose                                   = require('mongoose');
+const {aquilaEvents, populateItems, aquilaHooks} = require('aql-utils');
+const QueryBuilder                               = require('../utils/QueryBuilder');
+const NSErrors                                   = require('../utils/errors/NSErrors');
+const servicesLanguages                          = require('./languages');
+const ServicePromo                               = require('./promo');
+const ServiceShipment                            = require('./shipment');
+const ServicesProducts                           = require('./products');
+const servicesTerritory                          = require('./territory');
+const servicesMail                               = require('./mail');
+const ServiceJob                                 = require('./job');
 const {
     Cart,
     Orders,
     Products,
     Configuration
-}                       = require('../orm/models');
-const QueryBuilder      = require('../utils/QueryBuilder');
-const utilsDatabase     = require('../utils/database');
-const utilsModules      = require('../utils/modules');
-const NSErrors          = require('../utils/errors/NSErrors');
-const servicesLanguages = require('./languages');
-const ServicePromo      = require('./promo');
-const ServiceShipment   = require('./shipment');
-const ServicesProducts  = require('./products');
-const servicesTerritory = require('./territory');
-const servicesMail      = require('./mail');
-const ServiceJob        = require('./job');
+} = require('../orm/models');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt', 'customer'];
@@ -66,8 +64,8 @@ const getCartById = async (id, PostBody = null, user = null) => {
         if (user && !user.isAdmin) {
             cart = await linkCustomerToCart(cart, user);
         }
+        return cart.getItemsStock();
     }
-
     return cart;
 };
 
@@ -101,11 +99,11 @@ const setCartAddresses = async (cartId, addresses, userInfo) => {
         resp = await Cart.findOneAndUpdate(filter, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
-            await utilsDatabase.populateItems(newCart.items);
-            return {code: 'CART_CREATED', data: {cart: newCart}};
+            await populateItems(newCart.items);
+            return {code: 'CART_CREATED', data: {cart: await newCart.getItemsStock()}};
         }
-        await utilsDatabase.populateItems(resp.items);
-        return {code: 'CART_UPDATED', data: {cart: resp}};
+        await populateItems(resp.items);
+        return {code: 'CART_UPDATED', data: {cart: await resp.getItemsStock()}};
     } catch (err) {
         console.error(err);
         throw err;
@@ -119,7 +117,8 @@ const setComment = async (cartId, comment, userInfo) => {
         ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
     };
     const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
-    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
+    if (!resp) return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: null}};
+    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: await resp.getItemsStock()}};
 };
 
 const deleteCartItem = async (cartId, itemId, userInfo) => {
@@ -163,14 +162,14 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     } else {
         throw NSErrors.CartItemNotFound;
     }
-    await utilsDatabase.populateItems(cart.items);
+    await populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
     const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
     if (productsCatalog) {
         for (let i = 0; i < cart.items.length; i++) {
             let itemCart = cart.items[i];
             if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: undefined, cart}, async () => itemCart);
+            itemCart      = await aquilaHooks('aqGetCartItem', {item: itemCart, PostBody: undefined, cart}, async () => itemCart);
             cart.items[i] = itemCart;
         }
         cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
@@ -180,8 +179,8 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ITEM_DELETED', data: {cart}};
+    await populateItems(cart.items);
+    return {code: 'CART_ITEM_DELETED', data: {cart: await cart.getItemsStock()}};
 };
 
 const addItem = async (postBody, userInfo, lang = '') => {
@@ -221,45 +220,47 @@ const addItem = async (postBody, userInfo, lang = '') => {
         }
     }
     if (cart.items && cart.items.length) {
-        const indexes     = cart.items.toObject()
-            .map((val, index) => ({val, index}))
-            .filter(({val}) => val.id._id.toString() === _product._id.toString())
-            .map(({index}) => index);
-        let isANewProduct = false;
-        for (const index of indexes) {
-            if (
-                cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
-            // eslint-disable-next-line no-empty
-            ) {
-                continue;
-            } else {
+        if (typeof cart.items.toObject === 'function') {
+            const indexes     = cart.items.toObject()
+                .map((val, index) => ({val, index}))
+                .filter(({val}) => val.id._id.toString() === _product._id.toString())
+                .map(({index}) => index);
+            let isANewProduct = false;
+            for (const index of indexes) {
                 if (
-                    (
-                        postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
-                    ) || (
-                        typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
-                    )
+                    cart.items[index].type === 'bundle'
+            && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(postBody.item.selections)
+                // eslint-disable-next-line no-empty
                 ) {
-                    // then it's the same product in the cart
-                    isANewProduct = index;
-                    break;
+                    continue;
                 } else {
-                    // else, it's a new product in the cart
-                    isANewProduct = true;
+                    if (
+                        (
+                            postBody.item.selected_variant?._id?.toString() === cart.items[index].selected_variant?.id?.toString()     // <== this check if the 2 products got the same selected variant
+                        ) || (
+                            typeof postBody.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined'      // <== this check if the 2 products got no selected variants
+                        )
+                    ) {
+                        // then it's the same product in the cart
+                        isANewProduct = index;
+                        break;
+                    } else {
+                        // else, it's a new product in the cart
+                        isANewProduct = true;
+                    }
                 }
             }
-        }
-        if (typeof isANewProduct === 'number') {
-            postBody.item._id = cart.items[isANewProduct]._id.toString();
+            if (typeof isANewProduct === 'number') {
+                postBody.item._id = cart.items[isANewProduct]._id.toString();
 
-            postBody.item.quantity += cart.items[isANewProduct].quantity;
+                postBody.item.quantity += cart.items[isANewProduct].quantity;
 
-            delete postBody.item.id;
+                delete postBody.item.id;
 
-            delete postBody.item.weight;
+                delete postBody.item.weight;
 
-            return updateQty(postBody, userInfo);
+                return updateQty(postBody, userInfo);
+            }
         }
     }
     if (_product.translation[_lang]) {
@@ -293,7 +294,7 @@ const addItem = async (postBody, userInfo, lang = '') => {
     if (item.selected_variant) item.selected_variant.id = item.selected_variant._id;
 
     // Here you can change any information of a product before adding it to the user's cart
-    item = await utilsModules.modulesLoadFunctions('aqAddToCart', {item, postBody, userInfo}, async () => item);
+    item = await aquilaHooks('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
     await _product.addToCart(cart, item, userInfo, _lang);
     const data = await Cart.findOne({_id: cart._id}).populate('items.id');
@@ -301,14 +302,14 @@ const addItem = async (postBody, userInfo, lang = '') => {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart = data;
-    await utilsDatabase.populateItems(cart.items);
+    await populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
     const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, _lang, false);
     if (productsCatalog) {
         for (let i = 0; i < cart.items.length; i++) {
             let itemCart = cart.items[i];
             if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            itemCart      = await aquilaHooks('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
             cart.items[i] = itemCart;
         }
         cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, _lang, false);
@@ -321,8 +322,8 @@ const addItem = async (postBody, userInfo, lang = '') => {
     await _newCart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: _newCart._id});
-    await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    await populateItems(cart.items);
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const updateQty = async (postBody, userInfo) => {
@@ -385,14 +386,14 @@ const updateQty = async (postBody, userInfo) => {
         new          : true
     });
     await linkCustomerToCart(cart, userInfo);
-    await utilsDatabase.populateItems(cart.items);
+    await populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
     const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
     if (productsCatalog) {
         for (let i = 0; i < cart.items.length; i++) {
             let itemCart = cart.items[i];
             if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-            itemCart      = await utilsModules.modulesLoadFunctions('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+            itemCart      = await aquilaHooks('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
             cart.items[i] = itemCart;
         }
         cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
@@ -402,8 +403,8 @@ const updateQty = async (postBody, userInfo) => {
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
-    await utilsDatabase.populateItems(cart.items);
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    await populateItems(cart.items);
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
 };
 
 const checkCountryTax = async (_cart, _user) => {
@@ -511,7 +512,9 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         const newOrder = {
             ...cartObj,
-            items          : cartObj.items.filter((it) => it.quantity > 0),
+            items : cartObj.items.filter((it) => it.quantity > 0).map(function ({stock, ...rest}) {
+                return {...rest};
+            }),
             promos         : cartObj.promos,
             cartId         : cartObj._id,
             quantityBreaks : cartObj.quantityBreaks,
@@ -682,12 +685,12 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
             await cart.save();
         }
     }
-    return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
+    return {code: 'CART_DELIVERY_UPDATED', data: {cart: await cart.getItemsStock()}};
 };
 
 const removeDelivery = async (body) => {
     const cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
-    return cart;
+    return cart.getItemsStock();
 };
 
 const removeDiscount = async (id) => {
@@ -695,7 +698,7 @@ const removeDiscount = async (id) => {
     if (!updCart) {
         throw NSErrors.InactiveCart;
     }
-    return {code: 'CART_DISCOUNT_REMOVE', data: {cart: updCart}};
+    return {code: 'CART_DISCOUNT_REMOVE', data: {cart: await updCart.getItemsStock()}};
 };
 
 const validateForCheckout = (cart) => {

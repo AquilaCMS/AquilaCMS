@@ -1,0 +1,1350 @@
+{
+  "collection": "cmsBlocks",
+  "datas": [
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584f6a6ddc5445a0d40c02",
+      "translation": {
+        "fr": {
+          "description": "Index : info 1",
+          "html": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"image-block\"><img src=\"{{Image1}}\" sizes=\"94vw\" alt=\"{{Image1 alt}}\" loading=\"lazy\" /></div>\n<div class=\"content-block\">\n<h2 class=\"heading-3\">{{Titre 1}} <span class=\"text-span-4\">{{Titre 2}}</span><br />{{Titre 3}}<br /><span class=\"text-span-3\">{{Titre 4}}</span></h2>\n<p>{{Text}}</p>\n<a href=\"{{Lien}}\" class=\"button button-space w-button\">{{Text du lien}}</a></div>\n</div>\n</div>\n</div>",
+          "content": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a5fc49391e1ff8165381/home-bottom-faq.png\" sizes=\"94vw\" alt=\"faq\" loading=\"lazy\" /></div>\n<div class=\"content-block\">\n<h2 class=\"heading-3\">Commandez <span class=\"text-span-4\">dégustez</span><br />grâce à la<br /><span class=\"text-span-3\">Commande Rapide</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"/\" class=\"button button-space w-button\">Découvrez comment commander</a></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Image1",
+              "value": "/images/medias/max-90/6081a5fc49391e1ff8165381/home-bottom-faq.png"
+            },
+            {
+              "label": "Image1 alt",
+              "value": "faq"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Commandez"
+            },
+            {
+              "label": "Titre 2",
+              "value": "dégustez"
+            },
+            {
+              "label": "Titre 3",
+              "value": "grâce à la"
+            },
+            {
+              "label": "Titre 4",
+              "value": "Commande Rapide"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Text du lien",
+              "value": "Découvrez comment commander"
+            }
+          ]
+        },
+        "en": {
+          "html": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"image-block\"><img src=\"{{Image1}}\" sizes=\"94vw\" alt=\"{{Alt Image1}}\" loading=\"lazy\" /></div>\n<div class=\"content-block\">\n<h2 class=\"heading-3\">{{Title 1}} <span class=\"text-span-4\">{{Title 2}}</span><br />{{Title 3}}<br /><span class=\"text-span-3\">{{Title 4}}</span></h2>\n<p>{{Text}}</p>\n<a href=\"{{Link}}\" class=\"button button-space w-button\">{{Link of text}}</a></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Image1",
+              "value": "/images/medias/max-90/6081a5fc49391e1ff8165381/home-bottom-faq.png"
+            },
+            {
+              "label": "Alt Image1",
+              "value": "faq"
+            },
+            {
+              "label": "Title 1",
+              "value": "Order &"
+            },
+            {
+              "label": "Title 2",
+              "value": "enjoy"
+            },
+            {
+              "label": "Title 3",
+              "value": "with the"
+            },
+            {
+              "label": "Title 4",
+              "value": "Quick Order"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Link of text",
+              "value": "Find out how to order"
+            }
+          ],
+          "content": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a5fc49391e1ff8165381/home-bottom-faq.png\" sizes=\"94vw\" alt=\"faq\" loading=\"lazy\" /></div>\n<div class=\"content-block\">\n<h2 class=\"heading-3\">Order & <span class=\"text-span-4\">enjoy</span><br />with the<br /><span class=\"text-span-3\">Quick Order</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"/\" class=\"button button-space w-button\">Find out how to order</a></div>\n</div>\n</div>\n</div>",
+          "description": "Index : info 1"
+        }
+      },
+      "code": "home-bottom-faq"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584f7d6ddc5445a0d40c03",
+      "translation": {
+        "fr": {
+          "description": "home : Mise en avant 1",
+          "html": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading\"><span class=\"text-span-2\">{{Titre 1}}<br />{{Titre 2}} </span>{{Titre 3}}</h2>\n<p>{{Texte 1}}</p>\n<a href=\"{{Lien 1}}\" class=\"button button-space w-button\">{{Texte lien 1}}</a></div>\n<div class=\"image-block\"><img src=\"{{Image}}\" alt=\"{{Image alt}}\" class=\"image\" loading=\"lazy\" /> <a href=\"{{Lien 2}}\" class=\"button absolu w-button\">{{Texte lien 2}}</a></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Titre 1",
+              "value": "Nos offres"
+            },
+            {
+              "label": "Titre 2",
+              "value": "et"
+            },
+            {
+              "label": "Titre 3",
+              "value": "produit frais !"
+            },
+            {
+              "label": "Texte 1",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Lien 1",
+              "value": "/"
+            },
+            {
+              "label": "Texte lien 1",
+              "value": "Commander !"
+            },
+            {
+              "label": "Image",
+              "value": "/images/medias/max-90/6081a3e649391e1ff816537d/home-promote-product1.jpeg"
+            },
+            {
+              "label": "Image alt",
+              "value": "alt1"
+            },
+            {
+              "label": "Lien 2",
+              "value": "/"
+            },
+            {
+              "label": "Texte lien 2",
+              "value": "Click&amp;Collect"
+            }
+          ],
+          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading\"><span class=\"text-span-2\">Nos offres<br />et </span>produit frais !</h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"/\" class=\"button button-space w-button\">Commander !</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a3e649391e1ff816537d/home-promote-product1.jpeg\" alt=\"alt1\" class=\"image\" loading=\"lazy\" /> <a href=\"/\" class=\"button absolu w-button\">Click&amp;Collect</a></div>\n</div>\n</div>\n</div>"
+        },
+        "en": {
+          "description": "home : Highlight 1",
+          "html": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading\"><span class=\"text-span-2\">{{Title 1}}<br />{{Title 2}} </span>{{Title 3}}</h2>\n<p>{{Text 1}}</p>\n<a href=\"{{Link 1}}\" class=\"button button-space w-button\">{{Link text 1}}</a></div>\n<div class=\"image-block\"><img src=\"{{Image}}\" alt=\"{{Alt Image}}\" class=\"image\" loading=\"lazy\" /> <a href=\"{{Link 2}}\" class=\"button absolu w-button\">{{Link Text 2}}</a></div>\n</div>\n</div>\n</div>",
+          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading\"><span class=\"text-span-2\">Our offers<br />and </span>fresh products!</h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"/\" class=\"button button-space w-button\">Order!</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a3e649391e1ff816537d/home-promote-product1.jpeg\" alt=\"alt1\" class=\"image\" loading=\"lazy\" /> <a href=\"/\" class=\"button absolu w-button\">Click&amp;Collect</a></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Title 1",
+              "value": "Our offers"
+            },
+            {
+              "label": "Title 2",
+              "value": "and"
+            },
+            {
+              "label": "Title 3",
+              "value": "fresh products!"
+            },
+            {
+              "label": "Text 1",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Link 1",
+              "value": "/"
+            },
+            {
+              "label": "Link text 1",
+              "value": "Order!"
+            },
+            {
+              "label": "Image",
+              "value": "/images/medias/max-90/6081a3e649391e1ff816537d/home-promote-product1.jpeg"
+            },
+            {
+              "label": "Alt Image",
+              "value": "alt1"
+            },
+            {
+              "label": "Link 2",
+              "value": "/"
+            },
+            {
+              "label": "Link Text 2",
+              "value": "Click&amp;Collect"
+            }
+          ]
+        }
+      },
+      "code": "home-promote-product-1"
+    },
+    {
+      "group": "Module",
+      "active": true,
+      "_id": "607eadf6dc79b23614400109",
+      "code": "cms_allergens",
+      "translation": {
+        "fr": {
+          "html": "Passez obligatoirement une commande unique en cas d'allergie afin que les produits soient isolés",
+          "variables": [],
+          "content": "Passez obligatoirement une commande unique en cas d'allergie afin que les produits soient isolés",
+          "description": "Texte d'information allergènes"
+        },
+        "en": {
+          "description": "Allergen information text",
+          "html": "Place a single order in case of allergy so that the products are isolated",
+          "variables": [],
+          "content": "Place a single order in case of allergy so that the products are isolated"
+        }
+      }
+    },
+    {
+      "group": "Module",
+      "active": true,
+      "_id": "612c91d2ebf4774d90ceb44d",
+      "translation": {
+        "fr": {
+          "description": "Information FoodOption",
+          "html": "Nous vous proposons des produits complémentaires pour agrémenter votre repas.",
+          "variables": [],
+          "content": "Nous vous proposons des produits complémentaires pour agrémenter votre repas."
+        },
+        "en": {
+          "html": "We offer complementary products to enhance your meal.",
+          "variables": [],
+          "content": "We offer complementary products to enhance your meal."
+        }
+      },
+      "code": "foodoption-info"
+    },
+    {
+      "group": "Bandeau",
+      "active": true,
+      "_id": "6063825e767fbe362c869f8b",
+      "translation": {
+        "fr": {
+          "description": "Bandeau - home - 1",
+          "html": "<div class=\"slide-1 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{Image de fond}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h1 class=\"hero-h1\">{{Titre 1}} <span class=\"text-span\">{{Titre 2}}</span> {{Titre 3}}</h1>\n<p class=\"hero-paragraph\">{{Texte}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Lien}}\" class=\"button w-button\">{{Texte du bouton}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/60819c4d49391e1ff8165377/home-info-slider1.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Découvrez nos Menus"
+            },
+            {
+              "label": "Titre 2",
+              "value": "à Emporter"
+            },
+            {
+              "label": "Titre 3",
+              "value": "!"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500 !"
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Texte du bouton",
+              "value": "Commander !"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081a1f449391e1ff816537a/home-info-slider1-content1.png"
+            },
+            {
+              "label": "Image alt",
+              "value": "Nos menus"
+            }
+          ],
+          "content": "<div class=\"slide-1 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819c4d49391e1ff8165377/home-info-slider1.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h1 class=\"hero-h1\">Découvrez nos Menus <span class=\"text-span\">à Emporter</span> !</h1>\n<p class=\"hero-paragraph\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500 !</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Commander !</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a1f449391e1ff816537a/home-info-slider1-content1.png\" alt=\"Nos menus\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>"
+        },
+        "en": {
+          "html": "<div class=\"slide-1 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{Background image}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h1 class=\"hero-h1\">{{Title 1}} <span class=\"text-span\">{{Title 2}}</span> {{Title 3}}</h1>\n<p class=\"hero-paragraph\">{{Text}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Link}}\" class=\"button w-button\">{{Link of button}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{URL Image}}\" alt=\"{{Alt Image}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/60819c4d49391e1ff8165377/home-info-slider1.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Discover our Menus"
+            },
+            {
+              "label": "Title 2",
+              "value": "To Take Away"
+            },
+            {
+              "label": "Title 3",
+              "value": "!"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500 !"
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Link of button",
+              "value": "Order!"
+            },
+            {
+              "label": "URL Image",
+              "value": "/images/medias/max-90/6081a1f449391e1ff816537a/home-info-slider1-content1.png"
+            },
+            {
+              "label": "Alt Image",
+              "value": "Our menus"
+            }
+          ],
+          "content": "<div class=\"slide-1 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819c4d49391e1ff8165377/home-info-slider1.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h1 class=\"hero-h1\">Discover our Menus <span class=\"text-span\">To Take Away</span> !</h1>\n<p class=\"hero-paragraph\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500 !</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Order!</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a1f449391e1ff816537a/home-info-slider1-content1.png\" alt=\"Our menus\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>"
+        }
+      },
+      "code": "Slide-Home-1"
+    },
+    {
+      "group": "Bandeau",
+      "active": true,
+      "_id": "60638609767fbe362c869f8d",
+      "translation": {
+        "fr": {
+          "description": "Bandeau - home - 3",
+          "html": "<div class=\"slide-3 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{ImageBackground}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">{{Titre 1}} <span class=\"text-span\">{{Titre 2}}</span> {{Titre 3}}</h2>\n<p class=\"hero-paragraph\">{{Texte}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Lien}}\" class=\"button w-button\">{{Texte du bouton}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "ImageBackground",
+              "value": "/images/medias/max-90/60819f2e49391e1ff8165379/home-info-slider3.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Coktail & Drink"
+            },
+            {
+              "label": "Titre 2",
+              "value": "à Emporter"
+            },
+            {
+              "label": "Titre 3",
+              "value": "!"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 150"
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Texte du bouton",
+              "value": "Commander !"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081a31e49391e1ff816537c/home-info-slider3-content.jpeg"
+            },
+            {
+              "label": "Image alt",
+              "value": "Coktail & Drink"
+            }
+          ],
+          "content": "<div class=\"slide-3 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819f2e49391e1ff8165379/home-info-slider3.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">Coktail & Drink <span class=\"text-span\">à Emporter</span> !</h2>\n<p class=\"hero-paragraph\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 150</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Commander !</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a31e49391e1ff816537c/home-info-slider3-content.jpeg\" alt=\"Coktail & Drink\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>"
+        },
+        "en": {
+          "html": "<div class=\"slide-3 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{ImageBackground}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">{{Title 1}} <span class=\"text-span\">{{Title 2}}</span> {{Title 3}}</h2>\n<p class=\"hero-paragraph\">{{Text}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Link}}\" class=\"button w-button\">{{Button text}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "ImageBackground",
+              "value": "/images/medias/max-90/60819f2e49391e1ff8165379/home-info-slider3.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Coktail & Drink"
+            },
+            {
+              "label": "Title 2",
+              "value": "to take away"
+            },
+            {
+              "label": "Title 3",
+              "value": "!"
+            },
+            {
+              "label": "Text",
+              "value": "en - dummy text ever since the 150"
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Button text",
+              "value": "Order!"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081a31e49391e1ff816537c/home-info-slider3-content.jpeg"
+            },
+            {
+              "label": "Image alt",
+              "value": "Coktail & Drink"
+            }
+          ],
+          "content": "<div class=\"slide-3 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819f2e49391e1ff8165379/home-info-slider3.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">Coktail & Drink <span class=\"text-span\">to take away</span> !</h2>\n<p class=\"hero-paragraph\">en - dummy text ever since the 150</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Order!</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a31e49391e1ff816537c/home-info-slider3-content.jpeg\" alt=\"Coktail & Drink\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>"
+        }
+      },
+      "code": "Slide-Home-3"
+    },
+    {
+      "group": "Aquila",
+      "active": false,
+      "_id": "5e29a422286b512918a391bb",
+      "code": "invoice",
+      "translation": {
+        "fr": {
+          "description": "invoice",
+          "content": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n  </head>\n  <body>\n    <header class=\"clearfix\">\n      <div id=\"logo\">\n        LOGO\n      </div>\n      <h1>INVOICE </h1>\n      <div id=\"company\" class=\"clearfix\">\n        <div>Company Name</div>\n        <div>Address1,<br /> CP, City</div>\n        <div>(+33) 000-000-000</div>\n        <div><a href=\"mailto:company@example.com\">email@company.com</a></div>\n      </div>\n      <div id=\"project\">\n        <div><span>CLIENT</span>  </div>\n        <div><span>ADDRESS</span>  </div>\n        <div><span>ADDRESS</span>   </div>\n        <div><span>DATE</span> </div>\n      </div>\n    </header>\n    <main>\n      <table>\n        <thead>\n          <tr>\n            <th class=\"service\">CODE</th>\n            <th class=\"desc\">DESCRIPTION</th>\n            <th>PRICE</th>\n            <th>QTY</th>\n            <th>TOTAL</th>\n          </tr>\n        </thead>\n        <tbody>\n          <!--startitems-->\n          <tr>\n            <td class=\"service\"></td>\n            <td class=\"desc\"></td>\n            <td class=\"unit\"> €</td>\n            <td class=\"qty\"></td>\n            <td class=\"total\"> €</td>\n          </tr>\n          <!--enditems-->\n          <tr>\n            <td colspan=\"4\">SUBTOTAL</td>\n            <td class=\"total\"> €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">SHIPPING</td>\n            <td class=\"total\"> €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">TAX 20%</td>\n            <td class=\"total\"> €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\" class=\"grand total\">GRAND TOTAL</td>\n            <td class=\"grand total\"> €</td>\n          </tr>\n        </tbody>\n      </table>\n      <div id=\"notices\">\n        <div>NOTICE:</div>\n        <div class=\"notice\">IF NEEDED.</div>\n      </div>\n    </main>\n    <footer>\n      Invoice was created on a computer and is valid without the signature and seal.\n    </footer>\n  </body>\n</html>\n\n<!--                  : bill.facture\n            : bill.montant\n              : bill.withTaxes\n                  : bill.email\n            : bill.paymentDate\n           : bill.createdAt\n                 : bill.isPaid\n              : bill.address.firstname\n               : bill.address.lastname\n                : bill.address.companyName\n                  : bill.address.phone\n           : bill.address.phone_mobile\n          : bill.address.line1\n          : bill.address.line2\n        : bill.address.zipcode\n           : bill.address.city\n : bill.address.isoCountryCode\n        : bill.address.country\n       : bill.delivery.price.ati\n        : bill.delivery.price.et\n       : bill.delivery.price.vat\n           : bill.delivery.code\n\"          : bill.delivery.name\n          : bill.promos.discountATI\n           : bill.promos.discountET\n              : bill.promos.name\n       : bill.promos.description\n              : bill.promos.code\n     : bill.additionnalFees.ati\n      : bill.additionnalFees.et\n     : bill.additionnalFees.tax\n       : bill.priceSubTotal.ati\n        : bill.priceSubTotal.et\n\n\n!--startitems--\n            : bill.items[i].name\n            : bill.items[i].code\n        : bill.items[i].quantity\n        : bill.items[i].price.unit.ati\n : bill.items[i].price.special.ati\n         : bill.items[i].price.unit.et\n  : bill.items[i].price.special.et\n         : bill.items[i].price.vat.rate\n     : ''\n      : ''\n     : ''\n    : ''\n!--enditems-- -->\n\n\n<style>\n\n.clearfix:after {\n  content: \"\";\n  display: table;\n  clear: both;\n}\n\na {\n  color: #5D6975;\n  text-decoration: underline;\n}\n\nbody {\n  position: relative;\n  width: 21cm;  \n  height: 29.7cm; \n  margin: 0 auto; \n  color: #001028;\n  background: #FFFFFF; \n  font-family: Arial, sans-serif; \n  font-size: 12px; \n  font-family: Arial;\n}\n\nheader {\n  padding: 10px 0;\n  margin-bottom: 30px;\n}\n\n#logo {\n  text-align: center;\n  margin-bottom: 10px;\n}\n\n#logo img {\n  width: 90px;\n}\n\nh1 {\n  border-top: 1px solid  #5D6975;\n  border-bottom: 1px solid  #5D6975;\n  color: #5D6975;\n  font-size: 2.4em;\n  line-height: 1.4em;\n  font-weight: normal;\n  text-align: center;\n  margin: 0 0 20px 0;\n  background: url(dimension.png);\n}\n\n#project {\n  float: left;\n}\n\n#project span {\n  color: #5D6975;\n  text-align: right;\n  width: 52px;\n  margin-right: 10px;\n  display: inline-block;\n  font-size: 0.8em;\n}\n\n#company {\n  float: right;\n  text-align: right;\n}\n\n#project div,\n#company div {\n  white-space: nowrap;        \n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  border-spacing: 0;\n  margin-bottom: 20px;\n}\n\ntable tr:nth-child(2n-1) td {\n  background: #F5F5F5;\n}\n\ntable th,\ntable td {\n  text-align: center;\n}\n\ntable th {\n  padding: 5px 20px;\n  color: #5D6975;\n  border-bottom: 1px solid #C1CED9;\n  white-space: nowrap;        \n  font-weight: normal;\n}\n\ntable .service,\ntable .desc {\n  text-align: left;\n}\n\ntable td {\n  padding: 20px;\n  text-align: right;\n}\n\ntable td.service,\ntable td.desc {\n  vertical-align: top;\n}\n\ntable td.unit,\ntable td.qty,\ntable td.total {\n  font-size: 1.2em;\n}\n\ntable td.grand {\n  border-top: 1px solid #5D6975;;\n}\n\n#notices .notice {\n  color: #5D6975;\n  font-size: 1.2em;\n}\n\nfooter {\n  color: #5D6975;\n  width: 100%;\n  height: 30px;\n  position: absolute;\n  bottom: 0;\n  border-top: 1px solid #C1CED9;\n  padding: 8px 0;\n  text-align: center;\n}\n</style>",
+          "html": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n  </head>\n  <body>\n    <header class=\"clearfix\">\n      <div id=\"logo\">\n        LOGO\n      </div>\n      <h1>INVOICE {{number}}</h1>\n      <div id=\"company\" class=\"clearfix\">\n        <div>Company Name</div>\n        <div>Address1,<br /> CP, City</div>\n        <div>(+33) 000-000-000</div>\n        <div><a href=\"mailto:company@example.com\">email@company.com</a></div>\n      </div>\n      <div id=\"project\">\n        <div><span>CLIENT</span> {{firstname}} {{lastname}}</div>\n        <div><span>ADDRESS</span> {{address.line1}} {{address.line2}}</div>\n        <div><span>ADDRESS</span> {{address.zipcode}} {{address.city}} {{address.country}}</div>\n        <div><span>DATE</span> {{createdAt}}</div>\n      </div>\n    </header>\n    <main>\n      <table>\n        <thead>\n          <tr>\n            <th class=\"service\">CODE</th>\n            <th class=\"desc\">DESCRIPTION</th>\n            <th>PRICE</th>\n            <th>QTY</th>\n            <th>TOTAL</th>\n          </tr>\n        </thead>\n        <tbody>\n          <!--startitems-->\n          <tr>\n            <td class=\"service\">{{product.code}}</td>\n            <td class=\"desc\">{{product.name}}</td>\n            <td class=\"unit\">{{product.priceAti}} €</td>\n            <td class=\"qty\">{{product.quantity}}</td>\n            <td class=\"total\">{{product.priceAti}} €</td>\n          </tr>\n          <!--enditems-->\n          <tr>\n            <td colspan=\"4\">SUBTOTAL</td>\n            <td class=\"total\">{{priceSubTotalAti}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">SHIPPING</td>\n            <td class=\"total\">{{deliveryPriceAti}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">TAX 20%</td>\n            <td class=\"total\">{{additionnalFeesTax}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\" class=\"grand total\">GRAND TOTAL</td>\n            <td class=\"grand total\">{{totalAmount}} €</td>\n          </tr>\n        </tbody>\n      </table>\n      <div id=\"notices\">\n        <div>NOTICE:</div>\n        <div class=\"notice\">IF NEEDED.</div>\n      </div>\n    </main>\n    <footer>\n      Invoice was created on a computer and is valid without the signature and seal.\n    </footer>\n  </body>\n</html>\n\n<!-- {{number}}                 : bill.facture\n{{totalAmount}}            : bill.montant\n{{withTaxes}}              : bill.withTaxes\n{{email}}                  : bill.email\n{{paymentDate}}            : bill.paymentDate\n{{createdAt}}           : bill.createdAt\n{{isPaid}}                 : bill.isPaid\n{{firstname}}              : bill.address.firstname\n{{lastname}}               : bill.address.lastname\n{{company}}                : bill.address.companyName\n{{phone}}                  : bill.address.phone\n{{phone_mobile}}           : bill.address.phone_mobile\n{{address.line1}}          : bill.address.line1\n{{address.line2}}          : bill.address.line2\n{{address.zipcode}}        : bill.address.zipcode\n{{address.city}}           : bill.address.city\n{{address.isoCountryCode}} : bill.address.isoCountryCode\n{{address.country}}        : bill.address.country\n{{deliveryPriceAti}}       : bill.delivery.price.ati\n{{deliveryPriceEt}}        : bill.delivery.price.et\n{{deliveryPriceVat}}       : bill.delivery.price.vat\n{{deliveryCode}}           : bill.delivery.code\n{{deliveryName}}\"          : bill.delivery.name\n{{promoPriceAti}}          : bill.promos.discountATI\n{{promoPriceEt}}           : bill.promos.discountET\n{{promoName}}              : bill.promos.name\n{{promoDescription}}       : bill.promos.description\n{{promoCode}}              : bill.promos.code\n{{additionnalFeesAti}}     : bill.additionnalFees.ati\n{{additionnalFeesEt}}      : bill.additionnalFees.et\n{{additionnalFeesTax}}     : bill.additionnalFees.tax\n{{priceSubTotalAti}}       : bill.priceSubTotal.ati\n{{priceSubTotalEt}}        : bill.priceSubTotal.et\n\n\n!--startitems--\n{{product.name}}            : bill.items[i].name\n{{product.code}}            : bill.items[i].code\n{{product.quantity}}        : bill.items[i].quantity\n{{product.priceAti}}        : bill.items[i].price.unit.ati\n{{product.specialPriceAti}} : bill.items[i].price.special.ati\n{{product.priceEt}}         : bill.items[i].price.unit.et\n{{product.specialPriceEt}}  : bill.items[i].price.special.et\n{{product.vatRate}}         : bill.items[i].price.vat.rate\n{{product.discountATI}}     : ''\n{{product.discountET}}      : ''\n{{product.basePriceET}}     : ''\n{{product.basePriceATI}}    : ''\n!--enditems-- -->\n\n\n<style>\n\n.clearfix:after {\n  content: \"\";\n  display: table;\n  clear: both;\n}\n\na {\n  color: #5D6975;\n  text-decoration: underline;\n}\n\nbody {\n  position: relative;\n  width: 21cm;  \n  height: 29.7cm; \n  margin: 0 auto; \n  color: #001028;\n  background: #FFFFFF; \n  font-family: Arial, sans-serif; \n  font-size: 12px; \n  font-family: Arial;\n}\n\nheader {\n  padding: 10px 0;\n  margin-bottom: 30px;\n}\n\n#logo {\n  text-align: center;\n  margin-bottom: 10px;\n}\n\n#logo img {\n  width: 90px;\n}\n\nh1 {\n  border-top: 1px solid  #5D6975;\n  border-bottom: 1px solid  #5D6975;\n  color: #5D6975;\n  font-size: 2.4em;\n  line-height: 1.4em;\n  font-weight: normal;\n  text-align: center;\n  margin: 0 0 20px 0;\n  background: url(dimension.png);\n}\n\n#project {\n  float: left;\n}\n\n#project span {\n  color: #5D6975;\n  text-align: right;\n  width: 52px;\n  margin-right: 10px;\n  display: inline-block;\n  font-size: 0.8em;\n}\n\n#company {\n  float: right;\n  text-align: right;\n}\n\n#project div,\n#company div {\n  white-space: nowrap;        \n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  border-spacing: 0;\n  margin-bottom: 20px;\n}\n\ntable tr:nth-child(2n-1) td {\n  background: #F5F5F5;\n}\n\ntable th,\ntable td {\n  text-align: center;\n}\n\ntable th {\n  padding: 5px 20px;\n  color: #5D6975;\n  border-bottom: 1px solid #C1CED9;\n  white-space: nowrap;        \n  font-weight: normal;\n}\n\ntable .service,\ntable .desc {\n  text-align: left;\n}\n\ntable td {\n  padding: 20px;\n  text-align: right;\n}\n\ntable td.service,\ntable td.desc {\n  vertical-align: top;\n}\n\ntable td.unit,\ntable td.qty,\ntable td.total {\n  font-size: 1.2em;\n}\n\ntable td.grand {\n  border-top: 1px solid #5D6975;;\n}\n\n#notices .notice {\n  color: #5D6975;\n  font-size: 1.2em;\n}\n\nfooter {\n  color: #5D6975;\n  width: 100%;\n  height: 30px;\n  position: absolute;\n  bottom: 0;\n  border-top: 1px solid #C1CED9;\n  padding: 8px 0;\n  text-align: center;\n}\n</style>",
+          "variables": [
+            {
+              "label": "number",
+              "value": ""
+            },
+            {
+              "label": "firstname",
+              "value": ""
+            },
+            {
+              "label": "lastname",
+              "value": ""
+            },
+            {
+              "label": "address.line1",
+              "value": ""
+            },
+            {
+              "label": "address.line2",
+              "value": ""
+            },
+            {
+              "label": "address.zipcode",
+              "value": ""
+            },
+            {
+              "label": "address.city",
+              "value": ""
+            },
+            {
+              "label": "address.country",
+              "value": ""
+            },
+            {
+              "label": "createdAt",
+              "value": ""
+            },
+            {
+              "label": "product.code",
+              "value": ""
+            },
+            {
+              "label": "product.name",
+              "value": ""
+            },
+            {
+              "label": "product.priceAti",
+              "value": ""
+            },
+            {
+              "label": "product.quantity",
+              "value": ""
+            },
+            {
+              "label": "product.priceAti",
+              "value": ""
+            },
+            {
+              "label": "priceSubTotalAti",
+              "value": ""
+            },
+            {
+              "label": "deliveryPriceAti",
+              "value": ""
+            },
+            {
+              "label": "additionnalFeesTax",
+              "value": ""
+            },
+            {
+              "label": "totalAmount",
+              "value": ""
+            },
+            {
+              "label": "number",
+              "value": ""
+            },
+            {
+              "label": "totalAmount",
+              "value": ""
+            },
+            {
+              "label": "withTaxes",
+              "value": ""
+            },
+            {
+              "label": "email",
+              "value": ""
+            },
+            {
+              "label": "paymentDate",
+              "value": ""
+            },
+            {
+              "label": "createdAt",
+              "value": ""
+            },
+            {
+              "label": "isPaid",
+              "value": ""
+            },
+            {
+              "label": "firstname",
+              "value": ""
+            },
+            {
+              "label": "lastname",
+              "value": ""
+            },
+            {
+              "label": "company",
+              "value": ""
+            },
+            {
+              "label": "phone",
+              "value": ""
+            },
+            {
+              "label": "phone_mobile",
+              "value": ""
+            },
+            {
+              "label": "address.line1",
+              "value": ""
+            },
+            {
+              "label": "address.line2",
+              "value": ""
+            },
+            {
+              "label": "address.zipcode",
+              "value": ""
+            },
+            {
+              "label": "address.city",
+              "value": ""
+            },
+            {
+              "label": "address.isoCountryCode",
+              "value": ""
+            },
+            {
+              "label": "address.country",
+              "value": ""
+            },
+            {
+              "label": "deliveryPriceAti",
+              "value": ""
+            },
+            {
+              "label": "deliveryPriceEt",
+              "value": ""
+            },
+            {
+              "label": "deliveryPriceVat",
+              "value": ""
+            },
+            {
+              "label": "deliveryCode",
+              "value": ""
+            },
+            {
+              "label": "deliveryName",
+              "value": ""
+            },
+            {
+              "label": "promoPriceAti",
+              "value": ""
+            },
+            {
+              "label": "promoPriceEt",
+              "value": ""
+            },
+            {
+              "label": "promoName",
+              "value": ""
+            },
+            {
+              "label": "promoDescription",
+              "value": ""
+            },
+            {
+              "label": "promoCode",
+              "value": ""
+            },
+            {
+              "label": "additionnalFeesAti",
+              "value": ""
+            },
+            {
+              "label": "additionnalFeesEt",
+              "value": ""
+            },
+            {
+              "label": "additionnalFeesTax",
+              "value": ""
+            },
+            {
+              "label": "priceSubTotalAti",
+              "value": ""
+            },
+            {
+              "label": "priceSubTotalEt",
+              "value": ""
+            },
+            {
+              "label": "product.name",
+              "value": ""
+            },
+            {
+              "label": "product.code",
+              "value": ""
+            },
+            {
+              "label": "product.quantity",
+              "value": ""
+            },
+            {
+              "label": "product.priceAti",
+              "value": ""
+            },
+            {
+              "label": "product.specialPriceAti",
+              "value": ""
+            },
+            {
+              "label": "product.priceEt",
+              "value": ""
+            },
+            {
+              "label": "product.specialPriceEt",
+              "value": ""
+            },
+            {
+              "label": "product.vatRate",
+              "value": ""
+            },
+            {
+              "label": "product.discountATI",
+              "value": ""
+            },
+            {
+              "label": "product.discountET",
+              "value": ""
+            },
+            {
+              "label": "product.basePriceET",
+              "value": ""
+            },
+            {
+              "label": "product.basePriceATI",
+              "value": ""
+            }
+          ]
+        },
+        "en": {
+          "description": "invoice",
+          "content": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"utf-8\">\n  </head>\n  <body>\n    <header class=\"clearfix\">\n      <div id=\"logo\">\n        LOGO\n      </div>\n      <h1>INVOICE {{number}}</h1>\n      <div id=\"company\" class=\"clearfix\">\n        <div>Company Name</div>\n        <div>Address1,<br /> CP, City</div>\n        <div>(+33) 000-000-000</div>\n        <div><a href=\"mailto:company@example.com\">email@company.com</a></div>\n      </div>\n      <div id=\"project\">\n        <div><span>CLIENT</span> {{firstname}} {{lastname}}</div>\n        <div><span>ADDRESS</span> {{address.line1}} {{address.line2}}</div>\n        <div><span>ADDRESS</span> {{address.zipcode}} {{address.city}} {{address.country}}</div>\n        <div><span>DATE</span> {{createdAt}}</div>\n      </div>\n    </header>\n    <main>\n      <table>\n        <thead>\n          <tr>\n            <th class=\"service\">CODE</th>\n            <th class=\"desc\">DESCRIPTION</th>\n            <th>PRICE</th>\n            <th>QTY</th>\n            <th>TOTAL</th>\n          </tr>\n        </thead>\n        <tbody>\n          <!--startitems-->\n          <tr>\n            <td class=\"service\">{{product.code}}</td>\n            <td class=\"desc\">{{product.name}}</td>\n            <td class=\"unit\">{{product.priceAti}} €</td>\n            <td class=\"qty\">{{product.quantity}}</td>\n            <td class=\"total\">{{product.priceAti}} €</td>\n          </tr>\n          <!--enditems-->\n          <tr>\n            <td colspan=\"4\">SUBTOTAL</td>\n            <td class=\"total\">{{priceSubTotalAti}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">SHIPPING</td>\n            <td class=\"total\">{{deliveryPriceAti}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\">TAX 20%</td>\n            <td class=\"total\">{{additionnalFeesTax}} €</td>\n          </tr>\n          <tr>\n            <td colspan=\"4\" class=\"grand total\">GRAND TOTAL</td>\n            <td class=\"grand total\">{{totalAmount}} €</td>\n          </tr>\n        </tbody>\n      </table>\n      <div id=\"notices\">\n        <div>NOTICE:</div>\n        <div class=\"notice\">IF NEEDED.</div>\n      </div>\n    </main>\n    <footer>\n      Invoice was created on a computer and is valid without the signature and seal.\n    </footer>\n  </body>\n</html>\n\n<!-- {{number}}                 : bill.facture\n{{totalAmount}}            : bill.montant\n{{withTaxes}}              : bill.withTaxes\n{{email}}                  : bill.email\n{{paymentDate}}            : bill.paymentDate\n{{createdAt}}           : bill.createdAt\n{{isPaid}}                 : bill.isPaid\n{{firstname}}              : bill.address.firstname\n{{lastname}}               : bill.address.lastname\n{{company}}                : bill.address.companyName\n{{phone}}                  : bill.address.phone\n{{phone_mobile}}           : bill.address.phone_mobile\n{{address.line1}}          : bill.address.line1\n{{address.line2}}          : bill.address.line2\n{{address.zipcode}}        : bill.address.zipcode\n{{address.city}}           : bill.address.city\n{{address.isoCountryCode}} : bill.address.isoCountryCode\n{{address.country}}        : bill.address.country\n{{deliveryPriceAti}}       : bill.delivery.price.ati\n{{deliveryPriceEt}}        : bill.delivery.price.et\n{{deliveryPriceVat}}       : bill.delivery.price.vat\n{{deliveryCode}}           : bill.delivery.code\n{{deliveryName}}\"          : bill.delivery.name\n{{promoPriceAti}}          : bill.promos.discountATI\n{{promoPriceEt}}           : bill.promos.discountET\n{{promoName}}              : bill.promos.name\n{{promoDescription}}       : bill.promos.description\n{{promoCode}}              : bill.promos.code\n{{additionnalFeesAti}}     : bill.additionnalFees.ati\n{{additionnalFeesEt}}      : bill.additionnalFees.et\n{{additionnalFeesTax}}     : bill.additionnalFees.tax\n{{priceSubTotalAti}}       : bill.priceSubTotal.ati\n{{priceSubTotalEt}}        : bill.priceSubTotal.et\n\n\n!--startitems--\n{{product.name}}            : bill.items[i].name\n{{product.code}}            : bill.items[i].code\n{{product.quantity}}        : bill.items[i].quantity\n{{product.priceAti}}        : bill.items[i].price.unit.ati\n{{product.specialPriceAti}} : bill.items[i].price.special.ati\n{{product.priceEt}}         : bill.items[i].price.unit.et\n{{product.specialPriceEt}}  : bill.items[i].price.special.et\n{{product.vatRate}}         : bill.items[i].price.vat.rate\n{{product.discountATI}}     : ''\n{{product.discountET}}      : ''\n{{product.basePriceET}}     : ''\n{{product.basePriceATI}}    : ''\n!--enditems-- -->\n\n\n<style>\n\n.clearfix:after {\n  content: \"\";\n  display: table;\n  clear: both;\n}\n\na {\n  color: #5D6975;\n  text-decoration: underline;\n}\n\nbody {\n  position: relative;\n  width: 21cm;  \n  height: 29.7cm; \n  margin: 0 auto; \n  color: #001028;\n  background: #FFFFFF; \n  font-family: Arial, sans-serif; \n  font-size: 12px; \n  font-family: Arial;\n}\n\nheader {\n  padding: 10px 0;\n  margin-bottom: 30px;\n}\n\n#logo {\n  text-align: center;\n  margin-bottom: 10px;\n}\n\n#logo img {\n  width: 90px;\n}\n\nh1 {\n  border-top: 1px solid  #5D6975;\n  border-bottom: 1px solid  #5D6975;\n  color: #5D6975;\n  font-size: 2.4em;\n  line-height: 1.4em;\n  font-weight: normal;\n  text-align: center;\n  margin: 0 0 20px 0;\n  background: url(dimension.png);\n}\n\n#project {\n  float: left;\n}\n\n#project span {\n  color: #5D6975;\n  text-align: right;\n  width: 52px;\n  margin-right: 10px;\n  display: inline-block;\n  font-size: 0.8em;\n}\n\n#company {\n  float: right;\n  text-align: right;\n}\n\n#project div,\n#company div {\n  white-space: nowrap;        \n}\n\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  border-spacing: 0;\n  margin-bottom: 20px;\n}\n\ntable tr:nth-child(2n-1) td {\n  background: #F5F5F5;\n}\n\ntable th,\ntable td {\n  text-align: center;\n}\n\ntable th {\n  padding: 5px 20px;\n  color: #5D6975;\n  border-bottom: 1px solid #C1CED9;\n  white-space: nowrap;        \n  font-weight: normal;\n}\n\ntable .service,\ntable .desc {\n  text-align: left;\n}\n\ntable td {\n  padding: 20px;\n  text-align: right;\n}\n\ntable td.service,\ntable td.desc {\n  vertical-align: top;\n}\n\ntable td.unit,\ntable td.qty,\ntable td.total {\n  font-size: 1.2em;\n}\n\ntable td.grand {\n  border-top: 1px solid #5D6975;;\n}\n\n#notices .notice {\n  color: #5D6975;\n  font-size: 1.2em;\n}\n\nfooter {\n  color: #5D6975;\n  width: 100%;\n  height: 30px;\n  position: absolute;\n  bottom: 0;\n  border-top: 1px solid #C1CED9;\n  padding: 8px 0;\n  text-align: center;\n}\n</style>"
+        }
+      }
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584f336ddc5445a0d40c00",
+      "translation": {
+        "fr": {
+          "description": "Home et produit : en bas",
+          "html": "<div class=\"cta-section\">\n<div class=\"w-layout-grid cta-grid\">\n<div class=\"cta-image\" style=\"background-image: url('{{Lien de l'image}}');\"></div>\n<div class=\"cta-content\">\n<h2 class=\"cta-heading\"><span class=\"dark-span\">{{Text1}}</span> {{Text2}}<br />{{Text3}} <span class=\"text-span-7\">{{Text4}}</span></h2>\n<a href=\"{{Lien}}\" class=\"button-white button-space w-button\">{{Text du lien}}</a></div>\n</div>\n</div>",
+          "content": "<div class=\"cta-section\">\n<div class=\"w-layout-grid cta-grid\">\n<div class=\"cta-image\" style=\"background-image: url('/images/medias/max-90/6081a82849391e1ff8165384/info-bottom1.jpeg');\"></div>\n<div class=\"cta-content\">\n<h2 class=\"cta-heading\"><span class=\"dark-span\">Dégustez</span> local<br />& aidez la <span class=\"text-span-7\">filière équitable !</span></h2>\n<a href=\"/\" class=\"button-white button-space w-button\">Commandez &amp; dégustez !</a></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Lien de l'image",
+              "value": "/images/medias/max-90/6081a82849391e1ff8165384/info-bottom1.jpeg"
+            },
+            {
+              "label": "Text1",
+              "value": "Dégustez"
+            },
+            {
+              "label": "Text2",
+              "value": "local"
+            },
+            {
+              "label": "Text3",
+              "value": "& aidez la"
+            },
+            {
+              "label": "Text4",
+              "value": "filière équitable !"
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Text du lien",
+              "value": "Commandez &amp; dégustez !"
+            }
+          ]
+        },
+        "en": {
+          "html": "<div class=\"cta-section\">\n<div class=\"w-layout-grid cta-grid\">\n<div class=\"cta-image\" style=\"background-image: url('{{Background image}}');\"></div>\n<div class=\"cta-content\">\n<h2 class=\"cta-heading\"><span class=\"dark-span\">{{Text1}}</span> {{Text2}}<br />{{Text3}} <span class=\"text-span-7\">{{Text4}}</span></h2>\n<a href=\"{{Link}}\" class=\"button-white button-space w-button\">{{Text of link}}</a></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081a82849391e1ff8165384/info-bottom1.jpeg"
+            },
+            {
+              "label": "Text1",
+              "value": "Taste"
+            },
+            {
+              "label": "Text2",
+              "value": "local"
+            },
+            {
+              "label": "Text3",
+              "value": "& help the fair"
+            },
+            {
+              "label": "Text4",
+              "value": "trade industry!"
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Text of link",
+              "value": "Order and enjoy!"
+            }
+          ],
+          "content": "<div class=\"cta-section\">\n<div class=\"w-layout-grid cta-grid\">\n<div class=\"cta-image\" style=\"background-image: url('/images/medias/max-90/6081a82849391e1ff8165384/info-bottom1.jpeg');\"></div>\n<div class=\"cta-content\">\n<h2 class=\"cta-heading\"><span class=\"dark-span\">Taste</span> local<br />& help the fair <span class=\"text-span-7\">trade industry!</span></h2>\n<a href=\"/\" class=\"button-white button-space w-button\">Order and enjoy!</a></div>\n</div>\n</div>",
+          "description": "Home and product : Bottom"
+        }
+      },
+      "code": "info-bottom-1"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584f936ddc5445a0d40c04",
+      "translation": {
+        "fr": {
+          "description": "home : Mise en avant 2",
+          "html": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">{{Titre}}</h2>\n</div>\n<div class=\"w-layout-grid works-grid\">\n<div class=\"content-card\"><img src=\"{{Image 1}}\" alt=\"{{Image 1 alt}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Sous titre 1}}</h5>\n<p>{{Texte 1}}</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"{{Image 2}}\" alt=\"{{Image 2 alt}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Sous titre 2}}</h5>\n<p>{{Texte 2}}</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"{{Image 3}}\" alt=\"{{Image 3 alt}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Sous titre 3}}</h5>\n<p>{{Texte 3}}</p>\n</div>\n</div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Titre",
+              "value": "Comment ça marche"
+            },
+            {
+              "label": "Image 1",
+              "value": "/images/medias/max-90/6081a50949391e1ff816537e/home-promote-product2-step01.png"
+            },
+            {
+              "label": "Image 1 alt",
+              "value": "Etape 1"
+            },
+            {
+              "label": "Sous titre 1",
+              "value": "Ajouter un Menu au panier"
+            },
+            {
+              "label": "Texte 1",
+              "value": "Adaptez facilement votre menu en utilisant AquilaCMS et permettez aux clients de parcourir vos articles."
+            },
+            {
+              "label": "Image 2",
+              "value": "/images/medias/max-90/6081a51949391e1ff816537f/home-promote-product2-step02.png"
+            },
+            {
+              "label": "Image 2 alt",
+              "value": "Etape 2"
+            },
+            {
+              "label": "Sous titre 2",
+              "value": "Payez et récupérez"
+            },
+            {
+              "label": "Texte 2",
+              "value": "Laissez vos clients commander et payer via le puissant système de commerce électronique, ou laissez-les simplement appeler votre magasin."
+            },
+            {
+              "label": "Image 3",
+              "value": "/images/medias/max-90/6081a52149391e1ff8165380/home-promote-product2-step03.png"
+            },
+            {
+              "label": "Image 3 alt",
+              "value": "Etape 3"
+            },
+            {
+              "label": "Sous titre 3",
+              "value": "Enlever ou Livré ?"
+            },
+            {
+              "label": "Texte 3",
+              "value": "Gérez votre propre logistique et prenez les commandes simplement par le biais du système de commerce électronique."
+            }
+          ],
+          "content": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">Comment ça marche</h2>\n</div>\n<div class=\"w-layout-grid works-grid\">\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a50949391e1ff816537e/home-promote-product2-step01.png\" alt=\"Etape 1\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Ajouter un Menu au panier</h5>\n<p>Adaptez facilement votre menu en utilisant AquilaCMS et permettez aux clients de parcourir vos articles.</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a51949391e1ff816537f/home-promote-product2-step02.png\" alt=\"Etape 2\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Payez et récupérez</h5>\n<p>Laissez vos clients commander et payer via le puissant système de commerce électronique, ou laissez-les simplement appeler votre magasin.</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a52149391e1ff8165380/home-promote-product2-step03.png\" alt=\"Etape 3\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Enlever ou Livré ?</h5>\n<p>Gérez votre propre logistique et prenez les commandes simplement par le biais du système de commerce électronique.</p>\n</div>\n</div>\n</div>\n</div>\n</div>"
+        },
+        "en": {
+          "description": "home: Spotlight 2",
+          "html": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">{{Title}}</h2>\n</div>\n<div class=\"w-layout-grid works-grid\">\n<div class=\"content-card\"><img src=\"{{Image 1}}\" alt=\"{{Alt Image 1}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Lead 1}}</h5>\n<p>{{Text 1}}</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"{{Image 2}}\" alt=\"{{Alt Image 2}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Lead 2}}</h5>\n<p>{{Text 2}}</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"{{Image 3}}\" alt=\"{{Alt Image 3}}\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>{{Lead 3}}</h5>\n<p>{{Text 3}}</p>\n</div>\n</div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Title",
+              "value": "How it works"
+            },
+            {
+              "label": "Image 1",
+              "value": "/images/medias/max-90/6081a50949391e1ff816537e/home-promote-product2-step01.png"
+            },
+            {
+              "label": "Alt Image 1",
+              "value": "Step 1"
+            },
+            {
+              "label": "Lead 1",
+              "value": "Add a Menu to the cart"
+            },
+            {
+              "label": "Text 1",
+              "value": "Easily adapt your menu using AquilaCMS and allow customers to browse your items."
+            },
+            {
+              "label": "Image 2",
+              "value": "/images/medias/max-90/6081a51949391e1ff816537f/home-promote-product2-step02.png"
+            },
+            {
+              "label": "Alt Image 2",
+              "value": "Step 2"
+            },
+            {
+              "label": "Lead 2",
+              "value": "Pay and Collect"
+            },
+            {
+              "label": "Text 2",
+              "value": "Let your customers order and pay via the powerful ecommerce system, or simple let them call your store."
+            },
+            {
+              "label": "Image 3",
+              "value": "/images/medias/max-90/6081a52149391e1ff8165380/home-promote-product2-step03.png"
+            },
+            {
+              "label": "Alt Image 3",
+              "value": "Step 3"
+            },
+            {
+              "label": "Lead 3",
+              "value": "Picked up or Delivered?"
+            },
+            {
+              "label": "Text 3",
+              "value": "Manage your own logistics and take orders simply through the ecommerce system."
+            }
+          ],
+          "content": "<div class=\"content-section alterned\">\n<div class=\"container\">\n<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">How it works</h2>\n</div>\n<div class=\"w-layout-grid works-grid\">\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a50949391e1ff816537e/home-promote-product2-step01.png\" alt=\"Step 1\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Add a Menu to the cart</h5>\n<p>Easily adapt your menu using AquilaCMS and allow customers to browse your items.</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a51949391e1ff816537f/home-promote-product2-step02.png\" alt=\"Step 2\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Pay and Collect</h5>\n<p>Let your customers order and pay via the powerful ecommerce system, or simple let them call your store.</p>\n</div>\n</div>\n<div class=\"line-column\">\n<div class=\"line\"></div>\n</div>\n<div class=\"content-card\"><img src=\"/images/medias/max-90/6081a52149391e1ff8165380/home-promote-product2-step03.png\" alt=\"Step 3\" class=\"step-image\" loading=\"lazy\" />\n<div class=\"content-wrapper\">\n<h5>Picked up or Delivered?</h5>\n<p>Manage your own logistics and take orders simply through the ecommerce system.</p>\n</div>\n</div>\n</div>\n</div>\n</div>"
+        }
+      },
+      "code": "home-promote-product-2",
+      "active" : "true"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60590994edf93036d81d5202",
+      "translation": {
+        "fr": {
+          "html": "<div class=\"cta-full-image\" style=\"background-image: radial-gradient(circle farthest-corner at 50% 50%, rgba(0, 0, 0, 0.67), rgba(25, 26, 27, 0.19)), url('{{Image de fond}}');\">\n<div class=\"container\">\n<div class=\"w-layout-grid grid-3\">\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Valeur 1}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Titre 1}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Valeur 2}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Titre 2}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Valeur 3}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Titre 3}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Valeur 4}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Titre 4}}</div>\n</div>\n</div>\n</div>\n</div>",
+          "description": "Page static : en dessous",
+          "content": "<div class=\"cta-full-image\" style=\"background-image: radial-gradient(circle farthest-corner at 50% 50%, rgba(0, 0, 0, 0.67), rgba(25, 26, 27, 0.19)), url('/images/medias/max-90/6081ae2e49391e1ff81653a2/bottom-parallax.jpeg');\">\n<div class=\"container\">\n<div class=\"w-layout-grid grid-3\">\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">7</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Spécialités</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">26</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Nombre de plats</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">3</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Restaurants</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">❤</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Pour vous</div>\n</div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081ae2e49391e1ff81653a2/bottom-parallax.jpeg"
+            },
+            {
+              "label": "Valeur 1",
+              "value": "7"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Spécialités"
+            },
+            {
+              "label": "Valeur 2",
+              "value": "26"
+            },
+            {
+              "label": "Titre 2",
+              "value": "Nombre de plats"
+            },
+            {
+              "label": "Valeur 3",
+              "value": "3"
+            },
+            {
+              "label": "Titre 3",
+              "value": "Restaurants"
+            },
+            {
+              "label": "Valeur 4",
+              "value": "❤"
+            },
+            {
+              "label": "Titre 4",
+              "value": "Pour vous"
+            }
+          ]
+        },
+        "en": {
+          "html": "<div class=\"cta-full-image\" style=\"background-image: radial-gradient(circle farthest-corner at 50% 50%, rgba(0, 0, 0, 0.67), rgba(25, 26, 27, 0.19)), url('{{Background image}}');\">\n<div class=\"container\">\n<div class=\"w-layout-grid grid-3\">\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Value 1}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Title 1}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Value 2}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Title 2}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Value 3}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Title 3}}</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">{{Value 4}}</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">{{Title 4}}</div>\n</div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081ae2e49391e1ff81653a2/bottom-parallax.jpeg"
+            },
+            {
+              "label": "Value 1",
+              "value": "7"
+            },
+            {
+              "label": "Title 1",
+              "value": "Specialties"
+            },
+            {
+              "label": "Value 2",
+              "value": "26"
+            },
+            {
+              "label": "Title 2",
+              "value": "Number of plates"
+            },
+            {
+              "label": "Value 3",
+              "value": "3"
+            },
+            {
+              "label": "Title 3",
+              "value": "Restaurants"
+            },
+            {
+              "label": "Value 4",
+              "value": "❤"
+            },
+            {
+              "label": "Title 4",
+              "value": "For U"
+            }
+          ],
+          "content": "<div class=\"cta-full-image\" style=\"background-image: radial-gradient(circle farthest-corner at 50% 50%, rgba(0, 0, 0, 0.67), rgba(25, 26, 27, 0.19)), url('/images/medias/max-90/6081ae2e49391e1ff81653a2/bottom-parallax.jpeg');\">\n<div class=\"container\">\n<div class=\"w-layout-grid grid-3\">\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">7</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Specialties</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">26</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Number of plates</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">3</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">Restaurants</div>\n</div>\n<div class=\"statistic-block\">\n<h2 class=\"statistic\">❤</h2>\n<img src=\"/images/wave-blue.svg\" alt=\"wave\" class=\"wave\" loading=\"lazy\" />\n<div class=\"text-block-82\">For U</div>\n</div>\n</div>\n</div>\n</div>",
+          "description": "Static page: Bottom"
+        }
+      },
+      "code": "bottom-parallax"
+    },
+    {
+      "group": "Bandeau",
+      "active": true,
+      "_id": "60638447767fbe362c869f8c",
+      "translation": {
+        "fr": {
+          "description": "Bandeau - home - 2",
+          "html": "<div class=\"slide-2 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{ImageBackground}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">{{Titre 1}} <span class=\"text-span\">{{Titre 2}}</span> {{Titre 3}}</h2>\n<p class=\"hero-paragraph\">{{Texte}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Lien}}\" class=\"button w-button\">{{Texte du bouton}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "ImageBackground",
+              "value": "/images/medias/max-90/60819ebf49391e1ff8165378/home-info-slider2.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Plats du jour"
+            },
+            {
+              "label": "Titre 2",
+              "value": "à Emporter"
+            },
+            {
+              "label": "Titre 3",
+              "value": "!"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Texte du bouton",
+              "value": "Commander !"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081a27849391e1ff816537b/home-info-slider2-content.jpeg"
+            },
+            {
+              "label": "Image alt",
+              "value": "Plats du jour"
+            }
+          ],
+          "content": "<div class=\"slide-2 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819ebf49391e1ff8165378/home-info-slider2.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">Plats du jour <span class=\"text-span\">à Emporter</span> !</h2>\n<p class=\"hero-paragraph\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Commander !</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a27849391e1ff816537b/home-info-slider2-content.jpeg\" alt=\"Plats du jour\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>"
+        },
+        "en": {
+          "html": "<div class=\"slide-2 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('{{ImageBackground}}');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">{{Title 1}} <span class=\"text-span\">{{Title 2}}</span> {{Title 3}}</h2>\n<p class=\"hero-paragraph\">{{Text}}</p>\n<div class=\"button-wrapper\"><a href=\"{{Link}}\" class=\"button w-button\">{{Button text}}</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "ImageBackground",
+              "value": "/images/medias/max-90/60819ebf49391e1ff8165378/home-info-slider2.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Daily special"
+            },
+            {
+              "label": "Title 2",
+              "value": "To Take Away"
+            },
+            {
+              "label": "Title 3",
+              "value": "!"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Button text",
+              "value": "Order!"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081a27849391e1ff816537b/home-info-slider2-content.jpeg"
+            },
+            {
+              "label": "Image alt",
+              "value": "Daily special"
+            }
+          ],
+          "content": "<div class=\"slide-2 w-slide\" style=\"background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.51), transparent), url('/images/medias/max-90/60819ebf49391e1ff8165378/home-info-slider2.jpg');\">\n<div class=\"container-flex\">\n<div class=\"hero-content\">\n<h2 class=\"hero-h1\">Daily special <span class=\"text-span\">To Take Away</span> !</h2>\n<p class=\"hero-paragraph\">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<div class=\"button-wrapper\"><a href=\"/\" class=\"button w-button\">Order!</a></div>\n</div>\n<div class=\"hero-image-wrap\"><img src=\"/images/medias/max-90/6081a27849391e1ff816537b/home-info-slider2-content.jpeg\" alt=\"Daily special\" sizes=\"(max-width: 991px) 100vw, 50vw\" class=\"hero-image\" /></div>\n</div>\n</div>",
+          "description": "Bandeau - home - 2"
+        }
+      },
+      "code": "Slide-Home-2",
+      "active" : "true"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "607daf2db33c8e623487b5d2",
+      "translation": {
+        "fr": {
+          "html": "<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">{{Titre}}</h2>\n<p>{{Information}}<br /><br /></p>\n</div>\n<ns-product-card-list value=\"promote\" type=\"category\"></ns-product-card-list>",
+          "variables": [
+            {
+              "label": "Titre",
+              "value": "Découvrez notre carte"
+            },
+            {
+              "label": "Information",
+              "value": "Choisissez dans notre carte et offres du jour,<br />Et récupéré votre commande"
+            }
+          ],
+          "content": "<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">Découvrez notre carte</h2>\n<p>Choisissez dans notre carte et offres du jour,<br />Et récupéré votre commande<br /><br /></p>\n</div>\n<ns-product-card-list value=\"promote\" type=\"category\"></ns-product-card-list>",
+          "description": "Présentation des produits mise en avant"
+        },
+        "en": {
+          "html": "<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">{{Title}}</h2>\n<p>{{Information}}</p>\n</div><ns-product-card-list value=\"promote\" type=\"category\"></ns-product-card-list>",
+          "variables": [
+            {
+              "label": "Title",
+              "value": "Discover our menu"
+            },
+            {
+              "label": "Information",
+              "value": "Choose from our menu and offers of the day,<br/>And pick up your order"
+            }
+          ],
+          "description": "Presentation of the products put forward",
+          "content": "<div class=\"title-wrap-centre\">\n<h2 class=\"heading-2-steps\">Discover our menu</h2>\n<p>Choose from our menu and offers of the day,<br/>And pick up your order</p>\n</div><ns-product-card-list value=\"promote\" type=\"category\"></ns-product-card-list>"
+        }
+      },
+      "code": "home-product-listing"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584ec06ddc5445a0d40bff",
+      "translation": {
+        "fr": {
+          "description": "Sur toutes les pages : en haut",
+          "html": "<div id=\"Banner\" class=\"banner\">\n<div class=\"banner-wrap\">\n<div class=\"notice-text\">{{Texte}} <a href=\"{{Lien}}\" class=\"white-link\">{{Text du lien}}</a></div>\n</div>\n</div>",
+          "content": "<div id=\"Banner\" class=\"banner\">\n<div class=\"banner-wrap\">\n<div class=\"notice-text\">Nous sommes ouvert pour du Click &amp; Collect - <a href=\"/\" class=\"white-link\">Commandez maintenant</a></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Texte",
+              "value": "Nous sommes ouvert pour du Click &amp; Collect -"
+            },
+            {
+              "label": "Lien",
+              "value": "/"
+            },
+            {
+              "label": "Text du lien",
+              "value": "Commandez maintenant"
+            }
+          ]
+        },
+        "en": {
+          "description": "On all pages: top",
+          "html": "<div id=\"Banner\" class=\"banner\">\n<div class=\"banner-wrap\">\n<div class=\"notice-text\">{{Text}} <a href=\"{{Link}}\" class=\"white-link\">{{Text of link}}</a></div>\n</div>\n</div>",
+          "content": "<div id=\"Banner\" class=\"banner\">\n<div class=\"banner-wrap\">\n<div class=\"notice-text\">We are open for Click &amp; Collect - <a href=\"/\" class=\"white-link\">Order now</a></div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Text",
+              "value": "We are open for Click &amp; Collect -"
+            },
+            {
+              "label": "Link",
+              "value": "/"
+            },
+            {
+              "label": "Text of link",
+              "value": "Order now"
+            }
+          ]
+        }
+      },
+      "code": "top-banner"
+    },
+    {
+      "group": null,
+      "active": true,
+      "_id": "60584f536ddc5445a0d40c01",
+      "translation": {
+        "fr": {
+          "description": "Index : info 2",
+          "html": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">{{Titre 1}}<br />et <span class=\"text-span-6\">{{Titre 2}}</span><br />{{Titre 3}}<br /><span class=\"text-span-5\">{{Titre 4}}</span></h2>\n<p>{{Text}}</p>\n<a href=\"{{Lien}}\" class=\"button button-space w-button\">{{Titre bouton}}</a></div>\n<div class=\"image-block\"><img src=\"{{Image}}\" alt=\"{{Image alt}}\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Titre 1",
+              "value": "Contactez nous"
+            },
+            {
+              "label": "Titre 2",
+              "value": "récupérez"
+            },
+            {
+              "label": "Titre 3",
+              "value": "votre commande"
+            },
+            {
+              "label": "Titre 4",
+              "value": "quand vous voulez"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Lien",
+              "value": "tel:00000000"
+            },
+            {
+              "label": "Titre bouton",
+              "value": "Tél. : +33 0 00 00 00"
+            },
+            {
+              "label": "Image",
+              "value": "/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png"
+            },
+            {
+              "label": "Image alt",
+              "value": "Click and collect"
+            }
+          ],
+          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">Contactez nous<br />et <span class=\"text-span-6\">récupérez</span><br />votre commande<br /><span class=\"text-span-5\">quand vous voulez</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"tel:00000000\" class=\"button button-space w-button\">Tél. : +33 0 00 00 00</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png\" alt=\"Click and collect\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>"
+        },
+        "en": {
+          "description": "home-bottom-call",
+          "html": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">{{Title 1}}<br />and <span class=\"text-span-6\">{{Title 2}}</span><br />{{Title 3}}<br /><span class=\"text-span-5\">{{Title 4}}</span></h2>\n<p>{{Text}}</p>\n<a href=\"{{Link}}\" class=\"button button-space w-button\">{{Bouton title}}</a></div>\n<div class=\"image-block\"><img src=\"{{Image}}\" alt=\"{{Alt Image}}\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Title 1",
+              "value": "Contact us"
+            },
+            {
+              "label": "Title 2",
+              "value": "Collect your"
+            },
+            {
+              "label": "Title 3",
+              "value": "order whenever"
+            },
+            {
+              "label": "Title 4",
+              "value": "you want"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500."
+            },
+            {
+              "label": "Link",
+              "value": "tel:00000000"
+            },
+            {
+              "label": "Bouton title",
+              "value": "Tel. : +33 0 00 00 00"
+            },
+            {
+              "label": "Image",
+              "value": "/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png"
+            },
+            {
+              "label": "Alt Image",
+              "value": "Click and collect"
+            }
+          ],
+          "content": "<div class=\"content-section-bg\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block bg-text\">\n<h2 class=\"heading-4\">Contact us<br />and <span class=\"text-span-6\">Collect your</span><br />order whenever<br /><span class=\"text-span-5\">you want</span></h2>\n<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500.</p>\n<a href=\"tel:00000000\" class=\"button button-space w-button\">Tel. : +33 0 00 00 00</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081a6ab49391e1ff8165382/home-bottom-call.png\" alt=\"Click and collect\" loading=\"lazy\" /></div>\n</div>\n</div>\n</div>"
+        }
+      },
+      "code": "home-bottom-call"
+    },
+    {
+      "group": "Legal",
+      "active": true,
+      "_id": "6064fded767fbe362c869f8e",
+      "translation": {
+        "fr": {
+          "description": "Bannière cookie",
+          "html": "{{Texte}} <br /><a href=\"{{Lien}}\" class=\"link-rgpd\">{{Nom du lien}}</a>",
+          "variables": [
+            {
+              "label": "Texte",
+              "value": "Nous utilisons des cookies. Vous pouvez configurer ou refuser les cookies dans votre navigateur. Vous pouvez aussi accepter tous les cookies en cliquant sur le bouton « Accepter ». Pour plus d’informations, vous pouvez consulter notre Politique de confidentialité et des cookies."
+            },
+            {
+              "label": "Lien",
+              "value": "/mentions-legales"
+            },
+            {
+              "label": "Nom du lien",
+              "value": "Lire notre Politique de confidentialité"
+            }
+          ],
+          "content": "Nous utilisons des cookies. Vous pouvez configurer ou refuser les cookies dans votre navigateur. Vous pouvez aussi accepter tous les cookies en cliquant sur le bouton « Accepter ». Pour plus d’informations, vous pouvez consulter notre Politique de confidentialité et des cookies. <br /><a href=\"/mentions-legales\" class=\"link-rgpd\">Lire notre Politique de confidentialité</a>"
+        },
+        "en": {
+          "html": "{{Text}} <br /><a href=\"{{Link}}\" class=\"link-rgpd\">{{Name of link}}</a>",
+          "variables": [
+            {
+              "label": "Text",
+              "value": "We use cookies. You can set or decline cookies in your browser. You can also accept all cookies by clicking the \"Accept\" button. For more information, you can read our Privacy and Cookie Policy."
+            },
+            {
+              "label": "Link",
+              "value": "/en/cgu"
+            },
+            {
+              "label": "Name of link",
+              "value": "Read our Privacy Policy"
+            }
+          ],
+          "content": "We use cookies. You can set or decline cookies in your browser. You can also accept all cookies by clicking the \"Accept\" button. For more information, you can read our Privacy and Cookie Policy. <br /><a href=\"/en/cgu\" class=\"link-rgpd\">Read our Privacy Policy</a>",
+          "description": "Cookie banner"
+        }
+      },
+      "code": "CookiesBan",
+      "active" : "true"
+    },
+    {
+      "group": "Legal",
+      "active": true,
+      "_id": "612c91d2ebf4774d90ceb44e",
+      "translation": {
+        "fr": {
+          "description": "Texte légal concernant le RGPD",
+          "html": "lorem ipsum pour rgpd",
+          "variables": [],
+          "content": "lorem ipsum pour rgpd"
+        },
+        "en": {
+          "html": "lorem ipsum for rgpd",
+          "variables": [],
+          "content": "lorem ipsum for rgpd",
+          "description": "Legal text concerning the RGPD"
+        }
+      },
+      "code": "top-text-rgpd"
+    },
+    {
+      "group": "",
+      "active": false,
+      "_id": "61af289e1b52003b2337cab2",
+      "code": "foodoptions-info",
+      "translation": {
+        "en": {
+          "description": "foodoptions-info"
+        },
+        "fr": {
+          "description": "foodoptions-info"
+        }
+      }
+    }
+  ]
+}

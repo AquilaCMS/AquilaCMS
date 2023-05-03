@@ -6,12 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path           = require('path');
-const {fork}         = require('child_process');
-const fs             = require('../utils/fsp');
-const packageManager = require('../utils/packageManager');
-const jobServices    = require('../services/job');
-const adminServices  = require('../services/admin');
+const path          = require('path');
+const {fork}        = require('child_process');
+const {fs, restart} = require('aql-utils');
+const jobServices   = require('../services/job');
+const adminServices = require('../services/admin');
 
 const execScript = async (scriptPath) => {
     try {
@@ -73,7 +72,7 @@ module.exports = (installRouter) => {
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();
             adminServices.welcome();
-            const result = await packageManager.restart();
+            const result = await restart();
             res.send(result);
         } catch (err) {
             console.error(err);
@@ -90,7 +89,7 @@ module.exports = (installRouter) => {
             await require('./install').firstLaunch(req, false);
             jobServices.initAgendaDB();
             adminServices.welcome();
-            const result = await packageManager.restart();
+            const result = await restart();
             res.send(result);
         } catch (err) {
             console.error(err);

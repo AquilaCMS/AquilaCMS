@@ -1,0 +1,33 @@
+{
+  "collection": "territory",
+  "datas": [
+    {
+      "children": [],
+      "_id": "5ce662d540976ecd7f468543",
+      "code": "FR",
+      "type": "country",
+      "translation": {
+        "fr": {
+          "name": "France"
+        },
+        "en": {
+          "name": "France"
+        }
+      }
+    },
+    {
+      "children": [],
+      "_id": "5ce662d540976ecd7f46854e",
+      "code": "GB",
+      "type": "country",
+      "translation": {
+        "fr": {
+          "name": "Royaume-uni"
+        },
+        "en": {
+          "name": "United Kingdom"
+        }
+      }
+    }
+  ]
+}

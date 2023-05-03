@@ -58,8 +58,8 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
     }
     // Il ne faut pas pouvoir ajouter des produits qui ne sont reliés à aucune section
     item.selections = item.selections.filter((selection) => this.bundle_sections.find((section) => selection.bundle_section_ref === section.ref) !== undefined);
-    // TODO P2: On ne peut pas avoir deux sections avec la même référence
-    // On valide les produits qui sont reliés à des sections
+    // TODO : You can't have two sections with the same reference
+    // We validate products that are linked to sections
     let isValid = true;
     let i       = 0;
     while (isValid && i < this.bundle_sections.length) {
@@ -89,7 +89,6 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
     }
     const modifiers = await this.getBundlePrdsModifiers(item.selections);
     item.price      = {
-        // TODO P3 : se baser sur le produit normal pour ce schémas - Reùùquest somewhere later
         vat  : {rate: this.price.tax},
         unit : {et: this.price.et.normal + modifiers.price.et, ati: this.price.ati.normal + modifiers.price.ati}
     };

@@ -8,7 +8,7 @@
 
 const path                 = require('path');
 const moment               = require('moment');
-const fs                   = require('../utils/fsp');
+const {fs}                 = require('aql-utils');
 const {getUploadDirectory} = require('../utils/server');
 
 /**
@@ -21,11 +21,7 @@ const removeTempFile = async () => {
         const fileStat = await fs.stat(path.resolve(tempFolder, file));
         if (fileStat.isFile()) {
             if (moment(fileStat.mtime).add(1, 'day') < Date.now()) {
-                try {
-                    await fs.unlink(path.resolve(tempFolder, file));
-                } catch (err) {
-                    console.error(err);
-                }
+                await fs.unlink(path.resolve(tempFolder, file));
             }
         }
     }

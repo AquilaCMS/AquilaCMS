@@ -12,15 +12,15 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 - A complete back office to manage everything in your website
 - A plateform to add modules and themes from [Aquila's Shop](https://shop.aquila-cms.com/)
 
-![AquilaCMS](https://www.aquila-cms.com/medias/aquilacms_pres.gif)
+![AquilaCMS](https://www.aquila-cms.com/medias/aquila-landing.gif)
 
 ## Server configuration
 
 To install the latest AquilaCMS, you need :
 
-- [`node.js 14+`](https://nodejs.org/) (tested in v14.17.1)
-- [`mongoDB 4.2.5+`](https://www.mongodb.com/try/download)
-- [`yarn 1.22.4+`](https://classic.yarnpkg.com/en/docs/install/) package manager
+- [`node.js 18.14.0+`](https://nodejs.org/) (tested in v14.20.1+ and v16.18.1+)
+- [`mongoDB 6.0.2+`](https://www.mongodb.com/try/download) (tested in v4.2.5+)
+- [`yarn 3.4.1+`](https://classic.yarnpkg.com/en/docs/install/) package manager  (tested in v1.22.19 and v4.0.0-rc.35)
 
 ### System packages
 
@@ -39,7 +39,7 @@ g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nas
 
 ## Installation
 
-You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
+You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the interactive installer.
 
 - With npm :
 
@@ -83,28 +83,42 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of `127.0.0.1`)
 
+### Silent installation
+
+To start a silent installation, you need to set the following environment variables, then start aquila :
+- `MONGODB_URI` : MongoDB URI
+- `LANGUAGE` : Default language. "en" for English or "fr" for French
+- `FIRSTNAME` : Administrator's firstname
+- `LASTNAME` : Administrator's lastname
+- `EMAIL` : Administrator's email
+- `PASSWORD` : Administrator's password (if no password is entered, a random password will be created and shown only once in the server logs during installation)
+- `APPURL` : URL of the website (ie http://localhost:3010)
+- `ADMIN_PREFIX` : Admin subpath (ie : admin)
+- `SITENAME` : Website's name
+
 ### Have the installation page again
 
 If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
 
 ### Environment variables
 
-You can define two environment variables inside AquilaCMS.
+You can define two environment variables inside AquilaCMS (you can copy .env.sample into a .env file).
 
 - `NODE_ENV` : you should only limit values to `production`, `development` or `test` ([See 'Non standard node env'](https://github.com/vercel/next.js/blob/canary/errors/non-standard-node-env.md))
 - `AQUILA_ENV` : define the environment values in `/config/env.json` to be loaded ([See our documentation](https://doc.aquila-cms.com/#/Get_started/Configuration))
 
 ### Manually build the theme
 
-If you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
+We strongly recommend that you build the themes from the AquilaCMS backoffice.
+But if you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
 
 ```sh
-npm run build default_theme
+npm run build <THEME_NAME>
 ```
 
-> - the parameter is the name of the theme folder you want to build
-> ⚠️Warning : on Windows, you must **not use** the default cmd
-> Otherwise, you may get an error when using the `npm run build` command.
+> The parameter is the name of the theme folder you want to build.
+> 
+> On Windows, we do not recommend using the default cmd. Otherwise, you may get an error when using the `npm run build` command.
 
 ## Documentations
 

@@ -74,7 +74,7 @@ $(document).ready(function () {
         } catch (err) {
             if(err.responseJSON){
                 if(err.responseJSON.code && err.responseJSON.code == "NotFound"){
-                    $("#email-error").show(); //TODO
+                    $("#email-error").show();
                 }else{
                     $("#api-error").show();
                 }

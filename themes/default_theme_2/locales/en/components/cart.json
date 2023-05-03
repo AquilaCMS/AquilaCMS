@@ -1,0 +1,15 @@
+{
+    "cartListItem": {
+        "ordering": "Order!",
+        "orderingLoading": "Order...",
+        "subTotal": "Sub-total",
+        "delivery": "Delivery",
+        "discount": "Discount",
+        "total": "Total",
+        "empty": "Your cart is empty",
+        "goToHome": "Discover our menu"
+    },
+    "cartSideBarView": {
+        "title": "Cart"
+    }
+}

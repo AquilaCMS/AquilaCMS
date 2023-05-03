@@ -165,7 +165,6 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
     "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate", "$q",
     function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate, $q) {
         $scope.local = { url: "" };
-        $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
         $scope.groups = [];
         $scope.hookPageInfo = HookPageInfo;
@@ -312,28 +311,6 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                     }
                 })
             }
-        };
-
-        $http.post('/v2/modules', {
-            PostBody: {
-                filter: {},
-                limit: 100,
-                populate: [],
-                skip: 0,
-                sort: {},
-                structure: {},
-                page: null
-            }
-        }).then(function (response) {
-            $scope.modules = response.data.datas.filter(module => module.component_template_front);
-        });
-
-        $scope.showModulesTags = function () {
-            let tagText = '';
-            for (let i = 0; i < $scope.modules.length; i++) {
-                tagText += `${$scope.modules[i].component_template_front}\n`;
-            }
-            return tagText;
         };
     }
 ]);

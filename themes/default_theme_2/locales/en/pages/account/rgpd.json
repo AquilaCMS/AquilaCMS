@@ -1,0 +1,14 @@
+{
+  "title": "Data protection",
+  "titleNav" : "Data protection",
+  "buttonExportData": "Export my data",
+  "labelExportData": "Recover all your data",
+  "buttonAnonymizedData": "Anonymize my data",
+  "labelAnonymizedData": "Anonymize all information about you (your account will no longer be available after this action)",
+  "buttonRemoveAccount": "Delete my account",
+  "labelRemoveAccount": "Permanently deletes your account",
+  "modalTitle": "Confirmation",
+  "modalWarning": "Are you sure you want to perform this action ?",
+  "yes": "Yes",
+  "no": "No"
+}

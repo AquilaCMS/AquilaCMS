@@ -10,8 +10,9 @@ module.exports = {
         },
         // To launch in production mode, launch 'pm2 start ecosystem.config.js --env production'
         env_production : {
-            NODE_ENV   : 'production',
-            AQUILA_ENV : 'aquila'
+            NODE_ENV     : 'production',
+            AQUILA_ENV   : 'aquila',
+            AUTO_RESTART : 'true'
         }
     }]
 };

@@ -1,0 +1,53 @@
+{
+  "collection": "families",
+  "datas": [
+    {
+      "children": [],
+      "_id": "605364374b9ac91f54fcabae",
+      "name": "burger",
+      "code": "burger",
+      "type": "universe",
+      "parent": null,
+      "ancestors": [],
+      "createdAt": "2021-03-18T14:31:19.498Z",
+      "updatedAt": "2021-03-18T14:31:19.498Z",
+      "slug": "burger-burger"
+    },
+    {
+      "children": [],
+      "_id": "6053643c4b9ac91f54fcabaf",
+      "name": "boissons",
+      "code": "boissons",
+      "type": "universe",
+      "parent": null,
+      "ancestors": [],
+      "createdAt": "2021-03-18T14:31:24.826Z",
+      "updatedAt": "2021-03-18T14:31:24.826Z",
+      "slug": "boissons-boissons"
+    },
+    {
+      "children": [],
+      "_id": "6053644a4b9ac91f54fcabb0",
+      "name": "desserts",
+      "code": "desserts",
+      "type": "universe",
+      "parent": null,
+      "ancestors": [],
+      "createdAt": "2021-03-18T14:31:38.529Z",
+      "updatedAt": "2021-03-18T14:31:38.529Z",
+      "slug": "desserts-desserts"
+    },
+    {
+      "children": [],
+      "_id": "6054a8e06153ac1a34d4334d",
+      "name": "Autre",
+      "code": "autre",
+      "type": "universe",
+      "parent": null,
+      "ancestors": [],
+      "createdAt": "2021-03-19T13:36:32.167Z",
+      "updatedAt": "2021-03-19T13:36:32.167Z",
+      "slug": "autre-autre"
+    }
+  ]
+}

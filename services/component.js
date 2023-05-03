@@ -22,17 +22,14 @@ const getComponent = async (componentName, code, user = null, params = {}) => {
     // Transform ns-xxxxx to xxxxx : we can easily recover its model and its service
     componentName = componentName.replace('ns-', '');
 
-    let models;
     let PostBody;
     switch (componentName) {
     case 'megamenu':
     case 'menu':
-        models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
         const categorie         = await categorieServices.getCategoryTreeForMenu(code, user, params?.levels);
         return categorie;
     case 'cms':
-        models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
         PostBody               = {filter: {code, active: true}, structure: {content: 1, translation: 1}};
         const result           = await cmsBlockServices.getCMSBlock(PostBody);
@@ -46,11 +43,9 @@ const getComponent = async (componentName, code, user = null, params = {}) => {
         }
         return result;
     case 'gallery':
-        models               = require(`../orm/models/${componentName}`);
         const ServiceGallery = require(`./${componentName}`);
         return ServiceGallery.getItemsGallery(code);
     case 'agenda':
-        models              = require(`../orm/models/${componentName}`);
         const ServiceAgenda = require(`./${componentName}`);
         return ServiceAgenda.getAgendaByCode(code);
     default:
@@ -60,7 +55,7 @@ const getComponent = async (componentName, code, user = null, params = {}) => {
          */
         PostBody = {filter: {code}};
         // Get the models according to the componentName
-        models = require(`../orm/models/${componentName}`);
+        const models = require(`../orm/models/${componentName}`);
         if (!models) throw NSErrors.ComponentInvalidModel;
         // Get the service according to the componentName
         const genericServices = require(`./${componentName}`);

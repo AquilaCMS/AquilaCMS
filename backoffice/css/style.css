@@ -3785,7 +3785,6 @@ tr.angular-ui-tree-empty {
 
 .ui-widget.ui-widget-content {
     border: none;
-    /*z-index: 10 !important; // TODO: aucune raison apparente d'avoir cette ligne*/
 }
 
 /*.datepicker-holder input.invalid {

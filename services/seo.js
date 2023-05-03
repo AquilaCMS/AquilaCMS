@@ -9,7 +9,7 @@
 const path                 = require('path');
 const js2xmlparser         = require('js2xmlparser');
 const moment               = require('moment');
-const fs                   = require('../utils/fsp');
+const {fs}                 = require('aql-utils');
 const NSErrors             = require('../utils/errors/NSErrors');
 const {getUploadDirectory} = require('../utils/server');
 const {
@@ -32,7 +32,7 @@ const sitemapConf = {
 const genSitemap = async () => {
     // Check that we are not in "demoMode"
     if (await isDemoMode()) {
-        throw NSErrors.DemoMode;
+        throw NSErrors.NoCronDemoMode;
     }
 
     await manageRobotsTxt(true);

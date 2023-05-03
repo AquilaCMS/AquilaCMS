@@ -20,6 +20,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    # Test outdated componants
+    - name: Test outdated componants
+      continue-on-error: true
+      run: npm outdated
+
     - name: Create aquila packages file
       run: |
         export scriptReturn=`node scripts/updatePackageAquila.js`
@@ -27,9 +33,9 @@ jobs:
         if [[ $scriptReturn = "File is replaced successfully" ]]; then echo "Update package aquila done"; git add --force package-aquila.json; fi
     - name: Create theme packages file
       run: |
-        export scriptReturnPackageTheme=`node scripts/updatePackageAquila.js ./themes/default_theme package-theme.json`
+        export scriptReturnPackageTheme=`node scripts/updatePackageAquila.js ./themes/default_theme_2 package-theme.json`
         echo $scriptReturnPackageTheme
-        if [[ $scriptReturnPackageTheme = "File is replaced successfully" ]]; then echo "Update package theme done"; git add --force themes/default_theme/package-theme.json; fi
+        if [[ $scriptReturnPackageTheme = "File is replaced successfully" ]]; then echo "Update package theme done"; git add --force themes/default_theme_2/package-theme.json; fi
     - name: Commit file
       run: |
         export gitStatus=$(git status | grep "nothing to commit, working tree clean")

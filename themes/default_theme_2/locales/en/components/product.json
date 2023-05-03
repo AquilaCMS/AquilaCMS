@@ -1,0 +1,16 @@
+{
+    "productCard": {
+        "from": "From",
+        "addToBasket": "Add to cart",
+        "compose": "Compose",
+        "choose": "Choose",
+        "download": "Download",
+        "downloading": "Downloading...",
+        "addToCartLoading": "Add...",
+        "unavailable": "Unavailable",
+        "noProduct": "Unable to display the product [{{product}}]"
+    },
+    "productList": {
+        "noProduct": "No product found."
+    }
+}

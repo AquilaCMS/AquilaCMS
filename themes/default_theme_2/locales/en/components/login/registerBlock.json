@@ -1,0 +1,10 @@
+{
+  "title": "I'm a new client",
+  "firstname": "First Name",
+  "name": "Last Name",
+  "email": "Email",
+  "password": "Password",
+  "phone": "Phone number",
+  "register": "Register",
+  "registerLoading": "Sign in..."
+}

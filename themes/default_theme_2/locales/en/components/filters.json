@@ -1,0 +1,14 @@
+{
+    "title": "FILTERS",
+    "price": "Price",
+    "yes": "Yes",
+    "no": "No",
+    "pictogram": "Pictogram",
+    "btnReset": "Reset",
+    "limit": "Products per page",
+    "sortBy": "Sort by",
+    "pertinence": "Pertinence",
+    "novelty": "New",
+    "mostViewed": "Most viewed",
+    "sells": "Bestsellers"
+}

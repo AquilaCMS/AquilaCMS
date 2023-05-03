@@ -1,0 +1,10 @@
+{
+  "title": "Je suis un nouveau client",
+  "firstname": "Prénom",
+  "name": "Nom",
+  "email": "Email",
+  "password": "Mot de passe",
+  "phone": "Téléphone",
+  "register": "JE M'ENREGISTRE",
+  "registerLoading": "INSCRIPTION..."
+}

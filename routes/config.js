@@ -7,13 +7,12 @@
  */
 
 const path                 = require('path');
+const {fs, restart}        = require('aql-utils');
 const {middlewareServer}   = require('../middleware');
 const {adminAuth}          = require('../middleware/authentication');
 const {extendTimeOut}      = require('../middleware/server');
 const serviceConfig        = require('../services/config');
-const packageManager       = require('../utils/packageManager');
 const NSErrors             = require('../utils/errors/NSErrors');
-const fs                   = require('../utils/fsp');
 const {getUploadDirectory} = require('../utils/server');
 const {multerUpload}       = require('../middleware/multer');
 
@@ -21,7 +20,7 @@ module.exports = function (app) {
     app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
     app.post('/v2/config/ssl/:fileType', adminAuth, multerUpload.any(), uploadSSLFile);
-    app.get('/restart', adminAuth, restart);
+    app.get('/restart', adminAuth, restartServer);
     app.get('/robot', adminAuth, getRobot);
     app.post('/robot', adminAuth, setRobot);
 
@@ -73,7 +72,7 @@ async function saveEnvConfig(req, res, next) {
         await serviceConfig.saveEnvConfig(req.body);
         if (req.body?.environment?.needRestart || global.aquila.envConfig.environment.needRestart) {
             setTimeout(() => {
-                packageManager.restart();
+                restart();
             }, 5000);
         }
         res.json({
@@ -90,9 +89,9 @@ async function saveEnvConfig(req, res, next) {
 /**
  * GET /api/restart
  */
-const restart = async (req, res, next) => {
+const restartServer = async (req, res, next) => {
     try {
-        await packageManager.restart();
+        return res.send(await restart());
     } catch (err) {
         return next(err);
     }

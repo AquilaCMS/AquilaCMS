@@ -247,6 +247,8 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
             }
 
             $scope.selectVariantValue = function (variantValue, index) {
+                if(!$scope.product?.variants_values[0]._id)  return;
+
                 $scope.selectedVariantValue = variantValue
                 const ogSelectedVariantValue = angular.copy(variantValue)
                 $modal.open({

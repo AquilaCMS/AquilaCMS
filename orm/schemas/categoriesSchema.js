@@ -6,13 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose       = require('mongoose');
-const {aquilaEvents} = require('aql-utils');
-const utils          = require('../../utils/utils');
-const utilsDatabase  = require('../../utils/database');
-const Schema         = mongoose.Schema;
-const {ObjectId}     = Schema.Types;
-const NSErrors       = require('../../utils/errors/NSErrors');
+const mongoose                = require('mongoose');
+const {aquilaEvents, slugify} = require('aql-utils');
+const utilsDatabase           = require('../../utils/database');
+const Schema                  = mongoose.Schema;
+const {ObjectId}              = Schema.Types;
+const NSErrors                = require('../../utils/errors/NSErrors');
 
 const CategoriesSchema = new Schema({
     code         : {type: String, required: true, unique: true},
@@ -83,15 +82,15 @@ CategoriesSchema.statics.translationValidation = async function (self, updateQue
             if (Object.keys(lang).length > 0) {
                 if (updateQuery.action === 'catalog') {
                     if (lang.slug === undefined || lang.slug === '') {
-                        lang.slug = utils.slugify(lang.name);
+                        lang.slug = slugify(lang.name);
                     } else {
-                        lang.slug = utils.slugify(lang.slug);
+                        lang.slug = slugify(lang.slug);
                     }
                     if (updateQuery) {
                         self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
                     }
                     if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                        lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                        lang.slug = `${slugify(lang.name)}_${Date.now()}`;
                         if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
                             throw NSErrors.SlugAlreadyExist;
                         }
@@ -116,15 +115,15 @@ CategoriesSchema.statics.translationValidation = async function (self, updateQue
             if (Object.keys(lang).length > 0) {
                 if (updateQuery.action === 'catalog') {
                     if (lang.slug === undefined || lang.slug === '') {
-                        lang.slug = utils.slugify(lang.name);
+                        lang.slug = slugify(lang.name);
                     } else {
-                        lang.slug = utils.slugify(lang.slug);
+                        lang.slug = slugify(lang.slug);
                     }
                     if (updateQuery) {
                         updateQuery.translation[translationKeys[i]] = Object.assign(updateQuery.translation[translationKeys[i]], lang);
                     }
                     if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
-                        lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                        lang.slug = `${slugify(lang.name)}_${Date.now()}`;
                         if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
                             throw NSErrors.SlugAlreadyExist;
                         }

@@ -131,7 +131,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             toastService.toast("success", $translate.instant("simple.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", $translate.instant("simple.codeExists"));
+                            if($scope.isEditMode) {
+                                toastService.toast("danger", $translate.instant("simple.codeExists"));
+                            } else {
+                                toastService.toast("danger", $translate.instant("global.standardError"));
+                            }
                         });
                     }
                 },

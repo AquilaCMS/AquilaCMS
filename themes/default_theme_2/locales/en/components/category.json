@@ -1,0 +1,8 @@
+{
+    "categoryCard": {
+        "noCategory": "Unable to display the category"
+    },
+    "categoryList": {
+        "noCategory": "No category found."
+    }
+}

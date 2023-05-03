@@ -482,7 +482,11 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", $translate.instant("bundle.product.errorSaving"));
+                        if(err.status === 409) {
+                            toastService.toast("danger", $translate.instant("simple.codeExists"));
+                        } else {
+                            toastService.toast("danger", $translate.instant("bundle.product.errorSaving"));
+                        }
                         $scope.disableSave = false;
                     });
                 },

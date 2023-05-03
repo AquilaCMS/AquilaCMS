@@ -1,0 +1,10 @@
+{
+    "compose": "Compose",
+    "select": "Select",
+    "submit": "Choose this menu",
+    "submitLoading": "Add...",
+    "error1": "Please select at least 1 item in this section \"{{title}}\"",
+    "error2": "Please select at least {{min}} item(s) in this section \"{{title}}\"",
+    "error3": "Please select at most {{max}} item(s) in this section \"{{title}}\"",
+    "noProduct": "No product to compose !"
+}

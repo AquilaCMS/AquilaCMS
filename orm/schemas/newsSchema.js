@@ -7,8 +7,7 @@
  */
 
 const mongoose                               = require('mongoose');
-const {aquilaEvents}                         = require('aql-utils');
-const utils                                  = require('../../utils/utils');
+const {aquilaEvents, slugify}                = require('aql-utils');
 const utilsDatabase                          = require('../../utils/database');
 const {checkCustomFields, checkTranslations} = require('../../utils/translation');
 const Schema                                 = mongoose.Schema;
@@ -38,9 +37,9 @@ NewsSchema.statics.translationValidation = async function (self, updateQuery) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.slug === undefined || lang.slug === '') {
-                lang.slug = utils.slugify(lang.title);
+                lang.slug = slugify(lang.title);
             } else {
-                lang.slug = utils.slugify(lang.slug);
+                lang.slug = slugify(lang.slug);
             }
 
             if (updateQuery) {

@@ -7,8 +7,8 @@
  */
 
 const path                     = require('path');
+const {fs}                     = require('aql-utils');
 const themeServices            = require('../services/themes');
-const fs                       = require('../utils/fsp');
 const serverUtils              = require('../utils/server');
 const {themeInstallAndCompile} = require('../utils/themes');
 const {createListModuleFile}   = require('../utils/modules');
@@ -42,7 +42,61 @@ const testdb = async (req) => {
     }
 };
 
-// Only for installation purpose, will be inaccessible after first installation
+/**
+ * Silent installation (only if env variable exists)
+ */
+const handleSilentInstaller = async () => {
+    try {
+        console.log('-= Process silent installer =-');
+
+        const generateTmpPass = () => {
+            const characters     = 'abcdefghijklmnopqrstuvwxyz';
+            const charactersUp   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const charactersNum  = '0123456789';
+            const charactersSpec = '#.!@,?*';
+            const allChar        = [characters, characters, characters, charactersNum, charactersUp, charactersUp, charactersSpec, characters];
+            let result           = '';
+
+            for (let i = 0; i < allChar.length; i++) {
+                result += allChar[i].charAt(Math.floor(Math.random() * allChar[i].length));
+            }
+
+            console.log('/!\\ Admin password :', result);
+            return result;
+        };
+
+        const datas = {
+            databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+            language    : serverUtils.getEnv('LANGUAGE'),
+            firstname   : serverUtils.getEnv('FIRSTNAME'),
+            lastname    : serverUtils.getEnv('LASTNAME'),
+            email       : serverUtils.getEnv('EMAIL'),
+            appUrl      : serverUtils.getEnv('APPURL'),
+            adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+            siteName    : serverUtils.getEnv('SITENAME'),
+            compilation : serverUtils.getEnv('THEME_COMPILATION') ?? true,
+            password    : serverUtils.getEnv('PASSWORD') ?? generateTmpPass(),
+            envPath     : 'config/env.json',
+            override    : 'on',
+            demoData    : true
+        };
+
+        await postConfiguratorDatas({body: datas});
+        await require('../services/job').initAgendaDB();
+        await require('../utils/database').initDBValues();
+        await require('../services/admin').welcome();
+
+        const {restart} = require('aql-utils');
+        await restart();
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+/**
+ * Only for installation purpose, will be inaccessible after first installation
+ */
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
     global.aquila.installMode = true;
@@ -66,6 +120,7 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : Record datas value');
         const datas     = req.body;
         const bOverride = datas.override === 'on';
+        if (datas.compilation === undefined) datas.compilation = true;
         if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
@@ -90,18 +145,21 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/themes').languageManagement('default_theme');
+        if (datas.compilation !== 'false') {
+            global.aquila.envConfig = configuration.toObject();
+            await require('../services/themes').languageManagement('default_theme_2');
 
-        if (datas.demoData && datas.override === 'on') {
-            console.log('Installer : installation of the default theme datas');
-            await themeServices.copyDatas('default_theme', true, configuration);
-            console.log('Installer : end installation of the default theme datas');
+            if (datas.demoData && datas.override === 'on') {
+                console.log('Installer : installation of the default theme datas');
+                await themeServices.copyDatas('default_theme_2', true, configuration);
+                console.log('Installer : end installation of the default theme datas');
+            }
+            await createListModuleFile('default_theme_2');
+            // Compilation du theme par default
+            console.log('Installer : start default theme compilation');
+            await themeInstallAndCompile('default_theme_2');
+            console.log('Installer : end default theme compilation');
         }
-        await createListModuleFile('default_theme');
-        // Compilation du theme par default
-        console.log('Installer : start default theme compilation');
-        await themeInstallAndCompile('default_theme');
-        console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
         throw err;
@@ -160,7 +218,7 @@ const createConfiguration = async (datas, bOverride) => {
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
-            currentTheme    : 'default_theme',
+            currentTheme    : 'default_theme_2',
             adminPrefix     : datas.adminPrefix,
             websiteCountry  : datas.language && datas.language.toLowerCase() === 'en' ? 'GB' : 'FR',
             siteName        : datas.siteName,
@@ -283,5 +341,6 @@ const createDefaultCountries = async () => {
 module.exports = {
     firstLaunch,
     handleInstaller,
-    testdb
+    testdb,
+    handleSilentInstaller
 };

@@ -1,0 +1,13 @@
+{
+  "collection": "trademarks",
+  "datas": [
+    {
+      "active": true,
+      "_id": "6061b19f767fbe362c869f77",
+      "name": "BrandSample",
+      "createdAt": "2021-03-29T10:53:19.787Z",
+      "updatedAt": "2021-03-29T10:53:19.787Z",
+      "code": "brandsample"
+    }
+  ]
+}
