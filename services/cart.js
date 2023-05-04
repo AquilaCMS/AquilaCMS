@@ -296,7 +296,8 @@ const addItem = async (postBody, userInfo, lang = '') => {
     // Here you can change any information of a product before adding it to the user's cart
     item = await aquilaHooks('aqAddToCart', {item, postBody, userInfo}, async () => item);
 
-    const data = await _product.addToCart(cart, item, userInfo, _lang);
+    await _product.addToCart(cart, item, userInfo, _lang);
+    const data = await Cart.findOne({_id: cart._id}).populate('items.id');
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
