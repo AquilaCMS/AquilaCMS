@@ -49,7 +49,7 @@
                         <span ng-if="!job.disabled">{{(job.nextRunAt | date:'yyyy-MM-dd HH:mm:ss Z')}}</span>
                         <span ng-if="job.disabled" translate>job.list.paused</span>
                     </td>
-                    <td data-label="Dernière exécution :" class=" ">{{job.lastRunAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td data-label="Dernière exécution :" class=" ">{{job.lastRunAt | date:"dd/MM/yyyy HH'h'mm ss's'"}}</td>
                 </tr>
             </tbody>
         </table>

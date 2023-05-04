@@ -144,6 +144,9 @@ const initAgendaDB = async () => {
             for (const job of await agenda.jobs({})) {
                 try {
                     await defineJobOnStartUp(job);
+                    if (job.attrs.name === 'Jobs checks') {
+                        await getPlayJob(job.attrs._id);
+                    }
                 } catch (error) {
                     console.error(error);
                 }
@@ -316,15 +319,6 @@ const defineJobOnStartUp = async (job) => {
     await agendaDefine(name);
     // Create in the agendaJobs collection and add field (data, comment and flag)
     const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params, onMainThread, isImportant});
-
-    // If job throws error, we enter this
-    agenda.on('fail', (err, job) => {
-        console.log(`- Job ${job.attrs.name} failed with error: ${err.message}`);
-        console.log(job);
-    });
-    agenda.on('complete', (job) => {
-        console.log(`- Job ${job.attrs.name} finished`);
-    });
 
     // If there is an error we return the oAgenda: failReason will be filled, this is what allows us to display an error
     // on the front side if the user set the wrong frequency
