@@ -245,7 +245,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
     await agendaDefine(name);
 
     const datas = {
-        isImportant : isImportant === undefined ? jobs[0].attrs.data.isImportant : isImportant
+        isImportant : isImportant === undefined && jobs[0] ? jobs[0].attrs.data.isImportant : isImportant
     };
     // We update the job
     if (exists) {
