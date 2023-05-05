@@ -131,7 +131,7 @@
                 </div>
             </div>
 
-            <div class="form-group" ng-show="isEditMode"  ng-show="isJobEditable()">
+            <div class="form-group" ng-show="isEditMode && isJobEditable()">
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>job.detail.startStop</label>
                     <a ng-show="job.disabled == true" class="btn btn-inverse" ng-click="play(job._id)">
