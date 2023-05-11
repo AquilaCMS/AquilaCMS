@@ -70,7 +70,7 @@ const setUser = async (id, info, isAdmin, lang) => {
                 }
             }
         } */
-        if (userBase.email !== info.email) {
+        if (userBase.email && info.email && userBase.email !== info.email) {
             info.isActiveAccount = false;
         }
         if (info.birthDate) info.birthDate = new Date(info.birthDate);
