@@ -636,6 +636,21 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
     return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, attachments});
 };
 
+const sendMailCheckJobs = async (to, result, lang = '') => {
+    lang           = await determineLanguage(lang, lang);
+    const {
+        content,
+        subject,
+        from,
+        fromName,
+        attachments
+    }              = await getMailDataByTypeAndLang('notifyAdminsJobs', lang);
+    const htmlBody = generateHTML(content, {
+        '{{jobsResult}}' : result
+    });
+    return sendMail({subject, htmlBody, mailTo: to, mailFrom: from, fromName, attachments});
+};
+
 /**
  * @description Sending an email
  * @param {Object} mailinformation - Sending an email
@@ -1018,5 +1033,6 @@ module.exports = {
     sendContact,
     sendMailOrderRequestCancel,
     sendMailPendingCarts,
-    sendErrorMail
+    sendErrorMail,
+    sendMailCheckJobs
 };

@@ -11,9 +11,11 @@ const axios        = require('axios');
 const {fork}       = require('child_process');
 const mongoose     = require('mongoose');
 const moment       = require('moment');
+const ServiceMail  = require('./mail');
 const NSErrors     = require('../utils/errors/NSErrors');
 const utils        = require('../utils/utils');
 const errorMessage = require('../utils/translate/errors');
+const {Users}      = require('../orm/models');
 
 /** @type {Agenda} */
 let agenda;
@@ -500,6 +502,8 @@ const getPauseJob = async (_id) => {
 const checkJobsExecution = async () => {
     const jobs = await agenda.jobs({'data.isImportant': true});
 
+    moment.locale('fr');
+
     let jobStatus = '';
     for (const job of jobs) {
         const nextRunAt      = job.attrs.nextRunAt;
@@ -507,26 +511,43 @@ const checkJobsExecution = async () => {
 
         // if job is disabled
         if (!nextRunAt) {
-            console.log(`- Job ${job.attrs.name} is disabled`);
-            jobStatus += `- Job ${job.attrs.name} is disabled<br/>`;
+            console.log(`- La tache ${job.attrs.name} est inactive`);
+            jobStatus += `- La tache ${job.attrs.name} est inactive<br/>`;
             console.log(job);
 
         // if job is enabled and nextRunAt is before now but not disabled
         } else if (nextRunAt && moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
-            console.log(`- Job ${job.attrs.name} did not run at ${nextRunAt}`);
-            jobStatus += `- Job ${job.attrs.name} did not run at ${moment(nextRunAt).format('LLL')}<br/>`;
+            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${nextRunAt}`);
+            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(nextRunAt).format('LLL')}<br/>`;
 
         // if job is enabled and nextRunAt is before now and disabled
         } else if (moment(nextRunAt).isBefore(moment()) && job.attrs.disabled) {
-            console.log(`- Job ${job.attrs.name} did not run at ${nextRunAt} because it is disabled`);
-            jobStatus += `- Job ${job.attrs.name} did not run at ${moment(nextRunAt).format('LLL')} because it is disabled<br/>`;
+            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${nextRunAt} car elle est inactive`);
+            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(nextRunAt).format('LLL')} car elle est inactive<br/>`;
         } else if (moment(lastFinishedAt).isBefore(moment().add(-7, 'days'))) {
-            console.log(`- Job ${job.attrs.name} did not run since ${lastFinishedAt}`);
-            jobStatus += `- Job ${job.attrs.name} did not run since ${moment(lastFinishedAt).format('LLL')}<br/>`;
+            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${lastFinishedAt}`);
+            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(lastFinishedAt).format('LLL')}<br/>`;
         }
     }
 
+    if (jobStatus.length > 0) await notifyJobChecker(jobStatus);
+
     return jobStatus;
+};
+
+const notifyJobChecker = async (jobResult) => {
+    try {
+        const admins = await Users.find({isAdmin: true});
+        for (const admin of admins) {
+            await ServiceMail.sendMailCheckJobs(
+                admin.email,
+                jobResult,
+                admin.preferredLanguage
+            );
+        }
+    } catch (err) {
+        console.log('Envoi de mail echoué: ', err.message);
+    }
 };
 
 module.exports = {
@@ -541,5 +562,6 @@ module.exports = {
     getPlayJob,
     getPlayImmediateJob,
     getPauseJob,
-    checkJobsExecution
+    checkJobsExecution,
+    notifyJobChecker
 };
