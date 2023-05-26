@@ -177,14 +177,19 @@ adminCatagenApp.config([
         //================================================
         // Add an interceptor to build correct URLs and handle errors
         //================================================
-        $httpProvider.interceptors.push(function ($q, $location)
+        $httpProvider.interceptors.push(function ($q, $location, $rootScope)
         {
             return {
                 request: function (config)
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
                         config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
-                        config.headers.lang = window.localStorage.getItem("adminLang");
+                    }
+                    const defaultLangCode = window.localStorage.getItem("adminLang");
+                    if(defaultLangCode) {
+                        window.localStorage.setItem("adminLang", defaultLangCode);
+                        $rootScope.adminLang = defaultLangCode;
+                        config.headers.lang = defaultLangCode;
                     }
                     if(config.url.indexOf("/") === 0)
                     {
@@ -354,6 +359,23 @@ adminCatagenApp.config(function (treeConfig, paginationConfig)
 adminCatagenApp.controller("PrincipalCtrl", [ "$http", "$rootScope", "$scope",
     function ($http, $rootScope, $scope)
     {
+
+        if (!window.localStorage.getItem("adminLang")) {
+            $http({ url: `/v2/languages`, method: 'POST', data: {PostBody: {filter: {}, structure: {code: 1, defaultLanguage: 1}}} }).then(function (response) {
+                let defaultLang = response.data.datas.find((element) => element.defaultLanguage);
+                let defaultLangCode;
+                if(defaultLang) {
+                    defaultLangCode = defaultLang.code;
+                } else {
+                    defaultLang = response.data.datas[0];
+                }
+                defaultLangCode = defaultLang.code;
+
+                localStorage.setItem("adminLang", defaultLangCode);
+            })
+            
+        }
+
         if (!$rootScope.content_style){
             let content_style = "";
             $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {

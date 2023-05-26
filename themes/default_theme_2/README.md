@@ -8,16 +8,10 @@ This e-commerce store front use ReactJS 18 & nextJS 12.
 
 ## Getting Started
 
-- ```npm install```
-- Copy and rename .env.sample to .env (if you build the theme, .env is created automatically)
-- Run the development server:
+- ```yarn install```
+- Copy and rename .env.sample to .env
 
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-- Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- To build the theme, at the root of AquilaCMS :
+```npm run build default_theme_2```
 
 Demonstration data are included in this theme (/demoDatas/).
