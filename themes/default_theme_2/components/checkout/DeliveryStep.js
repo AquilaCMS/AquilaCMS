@@ -19,9 +19,9 @@ export default function DeliveryStep() {
     const { lang, t }                       = useTranslation();
     
     useEffect(() => {
-        if (!cart.items || !cart.items.length) {
+        if (!cart?.items?.length) {
             // Check if the cart is empty
-            router.push('/');
+            router.push('/checkout/cart');
         } else if (!cart.addresses || !cart.addresses.billing || !cart.addresses.delivery) {
             // Check if the billing & delivery addresses exists
             router.push('/checkout/address');

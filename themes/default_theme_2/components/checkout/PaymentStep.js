@@ -1,4 +1,4 @@
-import { useEffect, useState }                            from 'react';
+import { useEffect, useRef, useState }                    from 'react';
 import Link                                               from 'next/link';
 import { useRouter }                                      from 'next/router';
 import useTranslation                                     from 'next-translate/useTranslation';
@@ -11,6 +11,7 @@ import { formatPrice, isAllVirtualProducts, unsetCookie } from '@lib/utils';
 import i18n                                               from '/i18n';
 
 export default function PaymentStep() {
+    const timer                         = useRef();
     const [show, setShow]               = useState(false);
     const [paymentForm, setPaymentForm] = useState('');
     const [isLoading, setIsLoading]     = useState(false);
@@ -43,7 +44,7 @@ export default function PaymentStep() {
 
         // Check if the cart is empty
         if (!cart?.items?.length) {
-            router.push('/');
+            router.push('/checkout/cart');
         } else if (!cart.addresses || !cart.addresses.billing || !cart.addresses.delivery) {
             // Check if the billing & delivery addresses exists
             router.push('/checkout/address');
@@ -55,6 +56,7 @@ export default function PaymentStep() {
         } else {
             setShow(true);
         }
+        return () => clearTimeout(timer.current);
     }, []);
 
     useEffect(() => {
@@ -92,7 +94,16 @@ export default function PaymentStep() {
             document.cookie = 'order_id=' + order._id + '; path=/;';
             unsetCookie('cart_id');
         } catch (err) {
-            setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
+            if (err.messageCode === 'NOTAVAILABLE_PRODUCTS_FOR_ORDER') {
+                // Redirect to cart page with delay
+                setMessage({ type: 'error', message: t('components/checkout/paymentStep:error.notFoundProducts') });
+                const st      = setTimeout(() => {
+                    router.push('/checkout/cart');
+                }, 3000);
+                timer.current = st;
+            } else {
+                setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
+            }
         } finally {
             setIsLoading(false);
         }
