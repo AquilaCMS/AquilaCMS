@@ -8,7 +8,9 @@
 
 /* eslint-disable prefer-spread */
 /* eslint-disable prefer-rest-params */
-const winston                      = require('winston');
+const winston     = require('winston');
+const WinstonGelf = require('winston-gelf');
+
 const {combine, timestamp, printf} = winston.format;
 const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 
@@ -24,6 +26,27 @@ module.exports = () => {
             level       : 'info',
             filename    : `${global.aquila.appRoot}/logs/app.log`,
             datePattern : 'YYYY-MM-DD'
+        }));
+    }
+
+    if (global.aquila.envFile.logs.type === 'graylog') {
+        const graylogConfig = global.aquila.envFile.logs.config;
+        if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
+            throw new Error('Graylog enable but invalide config config is missing');
+        }
+
+        transports.push(new WinstonGelf({
+        // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
+            gelfPro : {
+                fields : {
+                    env : process.env.NODE_ENV || 'development'
+                },
+                adapterName    : 'udp',
+                adapterOptions : {
+                    host : graylogConfig.host, // Replace per your Graylog domain
+                    port : graylogConfig.port
+                }
+            }
         }));
     }
 
