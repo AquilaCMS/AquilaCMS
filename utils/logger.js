@@ -71,24 +71,24 @@ module.exports = () => {
     };
 
     if (global.aquila.envFile.logs && global.aquila.envFile.logs.override) {
-        // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
-        // Override the base console log with winston
-        console.log   = (...args) => {
-            process.stdout.write(`${args.join('')}\n`);
+        const logStdout = (...args) => {
+            const text = args.join('').replaceAll('%s', '');
+            process.stdout.write(`${text}\n`);
             return logger.info.call(logger, ...args);
         };
-        console.error = (...args) => {
-            process.stderr.write(`${args.join('')}\n`);
+
+        const logStderr = (...args) => {
+            const text = args.join('').replaceAll('%s', '');
+            process.stderr.write(`${text}\n`);
             logger.error.call(logger, ...args);
         };
-        console.info  = (...args) => {
-            process.stdout.write(`${args.join('')}\n`);
-            logger.info.call(logger, ...args);
-        };
-        console.warn  = (...args) => {
-            process.stdout.write(`${args.join('')}\n`);
-            logger.warn.call(logger, ...args);
-        };
+
+        // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
+        // Override the base console log with winston
+        console.log   = (...args) => logStdout(...args);
+        console.error = (...args) => logStderr(...args);
+        console.info  = (...args) => logStdout(...args);
+        console.warn  = (...args) => logStdout(...args);
     }
     console.log('Logger initialisé');
     return logger;
