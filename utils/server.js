@@ -11,7 +11,7 @@ const spdy         = require('spdy');
 const mongoose     = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 const {outside}    = require('semver');
-const {fs, logger} = require('aql-utils');
+const {fs}         = require('aql-utils');
 const NSErrors     = require('./errors/NSErrors');
 
 /**
@@ -141,7 +141,8 @@ const showAquilaLogo = () => {
         + '\x1b[94m@@@@@@@@@@@@@@@@@@@@@((\x1b[33m/*****************/\x1b[94m@@@@@@@@@@@@@@@@@@@@@',
         '\x1b[0m'
     );
-    logger.info('AquilaCMS is ready to use !', {context: {file: __filename, function: 'showAquilaLogo'}});
+
+    console.log('Starting Aquila...');
 };
 
 const controlNodeVersion = async () => {
