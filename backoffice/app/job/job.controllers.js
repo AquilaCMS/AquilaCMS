@@ -25,6 +25,9 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
  */
     JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
     function ($scope, $rootScope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById, $translate) {
+
+        const editDisabledJobs = ['Jobs checks']
+
         $scope.lang = $rootScope.adminLang;
         $scope.runImmediate = true;
         if ($routeParams.jobId != 'new') {
@@ -177,5 +180,9 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
                 });
             }
         };
+
+        $scope.isJobEditable = function() {
+            return !editDisabledJobs.includes($scope.job.name);
+        }
 
     }]);
