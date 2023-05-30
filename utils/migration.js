@@ -322,6 +322,40 @@ const migration_14_jobsOnMainThread = async () => {
     console.log('End migration script "migration_14_jobsOnMainThread"...');
 };
 
+const migration_15_addNewMailTypeJobCheck = async () => {
+    console.log('Applying migration script "migration_15_addNewMailTypeJobCheck"...');
+
+    const MailType = require('../orm/models/mail_type');
+
+    const countMailType = await MailType.countDocuments();
+    // Création du nouveau type de mail
+    await MailType.updateOne({code: 'notifyAdminsJobs'}, {code        : 'notifyAdminsJobs',
+        name        : 'Aquila - Job execution check',
+        translation : {
+            fr : {
+                name      : 'Aquila - Notification de vérification des taches planifiées',
+                variables : [
+                    {
+                        value       : 'jobsResult',
+                        description : 'Resultat de la verification des taches planifiées'
+                    }
+                ]
+            },
+            en : {
+                name      : 'Aquila - Job execution check',
+                variables : [
+                    {
+                        value       : 'jobsResult',
+                        description : 'Jobs checker result'
+                    }
+                ]
+            }
+        },
+        position : countMailType}, {upsert: true});
+
+    console.log('End migration script "migration_15_addNewMailTypeJobCheck"...');
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -337,7 +371,8 @@ const migrationScripts = [
     migration_11_clearAttributesIndexes,
     migration_12_searchSettings,
     migration_13_searchSettings_translations,
-    migration_14_jobsOnMainThread
+    migration_14_jobsOnMainThread,
+    migration_15_addNewMailTypeJobCheck
     // sample
 ];
 
