@@ -52,6 +52,23 @@ const objectPathCrawler = (object, pathAsArray) => {
     }
 };
 
+const objectSortConditions = (firstValue, secondValue) => {
+    if (typeof firstValue === 'number' && typeof secondValue === 'number') {
+        return firstValue - secondValue;
+    }
+
+    if (typeof firstValue === 'string' && typeof secondValue === 'string') {
+        return firstValue.localeCompare(secondValue);
+    }
+
+    if (typeof firstValue === 'boolean' && typeof secondValue === 'boolean') {
+        if (firstValue === secondValue) return 0;
+        return firstValue ? -1 : 1;
+    }
+
+    return 0;
+};
+
 const sortProductList = (products, PostBodySort, category) => {
     if (!PostBodySort || PostBodySort?.sortWeight) {
         /**
@@ -93,13 +110,15 @@ const sortProductList = (products, PostBodySort, category) => {
                 products.sort((p1, p2) => {
                     const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
                     const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p1Value - p2Value;
+
+                    return objectSortConditions(p1Value, p2Value);
                 });
             } else {
                 products.sort((p1, p2) => {
                     const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
                     const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p2Value - p1Value;
+
+                    return objectSortConditions(p2Value, p1Value);
                 });
             }
         }
@@ -366,6 +385,8 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             result.datas = res; // List C
         }
         delete PostBody.filter._id;
+    } else if (sort && !sort.sortWeight) {
+        result.datas = sortProductList(result.datas, sort);
     }
 
     if (structure.price !== 0) {
