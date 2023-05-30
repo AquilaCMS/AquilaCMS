@@ -169,6 +169,12 @@ ProductControllers.controller("ProductListCtrl", [
                 for (var i = 0; i < filterLength; i++) {
                     if(filterKeys[i] == "translation"){
                         newFilter[`translation.${$scope.filterLang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
+                    }else if(filterKeys[i] == "img"){
+                        if ($scope.searchObj[filterKeys[i]] === "true") {
+                            newFilter["images"] = {$ne: []};
+                        } else {
+                            newFilter["images"] = {$eq: []};
+                        }
                     }else if(filterKeys[i] == "active" || filterKeys[i] == "_visible"){
                         newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
                     }else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
