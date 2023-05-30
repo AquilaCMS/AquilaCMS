@@ -115,7 +115,12 @@ ProductServices.service("ProductColumns", function () {
             header : {
                 component_template :  "<span translate>product.list2.picture</span>"
             },
-            inter : {component_template: ""},
+            inter : {component_template: "<select ng-model='searchObj.img' ng-change='getProducts(1)' class='form-control' type='boolean'>"
+                    + "<option value='' translate>product.list2.indiff</option>"
+                    + "<option value='true' translate>product.list2.withImg</option>"
+                    + "<option value='false' translate>product.list2.withoutImg</option>"
+                    + "</select>"
+        },
             cell  : {label : "IMG :",component_template: "<img ng-src='{{getImage(product.images)}}' class='no-product-image' style='min-width: 120px;width:120px;height:90px' />"}
         },
         {
