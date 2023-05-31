@@ -79,7 +79,7 @@ async function getProductsListing(req, res, next) {
  */
 async function getProductsAsAdmin(req, res, next) {
     try {
-        const result = await ServiceProduct.getProductsAsAdmin(req.params.lang, req.query);
+        const result = await ServiceProduct.getProductsAsAdmin(req.query, req.params.lang);
         res.json(result);
     } catch (error) {
         return next(error);

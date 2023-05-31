@@ -203,26 +203,22 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            const structure = {
-                code: 1,
-                active: 1,
-                _visible: 1,
-                stock: 1,
-                images: 1,
-                stock: 1,
-                type: 1,
-                attributes: 1
-            };
+            // const structure = {
+            //     code: 1,
+            //     active: 1,
+            //     _visible: 1,
+            //     stock: 1,
+            //     images: 1,
+            //     stock: 1,
+            //     type: 1,
+            //     attributes: 1
+            // };
 
             const paramsV2 = {
-                lang: "fr",
-                PostBody: {
-                    filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
-                    structure,
-                    limit: $scope.nbItemsPerPage,
-                    page: $scope.currentPage,
-                    sort: params.sortObj
-                }
+                limit: $scope.nbItemsPerPage,
+                page: $scope.currentPage,
+                sort: params.sortObj,
+                filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
             };
             ProductsV2.list(paramsV2, function (res) {
                 if(res.count > 0 && res.datas.length == 0){

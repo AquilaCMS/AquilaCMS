@@ -450,25 +450,32 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
 };
 
 const parseSortObject = (sort) => {
-    const splitSort = sort.split('.');
-    const field     = splitSort[0];
+    let parsedSort = sort;
 
-    // If no order specified, order will be asc
-    let order = 1;
-    if (splitSort[1] && splitSort[1] === 'desc') order = -1;
+    if (sort.includes('asc') || sort.includes('desc')) {
+        const splitSort = sort.split('.');
+        const orderWord = splitSort.pop();
+        const field     = splitSort.join('.');
 
-    const parsedSort = `{"${field}": ${order}}`;
+        // If no order specified, order will be asc
+        let order = 1;
+        if (orderWord === 'desc') order = -1;
+
+        parsedSort = `{"${field}": ${order}}`;
+    }
+
     return JSON.parse(parsedSort);
 };
 
-const getProductsAsAdmin = async (lang, {page, limit, sort}) => {
-    const select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
+const getProductsAsAdmin = async ({page, limit, sort, filter, select}, lang = global.aquila.defaultLang) => {
+    select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
+    filter = {};
 
     let ormSort = {};
     if (sort) ormSort = parseSortObject(sort);
 
     let allProducts = await Products
-        .find()
+        .find(filter)
         .select(JSON.parse(select))
         .sort(ormSort)
         .lean();
