@@ -469,13 +469,12 @@ const parseSortObject = (sort) => {
 
 const getProductsAsAdmin = async ({page, limit, sort, filter, select}, lang = global.aquila.defaultLang) => {
     select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
-    filter = {};
 
     let ormSort = {};
     if (sort) ormSort = parseSortObject(sort);
 
     let allProducts = await Products
-        .find(filter)
+        .find(JSON.parse(filter))
         .select(JSON.parse(select))
         .sort(ormSort)
         .lean();
