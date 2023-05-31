@@ -63,7 +63,7 @@ const objectSortConditions = (firstValue, secondValue) => {
 
     if (typeof firstValue === 'boolean' && typeof secondValue === 'boolean') {
         if (firstValue === secondValue) return 0;
-        return firstValue ? -1 : 1;
+        return firstValue ? 1 : -1;
     }
 
     return 0;
