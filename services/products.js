@@ -474,8 +474,8 @@ const getProductsAsAdmin = async ({page, limit, sort, filter, select}, lang = gl
     if (sort) ormSort = parseSortObject(sort);
 
     let allProducts = await Products
-        .find(JSON.parse(filter))
-        .select(JSON.parse(select))
+        .find(filter ? JSON.parse(filter) : {})
+        .select(select ? JSON.parse(select) : {})
         .sort(ormSort)
         .lean();
 
