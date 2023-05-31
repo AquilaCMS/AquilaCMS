@@ -51,8 +51,11 @@ const getUserByAccountToken = async (activateAccountToken) => {
     return {isActiveAccount: user?.isActiveAccount};
 };
 
-const setUser = async (id, info, isAdmin, lang) => {
+const setUser = async (id, info, isAdmin) => {
     try {
+        if (userBase.email && info.email && userBase.email !== info.email) {
+            info.isActiveAccount = false;
+        }
         if (!isAdmin) {
             // The addresses field cannot be updated (see updateAddresses)
             delete info.addresses;
@@ -70,9 +73,6 @@ const setUser = async (id, info, isAdmin, lang) => {
                 }
             }
         } */
-        if (userBase.email && info.email && userBase.email !== info.email) {
-            info.isActiveAccount = false;
-        }
         if (info.birthDate) info.birthDate = new Date(info.birthDate);
         const userUpdated = await Users.findOneAndUpdate({_id: id}, info, {new: true});
         if (!userUpdated) throw NSErrors.UpdateUserInvalid;
