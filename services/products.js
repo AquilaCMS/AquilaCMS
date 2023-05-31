@@ -449,6 +449,55 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     return result;
 };
 
+const parseSortObject = (sort) => {
+    const splitSort = sort.split('.');
+    const field     = splitSort[0];
+
+    // If no order specified, order will be asc
+    let order = 1;
+    if (splitSort[1] && splitSort[1] === 'desc') order = -1;
+
+    const parsedSort = `{"${field}": ${order}}`;
+    return JSON.parse(parsedSort);
+};
+
+const getProductsAsAdmin = async (lang, {page, limit, sort}) => {
+    const select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
+
+    let ormSort = {};
+    if (sort) ormSort = parseSortObject(sort);
+
+    let allProducts = await Products
+        .find()
+        .select(JSON.parse(select))
+        .sort(ormSort)
+        .lean();
+
+    const count = allProducts.length;
+
+    // To create a pagination
+    page  = +page;
+    limit = +limit;
+    if (page) {
+        const res = [];
+        let i     = 0;
+        if (page !== 1) {
+            i = (page - 1) * limit;
+        }
+        while (i < limit + (page - 1) * limit && i < count) {
+            res.push(allProducts[i]);
+            i++;
+        }
+        allProducts = res;
+    }
+
+    const res = {
+        datas : allProducts,
+        count
+    };
+    return res;
+};
+
 /**
  * Get the product corresponding to the PostBody filter
  * @param {*} PostBody
@@ -1491,6 +1540,7 @@ const changeProductType = async (product, newType) => {
 
 module.exports = {
     getProducts,
+    getProductsAsAdmin,
     getProduct,
     getPromosByProduct,
     duplicateProduct,

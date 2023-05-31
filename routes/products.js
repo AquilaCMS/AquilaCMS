@@ -27,6 +27,7 @@ module.exports = function (app) {
     app.put('/v2/product', adminAuthRight('products'), autoFillCode, setProduct);
     app.delete('/v2/product/:id', adminAuthRight('products'), deleteProduct);
     app.get('/v2/product/getCoherence/:id', adminAuthRight('products'), getCoherence);
+    app.get('/v2/admin/products/:lang?', adminAuthRight('products'), getProductsAsAdmin);
 };
 
 async function getCoherence(req, res, next) {
@@ -64,6 +65,22 @@ async function getProductsListing(req, res, next) {
         }
 
         return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * GET /api/v2/products
+ * @summary Fetch all products
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function getProductsAsAdmin(req, res, next) {
+    try {
+        const result = await ServiceProduct.getProductsAsAdmin(req.params.lang, req.query);
+        res.json(result);
     } catch (error) {
         return next(error);
     }
