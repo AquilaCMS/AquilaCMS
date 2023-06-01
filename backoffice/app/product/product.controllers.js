@@ -203,22 +203,14 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            // const structure = {
-            //     code: 1,
-            //     active: 1,
-            //     _visible: 1,
-            //     stock: 1,
-            //     images: 1,
-            //     stock: 1,
-            //     type: 1,
-            //     attributes: 1
-            // };
+            const select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${$scope.filterLang}.name": 1}`;
 
             const paramsV2 = {
                 limit: $scope.nbItemsPerPage,
                 page: $scope.currentPage,
                 sort: params.sortObj,
                 filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
+                select
             };
             ProductsV2.list(paramsV2, function (res) {
                 if(res.count > 0 && res.datas.length == 0){

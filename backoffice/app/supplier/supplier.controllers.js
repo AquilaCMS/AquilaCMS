@@ -91,8 +91,9 @@ SupplierControllers.controller("SupplierDetailCtrl", [
         }
 
         $scope.getProducts = function () {
+            const select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${$scope.defaultLang}.name": 1}`; 
             if (angular.isDefined($scope.supplier.code)) {
-                ProductsV2.list({ PostBody: { filter: { supplier_ref: $scope.supplier._id }, structure: '*', limit: 0 } }, function ({ datas }) {
+                ProductsV2.list({ filter: { supplier_ref: $scope.supplier._id }, select, limit: 0 }, function ({ datas }) {
                     $scope.products = datas
                 });
             }
