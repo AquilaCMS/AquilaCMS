@@ -31,11 +31,7 @@ export default function CheckoutLogin() {
         if (!cart?.items?.length) {
             router.push('/');
         }
-    }, []);
-
-    if (!cart?.items?.length) {
-        return null;
-    }
+    }, [cart.items]);
 
     return (
         <Layout>
