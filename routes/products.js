@@ -14,6 +14,7 @@ const {securityForceActif}             = require('../middleware/security');
 const {autoFillCode}                   = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
+    app.get('/v2/adm/products/:lang?', adminAuthRight('products'), getProductsAsAdmin);
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
@@ -27,7 +28,6 @@ module.exports = function (app) {
     app.put('/v2/product', adminAuthRight('products'), autoFillCode, setProduct);
     app.delete('/v2/product/:id', adminAuthRight('products'), deleteProduct);
     app.get('/v2/product/getCoherence/:id', adminAuthRight('products'), getCoherence);
-    app.get('/v2/admin/products/:lang?', adminAuthRight('products'), getProductsAsAdmin);
 };
 
 async function getCoherence(req, res, next) {
