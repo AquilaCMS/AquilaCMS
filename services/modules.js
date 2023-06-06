@@ -431,7 +431,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
 
     // Control compatibility between the module and the theme
     if (!fs.existsSync(pathToThemeComponents)) {
-        throw NSErrors.ModuleAquilaVersionNotSatisfied;
+        throw NSErrors.IncompatibleModuleComponentType;
     }
 
     if (myModule.loadTranslationFront) {
