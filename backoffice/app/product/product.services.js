@@ -17,7 +17,7 @@ ProductServices.factory("Product", [
 ProductServices.factory("ProductsV2", [
     "$resource", function ($resource) {
         return $resource("v2/:type/:id", {}, {
-            list: {method: "POST", params: {type: "products"}},
+            list: {method: "GET", params: {type: "adm", id: "products"}},
             query: {method: "POST", params: {type: "product"}},
             save: {method: "PUT", params: {type: "product"}},
             delete: {method: "DELETE", params: {type: "product"}},

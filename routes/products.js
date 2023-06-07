@@ -14,6 +14,7 @@ const {securityForceActif}             = require('../middleware/security');
 const {autoFillCode}                   = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
+    app.get('/v2/adm/products/:lang?', adminAuthRight('products'), getProductsAsAdmin);
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
@@ -64,6 +65,22 @@ async function getProductsListing(req, res, next) {
         }
 
         return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * GET /api/v2/products
+ * @summary Fetch all products
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function getProductsAsAdmin(req, res, next) {
+    try {
+        const result = await ServiceProduct.getProductsAsAdmin(req.query, req.params.lang);
+        res.json(result);
     } catch (error) {
         return next(error);
     }

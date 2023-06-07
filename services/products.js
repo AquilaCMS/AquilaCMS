@@ -449,6 +449,61 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     return result;
 };
 
+const parseSortObject = (sort) => {
+    let parsedSort = sort;
+
+    if (sort.includes('asc') || sort.includes('desc')) {
+        const splitSort = sort.split('.');
+        const orderWord = splitSort.pop();
+        const field     = splitSort.join('.');
+
+        // If no order specified, order will be asc
+        let order = 1;
+        if (orderWord === 'desc') order = -1;
+
+        parsedSort = `{"${field}": ${order}}`;
+    }
+
+    return JSON.parse(parsedSort);
+};
+
+const getProductsAsAdmin = async ({page, limit, sort, filter, select}, lang = global.aquila.defaultLang) => {
+    if (!select) select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
+
+    let ormSort = {};
+    if (sort) ormSort = parseSortObject(sort);
+
+    let allProducts = await Products
+        .find(filter ? JSON.parse(filter) : {})
+        .select(select ? JSON.parse(select) : {})
+        .sort(ormSort)
+        .lean();
+
+    const count = allProducts.length;
+
+    // To create a pagination
+    page  = +page;
+    limit = +limit;
+    if (page) {
+        const res = [];
+        let i     = 0;
+        if (page !== 1) {
+            i = (page - 1) * limit;
+        }
+        while (i < limit + (page - 1) * limit && i < count) {
+            res.push(allProducts[i]);
+            i++;
+        }
+        allProducts = res;
+    }
+
+    const res = {
+        datas : allProducts,
+        count
+    };
+    return res;
+};
+
 /**
  * Get the product corresponding to the PostBody filter
  * @param {*} PostBody
@@ -1491,6 +1546,7 @@ const changeProductType = async (product, newType) => {
 
 module.exports = {
     getProducts,
+    getProductsAsAdmin,
     getProduct,
     getPromosByProduct,
     duplicateProduct,
