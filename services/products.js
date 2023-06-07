@@ -249,11 +249,6 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
         PostBody.limit         = 0;
     }
 
-    // Process for the BO context
-    if (sort && !sort.sortWeight) {
-        PostBody.limit = 0;
-    }
-
     let querySelect = '';
     if (PostBody.structure) {
         for (const [key, value] of Object.entries(PostBody.structure)) {
@@ -389,20 +384,6 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
             result.datas = res; // List C
         }
         delete PostBody.filter._id;
-    } else if (sort && !sort.sortWeight) {
-        // Process for the BO context
-        result.datas = sortProductList(result.datas, sort);
-
-        const res = [];
-        let i     = 0;
-        if (PostBody.page !== 1) {
-            i = (PostBody.page - 1) * realLimit;
-        }
-        while (i < realLimit + (PostBody.page - 1) * realLimit && i < result.datas.length) {
-            res.push(result.datas[i]);
-            i++;
-        }
-        result.datas = res; // List C
     }
 
     if (structure.price !== 0) {
