@@ -10,7 +10,7 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 99}}, function (cmsBlocks) {
+        CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 0}}, function (cmsBlocks) {
             $scope.cmsBlocks = cmsBlocks.datas;
             $scope.groups = cmsBlocks.datas.getAndSortGroups();
             $scope.currentTab = $scope.groups[0];
@@ -44,34 +44,25 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$q", "$translate", "$rootScope",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $q, $translate, $rootScope) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
-        $scope.modules = [];
         $scope.groups = [];
         $scope.selectedTab = { active: "result" };
 
         $scope.selectTab = function (tab) {
             $scope.selectedTab.active = tab;
         }
+
         $scope.getGroups = function () {
-            $scope.itemObjectSelected = function (item) {
-                $scope.selectedDropdownItem = item;
-            };
-    
-            $scope.filterDropdown = function (userInput) {
-                if (userInput !== undefined) {
-                    $scope.selectedDropdownItem = userInput;
-                }
-                return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsBlocks) {
-                    $scope.groups = cmsBlocks.datas.getAndSortGroups($scope.selectedDropdownItem)
-                    return $scope.groups;
-                });
-            };
-    
-            $scope.filterDropdown();
+            
+            CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit:0}}).$promise.then(function (cmsBlocks) {
+                $scope.groups = cmsBlocks.datas.getAndSortGroups()
+                $scope.filterDropdown($scope.cmsBlock.group)
+            });
         }
+        
         if ($routeParams.code !== "new") {
             CmsBlocksApi.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (block) {
                 $scope.cmsBlock = block;
@@ -80,15 +71,35 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 if ($scope.cmsBlock && $scope.cmsBlock.translation && !$scope.cmsBlock.translation[$scope.lang].html) {
                     $scope.cmsBlock.translation[$scope.lang].html = $scope.cmsBlock.translation[$scope.lang].content
                 }
-
+                
+                $scope.selectedDropdownItem = $scope.cmsBlock.group;
                 $scope.getGroups()
             });
         } else {
             $scope.cmsBlock = {group: "",translation:{}};
-            $scope.selectedDropdownItem = "";
+            $scope.selectedDropdownItem = null;
 
             $scope.getGroups()
         }
+
+        
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+            $scope.cmsBlock.group = item
+        };
+
+        $scope.filterDropdown = function (userInput) {
+            var filter = $q.defer();
+            var normalisedInput = userInput.toLowerCase();
+            $scope.cmsBlock.group = userInput
+
+            var filteredArray = $scope.groups.filter(function(group) {
+                return group.toLowerCase().indexOf(normalisedInput) === 0;
+            });
+
+            filter.resolve(filteredArray);
+            return filter.promise;
+        };
 
         $scope.generateVariables = function () {
             if ($scope.cmsBlock.translation){
@@ -140,7 +151,6 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
 
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
-            $scope.cmsBlock.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
 
             CmsBlocksApi.save($scope.cmsBlock, function (res) {
@@ -154,7 +164,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 }
             },(err) => {
                 toastService.toast("danger", err.data.message);
-                console.log(err);
+                console.error(err);
             });
 
             
@@ -186,26 +196,12 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             }
         }
 
-        $http.post('/v2/modules', {
-            PostBody: {
-                filter: {},
-                limit: 100,
-                populate: [],
-                skip: 0,
-                sort: {},
-                structure: {},
-                page: null
+        $scope.userIsAllowedTo = function (route) {
+            if($rootScope.userInfo.accessList.indexOf(route) === -1 || $rootScope.userInfo.accessList === undefined) {
+                return true
+            } else {
+                return false
             }
-        }).then(function (response) {
-            $scope.modules = response.data.datas.filter(module => module.component_template_front);
-        });
-
-        $scope.showModulesTags = function () {
-            let tagText = '';
-            for (let i = 0; i < $scope.modules.length; i++) {
-                tagText += `${$scope.modules[i].component_template_front}\n`;
-            }
-            return tagText;
-        };
+        }
     }
 ]);

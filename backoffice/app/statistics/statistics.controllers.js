@@ -68,7 +68,7 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
 
 
     /**
-     * Download datas : DONE/TODO P2 : Permettre de pouvoir télécharger une stats affiché sur le back
+     * Download datas
      */
     $scope.downloadDatas = function (datas) {
         $scope.obj.loading = true;

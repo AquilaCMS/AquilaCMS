@@ -1,23 +1,24 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceGallery = require('../services/gallery');
-const {adminAuth}    = require('../middleware/authentication');
+const ServiceGallery   = require('../services/gallery');
+const {adminAuthRight} = require('../middleware/authentication');
+const {autoFillCode}   = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
-    app.post('/v2/galleries', adminAuth, getGalleries);
+    app.post('/v2/galleries', adminAuthRight('gallery'), getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
-    app.put('/v2/gallery', adminAuth, setGallery);
-    app.put('/v2/gallery/:_id/item', adminAuth, setItemGallery);
-    app.put('/v2/gallery/:_id/items', adminAuth, setItemsGallery);
-    app.delete('/v2/gallery/:_id', adminAuth, deleteGallery);
-    app.delete('/v2/gallery/:_id/:_id_item', adminAuth, deleteItemGallery);
+    app.put('/v2/gallery', adminAuthRight('gallery'), autoFillCode, setGallery);
+    app.put('/v2/gallery/:_id/item', adminAuthRight('gallery'), setItemsGallery);
+    app.put('/v2/gallery/:_id/items', adminAuthRight('gallery'), setItemsGallery);
+    app.delete('/v2/gallery/:_id', adminAuthRight('gallery'), deleteGallery);
+    app.delete('/v2/gallery/:_id/:_id_item', adminAuthRight('gallery'), deleteItemGallery);
 };
 
 /**
@@ -68,15 +69,6 @@ async function setGallery(req, res, next) {
 /**
  * Function to add or update an item from a gallery
  */
-async function setItemGallery(req, res, next) {
-    try {
-        const result = await ServiceGallery.setItemGallery(req.params._id, req.body);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
 async function setItemsGallery(req, res, next) {
     try {
         const result = await ServiceGallery.setItemGallery(req.params._id, req.body);

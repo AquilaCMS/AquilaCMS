@@ -24,6 +24,7 @@
         "slug": "Slug",
         "downloadLink": "Download link",
         "downloadInfos": "Download informations",
+        "filename": "Filename (visual only)",
         "autoGen": "automatic generation from name if empty",
         "jeuAttr": "Attributes set",
         "jeuOpt": "Options set",
@@ -41,7 +42,14 @@
         "preview": "Preview",
         "finished": "Finished",
         "errorCategorization": "Error during categorization",
-        "coherenceTitle": "Coherence of the product"
+        "coherenceTitle": "Coherence of the product",
+        "saveFirst": "Save the product before editing variant(s)",
+        "changeType": "Change product type",
+        "type": "Type",
+        "typeTooltip": "Change the type of product (requires save)",
+        "views": "Views",
+        "sells": "Sells",
+        "stats": "Stats"
     },
     "modal": {
         "activeProduct": "Activate a product",
@@ -86,14 +94,16 @@
     },
     "photo": {
         "add": "Add",
-        "nom": "Name",
-        "title": "Title tag",
+        "nom": "Original",
+        "title": "Name",
         "picturessaved": "Pictures saved :",
         "alt": "Alt tag",
         "pos": "Position",
-        "img": "Main Picture",
-        "url": "URL",
-        "noPics": "There are no images in this product, the default image will be displayed in the theme"
+        "img": "Main",
+        "url": "Image",
+        "noPics": "There are no images in this product, the default image will be displayed in the theme",
+        "youtubeId": "Youtube video ID" ,
+        "type": "Youtube video"
     },
     "list": {
         "ph1": "Name",
@@ -115,6 +125,8 @@
         "code": "Code",
         "name": "Name",
         "picture": "Picture",
+        "withImg": "With picture",
+        "withoutImg": "Without picture",
         "price": "Base price (tax incl.)",
         "quantity": "Quantity",
         "min": "Min",
@@ -141,7 +153,29 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Can't generate URL because canonical is empty",
-        "notValid": "Informations entered are not valid"
-    }
+        "notValid": "Informations entered are not valid",
+        "URLcanonical": "Can't generate URL because canonical is empty"
+    },
+    "declinaisons": {
+        "title1": "Used variant",
+        "title2": "List variant",
+        "code": "Code",
+        "name": "Name",
+        "typeDisplay": "Display",
+        "available": "Available",
+        "picture": "Image",
+        "variant": "Variant",
+        "variants": "Variants",
+        "price": "Base ATI price",
+        "quantity": "Qty",
+        "default": "Default",
+        "createAttribs": "You need to create at least one attribut flagged as product variant <a style='text-decoration: underline;' href='#/products/attributes'>here</a>",
+        "displayImage": "Display image",
+        "displayRadio": "Radio buttons",
+        "displayList": "Values lists",
+        "displayList2": "Variants list",
+        "activateAllVariants": "Activate all variants",
+        "disableAllVariants": "Disable all variants"
+    },
+    "beforeConfigCat": "Save product before adding it to categories"
 }

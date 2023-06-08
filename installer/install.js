@@ -1,14 +1,14 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path                     = require('path');
+const {fs}                     = require('aql-utils');
 const themeServices            = require('../services/themes');
-const fs                       = require('../utils/fsp');
 const serverUtils              = require('../utils/server');
 const {themeInstallAndCompile} = require('../utils/themes');
 const {createListModuleFile}   = require('../utils/modules');
@@ -43,10 +43,64 @@ const testdb = async (req) => {
     }
 };
 
-// Only for installation purpose, will be inaccessible after first installation
+/**
+ * Silent installation (only if env variable exists)
+ */
+const handleSilentInstaller = async () => {
+    try {
+        console.log('-= Process silent installer =-');
+
+        const generateTmpPass = () => {
+            const characters     = 'abcdefghijklmnopqrstuvwxyz';
+            const charactersUp   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const charactersNum  = '0123456789';
+            const charactersSpec = '#.!@,?*';
+            const allChar        = [characters, characters, characters, charactersNum, charactersUp, charactersUp, charactersSpec, characters];
+            let result           = '';
+
+            for (let i = 0; i < allChar.length; i++) {
+                result += allChar[i].charAt(Math.floor(Math.random() * allChar[i].length));
+            }
+
+            console.log('/!\\ Admin password :', result);
+            return result;
+        };
+
+        const datas = {
+            databaseAdd : serverUtils.getEnv('MONGODB_URI'),
+            language    : serverUtils.getEnv('LANGUAGE'),
+            firstname   : serverUtils.getEnv('FIRSTNAME'),
+            lastname    : serverUtils.getEnv('LASTNAME'),
+            email       : serverUtils.getEnv('EMAIL'),
+            appUrl      : serverUtils.getEnv('APPURL'),
+            adminPrefix : serverUtils.getEnv('ADMIN_PREFIX'),
+            siteName    : serverUtils.getEnv('SITENAME'),
+            compilation : serverUtils.getEnv('THEME_COMPILATION') ?? true,
+            password    : serverUtils.getEnv('PASSWORD') ?? generateTmpPass(),
+            envPath     : 'config/env.json',
+            override    : 'on',
+            demoData    : true
+        };
+
+        await postConfiguratorDatas({body: datas});
+        await require('../services/job').initAgendaDB();
+        await require('../utils/database').initDBValues();
+        await require('../services/admin').welcome();
+
+        const {restart} = require('aql-utils');
+        await restart();
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+/**
+ * Only for installation purpose, will be inaccessible after first installation
+ */
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
-    global.installMode = true;
+    global.aquila.installMode = true;
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
@@ -67,6 +121,7 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : Record datas value');
         const datas     = req.body;
         const bOverride = datas.override === 'on';
+        if (datas.compilation === undefined) datas.compilation = true;
         if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
@@ -74,12 +129,12 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : write env file');
         await fs.writeFile('./config/envPath', datas.envPath);
         const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
-        global.envPath         = datas.envPath;
+        global.aquila.envPath  = datas.envPath;
         let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
         envFile[aquila_env].db = datas.databaseAdd;
-        await fs.writeFile(path.join(global.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
-        envFile        = envFile[aquila_env];
-        global.envFile = envFile;
+        await fs.writeFile(path.join(global.aquila.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
+        envFile               = envFile[aquila_env];
+        global.aquila.envFile = envFile;
         console.log('Installer : finish writing env file');
 
         await require('../utils/database').connect();
@@ -91,24 +146,27 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile('default_theme');
+        if (datas.compilation !== 'false') {
+            global.aquila.envConfig = configuration.toObject();
+            await require('../services/themes').languageManagement('default_theme_2');
 
-        if (datas.demoData && datas.override === 'on') {
-            console.log('Installer : installation of the default theme datas');
-            await themeServices.copyDatas('default_theme', true, configuration);
-            console.log('Installer : end installation of the default theme datas');
+            if (datas.demoData && datas.override === 'on') {
+                console.log('Installer : installation of the default theme datas');
+                await themeServices.copyDatas('default_theme_2', true, configuration);
+                console.log('Installer : end installation of the default theme datas');
+            }
+            await createListModuleFile('default_theme_2');
+            // Compilation du theme par default
+            console.log('Installer : start default theme compilation');
+
+            const packageJSON = new PackageJSON();
+            await packageJSON.read();
+            packageJSON.package.workspaces.push('themes/default_theme_2');
+            await packageJSON.save();
+
+            await themeInstallAndCompile('default_theme_2');
+            console.log('Installer : end default theme compilation');
         }
-        await createListModuleFile('default_theme');
-        // Compilation du theme par default
-        console.log('Installer : start default theme compilation');
-        const packageJSON = new PackageJSON();
-        await packageJSON.read();
-        // const currentThemeIndex = packageJSON.package.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
-        // if (currentThemeIndex !== -1) packageJSON.package.workspaces.splice(currentThemeIndex, 1);
-        packageJSON.package.workspaces.push('themes/default_theme');
-        await packageJSON.save();
-        await themeInstallAndCompile('default_theme');
-        console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
         throw err;
@@ -133,10 +191,10 @@ const recoverConfiguration = async (req) => {
         await fs.unlink(envPath);
         envPath = `${envPath}on`;
     }
-    const envPathFile = path.join(global.appRoot, 'config', 'envPath');
+    const envPathFile = path.join(global.aquila.appRoot, 'config', 'envPath');
     await fs.writeFile(envPathFile, envPath);
-    global.envPath = envPath;
-    global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
+    global.aquila.envPath = envPath;
+    global.aquila.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
     console.log('Installer : finish fetching new env path');
 };
 
@@ -162,15 +220,18 @@ const createConfiguration = async (datas, bOverride) => {
 
     datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
 
+    global.aquila.defaultLang = datas.language;
+
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
-            currentTheme    : 'default_theme',
+            currentTheme    : 'default_theme_2',
             adminPrefix     : datas.adminPrefix,
-            websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
+            websiteCountry  : datas.language && datas.language.toLowerCase() === 'en' ? 'GB' : 'FR',
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
+            defaultImage    : '/medias/no-image.png',
             // We don't want to apply migration after the installation, so we calculate the current migration step
             migration       : require('../utils/migration').migrationScripts.length
         },
@@ -180,6 +241,7 @@ const createConfiguration = async (datas, bOverride) => {
             bookingStock              : 'none'
         },
         taxerate : [
+            {rate: 0},
             {rate: 2.1},
             {rate: 5.5},
             {rate: 10.0},
@@ -254,15 +316,30 @@ const createDefaultCountries = async () => {
     const {Territory} = require('../orm/models');
     try {
         await Territory.insertMany([{
-            code : 'FR',
-            name : 'France',
-            type : 'country'
+            code        : 'FR',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'France'
+                },
+                en : {
+                    name : 'France'
+                }
+            }
         },
         {
-            code : 'GB',
-            name : 'United Kingdom',
-            type : 'country'
-        }]);
+            code        : 'GB',
+            type        : 'country',
+            translation : {
+                fr : {
+                    name : 'Royaume-uni'
+                },
+                en : {
+                    name : 'United Kingdom'
+                }
+            }
+        }
+        ]);
     } catch (err) {
         console.error('Countries cannot be created');
     }
@@ -271,5 +348,6 @@ const createDefaultCountries = async () => {
 module.exports = {
     firstLaunch,
     handleInstaller,
-    testdb
+    testdb,
+    handleSilentInstaller
 };

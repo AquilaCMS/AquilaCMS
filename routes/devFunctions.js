@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -12,7 +12,7 @@ const {Configuration}      = require('../orm/models');
 
 module.exports = function (app) {
     app.get('/encryption/cipher', adminAuth, cipherPasswords);
-    app.get('/createModelData', adminAuth, createModelData);
+    app.get('/createModelData', createModelData);
 };
 async function createModelData(req, res, next) {
     try {
@@ -26,7 +26,7 @@ async function createModelData(req, res, next) {
 async function cipherPasswords(req, res, next) {
     console.log(new Date(), 'Encryption in progress');
     try {
-        const _config = global.envConfig;
+        const _config = global.aquila.envConfig;
 
         if (_config.environment && _config.environment.mailPass !== undefined && _config.environment.mailPass !== '') {
             const goodPassword = _config.environment.mailPass;

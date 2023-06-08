@@ -1,0 +1,9 @@
+{
+    "noPayment": "No payment method !",
+    "previous" : "BACK",
+    "pay" : "PAY",
+    "submitLoading" : "PAYMENT...",
+    "error": {
+        "notFoundProducts": "One or more products are no longer available, you will be redirected to the cart."
+    }
+}

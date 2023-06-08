@@ -23,7 +23,7 @@ OrderServices.service("Orders", [
         return $resource("v2/:route/:action", {}, {
             list: {method: "POST", params: {route: "orders"}},
             rma: {method: "POST", params: {route: "order", action: "rma"}},
-            infoPayment: {method: "POST", params: {route: "order", action: "infoPayment"}},
+            infoPayment: {method: "POST", params: {route: "payment", action: "info"}},
             addPkg: {method: "POST", params: {route: "order", action: "addpkg"}},
             delPkg: {method: "POST", params: {route: "order", action: "delpkg"}},
             save: {method: "PUT", params: {route: "order"}},

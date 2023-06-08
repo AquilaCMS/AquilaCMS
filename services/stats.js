@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -52,10 +52,13 @@ const addUserVisitIP = async (ipClient) => {
 
         if (existing === -1) {
             // Update data
-            await StatsToday.updateOne({}, {
-                $push : {visit: {$each: [ipClient]}}
-            },
-            {upsert: true, new: true});
+            await StatsToday.updateOne(
+                {},
+                {
+                    $push : {visit: {$each: [ipClient]}}
+                },
+                {upsert: true, new: true}
+            );
         }
     } catch (error) {
         console.error(error);
@@ -122,7 +125,7 @@ const buildStats = async () => {
                         result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                     return `Ok - But metrics not sent : ${error}`;
                 }
             }
@@ -143,7 +146,11 @@ async function insertType(type, nb) {
         const isoDate = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).toISOString();
         const pushed  = {};
         pushed[type]  = {$each: [{date: isoDate, count: nb}]};
-        await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
+        // Check if stats exists for this day
+        const todayExist = await StatsHistory.findOne({'visit.date': isoDate}).lean();
+        if (!todayExist) {
+            await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
+        }
     } catch (error) {
         console.error(error);
     }

@@ -24,6 +24,7 @@
         "slug": "Slug",
         "downloadLink": "Liens de téléchargement",
         "downloadInfos": "Informations au téléchargement",
+        "filename": "Nom du fichier (affichage uniquement)",
         "autoGen": "Generation automatique par le nom si vide",
         "jeuAttr": "Jeu d'attributs",
         "jeuOpt": "Jeu d'options",
@@ -41,7 +42,14 @@
         "preview": "Aperçu",
         "finished": "Terminé",
         "errorCategorization": "Erreur lors de la categorisation",
-        "coherenceTitle": "Cohérence du produit"
+        "coherenceTitle": "Cohérence du produit",
+        "changeType": "Changer le type",
+        "type": "Type",
+        "typeTooltip": "Changer le type de produit (nécessite une sauvegarde du produit)",
+        "views": "Vues",
+        "sells": "Ventes",
+        "stats": "Statistiques",
+        "saveFirst": "Enregistrez le produit avant de modifier les variants"
     },
     "modal": {
         "activeProduct": "Activer un produit",
@@ -86,14 +94,16 @@
     },
     "photo": {
         "add": "Ajouter",
-        "nom": "Nom",
-        "title": "Balise Title",
+        "nom": "Originale",
+        "title": "Nom",
         "picturessaved": "Images sauvegardées :",
         "alt": "Balise Alt",
         "pos": "Position",
-        "img": "Image Principale",
-        "url": "URL",
-        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
+        "img": "Principale",
+        "url": "Chemin",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème",
+        "youtubeId": "Video Youtube ID" ,
+        "type": "Video Youtube"
     },
     "list": {
         "ph1": "Nom",
@@ -115,6 +125,8 @@
         "code": "Code",
         "name": "Nom",
         "picture": "Image",
+        "withImg": "Avec image",
+        "withoutImg": "Sans image",
         "price": "Prix base TTC",
         "quantity": "Quantité",
         "min": "Min",
@@ -141,7 +153,29 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical",
-        "notValid": "Les informations saisies ne sont pas valides"
-    }
+        "notValid": "Les informations saisies ne sont pas valides",
+        "URLcanonical": "Impossible de générer l'URL de test car pas de canonical"
+    },
+    "declinaisons": {
+        "title1": "Déclinaisons utilisés",
+        "title2": "Liste des déclinaisons",
+        "code": "Code",
+        "name": "Nom",
+        "typeDisplay": "Type d'affichage",
+        "available": "Disponible",
+        "picture": "Image",
+        "variant": "Declinaison",
+        "variants": "Declinaisons",
+        "price": "Prix base TTC",
+        "quantity": "Quantité",
+        "default": "Defaut",
+        "createAttribs": "Vous devez creer au moins un attribut marqué comme declinaison de produits <a style='text-decoration: underline;' href='#/products/attributes'>ici</a>",
+        "displayImage": "Afficher en image",
+        "displayRadio": "Radio boutons",
+        "displayList": "Listes des valeurs",
+        "displayList2": "Liste des déclinaisons",
+        "activateAllVariants": "Activer toutes les déclinaisons",
+        "disableAllVariants": "Désactiver toutes les déclinaisons"
+    },
+    "beforeConfigCat": "Sauvegardez le produit pour l'ajouter a des catégories"
 }

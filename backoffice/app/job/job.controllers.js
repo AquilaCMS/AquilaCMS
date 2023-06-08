@@ -23,10 +23,12 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
 /**
  * Controller de la page contenant le detail d'un Job
  */
-JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
+    JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById', '$translate',
     function ($scope, $rootScope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById, $translate) {
+
+        const editDisabledJobs = ['Jobs checks']
+
         $scope.lang = $rootScope.adminLang;
-        $scope.test = 1;
         $scope.runImmediate = true;
         if ($routeParams.jobId != 'new') {
             $scope.isEditMode = true;
@@ -38,9 +40,16 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             data: {
                 method: "get",
                 flag: "user",
-                params: ""
+                params: "",
+                onMainThread: true,
+                isImportant: false
             }
         };
+        $scope.handleChangeType = function () {
+            if(['get','post','ftp'].includes($scope.job.data.method)) {
+                $scope.job.data.onMainThread = true;
+            }
+        }
         $scope.trustHtml = function(){
             return $sce.trustAsHtml($scope.job.data.lastExecutionResult);
         }
@@ -171,5 +180,9 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 });
             }
         };
+
+        $scope.isJobEditable = function() {
+            return !editDisabledJobs.includes($scope.job.name);
+        }
 
     }]);

@@ -10,10 +10,11 @@
     "gen": "Général",
     "mark": "Marketing",
     "prixStock": "Prix & stock",
-    "pics": "Photos",
+    "pics": "Photos / Vidéos",
     "cs": "Produits associés",
     "specAttr": "Attributs spécifiques",
     "linkedCat": "Catégories liées",
+    "inputCode":"Saisir le code du nouveau produit :",
     "stock": {
         "title": "Stock",
         "qt": "Quantité",

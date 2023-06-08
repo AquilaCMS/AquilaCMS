@@ -12,15 +12,31 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         };
 
         $scope.addMedia = function () {
+            const newMedia = {
+                link : "",
+                name : 'new-' + Math.floor(Math.random() * 1024),
+                group: "",
+            };
+
+            MediaApiV2.save({media: newMedia}, function (rep) {
+                $scope.mediaDetails({_id: `${rep._id}:new`})
+            }, function(err) {
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
+                }
+            });
+        };
+
+        $scope.addMassMedia = function() {
             var modalInstance = $modal.open({
-                templateUrl: "app/medias/views/modals/media-new.html",
-                controller: "MediasModalNewCtrl"
+                templateUrl: 'app/medias/views/modals/medias-mass-new.html',
+                controller: 'MediasModalMassNewCtrl',
             });
 
-            modalInstance.result.then(function (returnedValue) {
-                if(returnedValue.create == true){
-                    $scope.mediaDetails({_id: `${returnedValue._id}:new`})
-                }
+            modalInstance.result.then(() => {
+                $scope.init();
             });
         };
 
@@ -105,13 +121,12 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
 );
 
 MediasControllers.controller("MediasDetailsCtrl",
-    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate", "$q",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate, $q) {
         $scope.media = {
             link : "",
             name : "",
             group: "",
-            groups: []
         };
 
         $scope.nsUploadFiles = {
@@ -130,12 +145,11 @@ MediasControllers.controller("MediasDetailsCtrl",
             }
         }
 
-        function setMode(mode){
+        function setMode(isNew){
             let id;
-            if(mode == true){
+            if (isNew == true){
                 // it is a new media
                 id = $routeParams.id.substring(0, $routeParams.id.length - 4);
-                $scope.filterDropdown();
                 $scope.additionnalButtons = [
                     {
                         text: 'medias.medias.uploadButton',
@@ -146,16 +160,35 @@ MediasControllers.controller("MediasDetailsCtrl",
                 ];
             }else{
                 id = $routeParams.id;
+                $scope.additionnalButtons = [
+                    {
+                        text: 'medias.medias.cpLien',
+                        onClick: function(){
+                            $scope.copyLink($scope.media);
+                        }
+                    }
+                ];
             }
             $scope.id = id;
             // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
-            MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 99}}, function (response) {
+            MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 0}}, function (response) {
                 $scope.media = response;
-                $scope.filterDropdown();
+
+                if($location.$$url.lastIndexOf(':new') > 1) {
+                    $scope.media.name = '';
+                }
+            });
+            MediaApiV2.getGroups({query: ''}, function (groups) {
+                $scope.groups = groups.filter(gp => typeof gp === 'string');
                 if($scope.media.group){
                     // to bind the input "group"
                     $scope.selectedDropdownItem = $scope.media.group;
+                    $scope.filterDropdown($scope.selectedDropdownItem)
+                } else {
+                    $scope.selectedDropdownItem = null
                 }
+            }, function (error){
+                console.log(error);
             });
         }
 
@@ -186,7 +219,6 @@ MediasControllers.controller("MediasDetailsCtrl",
                     return
                 }
             }
-            $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", $translate.instant("medias.medias.mediaSaved"));
                 if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
@@ -208,23 +240,21 @@ MediasControllers.controller("MediasDetailsCtrl",
 
 
         $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            let params = {};
-            if($scope.selectedDropdownItem){
-                params = {query: $scope.selectedDropdownItem};
-            }
-            MediaApiV2.getGroups(params, function (groups) {
-                $scope.groups = [];
-                $scope.groups = groups;
-            }, function (error){
-                console.log(error);
+            var filter = $q.defer();
+            var normalisedInput = userInput.toLowerCase();
+            $scope.media.group = userInput
+
+            var filteredArray = $scope.groups.filter(function(group) {
+                return group.toLowerCase().indexOf(normalisedInput) === 0;
             });
+
+            filter.resolve(filteredArray);
+            return filter.promise;
         };
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
+            $scope.media.group = item
         };
 
         $scope.isPicture = function(media) {
@@ -251,126 +281,37 @@ MediasControllers.controller("MediasDetailsCtrl",
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
     function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
-        $scope.positions = [
-            {
-                pos: "center",
-                id: "center"
-            },
-            {
-                pos: "top",
-                id: "top"
-            },
-            {
-                pos: "bottom",
-                id: "bottom"
-            },
-            {
-                pos: "left",
-                id: "left"
-            },
-            {
-                pos: "right",
-                id: "right"
-            },
-            {
-                pos: "top-left",
-                id: "topLeft"
-            },
-            {
-                pos: "top-right",
-                id: "topRight"
-            },
-            {
-                pos: "bottom-left",
-                id: "bottomLeft"
-            },
-            {
-                pos: "bottom-right",
-                id: "bottomRight"
-            }
-        ];
+        if(!$scope.media.type) $scope.media.type = 'medias'
 
-        $scope.getTranslation = function(pos){
-            return `medias.modal.${pos}`;
+        $scope.generate = function (url) {
+            $scope.link = url
+            const elem = document.getElementById("copy-link");
+            elem.focus();
+            elem.select();
+            setTimeout(function () {
+                $scope.copierLien()
+            }, 200)
         }
-        $scope.info = {
-            crop:false,
-            position:"center",
-            background:false,
-            largeur: "",
-            longueur: "",
-            quality: "",
-            r:255,
-            g:255,
-            b:255,
-            alpha:1
-        };
-        if (media.name) {
-            $scope.info.name = media.name;
-        }
-
-        $scope.generer = function () {
-            const size = $scope.info.largeur + "x" + $scope.info.longueur;
-            const quality = $scope.info.quality;
-            let filename = "";
-            if ($scope.info.name !== undefined) {
-                filename = $scope.info.name.replace(/[^\w\s]/gi, '').replace(/\s/g, '')
-                    + "." + $scope.media.link.replace(`medias/`, "")
-                        .substr($scope.media.link.replace(`medias/`, "").lastIndexOf('.') + 1);
-            } else {
-                filename = $scope.media.link.replace(`medias/`, "");
-            }
-
-            let background  = '';
-            let crop        = '';
-            if (
-                (!$scope.info.largeur || !$scope.info.longueur || !quality)
-                || (
-                    $scope.info.background
-                    && (
-                        !$scope.info.r || !$scope.info.g || !$scope.info.b ||
-                        !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
-                )
-            ) {
-                toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
-            } else {
-                if ($scope.info.background) {
-                    if ($scope.info.alpha) {
-                        if ($scope.info.alpha > 1) {
-                            $scope.info.alpha = 1;
-                        }
-                    }
-                    background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
-                }
-                if ($scope.info.crop) {
-                    crop = `-crop-${$scope.info.position}`;
-                }
-                toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
-                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
-                const elem = document.getElementById("copy-link");
-                elem.focus();
-                elem.select();
-            }
-        };
-
+    
         $scope.copierLien = function() {
             const elem = document.getElementById("copy-link");
             elem.focus();
             elem.select();
             if (document.execCommand('copy')) {
-                toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
+                toastService.toast("success", $translate.instant("medias.medias.copiedLink"));
             }
         }
-
+    
         $scope.cancel = function () {
             $modalInstance.close()
         };
+        
     }
 ]);
 
 
-MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate",
-    function ($scope, toastService, $modalInstance, $translate) {
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate", "$location",
+    function ($scope, toastService, $modalInstance, $translate, $location) {
         $scope.local = {
             insertDBMediaUpload: true
         };
@@ -381,37 +322,15 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
         $scope.uploadedMediaMass = function () {
             toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
+            $location.path('/medias');
         };
-
         $scope.cancel = function () {
             $modalInstance.close('cancel')
         };
+        $scope.onError = function () {
+            $modalInstance.close('error')
+        };
+        
     }
 ]);
 
-MediasControllers.controller("MediasModalNewCtrl", [
-    "$scope", "$modalInstance", "MediaApiV2", "toastService",
-    function ($scope, $modalInstance, MediaApiV2, toastService) {
-        $scope.media = {
-            link : "",
-            name : "",
-            group: "",
-        };
-
-        $scope.save = function (category) {
-            MediaApiV2.save({media: $scope.media}, function (rep) {
-                $modalInstance.close({create: true, _id: rep._id});
-            }, function(err) {
-                if(err.data.code === "Conflict"){
-                    toastService.toast("danger", err.data.message + " : code already exists");
-                }else{
-                    toastService.toast("danger", err.data.message);
-                }
-            });
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.close({create: false});
-        };
-    }
-]);

@@ -1,23 +1,23 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}  = require('../middleware/authentication');
-const ServicePromo = require('../services/promo');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServicePromo     = require('../services/promo');
 
 module.exports = function (app) {
-    app.get('/v2/promo/check/code/:code/:cartId/:lang?', checkCodePromoByCode);
-    app.post('/v2/promos',          adminAuth, getPromos);
-    app.post('/v2/promo',           adminAuth, getPromo);
-    app.post('/v2/promo/:_id',      adminAuth, getPromoById);
-    app.put('/v2/promo/:_id/clone', adminAuth, clonePromo);
-    app.put('/v2/promo',            adminAuth, setPromo);
-    app.delete('/v2/promo/:_id',    adminAuth, deletePromo);
-    app.delete('/v2/promo/:promoId/code/:codeId',    adminAuth, deletePromoCode);
+    app.get('/v2/promo/check/code/:code/:cartId/:lang?',       checkCodePromoByCode);
+    app.post('/v2/promos',                        adminAuthRight('promos'), getPromos);
+    app.post('/v2/promo',                         adminAuthRight('promos'), getPromo);
+    app.post('/v2/promo/:_id',                    adminAuthRight('promos'), getPromoById);
+    app.put('/v2/promo/:_id/clone',               adminAuthRight('promos'), clonePromo);
+    app.put('/v2/promo',                          adminAuthRight('promos'), setPromo);
+    app.delete('/v2/promo/:_id',                  adminAuthRight('promos'), deletePromo);
+    app.delete('/v2/promo/:promoId/code/:codeId', adminAuthRight('promos'), deletePromoCode);
 };
 
 /**

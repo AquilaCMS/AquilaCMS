@@ -1,0 +1,26 @@
+{
+  "title": "My information",
+  "titleNav" : "Customer information",
+  "mandatory" : "mandatory",
+  "titleInformation":"Your information",
+  "titleDelivery":"Shipment address",
+  "titleBilling":"Billing address",
+  "email" : "Email",
+  "phone" : "Phone number",
+  "firstname":"First name",
+  "lastname":"Last name",
+  "newsletter":"I subscribe to the newsletter",
+  "password" : {
+    "title" : "Change your password",
+    "email" : "If you want to change your password, click on the button below, we will send you an email with a link to change your password.",
+    "msgInfo" : "You will receive an email to reset your password!"
+  },
+  "line1":"Address",
+  "line2":"Address 2",
+  "city":"City",
+  "postal":"Zip code",
+  "country":"Country",
+  "sameAddress": "Same billing address",
+  "save" : "Save",
+  "saveLoading" : "Saving..."
+}

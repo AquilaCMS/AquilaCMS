@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -35,9 +35,13 @@ module.exports = {
         fr : 'Interdit',
         en : 'Forbidden'
     },
-    DemoModeActivate : {
-        fr : 'Mode démo Activé',
-        en : 'Demo mode activate'
+    NoCronDemoMode : {
+        fr : 'Impossible de lancer cette tâche en mode démo',
+        en : 'Unable to run this task in demo mode'
+    },
+    JobError : {
+        fr : 'Une erreur est survenue dans le job',
+        en : 'An error occurred in the job'
     },
     NotFound : {
         fr : 'Item non trouvé',
@@ -46,6 +50,10 @@ module.exports = {
     MediaNotFound : {
         fr : 'Média introuvable',
         en : 'Media not found'
+    },
+    MediaNotInRoot : {
+        fr : 'Aucun média à la racine du zip',
+        en : 'No media in root zip'
     },
     UserNotFound : {
         fr : 'Utilisateur non trouvé',
@@ -118,10 +126,6 @@ module.exports = {
     categoryAlreadyExist : {
         fr : 'Catégorie déjà existante',
         en : 'Category already exist'
-    },
-    SlugAlreadyExist : {
-        fr : 'Le slug existe déjà',
-        en : 'Slug already exist'
     },
     CmsBlockNotFound : {
         fr : 'Bloc CMS non trouvé',
@@ -230,6 +234,10 @@ module.exports = {
     ComponentNotAllowed : {
         fr : 'Composant non autorisé, il doit être prefixé par ns-',
         en : 'Composant not allowed, it should be prefixed with ns-'
+    },
+    ProductTypeInvalid : {
+        fr : 'Ce type n\'est pas valide',
+        en : 'Type not allowed'
     },
     ComponentInvalidModel : {
         fr : 'Impossible de trouver le code de ce composant',
@@ -367,9 +375,25 @@ module.exports = {
         fr : 'Impossible de mettre à jour le produit',
         en : 'Cannot update this product'
     },
-    ProductUpdateSlugError : {
-        fr : 'Impossible de mettre à jour le produit, le slug est trop court',
-        en : 'Cannot update this product, slug is too short'
+    SlugAlreadyExist : {
+        fr : 'Le slug existe déjà',
+        en : 'Slug already exists'
+    },
+    SlugTooShort : {
+        fr : 'Le slug est trop court',
+        en : 'Slug is too short'
+    },
+    InvalidInputString : {
+        fr : 'Un champs de type string est invalide',
+        en : 'A string field is invalid'
+    },
+    NameMissing : {
+        fr : 'Le nom est manquant',
+        en : 'Name is missing'
+    },
+    MailTypeCodeEmpty : {
+        fr : 'Le code du type de mail est vide',
+        en : 'Email type code is empty'
     },
     ProductIdExisting : {
         fr : 'ID produit déjà existant',
@@ -406,6 +430,10 @@ module.exports = {
     PromoCodeNotFound : {
         fr : 'Impossible de trouver le code de la promotion',
         en : 'Cannot find the code discount'
+    },
+    InitChildProcessError : {
+        fr : 'Impossible d\'initialiser le processus enfant',
+        en : 'Cannot initialize child process'
     },
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',
@@ -526,6 +554,10 @@ module.exports = {
     ModuleAquilaVersionNotSatisfied : {
         fr : 'Version du module Aquila non satisfaite',
         en : 'Module aquila version not satisfied'
+    },
+    IncompatibleModuleComponentType : {
+        fr : 'Le type de composant requis par le thème n\'a pas été trouvé dans le module',
+        en : 'The component type required by the theme was not found in the module'
     },
     ThemePackageNotFound : {
         fr : 'Thème Package.json introuvable',

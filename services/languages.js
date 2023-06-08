@@ -1,30 +1,34 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path         = require('path');
-const fs           = require('../utils/fsp');
-const {Languages}  = require('../orm/models');
-const NSErrors     = require('../utils/errors/NSErrors');
-const QueryBuilder = require('../utils/QueryBuilder');
+const path          = require('path');
+const {fs}          = require('aql-utils');
+const ServiceConfig = require('./config');
+const {Languages}   = require('../orm/models');
+const NSErrors      = require('../utils/errors/NSErrors');
+const QueryBuilder  = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
-const getLanguages = async (PostBody) => queryBuilder.find(PostBody);
+const warningMsg = 'you must rebuild the theme and restart the server to apply the change.';
 
-const getLang = async (PostBody) => queryBuilder.findOne(PostBody);
+const getLanguages = async (PostBody) => queryBuilder.find(PostBody, true);
+
+const getLang = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status = 'visible'; // The default language need to be visible
+        lang.status               = 'visible'; // The default language need to be visible
+        global.aquila.defaultLang = lang.code;
         await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
@@ -34,13 +38,22 @@ const saveLang = async (lang) => {
         result = await Languages.create(lang);
     }
 
-    await createDynamicLangFile();
+    await require('./themes').languageManagement();
+    if (lang._id) {
+        console.log(`Language '${result.name}' updated, ${warningMsg}`);
+    } else if (result.status === 'visible') {
+        console.log(`Language '${result.name}' created, ${warningMsg}`);
+    }
     return result;
 };
 
 const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
-    await createDynamicLangFile();
+
+    await require('./themes').languageManagement();
+    if (deletedLang.status === 'visible') {
+        console.log(`Language '${deletedLang.name}' deleted, ${warningMsg}`);
+    }
     return deletedLang;
 };
 
@@ -48,10 +61,13 @@ const removeLang = async (_id) => {
  * @description Return the default lang code
  * @param {string} language - Requested language
  */
-const getDefaultLang = (language) => {
-    // If the language requested is the default one, we will recover the "real" default language
-    if (language === undefined || language === null || language === '') return global.defaultLang;
-    return language;
+const getDefaultLang = async (language) => {
+    if (language) {
+        // Check if language exists
+        const lang = await Languages.find({code: language}).lean();
+        if (lang) return language;
+    }
+    return global.aquila.defaultLang;
 };
 
 /**
@@ -74,10 +90,16 @@ const translateSet = async (translateName, translateValue, lang) => {
  * @description Get the contents of the translation file
  */
 const translateGet = async (filePath, lang) => {
+    const {createSchema} = require('genson-js');
     try {
         const themePath = await getTranslatePath(lang);
-        const pathName  = path.join(themePath, `${filePath}.json`);
-        return fs.readFile(pathName, 'utf8');
+        const pathName  = path.resolve(themePath, `${filePath}.json`);
+        const temp      = fs.readFileSync(pathName, 'utf8');
+        const tradObj   = {};
+        tradObj.data    = temp;
+        tradObj.schema  = createSchema(JSON.parse(temp));
+
+        return tradObj;
     } catch (error) {
         throw NSErrors.TranslationError;
     }
@@ -88,19 +110,33 @@ const translateGet = async (filePath, lang) => {
  */
 const translateList = async () => {
     try {
-        const lang          = 'fr';
+        const lang          = await getDefaultLang();
         const translateList = [];
         const translatePath = await getTranslatePath(lang);
-        const listDir       = await fs.readdir(translatePath);
-        for (const file of listDir) {
-            if (file.endsWith('.json')) {
-                translateList.push(file.substring(0, file.lastIndexOf('.json')));
-            }
-        }
+        await getListOfAllTranslationFiles(translatePath, translateList);
 
-        return translateList;
+        return translateList.map((translate) => translate.replace(`${translatePath}\\`, '').replace(/\\/g, '/'));
     } catch (error) {
         throw NSErrors.TranslationError;
+    }
+};
+
+const getListOfAllTranslationFiles = async (dir, translateList) => {
+    try {
+        const files = await fs.readdir(dir);
+
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            const stat     = await fs.stat(filePath);
+
+            if (stat.isFile() && path.extname(filePath) === '.json') {
+                translateList.push(filePath.substring(0, filePath.lastIndexOf('.json')));
+            } else if (stat.isDirectory()) {
+                await getListOfAllTranslationFiles(filePath, translateList);
+            }
+        }
+    } catch (err) {
+        console.error('Could not list the directory.', err);
     }
 };
 
@@ -108,20 +144,35 @@ const translateList = async () => {
  *
  */
 async function getTranslatePath(lang) {
-    return path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
+    const newPath = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'locales', lang);
+    if (await fs.existsSync(newPath)) {
+        return newPath;
+    }
+    return path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 
 /**
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
-const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
-    const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
-    const contentFile = `module.exports = [${_languages}];`;
-
-    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+const createDynamicLangFile = async (selectedTheme = global.aquila.envConfig.environment.currentTheme) => {
     try {
+        const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
+        const contentFile = `module.exports = [${_languages}];`;
+        const linkToFile  = path.join(global.aquila.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        if (await fs.existsSync(linkToFile)) {
+            const originalContentFile = await fs.readFile(linkToFile);
+
+            if (originalContentFile.toString() !== contentFile) {
+                console.log('dynamic_lang file changes');
+                await ServiceConfig.needRebuildAndRestart(true, true);
+            }
+        } else {
+            await ServiceConfig.needRebuildAndRestart(true, true);
+        }
+
         await fs.writeFile(linkToFile, contentFile);
     } catch (e) {
+        console.error(e);
         throw 'Error writing file "dynamic_langs.js"';
     }
 };

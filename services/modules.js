@@ -1,26 +1,26 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip           = require('adm-zip');
-const path             = require('path');
-const mongoose         = require('mongoose');
-const rimraf           = require('rimraf');
-const semver           = require('semver');
-const packageManager   = require('../utils/packageManager');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const modulesUtils     = require('../utils/modules');
-const {isProd, getEnv} = require('../utils/server');
-const fs               = require('../utils/fsp');
-const NSErrors         = require('../utils/errors/NSErrors');
-const {Modules}        = require('../orm/models');
-const themesService    = require('./themes');
-const {PackageJSON}    = require('../utils');
-const aquilaEvents     = require('../utils/aquilaEvents');
+const AdmZip                      = require('adm-zip');
+const path                        = require('path');
+const mongoose                    = require('mongoose');
+const rimraf                      = require('rimraf');
+const semver                      = require('semver');
+const slash                       = require('slash');
+const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const {PackageJSON}               = require('../utils');
+const utilsThemes                 = require('../utils/themes');
+const QueryBuilder                = require('../utils/QueryBuilder');
+const modulesUtils                = require('../utils/modules');
+const {getEnv}                    = require('../utils/server');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Modules}                   = require('../orm/models');
+const themesService               = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -71,17 +71,15 @@ const initModule = async (files) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolder       = 'modules/';
-    const zipFilePath        = `${moduleFolder}${originalname}`;
-    const extractZipFilePath = zipFilePath.replace('.zip', '/');
+    const moduleFolderName    = 'modules/';
+    const moduleFolderAbsPath = path.resolve(global.aquila.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
+    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
+    const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
 
     // move the file from the temporary location to the intended location
-    await fs.mkdir(path.resolve(global.appRoot, moduleFolder), {recursive: true});
-    await fs.copyFile(
-        path.resolve(global.appRoot, filepath),
-        path.resolve(global.appRoot, zipFilePath)
-    );
-    await fs.unlink(path.resolve(global.appRoot, filepath));
+    await fs.mkdir(moduleFolderAbsPath, {recursive: true});
+    await fs.copyFile(path.resolve(global.aquila.appRoot, filepath), zipFilePath);
+    await fs.unlink(path.resolve(global.aquila.appRoot, filepath));
 
     try {
         const zip      = new AdmZip(zipFilePath);
@@ -93,7 +91,7 @@ const initModule = async (files) => {
         }
         const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
         if (moduleAquilaVersion) {
-            const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+            const packageAquila = (await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
             const aquilaVersion = JSON.parse(packageAquila).version;
             if (!semver.satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
                 throw NSErrors.ModuleAquilaVersionNotSatisfied;
@@ -109,12 +107,11 @@ const initModule = async (files) => {
             }
         }
         if (!found) {
-            throw NSErrors.ModuleMainFolder;
-            // throw new Error('missing main folder in zip');
+            throw NSErrors.ModuleMainFolder; // missing main folder in zip
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
-            zip.extractAllToAsync(moduleFolder, true, (err) => {
+            zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
                 if (err) {
                     console.error(err);
                     reject();
@@ -127,10 +124,10 @@ const initModule = async (files) => {
         if (!fs.existsSync(infoPath)) {
             throw NSErrors.ModuleInfoNotFound;
         }
-        const infoFile = await fs.readFile(infoPath, 'utf8');
+        const infoFile    = await fs.readFile(infoPath, 'utf8');
         const packageFile = await fs.readFile(path.resolve(extractZipFilePath, 'package.json'), 'utf8');
-        const packageJSON = JSON.parse(packageFile)
-        const {info}   = JSON.parse(infoFile);
+        const packageJSON = JSON.parse(packageFile);
+        const {info}      = JSON.parse(infoFile);
         console.log('Installing module...');
 
         const myModule  = await Modules.findOne({name: info.name});
@@ -138,7 +135,7 @@ const initModule = async (files) => {
             name                     : packageJSON.package.name,
             description              : packageJSON.package.description,
             version                  : packageJSON.package.version,
-            path                     : extractZipFilePath,
+            path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -155,27 +152,31 @@ const initModule = async (files) => {
         }, {upsert: true, new: true});
 
         // Check if the functions init, initAfter, uninit and rgpd are present
-        const pathUninit = path.join(global.appRoot, extractZipFilePath, 'uninit.js');
+        const pathUninit = path.join(extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
             console.error(`Uninit file is missing for : ${info.name}`);
         }
 
-        const pathInit = path.join(global.appRoot, extractZipFilePath, 'init.js');
+        const pathInit = path.join(extractZipFilePath, 'init.js');
         if (!fs.existsSync(pathInit)) {
             console.error(`Init file is missing for : ${info.name}`);
         }
 
-        const pathInitAfter = path.join(global.appRoot, extractZipFilePath, 'initAfter.js');
+        const pathInitAfter = path.join(extractZipFilePath, 'initAfter.js');
         if (!fs.existsSync(pathInitAfter)) {
             console.error(`InitAfter file is missing for : ${info.name}`);
         }
 
-        const pathRgpd = path.join(global.appRoot, extractZipFilePath, 'rgpd.js');
+        const pathRgpd = path.join(extractZipFilePath, 'rgpd.js');
         if (!fs.existsSync(pathRgpd)) {
             console.error(`RGPD file is missing for : ${info.name}`);
         }
 
         console.log('Module installed');
+        if (myModule && myModule.active) {
+            console.log(`Updating active module ${myModule.name}`);
+            await activateModule(myModule._id, {});
+        }
         return newModule;
     } catch (err) {
         try {
@@ -199,78 +200,124 @@ const initModule = async (files) => {
  * npm install back (in aquila), npm install for the theme (with active modules)
  * @param {String} idModule mongoose id of the module
  */
-const activateModule = async (idModule) => {
-    const myModule = await Modules.findOne({_id: idModule});
-    await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
+const activateModule = async (idModule, toBeChanged) => {
+    try {
+        const myModule = await Modules.findOne({_id: idModule});
+        await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-    const copy    = path.resolve(`backoffice/app/${myModule.name}`);
-    const copyF   = path.resolve(`modules/${myModule.name}/app/`);
-    const copyTab = [];
-    if (await fs.hasAccess(copyF)) {
-        try {
-            await fs.copyRecursive(
-                path.resolve(global.appRoot, copyF),
-                path.resolve(global.appRoot, copy),
-                true
-            );
-        } catch (err) {
-            console.error(err);
-        }
-        copyTab.push(copy);
-    }
-
-    if (myModule.loadTranslationBack) {
-        console.log('Loading back translation for module...');
-        const src  = path.resolve('modules', myModule.name, 'translations/back');
-        const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
-        if (await fs.hasAccess(src)) {
+        const copy  = path.resolve(`backoffice/app/${myModule.name}`);
+        const copyF = path.resolve(`modules/${myModule.name}/app/`);
+        let copyTab = [];
+        if (await fs.hasAccess(copyF)) {
             try {
                 await fs.copyRecursive(
-                    path.resolve(global.appRoot, src),
-                    path.resolve(global.appRoot, dest),
+                    path.resolve(global.aquila.appRoot, copyF),
+                    path.resolve(global.aquila.appRoot, copy),
                     true
                 );
             } catch (err) {
                 console.error(err);
             }
-            copyTab.push(dest);
+            copyTab.push(copy);
         }
-    }
 
-    if (myModule.loadTranslationFront) {
-        console.log('Loading front translation for module...');
-        const {currentTheme} = global.envConfig.environment;
-        const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`, 'utf-8');
-        for (let i = 0; i < files.length; i++) {
-            const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
-            const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
+        if (myModule.loadTranslationBack) {
+            console.log('Loading back translation for module...');
+            const src  = path.join('modules', myModule.name, 'translations/back');
+            const dest = path.join('backoffice/assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursive(src, dest, true);
+                    await fs.copyRecursive(
+                        path.resolve(global.aquila.appRoot, src),
+                        path.resolve(global.aquila.appRoot, dest),
+                        true
+                    );
                 } catch (err) {
                     console.error(err);
                 }
                 copyTab.push(dest);
             }
         }
+
+        // Add new module to the workspaces field in the AquilaCMS package.json
+        const packageJSON = new PackageJSON();
+        await packageJSON.read();
+        packageJSON.package.workspaces.push(`modules/${myModule.name}`);
+        await packageJSON.save();
+
+        // All the actions concerning the module that will be performed in the theme
+        copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
+
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
+        console.log('Module activated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
+    }
+};
+
+const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
+    const {currentTheme}       = global.aquila.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No component installation is required by this theme (${currentTheme})`);
+        return copyTab;
+    }
+    if (!myModule.component_template_front) {
+        console.log(`No component template is defined by this module (${myModule.name})`);
+        return copyTab;
     }
 
-    const packageJSON = new PackageJSON();
-    await packageJSON.read();
-    packageJSON.package.workspaces.push(`modules/${myModule.name}`);
-    await packageJSON.save();
+    let pathToComponents = 'theme_components';
+    if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+    const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
 
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+    // Control compatibility between the module and the theme
+    if (!fs.existsSync(pathToThemeComponents)) {
+        throw NSErrors.IncompatibleModuleComponentType;
+    }
+
+    if (myModule.loadTranslationFront) {
+        console.log('Front translation for module : Loading ...');
+        try {
+            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n');
+            const hasAccess           = await fs.hasAccess(pathToTranslateFile);
+            if (hasAccess) {
+                const files      = await fs.readdir(pathToTranslateFile);
+                const fileLength = files.length;
+                for (let i = 0; i < fileLength; i++) {
+                    const lang = files[i];
+                    if (lang === 'index.js') {
+                        continue;
+                    }
+                    const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
+                    const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                    if (await fs.hasAccess(src)) {
+                        try {
+                            await fs.copyRecursive(src, dest, true);
+                        } catch (err) {
+                            console.error(err);
+                        }
+                        copyTab.push(dest);
+                    }
+                }
+            }
+            console.log('Front translation for module : Success');
+        } catch (errorLoadTranslationFront) {
+            console.log('Front translation for module : Failed');
+        }
+    }
 
     // If the module must import components into the front
     await addOrRemoveThemeFiles(
-        path.join(global.appRoot, 'modules', myModule.name, 'theme_components'),
-        false,
-        myModule.types || myModule.type || ''
+        pathToThemeComponents,
+        false
     );
-    await myModule.updateOne({$push: {files: copyTab}, active: true});
-    console.log('Module activated');
-    return Modules.find({}).sort({active: -1, name: 1});
+
+    return copyTab;
 };
 
 /**
@@ -278,52 +325,123 @@ const activateModule = async (idModule) => {
  * to the backoffice and the theme if exists
  * @param {String} idModule
  */
-const deactivateModule = async (idModule) => {
-    const _module = (await Modules.findById(idModule)).toObject();
-    if (!_module) {
-        throw NSErrors.ModuleNotFound;
-    }
-    await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
-    await removeModuleAddon(_module);
+const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
     try {
-        await addOrRemoveThemeFiles(
-            path.resolve(global.appRoot, _module.path, 'theme_components'),
-            true,
-            _module.types || _module.type || ''
-        );
-    } catch (error) {
-        console.error(error);
-    }
+        const _module = (await Modules.findById(idModule)).toObject();
+        if (!_module) {
+            throw NSErrors.ModuleNotFound;
+        }
+        await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+        await removeModuleAddon(_module);
 
-    // Deleting copied files
-    for (let i = 0; i < _module.files.length; i++) {
-        if (await fs.hasAccess(_module.files[i])) {
-            if ((await fs.lstat(_module.files[i])).isDirectory()) {
-                await new Promise((resolve) => rimraf(_module.files[i], (err) => {
-                    if (err) console.error(err);
-                    resolve();
-                }));
-            } else {
-                try {
-                    await fs.unlink(_module.files[i]);
-                } catch (err) {
-                    console.error('Error: ', err);
+        // Deleting copied files
+        for (let i = 0; i < _module.files.length; i++) {
+            if (await fs.hasAccess(_module.files[i])) {
+                if ((await fs.lstat(_module.files[i])).isDirectory()) {
+                    await new Promise((resolve) => {
+                        rimraf(_module.files[i], (err) => {
+                            if (err) console.error(err);
+                            resolve();
+                        });
+                    });
+                } else {
+                    try {
+                        await fs.unlink(_module.files[i]);
+                    } catch (err) {
+                        console.error('Error: ', err);
+                    }
                 }
             }
         }
+
+        await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
+
+        // Remove module from the workspaces field of the AquilaCMS package.json
+        console.log('Removing dependencies of the module...');
+        const packageJSON = new PackageJSON();
+        await packageJSON.read();
+        const workspaceIndex = packageJSON.package.workspaces.indexOf(`/modules/${_module.name}`);
+        packageJSON.package.workspaces.splice(workspaceIndex, 1);
+        await packageJSON.save();
+
+        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
+        console.log('Module deactivated');
+        return Modules.find({}).sort({active: -1, name: 1});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
+        throw err;
     }
+};
 
-    console.log('Removing dependencies of the module...');
-    const packageJSON = new PackageJSON();
-    await packageJSON.read();
-    const workspaceIndex = packageJSON.package.workspaces.indexOf(`/modules/${_module.name}`);
-    packageJSON.package.workspaces.splice(workspaceIndex, 1);
-    await packageJSON.save();
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => {
+    const {currentTheme}       = global.aquila.envConfig.environment;
+    const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log(`No components were required by this theme (${currentTheme})`);
+    } else {
+        let pathToComponents = 'theme_components';
+        if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
+        const pathToThemeComponents = path.join(global.aquila.appRoot, _module.path, pathToComponents);
+        await addOrRemoveThemeFiles(
+            pathToThemeComponents,
+            true
+        );
+        console.log('Removing dependencies of the module...');
+        // Remove the dependencies of the module
+        if (_module.packageDependencies) {
+            for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
+                let installPath;
+                let savePackagedependenciesPath;
+                let packagePath;
+                if (apiOrTheme === 'api') {
+                    installPath                 = global.aquila.appRoot;
+                    savePackagedependenciesPath = path.join(global.aquila.appRoot, 'package-aquila.json');
+                    packagePath                 = path.resolve(installPath, 'package.json');
+                } else if (apiOrTheme === 'theme') {
+                    installPath                 = path.resolve(
+                        global.aquila.appRoot,
+                        'themes',
+                        global.aquila.envConfig.environment.currentTheme
+                    );
+                    savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
+                    packagePath                 = path.resolve(installPath, 'package.json');
+                }
+                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
+                const packageJSON             = JSON.parse(await fs.readFile(packagePath));
+                packageJSON.dependencies      = {
+                    ...packageJSON.dependencies,
+                    ...toBeChanged[apiOrTheme]
+                };
+                for (const packageToDelete of toBeRemoved[apiOrTheme]) {
+                    delete packageJSON.dependencies[packageToDelete];
+                }
+                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
+                    let found = false;
+                    for (const [name2] of Object.entries(packageJSON.dependencies)) {
+                        if (name === name2) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) packageJSON.dependencies[name] = version;
+                }
 
-    await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-    console.log('Module deactivated');
-    return Modules.find({}).sort({active: -1, name: 1});
+                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                await execCmd('yarn install', installPath);
+                // await execCmd('yarn upgrade', installPath);
+            }
+        }
+    }
+};
+
+const orderPackages = (dependencies) => {
+    const ordered = {};
+    for (const pkg of Object.keys(dependencies).sort()) {
+        ordered[pkg] = dependencies[pkg];
+    }
+    return ordered;
 };
 
 /**
@@ -349,25 +467,49 @@ const removeModule = async (idModule) => {
     return true;
 };
 
+const retrieveModuleComponentType = async (theme) => {
+    const themeInfo = await utilsThemes.loadThemeInfo(theme);
+    if (themeInfo?.moduleComponentType) return themeInfo.moduleComponentType;
+    return '';
+};
+
+/**
+ * Checks the type of module component the theme expects
+ * If a module path is not filled in, this means that all modules registered in the database must be installed (as in the case of a theme change)
+ * @param {*} theme : theme
+ * @param {*} pathModule : module path
+ */
+const frontModuleComponentManagement = async (theme, modulePath) => {
+    const themeModuleComponent = await retrieveModuleComponentType(theme);
+    if (themeModuleComponent === 'no-installation') {
+        console.log('No component installation is required by this theme');
+    } else {
+        if (modulePath) {
+            await setFrontModuleInTheme(modulePath, theme);
+        } else {
+            await setFrontModules(theme);
+        }
+    }
+};
+
 /**
  * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
  */
 const setFrontModules = async (theme) => {
     console.log("Set module's front files : Loading ...");
     // Create the file if it does not exist, or reinit of the file
-    await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
+    await modulesUtils.createListModuleFile(theme || global.aquila.envConfig.environment.currentTheme);
 
     // Update file content (from modules)
     const listModules = await Modules.find({active: true/* , "et need front" */});
-
     for (let index = 0; index < listModules.length; index++) {
         const oneModule = listModules[index];
 
         // Does this module contain a front?
-        const modulePath = path.join(global.appRoot, oneModule.path);
+        const modulePath = path.join(global.aquila.appRoot, oneModule.path);
         if (await fs.hasAccess(modulePath)) {
             // Write the file if it's not already in it
-            await setFrontModuleInTheme(modulePath, theme || global.envConfig.environment.currentTheme);
+            await setFrontModuleInTheme(modulePath, theme || global.aquila.envConfig.environment.currentTheme);
         }
     }
     console.log("Set module's front files : Done");
@@ -379,8 +521,9 @@ const setFrontModules = async (theme) => {
  * @param {*} theme : theme
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
-    const savePath = pathModule.replace('theme_components', ''); // useless
-    console.log(`Set module's front files... ${pathModule}`);
+    let savePath              = pathModule.replace('theme_components', '');
+    const moduleComponentType = await retrieveModuleComponentType(theme);
+    if (moduleComponentType !== '') savePath = savePath.replace(moduleComponentType, '');
 
     if (pathModule.lastIndexOf('theme_components') === -1) {
         pathModule = path.join(pathModule, 'theme_components');
@@ -389,53 +532,75 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         pathModule = path.join(pathModule, '/');
     }
 
-    // Check if the theme_components folder exists in the module, if so, then it's a front module
+    if (moduleComponentType !== '' && pathModule.lastIndexOf(moduleComponentType) === -1) pathModule = path.join(pathModule, moduleComponentType, '/');
+
+    // Check if the module component type exists in the theme_components folder
     const hasAccess = await fs.hasAccess(pathModule);
     if (!hasAccess) {
         return;
     }
-    const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
-    const resultDir    = await fs.readdir(pathModule);
+
+    const currentTheme       = theme || global.aquila.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
+    const pathToThemeModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules');
+
+    const info       = await fs.readFile(path.join(savePath, 'info.json'));
+    const parsedInfo = JSON.parse(info);
+
+    const moduleFolderInTheme = path.join(pathToThemeModules, parsedInfo.info.name);
+    if (!fs.existsSync(moduleFolderInTheme)) {
+        fs.mkdirSync(moduleFolderInTheme);
+    }
+
+    const pathListModules = path.join(pathToThemeModules, 'list_modules.js');
 
     // For each module front file
-    for (let i = 0; i < resultDir.length; i++) {
-        const file = resultDir[i];
-        if (!file.startsWith('Module') || !file.endsWith('.js')) {
-            continue;
-        }
-        const info       = await fs.readFile(path.join(savePath, 'info.json'));
-        const parsedInfo = JSON.parse(info);
-        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
+    const resultDir = await fs.readdir(pathModule, {withFileTypes: true});
+    const filesList = resultDir.filter((file) => file.isFile());
+    for (let i = 0; i < filesList.length; i++) {
+        const file = filesList[i].name;
+        let type   = parsedInfo?.info?.type ? parsedInfo.info.type : '';
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
-            type = parsedInfo.info.types.find((t) => t.component === file).type;
+            type = parsedInfo.info.types.find((t) => t.component === file)?.type;
         }
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> componentname
-        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
-        console.log(jsxModuleToImport);
-        const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
-        const result          = await fs.readFile(pathListModules, 'utf8');
+        if (type === undefined || type === null) {
+            type = '';
+        }
+        const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
+        const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
+            // eslint-disable-next-line prefer-regex-literals
             const regexArray            = new RegExp(/\[[^]*?\]/, 'gm');
             let exportDefaultListModule = '';
             const match                 = result.match(regexArray);
             if (match && match.length > 0) {
                 exportDefaultListModule = match[0];
             }
-            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
+            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))}${jsxModuleToImport}]`;
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
         // Copy the files (of the module) needed by the front
-        const copyTo  = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+        const copyTo  = path.join(moduleFolderInTheme, file);
         const copyTab = [
-            path.join(global.appRoot, 'themes', currentTheme, 'modules', file)
+            copyTo
         ];
         // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(path.resolve(pathModule, file), copyTo);
         console.log(`Copy module's files front : ${path.resolve(pathModule, file)} -> ${copyTo}`);
+    }
+
+    // Add the rest of the folders and files
+    if (moduleComponentType && moduleComponentType !== 'no-installation') {
+        for (let i = 0; i < resultDir.length; i++) {
+            const thisDir = path.join(moduleFolderInTheme, resultDir[i].name);
+            if (!fs.existsSync(thisDir)) {
+                await fs.copyRecursive(pathModule + resultDir[i].name, thisDir);
+            }
+        }
     }
 };
 
@@ -444,35 +609,44 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
  * @param {string} pathThemeComponents path to the front component of the module. ie: "modules/my-module-aquila/theme_components"
  * @param {boolean} toRemove if true then we delete the files in "themes/currentTheme/modules" and "themes/currentTheme/list_modules"
  */
-const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
+const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
     // Check if the theme_components folder exists in the module, then it's a front module
     if (!fs.existsSync(pathThemeComponents)) {
         return;
     }
-    const currentTheme = global.envConfig.environment.currentTheme;
-    const listOfFile   = await fs.readdir(pathThemeComponents);
-    for (const file of listOfFile) {
-        if (!file.startsWith('Module') || !file.endsWith('.js')) {
-            continue;
-        }
-        if (toRemove) {
-            const fileNameWithoutModule = file.replace('Module', '')
-                .replace('.js', '')
-                .toLowerCase();
-            await removeFromListModule(file, currentTheme, fileNameWithoutModule, type);
-            const filePath = path.join(global.appRoot, 'themes', currentTheme, 'modules', file);
+    const currentTheme = global.aquila.envConfig.environment.currentTheme;
+    if (toRemove) {
+        const pathThemeComponentsArray = slash(pathThemeComponents).split('/');
+        let moduleName                 = pathThemeComponentsArray[pathThemeComponentsArray.length - 2]; // Historic path with no sub-folder in theme_components
+        if (moduleName === 'theme_components') moduleName = pathThemeComponentsArray[pathThemeComponentsArray.length - 3]; // New path with a sub-folder for each possible technology
+
+        // Remove all component files (especially from the list_modules.js file)
+        const listOfDir  = await fs.readdir(pathThemeComponents, {withFileTypes: true});
+        const listOfFile = listOfDir.filter((file) => file.isFile());
+        for (const file of listOfFile) {
+            const fileName = file.name;
+            await removeFromListModule(fileName, currentTheme);
+            let filePath = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', fileName);
+            if (!fs.existsSync(filePath)) filePath = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName, fileName); // The new way
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
-                    console.log(`rm ${filePath}`);
+                    console.log(`Delete ${filePath}`);
                 } catch (err) {
-                    console.log(`cannot rm ${filePath}`);
+                    console.log(`Cannot delete ${filePath}`);
                 }
             }
-        } else {
-            await setFrontModuleInTheme(pathThemeComponents, currentTheme);
         }
-    } 
+
+        const moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
+        if (fs.existsSync(moduleFolderInTheme)) {
+            fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
+            console.log(`Delete ${moduleFolderInTheme}`);
+        }
+    } else {
+        await frontModuleComponentManagement(currentTheme, pathThemeComponents);
+    }
+
     // Rebuild du theme
     if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
@@ -485,27 +659,18 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
  * @param {*} exportDefaultListModule [{ jsx: require('./ModuleMonModule1.js').default, code: 'aq-monmodule1' }, ...]
  * @param {*} pathListModules themes/${currentTheme}/modules/list_modules.js`
  */
-const removeImport = async (jsxModuleToImport, exportDefaultListModule, pathListModules) => {
-    // We remove the spaces
-    const objectToRemove = jsxModuleToImport.replace(/\s+/g, '');
-    // We remove the spaces from the information contained in the export table
-    exportDefaultListModule = exportDefaultListModule.replace(/\s+/g, '');
-    // We replace with "" the object to be deleted from the file
-    const result = exportDefaultListModule.replace(objectToRemove, '');
-    await fs.writeFile(pathListModules, `export default ${result}`);
+const removeImport = async (thisModuleElement, exportDefaultListModule, pathListModules) => {
+    const result = exportDefaultListModule.replace(thisModuleElement, '');
+    await fs.writeFile(pathListModules, result);
 };
 
-const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, type) => {
+const removeFromListModule = async (file, currentTheme) => {
     try {
-        const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
+        const pathListModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
-            const result = await fs.readFile(pathListModules, 'utf8');
-            if (Array.isArray(type)) {
-                type = type.find((t) => t.component === file).type;
-            }
-            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
-            const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-            await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
+            const result            = await fs.readFile(pathListModules, 'utf8');
+            const thisModuleElement = new RegExp(`{[^{]*${file}[^}]*},`, 'gm');
+            await removeImport(thisModuleElement, result, pathListModules);
         }
     } catch (error) {
         console.error(error);
@@ -518,7 +683,7 @@ const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, t
  */
 const removeModuleAddon = async (_module) => {
     if (!_module) return;
-    const uninit = path.join(global.appRoot, _module.path, 'uninit.js');
+    const uninit = path.join(global.aquila.appRoot, _module.path, 'uninit.js');
     if (fs.existsSync(uninit)) {
         try {
             await new Promise((resolve, reject) => {
@@ -534,14 +699,14 @@ const removeModuleAddon = async (_module) => {
             try {
                 await require('./job').deleteModuleJobByName(cronName);
             } catch (err) {
-                console.error(err);
+                console.error(`Unable to delete the job '${cronName}'`);
             }
         }
     }
     if (_module.mailTypeCode && _module.mailTypeCode.length > 0) {
         for (const mailCode of _module.mailTypeCode) {
             try {
-                await require('./mailType').deleteMailType(mailCode);
+                await require('./mailType').deleteMailType(mailCode, false);
             } catch (err) {
                 console.error(err);
             }
@@ -550,7 +715,7 @@ const removeModuleAddon = async (_module) => {
 };
 
 const initComponentTemplate = async (model, component, moduleName) => {
-    const elements = await mongoose.model(model).find({});
+    const elements = await mongoose.model(model).find({$or: [{component_template: {$regex: `^((?!${component}).)*$`, $options: 'm'}}, {component_template: undefined}]}).select('_id component_template').lean();
     for (const elem of elements) {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';
@@ -589,7 +754,7 @@ const loadAdminModules = async () => {
     for (const oneModule of modules) {
         const item = {module: oneModule.name, files: []};
         try {
-            const pathToModule = path.join(global.appRoot, 'backoffice', 'app', oneModule.name);
+            const pathToModule = path.join(global.aquila.appRoot, 'backoffice', 'app', oneModule.name);
             const hasAccess    = await fs.hasAccess(pathToModule);
             if (!hasAccess) {
                 throw `Can't access to ${pathToModule}`;
@@ -650,20 +815,18 @@ const setConfig = async (name, newConfig) => {
 
 /**
  * Used to define the configuration (conf field) of a module
- * @param body {object} datas of the request
+ * @param body {object} datas of the request it has moduleName key (required) and 2 optionnals keys: filename which is the name of the file you wanna point to (default README.md), and encoding which is the file encoding (default utf8)
  * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
- * @deprecated
  */
 const getModuleMd = async (body) => {
     if (!body.moduleName) {
         throw NSErrors.InvalidParameters;
     }
-    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
-    let text       = '';
-    if (fs.existsSync(pathToMd)) {
-        text = await fs.readFileSync(pathToMd, 'utf8');
+    const pathToMd = path.join(global.aquila.appRoot, 'modules', body.moduleName, body.filename || 'README.md');
+    if (await fs.existsSync(pathToMd)) {
+        return fs.readFileSync(pathToMd, body.encoding || 'utf8');
     }
-    return text;
+    return '';
 };
 
 module.exports = {
@@ -674,8 +837,9 @@ module.exports = {
     activateModule,
     deactivateModule,
     removeModule,
-    setFrontModules,
-    setFrontModuleInTheme,
+    frontModuleComponentManagement,
+    // setFrontModules, DEPRECATED : you have to go through the frontModuleComponentManagement function
+    // setFrontModuleInTheme, DEPRECATED : you have to go through the frontModuleComponentManagement function
     addOrRemoveThemeFiles,
     removeImport,
     removeFromListModule,

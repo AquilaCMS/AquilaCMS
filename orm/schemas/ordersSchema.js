@@ -1,23 +1,20 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const utilsDatabase = require('../../utils/database');
-
+const mongoose          = require('mongoose');
+const {aquilaEvents}    = require('aql-utils');
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
-
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const Schema            = mongoose.Schema;
+const {ObjectId}        = Schema.Types;
 
 const DeliveryPackageSchema = new Schema({
     date     : {type: Date, default: Date.now},
@@ -29,7 +26,8 @@ const DeliveryPackageSchema = new Schema({
         selections   : [{
             bundle_section_ref : {type: String},
             products           : [{type: ObjectId, ref: 'products'}]
-        }]
+        }],
+        selected_variant : {}
     }]
 });
 
@@ -202,24 +200,22 @@ const OrdersSchema = new Schema({
         ati : {type: Number, default: 0},
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
-    }
+    },
+    component_template : {type: String, default: null}
 }, {
     usePushEach : true,
     timestamps  : true,
     id          : false
 });
 
+// Need all this index for BO listing
+OrdersSchema.index({createdAt: -1});
+OrdersSchema.index({'customer.email': 1});
+OrdersSchema.index({'customer.nom': 1});
+OrdersSchema.index({'priceTotal.ati': 1});
+
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
-
-/* OrdersSchema.virtual("delivery.date").get(function () {
-    if (this.delivery.dateDelivery !== undefined && this.delivery.dateDelivery.delayPreparation && this.delivery.dateDelivery.delayPreparation) {
-        const mDate = moment(new Date()).add(this.delivery.dateDelivery.delayPreparation, this.delivery.dateDelivery.unitPreparation);
-        mDate.add(this.delivery.dateDelivery.delayDelivery, this.delivery.dateDelivery.unitDelivery);
-        return mDate;
-    }
-    return null;
-}); */
 
 const docArray = OrdersSchema.path('items');
 
@@ -259,22 +255,6 @@ OrdersSchema.post('findOneAndUpdate', function (result) {
         aquilaEvents.emit('aqUpdateOrder', {number: result.number}, this.getUpdate());
         aquilaEvents.emit('aqUpdateStatusOrder', this.getUpdate(), result._id.toString());
     }
-});
-
-OrdersSchema.post('findOne', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-OrdersSchema.post('find', async function (docs, next) {
-    for (let i = 0; i < docs.length; i++) {
-        if (docs[i] && docs[i].items && docs[i].items.length) {
-            await utilsDatabase.populateItems(docs[i].items);
-        }
-    }
-    next();
 });
 
 // Permet d'envoyer un evenement avant que le schema order ne soit crée

@@ -1,24 +1,24 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth} = require('../middleware/authentication');
-const ServiceMail = require('../services/mail');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceMail      = require('../services/mail');
 
 module.exports = function (app) {
-    app.post('/v2/mails', adminAuth, getMails);
-    app.get('/v2/mail/:_id', adminAuth, getMail);
+    app.post('/v2/mails', adminAuthRight('mails'), getMails);
+    app.get('/v2/mail/:_id', adminAuthRight('mails'), getMail);
     app.get('/v2/mail/activation/account/sent/:user_id/:lang?', sendMailActivationAccount);
-    app.put('/v2/mail', adminAuth, setMail);
-    app.put('/v2/mail/removePdf', adminAuth, removePdf);
+    app.put('/v2/mail', adminAuthRight('mails'), setMail);
+    app.put('/v2/mail/removePdf', adminAuthRight('mails'), removePdf);
     app.post('/v2/mail/form/:lang?', sendContact);
-    app.delete('/v2/mail/:_id', adminAuth, deleteMail);
-    app.post('/v2/mail/test', adminAuth, sendTestEmail);
-    app.post('/v2/mail/error', sendError);
+    app.delete('/v2/mail/:_id', adminAuthRight('mails'), deleteMail);
+    app.post('/v2/mail/test', adminAuthRight('mails'), sendTestEmail);
+    app.post('/v2/mail/error', sendErrorMail);
 };
 
 async function sendTestEmail(req, res, next) {
@@ -127,16 +127,16 @@ async function sendContact(req, res, next) {
 }
 
 /**
- * Send an email error (only for dev). Need to set manually (in db) the type of mail
+ * Send an email error
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
  */
-async function sendError(req, res, next) {
+async function sendErrorMail(req, res, next) {
     try {
-        console.error('sendError', req.body);
-        await ServiceMail.sendError(req.body);
-        res.status(200).end();
+        console.error('sendErrorMail', req.body);
+        const result = await ServiceMail.sendErrorMail(req.body);
+        return res.json(result);
     } catch (error) {
         return next(error);
     }

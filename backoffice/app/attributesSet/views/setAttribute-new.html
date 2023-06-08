@@ -1,7 +1,6 @@
 <ns-box data-title="setAttribute.new.t1" title-icon="fa fa-align-justify fa-lg" close-href="#/setAttributes">
     <form name="form" class="form-horizontal" role="form" ng-submit="save(setAttribute)">
-        <!-- <ns-buttons save-and-quit="save(setAttribute, true)"
-                    disable-save="disableSave" return-path="/setAttributes" form="form"> -->
+        <div hook-attributesset-new data="setAttribute">
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label" translate>setAttribute.new.code</label>
                 <div class="col-sm-6">
@@ -17,6 +16,6 @@
             <div style="text-align: right">
                 <button type="submit" class="btn btn-success" translate>setAttribute.new.save</button>
             </div>
-        <!-- </ns-buttons> -->
+        </div>
     </form>
 </ns-box>

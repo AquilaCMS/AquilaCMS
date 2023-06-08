@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -14,15 +14,15 @@ const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Families, restrictedFields, defaultFields);
 
-const getFamilies = async (PostBody) => queryBuilder.find(PostBody);
+const getFamilies = async (PostBody) => queryBuilder.find(PostBody, true);
 
-const getFamily = async (PostBody) => queryBuilder.findOne(PostBody);
+const getFamily = async (PostBody) => queryBuilder.findOne(PostBody, true);
 
 const saveFamily = async (family) => {
     if (!family) throw NSErrors.UnprocessableEntity;
     let _family = null;
     if (family._id) {
-        _family = await Families.findOneAndUpdate({_id: family._id}, family);
+        _family = await Families.findOneAndUpdate({_id: family._id}, family, {new: true});
     } else {
         _family = await Families.create(family);
     }

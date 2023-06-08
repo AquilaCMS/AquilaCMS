@@ -1,5 +1,5 @@
 const path = require('path');
-const fs   = require('./fsp');
+const {fs} = require('aql-utils');
 
 const packageJSONPath = path.resolve(global.appRoot, 'package.json');
 

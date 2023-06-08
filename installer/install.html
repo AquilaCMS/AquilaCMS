@@ -59,11 +59,13 @@
         function NextStep() {
             document.getElementById("firstStep").style.display  = 'none';
             document.getElementById("secondStep").style.display = 'block';
+            isRefreshable = false;
         }
 
         function RecoverConfiguration() {
             document.getElementById("firstStep").style.display   = 'none';
             document.getElementById("recoverStep").style.display = 'block';
+            isRefreshable = false;
         }
 
         function Configuration() {
@@ -112,12 +114,14 @@
                 type: 'POST',
                 data: form.serialize(),
                 success: (response, status) => {
+                    isRefreshable = true;
+                    document.getElementById("loadingPanel").style.color = "red";
 
                     if(response === "ManualRestart") {
-                        document.getElementById("loadingPanel").innerHTML   = "Please restart your server and refresh this page.";
-                        document.getElementById("loadingPanel").style.color = "red";
+                        document.getElementById("loadingPanel").innerHTML   = "Congratulations, install is done !<br/>Please restart your server and refresh this page.";
                     }
                     else {
+                        document.getElementById("loadingPanel").innerHTML   = "Congratulations, install is done !<br/>Please wait while your server restarts.";
                         setTimeout(() => {
                             window.location.href = `${window.location.origin}/`;
                         }, 30000);
@@ -136,7 +140,7 @@
             const fieldValue = document.getElementById(fieldId).value;
 
             // Custom fields
-            if(fieldId === "databaseAdd" && (fieldValue === "mongodb://localhost:27017/")) {
+            if(fieldId === "databaseAdd" && (fieldValue === "mongodb://127.0.0.1:27017/")) {
                 return fieldError + "- MongoDB needs database name<br/>";
             }
             if(fieldId === "appUrl" && fieldValue === "http://") {
@@ -205,7 +209,7 @@
                 const secondPart = partValue[1].split("/");
                 if((typeof secondPart[1] !== "undefined" && secondPart[1] === "") || typeof secondPart[1] === "undefined") {
                     toastContain.style.backgroundColor = "darkorange";
-                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database, example : 'mongodb://localhost:27017/database'"});
+                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database, example : 'mongodb://127.0.0.1:27017/database'"});
                     return;
                 }
             }
@@ -237,6 +241,14 @@
                 }
             });
         };
+
+        let isRefreshable = true;
+        window.addEventListener('beforeunload', function (e) {
+            if(!isRefreshable) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
     </script>
 </header>
@@ -325,7 +337,7 @@
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="mdl-textfield__input" type="text" id="databaseAdd" name="databaseAdd" required
-                        value="mongodb://localhost:27017/">
+                        value="mongodb://127.0.0.1:27017/">
                     <label class="mdl-textfield__label" for="databaseAdd">Connection string to MongoDB <span style="color:#AAA">(if necessary, DB will be created)</span></label>
                 </div>
                 <button type="button" id="testDB" class="testDB mdl-button mdl-js-button mdl-button--primary" style="float: right;margin-top: -15px;">

@@ -1,22 +1,24 @@
 <ns-box data-title="trademark.new.t1" title-icon="fa fa-creative-commons fa-lg" close-href="#/trademarks">
     <form novalidate class="form-horizontal" role="form" ng-submit="save(trademark)" name="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/trademarks" form="form">
-        </br>
-            <input type="hidden" value="" name="id" id="template" ng-model="trademark._id">
-            <div class="form-group" style="margin: 0px 0px 15px 0px;">
-                <label for="name" class="col-sm-1 control-label" translate>trademark.new.nom</label>
-                <div class="col-sm-11">
-                    <input type="text" class="form-control" id="name" translate translate-attr-placeholder='trademark.new.ph1' ng-model="trademark.name"
-                        required>
+            </br>
+            <div hook-trademark-new data="trademark">
+                <input type="hidden" value="" name="id" id="template" ng-model="trademark._id">
+                <div class="form-group" style="margin: 0px 0px 15px 0px;">
+                    <label for="name" class="col-sm-1 control-label" translate>trademark.new.nom</label>
+                    <div class="col-sm-11">
+                        <input type="text" class="form-control" id="name" translate
+                            translate-attr-placeholder='trademark.new.ph1' ng-model="trademark.name" required>
+                    </div>
                 </div>
-            </div>
-        </br>
-            <!-- <div class="form-group" style="margin: 0px 0px 15px 0px;">
+                </br>
+                <!-- <div class="form-group" style="margin: 0px 0px 15px 0px;">
                 <div class="col-sm-6 col-md-offset-1">
                     <button type="button" class="btn btn-default" ng-click="reset()">Annuler</button>
                     <button type="button" class="btn btn-default" ng-click="save(trademark)">Enregistrer</button>
                 </div>
             </div> -->
+            </div>
         </ns-buttons>
     </form>
 </ns-box>

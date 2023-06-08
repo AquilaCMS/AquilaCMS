@@ -1,10 +1,10 @@
 {
     "medias": {
         "t1": "Médias",
-        "nom": "Code",
+        "nom": "Nom",
         "lien": "Lien",
         "miniature": "Miniature",
-        "cpLien": "Copier lien",
+        "cpLien": "Générer lien",
         "delete": "Supprimer",
         "deleteMedia": "Media supprimé",
         "copiedLink": "Lien copié",
@@ -15,9 +15,9 @@
     "new": {
         "t1": "Nouveau Média",
         "ph1": "Nom du fichier",
-        "nom": "Code",
+        "nom": "Nom",
         "lien": "Lien :",
-        "cpLien": "Copier lien",
+        "cpLien": "Générer lien",
         "media": "Média",
         "add": "Ajouter",
         "group": "Groupe",
@@ -59,7 +59,7 @@
         "bottomRight": "Bas droite",
         "enterAllValue": "Veuillez saisir toutes les valeurs.",
         "linkGenerated": "Lien généré",
-        "massAddDone.": "Ajout en masse effectué.",
+        "massAddDone": "Ajout en masse effectué.",
         "takeTime": "Cela peut prendre du temps, merci de patienter ..."
     },
     "multi": {

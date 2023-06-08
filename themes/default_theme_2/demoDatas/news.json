@@ -1,0 +1,31 @@
+{
+  "collection": "news",
+  "datas": [
+    {
+      "isVisible": true,
+      "img": "photos/article/20210830/audit.png",
+      "extension": ".jpg",
+      "_id": "612c9872ebf4774d90ceb4d2",
+      "translation": {
+        "fr": {
+          "slug": "nouveau-theme",
+          "title": "Nouveau theme",
+          "content": {
+            "text": "<p>Voici le nouveau thème par défaut d'<a href=\"https://www.aquila-cms.com/fr\" title=\"AquilaCMS : Open source ecommerce plateforme\" target=\"_blank\" rel=\"noopener\">AquilaCMS</a>.</p>\n<p>Il est orienté pour les restaurateurs avec trois modules supplémentaires (<a href=\"https://shop.aquila-cms.com/fr/modules/allergenes\" title=\"Module allergène pour AquilaCMS\" target=\"_blank\" rel=\"noopener\">Allergène</a>, <a href=\"https://shop.aquila-cms.com/fr/modules/food-options\" title=\"Module Food Option pour Aquila-CMS\" target=\"_blank\" rel=\"noopener\">Food-Option</a> et <a href=\"https://shop.aquila-cms.com/fr/modules/pointofsale\" title=\"Module Click and collect\" target=\"_blank\" rel=\"noopener\">ClickAndCollect</a>), mais ce thème peut être décliné pour n'importe quelle activité e-commerce.</p>\n<p>La technologie utilisée est du ReactJS avec NextJS 11 afin de lier performance et référencement optimisé.</p>\n<p>Cette boutique en ligne <a href=\"https://github.com/AquilaCMS/default_theme_2\" title=\"Thème Open Source développé en ReactJS et NextJS pour AquilaCMS\" target=\"_blank\" rel=\"noopener\">open-source</a> peut service de base pour développer d'autres \"front\". La <a href=\"https://doc.aquila-cms.com\" title=\"Documentation technique pour AquilaCMS\" target=\"_blank\" rel=\"noopener\">documentation</a> en ligne est aussi un outil précieux pour vous aider dans vos développements.</p>",
+            "resume": "Voici le nouveau thème par défaut d'AquilaCMS.\nIl est orienté pour les restaurateurs avec trois modules supplémentaires (Allergène, Food-Option et ClickAndCollect), mais ce thème peut être décliné pou"
+          }
+        },
+        "en": {
+          "content": {
+            "text": "<p>Here is the new default theme for <a href=\"https://www.aquila-cms.com/\" title=\"AquilaCMS : Open source ecommerce plateforme\" target=\"_blank\" rel=\"noopener\">AquilaCMS</a>.</p>\n<p>It is oriented for restaurateurs with three additional modules (<a href=\"https://shop.aquila-cms.com/modules/allergenes\" title=\"Plugin Allergen for AquilaCMS\" target=\"_blank\" rel=\"noopener\">Allergen</a>, <a href=\"https://shop.aquila-cms.com/modules/food-option\" title=\"Plugin Food Option for Aquila-CMS\" target=\"_blank\" rel=\"noopener\">Food-Option</a> and <a href=\"https://shop.aquila-cms.com/modules/pointofsale\" title=\"Plugin Click and collect for AquilaCMS ecommerce\" target=\"_blank\" rel=\"noopener\">ClickAndCollect</a>), but this theme can be declined for any e-commerce activity.</p>\n<p>The technology used is ReactJS with NextJS 11 in order to link performance and optimized referencing.</p>\n<p>This <a href=\"https://github.com/AquilaCMS/default_theme_2\" title=\"Ecommerce Store front javascript\" target=\"_blank\" rel=\"noopener\">open-source</a> online store can basic service to develop other \"front\". Online <a href=\"https://doc.aquila-cms.com/#/\" title=\"Documentation for AquilaCMS\" target=\"_blank\" rel=\"noopener\">documentation </a>is also a valuable tool to help you in your developments.</p>",
+            "resume": "Here is the new default theme for AquilaCMS.\nIt is oriented for restaurateurs with three additional modules (Allergen, Food-Option and ClickAndCollect), but this theme can be declined for any e-commer"
+          },
+          "slug": "new-store-front",
+          "title": "New store front"
+        }
+      },
+      "createdAt": "2021-08-30T08:36:02.528Z",
+      "updatedAt": "2021-08-30T11:31:10.405Z"
+    }
+  ]
+}

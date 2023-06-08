@@ -1,29 +1,30 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const showdown           = require('showdown');
 const {middlewareServer} = require('../middleware');
+const {adminAuthRight}   = require('../middleware/authentication');
 const {adminAuth}        = require('../middleware/authentication');
 const serviceModule      = require('../services/modules');
-const NSErrors           = require('../utils/errors/NSErrors');
+const {multerUpload}     = require('../middleware/multer');
 
 module.exports = function (app) {
-    app.post('/v2/modules',          adminAuth, getAllModules);
-    app.post('/v2/module',           adminAuth, getModule);
-    app.post('/v2/modules/upload',   adminAuth, uploadModule);
-    app.post('/v2/modules/toggle',   adminAuth, toggleActiveModule);
-    app.post('/v2/modules/md',       adminAuth, getModuleMd);
-    app.delete('/v2/modules/:id',    adminAuth, removeModule);
-    app.post('/v2/module/setConfig', adminAuth, setModuleConfig);
+    app.post('/v2/modules', adminAuth, getAllModules);
+    app.post('/v2/module', adminAuthRight('modules'), getModule);
+    app.post('/v2/modules/upload', adminAuthRight('modules'), multerUpload.any(), uploadModule);
+    app.post('/v2/modules/toggle', adminAuthRight('modules'), toggleActiveModule);
+    app.delete('/v2/modules/:id', adminAuthRight('modules'), removeModule);
+    app.post('/v2/module/setConfig', adminAuthRight('modules'), setModuleConfig);
+    app.get('/v2/module/installDependencies', adminAuthRight('modules'), installDependencies);
+    app.post('/v2/modules/md', adminAuthRight('modules'), getModuleMd);
 
     // Deprecated
-    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
-    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
+    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuthRight('modules'), setModuleConfigById); // deprecated -> use /v2/module/setConfig
 };
 
 /**
@@ -108,9 +109,6 @@ const removeModule = async (req, res, next) => {
     }
 };
 
-/**
- * @deprecated
- */
 const getModuleMd = async (req, res, next) => {
     try {
         const result    = await serviceModule.getModuleMd(req.body);
@@ -132,5 +130,14 @@ async function setModuleConfigById(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
+    }
+}
+
+async function installDependencies(req, res, next) {
+    try {
+        return res.json(await serviceModule.installDependencies());
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
 }

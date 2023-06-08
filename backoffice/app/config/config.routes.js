@@ -12,5 +12,14 @@ ConfigRoutes.config(['$routeProvider', function ($routeProvider) {
                 loggedin: checkLoggedin,
                 checkAccess: checkAccess('config'),
             }
+        })
+        .when('/config/storefront', {
+          name: 'storefront',
+          controller: 'StorefrontConfigCtrl',
+          templateUrl: 'app/config/views/storefront.config.html',
+          resolve: {
+            loggedin: checkLoggedin,
+            checkAccess: checkAccess('config'),
+          }
         });
 }]);

@@ -1,0 +1,136 @@
+<div id="DataTables_Table_0_wrapper row" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <div style="margin: 20px auto; font-weight: bold;">
+                <p translate>product.declinaisons.title1</p>
+            </div>                    
+            <table ng-show="declinaisons && declinaisons.length > 0" class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                    <tr role="row">
+                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                        </th>
+                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'translation[lang].name'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                product.declinaisons.name
+                                <span ng-show="sort.type == 'translation[lang].name' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'translation[lang].name' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'code'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                product.declinaisons.code
+                                <span ng-show="sort.type == 'code' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'code' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'typeDisplay'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                product.declinaisons.typeDisplay
+                                <span ng-show="sort.type == 'typeDisplay' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'typeDisplay' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                    <tr class="pointer" ng-repeat="declinaison in declinaisons track by declinaison.code" ng-class-odd="'odd'" ng-class-even="'even'">
+                        <td><input type="checkbox" class="form-control" ng-click="toggleVariant($event, declinaison)" ng-checked="isVariantSelected(declinaison)"></td>
+                        <td>{{declinaison.translation[lang].name}}</td>
+                        <td>{{declinaison.code}}</td>
+                        <td>
+                            <select 
+                                class="form-control"
+                                ng-if="isVariantSelected(declinaison)" 
+                                name="type_{{$index}}" id="type_{{$index}}" 
+                                ng-model="product.variants[getProductVariantIndex(declinaison.code)].type" 
+                                ng-click="$event.stopPropagation()"
+                                ng-change="updateVariantType(product.variants[getProductVariantIndex(declinaison.code)].type)">
+                            >
+                                <option selected value="image" translate>product.declinaisons.displayImage</option>
+                                <option selected value="list" translate>product.declinaisons.displayList</option>
+                                <option selected value="radio" translate>product.declinaisons.displayRadio</option>
+                                <option selected value="list2" translate>product.declinaisons.displayList2</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p ng-show="!declinaisons || declinaisons.length === 0" translate>product.declinaisons.createAttribs</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div style="margin: 20px 0; font-weight: bold; width: 100%;">
+                <p translate>product.declinaisons.title2</p>
+            </div>  
+            <div>
+                <button class="btn btn-default" ng-show="product.variants_values && product.variants_values[0]" type="button" ng-click="activateAllVariants()" translate>product.declinaisons.activateAllVariants</button>  
+                <button class="btn btn-default" ng-show="product.variants_values && product.variants_values[0]" type="button" ng-click="disableAllVariants()" translate>product.declinaisons.disableAllVariants</button>  
+            </div>
+            <div>
+                <br>
+                <p ng-show="product.variants_values[0] && (!product.variants_values[0]._id)" translate>product.general.saveFirst</p>
+                <br>
+                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'translation[lang].name'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.available
+                                    <span ng-show="sort.type == 'translation[lang].name' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'translation[lang].name' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'translation[lang].name'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.picture
+                                    <span ng-show="sort.type == 'translation[lang].name' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'translation[lang].name' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'code'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.variant
+                                    <span ng-show="sort.type == 'code' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'code' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'typeDisplay'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.price
+                                    <span ng-show="sort.type == 'typeDisplay' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'typeDisplay' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'typeDisplay'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.quantity
+                                    <span ng-show="sort.type == 'typeDisplay' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'typeDisplay' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                <a ng-click="sort.type = 'typeDisplay'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
+                                    product.declinaisons.default
+                                    <span ng-show="sort.type == 'typeDisplay' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'typeDisplay' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        <tr class="pointer" ng-repeat="variant in product.variants_values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant, $index)">
+                            <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active" ng-click="$event.stopPropagation()"></ns-switch></td>
+                            <td><img ng-src="/{{getImageUrl(variant)}}" alt="{{variant.code}}"></td>
+                            <td>{{variant.translation[lang].name}}</td>
+                            <td>{{(variant.price.ati.special >= 0 ? variant.price.ati.special : variant.price.ati.normal).toFixed(2)}}€</td>
+                            <td>{{variant.stock.qty}}</td>
+                            <td><ns-switch name="{{variant.code}}_default" ng-model="variant.default" ng-click="setDefaultVariantValue(variant, $event)"></ns-switch></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+        </div>
+        
+    </div>
+</div>

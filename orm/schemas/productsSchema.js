@@ -1,21 +1,21 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const fs            = require('../../utils/fsp');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const NSErrors      = require('../../utils/errors/NSErrors');
-const utils         = require('../../utils/utils');
+const mongoose                    = require('mongoose');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const path                        = require('path');
+const NSErrors                    = require('../../utils/errors/NSErrors');
 const {
     checkCustomFields,
     checkTranslations
 } = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
+const utilsDatabase               = require('../../utils/database');
+const reviewService               = require('../../services/reviews');
 
 const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
@@ -53,14 +53,15 @@ const ProductsSchema = new Schema({
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
         {
-            id          : {type: ObjectId, ref: 'attributes', index: true},
-            code        : String,
-            values      : String,
-            param       : String,
-            type        : {type: String, default: 'unset'},
-            translation : {},
-            position    : {type: Number, default: 1},
-            visible     : {type: Boolean, default: true}
+            id           : {type: ObjectId, ref: 'attributes', index: true},
+            code         : String,
+            param        : String,
+            type         : {type: String, default: 'unset'},
+            translation  : {},
+            position     : {type: Number, default: 1},
+            visible      : {type: Boolean, default: true},
+            usedInSearch : {type: Boolean, default: false},
+            parents      : [{type: ObjectId, ref: 'attributes'}]
         }
     ], // Module Options
     images : [
@@ -72,7 +73,8 @@ const ProductsSchema = new Schema({
             position         : Number,
             modificationDate : String,
             default          : {type: Boolean, default: false},
-            extension        : {type: String, default: '.jpg'}
+            extension        : {type: String, default: '.jpg'},
+            content          : String
         }
     ],
     code_ean    : String,
@@ -115,20 +117,16 @@ const ProductsSchema = new Schema({
         }]
     },
     stats : {
-        views : {type: Number, default: 0}
+        views : {type: Number, default: 0},
+        sells : {type: Number, default: 0}
     }
 }, {
-    discriminatorKey : 'kind',
+    discriminatorKey : 'type',
     timestamps       : true,
     usePushEach      : true,
     id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
-// ProductsSchema.index({
-//     code        : 'text',
-//     trademark   : 'text',
-//     code_ean    : 'text',
-// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
     /** Quantity <= 0 not allowed on creation * */
@@ -147,23 +145,87 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        item.price = {
-            vat  : {rate: this.price.tax},
-            unit : {
-                et  : this.price.et.normal,
-                ati : this.price.ati.normal
-            }
-        };
-
-        if (this.price.et.special !== undefined && this.price.et.special !== null) {
-            item.price.special = {
-                et  : this.price.et.special,
-                ati : this.price.ati.special
+        if (item.selected_variant) {
+            item.price = {
+                unit : {
+                    ati : item.selected_variant.price.ati.normal,
+                    et  : item.selected_variant.price.et.normal
+                },
+                vat : {rate: item.selected_variant.price.tax}
             };
+            if (item.selected_variant.price.et.special !== undefined && item.selected_variant.price.et.special !== null) {
+                item.price.special = {
+                    et  : item.selected_variant.price.et.special,
+                    ati : item.selected_variant.price.ati.special
+                };
+            }
+        } else {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal,
+                    ati : this.price.ati.normal
+                }
+            };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special,
+                    ati : this.price.ati.special
+                };
+            }
         }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     return resp;
+};
+
+ProductsSchema.methods.updateData = async function (data) {
+    setPriceSort(data);
+
+    // Slugify images name
+    if (data.images) {
+        for (const image of data.images) {
+            image.title = slugify(image.title);
+        }
+        for (const prdImage of this.images) {
+            if (!data.images.find((img) => img._id.toString() === prdImage._id.toString()) && prdImage.url) {
+                // on delete les images cache generées depuis cette image
+                await require('../../services/cache').deleteCacheImage('products', this);
+                // puis on delete l'image original
+                const joindPath = path.join(global.aquila.envConfig.environment.photoPath, prdImage.url);
+                try {
+                    await fs.unlinkSync(joindPath);
+                } catch {
+                    console.warn(`Unable to remove ${joindPath}`);
+                }
+            }
+        }
+    }
+
+    let update;
+
+    switch (data.type) {
+    case 'simple':
+        const ProductSimple = require('../models/productSimple');
+        update              = new ProductSimple(data).preUpdateSimpleProduct(data);
+        break;
+    case 'bundle':
+        const ProductBundle = require('../models/productBundle');
+        update              = new ProductBundle(data).preUpdateBundleProduct(data);
+        break;
+    case 'virtual':
+        const ProductVirtual = require('../models/productVirtual');
+        update               = new ProductVirtual(data).preUpdateVirtualProduct(data);
+        break;
+    default:
+        break;
+    }
+
+    reviewService.computeAverageRateAndCountReviews(update);
+
+    const updPrd = await this.model(data.type).findOneAndUpdate({_id: this._id}, {$set: update}, {new: true});
+    return updPrd;
 };
 
 ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
@@ -180,12 +242,9 @@ ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkN
     await this.updateMany(query, {_trademark: trademarkName});
 };
 
-ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
-    // if (self._collection && !self._collection.collectionName.includes('preview')) {
+ProductsSchema.statics.translationValidation = async function (self, updateQuery) {
     if (updateQuery) {
-        if (updateQuery.translation === undefined) return errors; // No translation
+        if (updateQuery.translation === undefined) return; // No translation
         const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
         for (const lang of languages) {
@@ -202,78 +261,67 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 } else {
                     correctCode = updateQuery.code;
                 }
-                updateQuery.translation[lang.code] = {slug: utils.slugify(correctCode)};
+                updateQuery.translation[lang.code] = {slug: slugify(correctCode)};
             }
             if (!updateQuery.translation[lang.code].slug) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
             } else {
-                updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
+                updateQuery.translation[lang.code].slug = slugify(updateQuery.translation[lang.code].slug);
             }
-            if (updateQuery.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
-                return errors;
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? `${utils.slugify(updateQuery.translation[lang.code].name)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
-                if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                    errors.push('slug déjà existant');
-                }
-            }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+            checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            ]);
 
             if (updateQuery.translation[lang.code].description1) {
-                errors = checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title');
+                checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text');
             }
             if (updateQuery.translation[lang.code].description2) {
-                errors = checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title');
+                checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text');
             }
         }
     } else {
-        if (self.translation === undefined) return errors; // No translation
+        if (self.translation === undefined) return; // No translation
 
         const translationKeys = Object.keys(self.translation);
         const languages       = await mongoose.model('languages').find({});
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                self.translation[lang.code] = {slug: utils.slugify(self.code)};
+                self.translation[lang.code] = {slug: slugify(self.code)};
             }
             if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].name ? utils.slugify(self.translation[lang.code].name) : updateQuery.code;
+                self.translation[lang.code].slug = self.translation[lang.code].name ? slugify(self.translation[lang.code].name) : updateQuery.code;
             } else {
-                self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+                self.translation[lang.code].slug = slugify(self.translation[lang.code].slug);
             }
-            if (self.translation[lang.code].slug.length <= 2) {
-                errors.push(`slug '${lang.code}' trop court`);
-                return errors;
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push(`slug '${lang.code}' déjà existant`);
-            }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+            checkCustomFields(lang,  [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            ]);
 
             if (self.translation[lang.code].description1) {
-                errors = checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                checkTranslations(self.translation[lang.code].description1.title, 'description1.title');
+                checkTranslations(self.translation[lang.code].description1.text, 'description1.text');
             }
             if (self.translation[lang.code].description2) {
-                errors = checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                checkTranslations(self.translation[lang.code].description2.title, 'description2.title');
+                checkTranslations(self.translation[lang.code].description2.text, 'description2.text');
             }
         }
     }
-    // }
-    return errors;
+};
+
+ProductsSchema.methods.hasVariantsValue = function (that) {
+    return that ? (that.variants_values && that.variants_values.length > 0 && that.variants_values.find((vv) => vv.active)) : (this.variants_values && this.variants_values.length > 0 && this.variants_values.find((vv) => vv.active));
 };
 
 ProductsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('products', that._id, that.code);
+};
+
+ProductsSchema.statics.checkSlugLength = async function (that) {
+    await utilsDatabase.checkSlugLength(that, 'products');
 };
 
 ProductsSchema.statics.checkSlugExist = async function (that) {
@@ -281,40 +329,34 @@ ProductsSchema.statics.checkSlugExist = async function (that) {
 };
 
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
-    // suppression des images en cache si la principale est supprimée
-    if (this.getUpdate().$set && this.getUpdate().$set._id) {
-        const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        for (let i = 0; i < oldPrd.images.length; i++) {
-            if (this.getUpdate().$set.images) {
-                if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
-                    try {
-                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
-                    } catch (error) {
-                        console.log(error);
-                    }
-                    try {
-                        require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-            }
-        }
-    }
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, ProductsSchema);
+    await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {
-    this.price.priceSort = {
-        et  : this.price.et.special || this.price.et.normal,
-        ati : this.price.ati.special || this.price.ati.normal
-    };
+    setPriceSort(this);
+
     await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
+
+const setPriceSort = async (data) => {
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
+
+    if (data.variants_values?.length > 0) {
+        data.variants_values.forEach((variant) => {
+            variant.price.priceSort = {
+                et  : variant.price.et.special || variant.price.et.normal,
+                ati : variant.price.ati.special || variant.price.ati.normal
+            };
+        });
+    }
+};
 
 aquilaEvents.emit('productSchemaInit', ProductsSchema);
 

@@ -1,13 +1,37 @@
 "use strict";
 
-/* App Module */
-var adminCatagenApp = angular.module("adminCatagenApp", [
+Number.prototype.aqlRound = function (places = 2, addingTrailingZeros = true) {
+    let roundNum = +(`${Math.round(`${this}e+${places}`)}e-${places}`);
+    if (places !== 0 && addingTrailingZeros) {
+        roundNum        = roundNum.toString();
+        let intPart     = roundNum;
+        let decimalPart = '';
+
+        // if we have a decimal number we split it into two parts
+        if (roundNum.includes('.')) {
+            roundNum    = roundNum.split('.');
+            intPart     = roundNum[0];
+            decimalPart = roundNum[1];
+        }
+
+        // if the size of the decimal part is not equal to the number of digits after the decimal point given in parameter, we add the missing zeros
+        if (decimalPart.length !== places) {
+            const numOfMissingZero = places - decimalPart.length;
+            decimalPart            = decimalPart.padEnd(numOfMissingZero + decimalPart.length, 0);
+        }
+        roundNum = `${intPart}.${decimalPart}`;
+    }
+    return roundNum;
+};
+
+var aqModules = [
     "ngRoute",
     "adminCatagenControllers",
     "adminCatagenFilters",
     "adminCatagenServices",
     "adminCatagenDirectives",
     "pascalprecht.translate",
+    "schemaForm",
     "ngSanitize",
     "xeditable",
     "ngFileUpload",
@@ -16,10 +40,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "infinite-scroll",
     'ui.tinymce',
     "angular-bind-html-compile",
-    "ngMessages",
     "aquilaCmsBlocks",
     "ui.tree",
-    "angular-clipboard",
     "color.picker",
     "inputDropdown",
     "googlechart",
@@ -33,7 +55,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.medias",
     "aq.modules",
     "aq.translation",
-    "aq.dependencies",
     "aq.cmsBlocks",
     "aq.design",
     "aq.translate",
@@ -70,8 +91,12 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.newsletter",
     "aq.system",
     "aq.invoices",
-    "aq.adminList"
-]);
+    "aq.adminList",
+    "aq.dependencies"
+]
+
+/* App Module */
+var    adminCatagenApp = angular.module("adminCatagenApp", aqModules);
 
 //================================================
 // Check if the user is connected
@@ -130,7 +155,7 @@ var checkAccess = function (route) {
                         deferred.reject();
                         toastService.toast("danger", $translate.instant("global.accessForbidden"));
                         $location.path("/");
-                    }, 0);
+                    }, 500);
                 }
             });
             return deferred.promise;
@@ -142,7 +167,7 @@ var delayTimer;
 function input(ele) {
     clearTimeout(delayTimer);
     delayTimer = setTimeout(function() {
-       ele.value = parseFloat(ele.value).toFixed(2).toString();
+       ele.value = parseFloat(ele.value).aqlRound(2).toString();
     }, 800); 
 }
 
@@ -152,13 +177,19 @@ adminCatagenApp.config([
         //================================================
         // Add an interceptor to build correct URLs and handle errors
         //================================================
-        $httpProvider.interceptors.push(function ($q, $location)
+        $httpProvider.interceptors.push(function ($q, $location, $rootScope)
         {
             return {
                 request: function (config)
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
                         config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
+                    }
+                    const defaultLangCode = window.localStorage.getItem("adminLang");
+                    if(defaultLangCode) {
+                        window.localStorage.setItem("adminLang", defaultLangCode);
+                        $rootScope.adminLang = defaultLangCode;
+                        config.headers.lang = defaultLangCode;
                     }
                     if(config.url.indexOf("/") === 0)
                     {
@@ -228,7 +259,7 @@ adminCatagenApp
                 var deferred = $q.defer();
                 var translation = {};
 
-                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
+                $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 0}}).then(function (response)
                 {
                     const translationArray = []; // {url:"", name:""}
 
@@ -306,10 +337,7 @@ adminCatagenApp.run(function ($rootScope, $http, $window)
         window.localStorage.removeItem("jwtAdmin");
         $rootScope.userInfo = {};
         $rootScope.message = "Logged out.";
-        $http.post("/v2/auth/logout/admin").then(function ()
-        {
-            $window.location.href = $window.location.pathname + "/login";
-        });
+        $window.location.href = $window.location.pathname + "/login";
     };
 });
 
@@ -331,6 +359,23 @@ adminCatagenApp.config(function (treeConfig, paginationConfig)
 adminCatagenApp.controller("PrincipalCtrl", [ "$http", "$rootScope", "$scope",
     function ($http, $rootScope, $scope)
     {
+
+        if (!window.localStorage.getItem("adminLang")) {
+            $http({ url: `/v2/languages`, method: 'POST', data: {PostBody: {filter: {}, structure: {code: 1, defaultLanguage: 1}}} }).then(function (response) {
+                let defaultLang = response.data.datas.find((element) => element.defaultLanguage);
+                let defaultLangCode;
+                if(defaultLang) {
+                    defaultLangCode = defaultLang.code;
+                } else {
+                    defaultLang = response.data.datas[0];
+                }
+                defaultLangCode = defaultLang.code;
+
+                localStorage.setItem("adminLang", defaultLangCode);
+            })
+            
+        }
+
         if (!$rootScope.content_style){
             let content_style = "";
             $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {

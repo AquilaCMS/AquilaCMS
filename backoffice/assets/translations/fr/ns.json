@@ -90,7 +90,7 @@
         "trademark": "Produit : Marque",
         "supplier_ref": "Produit : Fournisseur",
         "client__id": "Client : ID",
-        "client_type": "Client : Code",
+        "client_type": "Client : Type",
         "categorie_code": "Catégorie : Code",
         "panier_priceTotal_et": "Panier : Prix HT",
         "panier_priceTotal_ati": "Panier : Prix TTC",
@@ -98,7 +98,8 @@
         "client_attr_translation": "Client : Attribut '{{attr}}' ({{lang}})",
         "translation_name": "Produit : Nom ({{lang}})",
         "translation_slug": "Produit : Slug ({{lang}})",
-        "attr.translation": "Produit : Attribut '{{attr}}' ({{lang}})"
+        "attr.translation": "Produit : Attribut '{{attr}}' ({{lang}})",
+        "pictos_code": "Pictogramme"
     },
     "help": {
         "products": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Produits.</a>",
@@ -110,6 +111,9 @@
         "contacts":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Contacts.</a>",
         "medias":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Médias.</a>",
         "gallery":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation de la Gallerie.</a>",
+        "trademarks":"Les marques permettent de créer des pages marques, mais aussi de créer des règles en se basant sur les marques.",
+        "suppliers":"Les fournisseurs permettent de créer des règles en se basant sur les fournisseurs.",
+        "families":"Les univers, familles et sous-famille permettent de créer des règles en se basant sur cet arborescence.",
         "hide":"Cacher"
     }
 }

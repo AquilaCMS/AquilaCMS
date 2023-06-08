@@ -26,7 +26,7 @@
             <td ng-repeat="column in columns">
                 <span ng-switch="checkFormat(item[column.field], column)">
                     <span ng-switch-when="custom_format">{{executeFormat(item[column.field], column.format)}}</span>
-                    <span ng-switch-when="image"><img ng-src="{{item[column.field]}}" height="80" width="120"/></span><!--TODO: revoir taille image -->
+                    <span ng-switch-when="image"><img ng-src="{{item[column.field]}}" height="80" width="120"/></span>
                     <span ng-switch-when="bool" ng-bind-html="item[column.field] | checked"></span>
                     <span ng-switch-when="date">{{item[column.field]| date:dd/MM/yyyy}}</span>
                     <span ng-switch-default>{{item[column.field]}}</span>

@@ -4,7 +4,7 @@
         <ns-buttons is-edit-mode="isEditMode" remove="remove(promo._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/promos"
                     form="form" additionnal-buttons="additionnalButtons">
             <div class="scrollmenu">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs" hook-promo-detail-tab>
                     <li class="active">
                         <a data-toggle="tab" target="_self" ng-click="changeTab('general')" translate>promo.detail.gen</a>
                     </li>
@@ -20,7 +20,7 @@
                 </ul>
             </div>
             <div class="tab-content">
-                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'">
+                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'" hook-promo-detail-general>
                     <div class="form-group">
                         <div class="col-sm-11">
                             <label class="col-sm-2 control-label" translate>promo.detail.type</label>
@@ -132,7 +132,7 @@
                 </div>
 
                 <!-- GESTION DES CODE PROMO -->
-                <div id="code_promo" class="tab-pane fade in active" ng-show="tabActive === 'code_promo'">
+                <div id="code_promo" class="tab-pane fade in active" ng-show="tabActive === 'code_promo'" hook-promo-detail-promo>
                     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
                         <div class="row" style="text-align: right; margin-right: 12px;">
                             <button class="btn-add" type="button" ng-click="addPromo()" style="margin-left: 10px; width: 40px; height: 40px;">
@@ -218,7 +218,8 @@
                         </table>
                     </div>
                 </div>
-                <div id="segmentation" class="tab-pane fade in active" ng-show="tabActive === 'segmentation'">
+                <div id="segmentation" class="tab-pane fade in active" ng-show="tabActive === 'segmentation'" hook-promo-detail-segmentation>
+                    <h3 translate>promo.detail.infoRules</h3>
                     <div class="row">
                         <div class="col-sm-12">
                             <ng-form novalidate name="ruleForm" ng-submit="">
@@ -227,7 +228,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="action" class="tab-pane fade in active" ng-show="tabActive === 'action'">
+                <div id="action" class="tab-pane fade in active" ng-show="tabActive === 'action'" hook-promo-detail-action>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">

@@ -6,7 +6,8 @@
         "fq": "Fréquence",
         "nextExec": "Prochaine Exécution",
         "lastExec": "Dernière Exécution",
-        "paused": "En pause"
+        "paused": "En pause",
+        "isImportant": "Important"
     },
     "detail": {
         "t1": "Détail tâche planifiée",
@@ -28,6 +29,9 @@
         "fqDoc": "Documentation fréquence",
         "params": "Paramètres",
         "cronSuccess": "Tâche planifiée exécutée avec succès",
+        "onMainThread": "Éxecuter sur le thread principal",
+        "yes": "Oui",
+        "no": "Non",
         "infoInvalid": "Les informations saisies ne sont pas valides.",
         "cronSaved": "Tâche planifiée sauvegardée !",
         "errorDeleteCron": "Impossible de supprimer une Tâche planifiée système",

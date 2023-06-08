@@ -1,25 +1,28 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}          = require('../middleware/authentication');
+const {adminAuthRight}     = require('../middleware/authentication');
 const {securityForceActif} = require('../middleware/security');
 const {filterCategories}   = require('../middleware/categories');
 const ServiceCategory      = require('../services/categories');
 const ServiceRules         = require('../services/rules');
+const {autoFillCode}       = require('../middleware/autoFillCode');
 
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
-    app.post('/v2/category/execRules', adminAuth, execRules);
-    app.post('/v2/category/canonical', adminAuth, execCanonical);
-    app.post('/v2/category/applyTranslatedAttribs', adminAuth, applyTranslatedAttribs);
-    app.put('/v2/category', adminAuth, setCategory);
-    app.delete('/v2/category/:id', adminAuth, deleteCategory);
+    app.get('/v2/category/export/:catId', adminAuthRight('categories'), exportCategoryProducts);
+    app.post('/v2/category/import', adminAuthRight('categories'), importCategoryProducts);
+    app.post('/v2/category/execRules', adminAuthRight('categories'), execRules);
+    app.post('/v2/category/canonical', adminAuthRight('categories'), execCanonical);
+    app.post('/v2/category/applyTranslatedAttribs', adminAuthRight('categories'), applyTranslatedAttribs);
+    app.put('/v2/category', adminAuthRight('categories'), autoFillCode, setCategory);
+    app.delete('/v2/category/:id', adminAuthRight('categories'), deleteCategory);
 };
 
 /**
@@ -58,9 +61,9 @@ async function setCategory(req, res, next) {
     try {
         let response;
         if (req.body._id) {
-            response = await ServiceCategory.setCategory(req);
+            response = await ServiceCategory.setCategory(req.body);
         } else {
-            response = await ServiceCategory.createCategory(req);
+            response = await ServiceCategory.createCategory(req.body);
         }
         return res.json(response);
     } catch (error) {
@@ -104,14 +107,21 @@ async function applyTranslatedAttribs(req, res, next) {
     }
 }
 
-/**
- * @deprecated
- */
-// eslint-disable-next-line no-unused-vars
-function checkPostBody(postBody, req_headers_authorization) {
-    postBody = securityForceActif(postBody, req_headers_authorization, ['active']);
+async function importCategoryProducts(req, res, next) {
+    try {
+        const {data, category} = req.body;
+        res.json(await ServiceCategory.importCategoryProducts(data, category));
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+}
 
-    // TODO : lors de la canonicalisation, prendre aussi en comptes les dates et ne pas mettre de produit dedans si en dehors des dates, ou si inactive
-
-    return postBody;
+async function exportCategoryProducts(req, res, next) {
+    try {
+        res.json(await ServiceCategory.exportCategoryProducts(req.params.catId));
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
 }

@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <h3>Variant Edition</h3>
+</div>
+<div class="modal-body form-horizontal">
+    <div ng-if="selectedVariantValue.code">
+        <div class="scrollmenu">
+            <ul class="nav nav-tabs" >
+                <li class='active' ><a data-toggle="tab" href="#vMarketing" target="_self" translate>simple.mark</a></li>
+                <li><a data-toggle="tab" href="#vPriceStock" target="_self" translate>simple.prixStock</a></li>
+                <li><a data-toggle="tab" href="#vPictures" target="_self" translate>simple.pics</a></li>
+            </ul>
+        </div>
+        <div  class="tab-content">
+            <div id="vMarketing" class="tab-pane fade in active">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <div class="col-sm-11">
+                            <label for="vName" class="col-sm-2 control-label" translate>product.general.nom</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="vName" name="vName" ng-model="selectedVariantValue.translation[lang].name" required>
+                                <div class="ns-error-message">
+                                    <div ng-show="(form.vName.$dirty || form.nsSubmitted) && form.vName.$error.required" translate>product.general.fieldReq</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <div class="col-sm-11">
+                            <label for="vCode" class="col-sm-2 control-label" translate>product.general.code</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="vCode" name="vCode" ng-model="selectedVariantValue.code" disabled>
+                                <div class="ns-error-message">
+                                    <div ng-show="(form.vCode.$dirty || form.nsSubmitted) && form.vCode.$error.required" translate>product.general.fieldReq</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <div class="col-sm-11">
+                            <label for="vWeight" class="col-sm-2 control-label" translate>product.marketing.pds</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="vWeight" name="vWeight" ng-model="selectedVariantValue.weight" required>
+                                <div class="ns-error-message">
+                                    <div ng-show="(form.vWeight.$dirty || form.nsSubmitted) && form.vWeight.$error.required" translate>product.general.fieldReq</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="vPriceStock" class="tab-pane">
+                <div>
+                    <ns-product-price ng-model="selectedVariantValue"></ns-product-price>
+                </div>
+            </div>
+            <div id="vPictures" class="tab-pane">
+                <div>
+                    <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" variant-id="selectedVariantValue._id" ></ns-product-photo>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" ng-click="close()" translate>product.select.valider</button>
+    <button class="btn btn-default" ng-click="cancel()" translate>product.select.cancel</button>
+    <style>
+        .col-sm-3, .col-sm-4 {
+            margin: 15px auto;
+        }
+        .modal-large .modal-dialog {
+            width: 90%;
+            max-width: 1500px;
+        }
+    </style>
+</div>

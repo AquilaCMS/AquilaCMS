@@ -130,7 +130,7 @@
                         }
                     }
                 },
-                "description": "PostBody",
+                "description": "Put a new product on your website",
                 "required": false
             }
         }
@@ -174,7 +174,7 @@
                         }
                     }
                 },
-                "description": "PostBody",
+                "description": "Get a specific product having {id} for id",
                 "required": false
             }
         },

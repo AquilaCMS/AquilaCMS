@@ -1,24 +1,24 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const moment            = require('moment-business-days');
-const {adminAuth}       = require('../middleware/authentication');
+const {adminAuthRight}  = require('../middleware/authentication');
 const ServiceStatistics = require('../services/statistics');
 
 module.exports = function (app) {
-    app.get('/v2/statistics/globale',              adminAuth, getGlobaleStats);
-    app.get('/v2/statistics/sell/canceledCart',    adminAuth, getCanceledCart);
-    app.get('/v2/statistics/sell/cag',             adminAuth, getCag);
-    app.get('/v2/statistics/sell/capp',            adminAuth, getCapp);
-    app.get('/v2/statistics/sell/nbOrder',         adminAuth, getNbOrder);
-    app.get('/v2/statistics/customer/newCustomer', adminAuth, getNewCustomer);
-    app.get('/v2/statistics/customer/topCustomer', adminAuth, getTopCustomer);
-    app.post('/v2/statistics/generate',            adminAuth, generateStatistics);
+    app.get('/v2/statistics/globale',              adminAuthRight('statistics'), getGlobaleStats);
+    app.get('/v2/statistics/sell/canceledCart',    adminAuthRight('statistics'), getCanceledCart);
+    app.get('/v2/statistics/sell/cag',             adminAuthRight('statistics'), getCag);
+    app.get('/v2/statistics/sell/capp',            adminAuthRight('statistics'), getCapp);
+    app.get('/v2/statistics/sell/nbOrder',         adminAuthRight('statistics'), getNbOrder);
+    app.get('/v2/statistics/customer/newCustomer', adminAuthRight('statistics'), getNewCustomer);
+    app.get('/v2/statistics/customer/topCustomer', adminAuthRight('statistics'), getTopCustomer);
+    app.post('/v2/statistics/generate',            adminAuthRight('statistics'), generateStatistics);
 };
 
 /**

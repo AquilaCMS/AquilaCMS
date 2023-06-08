@@ -6,7 +6,8 @@
         "fq": "Frequency",
         "nextExec": "Next run",
         "lastExec": "Last run",
-        "paused": "Paused"
+        "paused": "Paused",
+        "isImportant": "Important"
     },
     "detail": {
         "t1": "Planned Task Detail",
@@ -28,6 +29,9 @@
         "fqDoc": "Frequency documentation",
         "params": "Parameters",
         "cronSuccess": "Scheduled task executed successfully",
+        "onMainThread": "Run on main thread",
+        "yes": "Yes",
+        "no": "No",
         "infoInvalid": "The information entered is not valid.",
         "cronSaved": "Scheduled task saved!",
         "errorDeleteCron": "Cannot delete a System Scheduled Task",

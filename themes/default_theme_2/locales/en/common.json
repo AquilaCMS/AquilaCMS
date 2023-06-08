@@ -1,0 +1,8 @@
+{
+  "previous": "Previous",
+  "message": {
+    "unknownError" : "Unknown Error",
+    "loginRequired" : "You must be logged in for this action!",
+    "saveData" : "Datas saved"
+  }
+}

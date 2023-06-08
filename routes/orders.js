@@ -1,35 +1,28 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceOrder                = require('../services/orders');
-const ServiceAuth                 = require('../services/auth');
-const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {isAdmin}                   = require('../utils/utils');
+const ServiceOrder                                = require('../services/orders');
+const ServiceAuth                                 = require('../services/auth');
+const {authentication, adminAuth, adminAuthRight} = require('../middleware/authentication');
+const {isAdmin}                                   = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', adminAuth, rma);
-    app.post('/v2/order/infoPayment', adminAuth, infoPayment);
+    app.post('/v2/order/rma', adminAuthRight('orders'), rma);
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', adminAuth, addPackage);
-    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.post('/v2/order/addpkg', adminAuthRight('orders'), addPackage);
+    app.post('/v2/order/delpkg', adminAuthRight('orders'), delPackage);
     app.put('/v2/order/updateStatus', adminAuth, updateStatus);
-    app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
-    app.put('/v2/order/updatePayment', adminAuth, updatePayment);
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuthRight('orders'), cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', adminAuth, setOrder);
-
-    // Deprecated
-    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
+    app.put('/v2/order', adminAuthRight('orders'), setOrder);
 };
 
 /**
@@ -43,7 +36,8 @@ async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         if (!isAdmin(req.info)) {
-            PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
+            const {orderStatuses}          = require('../services/orders');
+            PostBodyVerified.filter.status = {$nin: [orderStatuses.PAYMENT_FAILED]};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
         return res.json(result);
@@ -115,21 +109,6 @@ async function rma(req, res, next) {
  * @param {Express.Response} res
  * @param {Function} next
  */
-async function infoPayment(req, res, next) {
-    try {
-        const order = await ServiceOrder.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
-        res.json(order);
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
 async function duplicateItemsFromOrderToCart(req, res, next) {
     try {
         req.body.query = await ServiceAuth.validateUserIsAllowedWithoutPostBody(
@@ -137,7 +116,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
             {_id: req.body.idOrder || null},
             'customer.id'
         );
-        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req));
+        return res.json(await ServiceOrder.duplicateItemsFromOrderToCart(req.body, req.info));
     } catch (err) {
         return next(err);
     }
@@ -182,20 +161,6 @@ async function updateStatus(req, res, next) {
     }
 }
 
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function updatePayment(req, res, next) {
-    try {
-        return res.json(await ServiceOrder.updatePayment(req.body));
-    } catch (e) {
-        next(e);
-    }
-}
-
 async function cancelOrder(req, res, next) {
     try {
         const result = await ServiceOrder.cancelOrder(req.params.id || req.body.id);
@@ -218,19 +183,5 @@ async function cancelOrderRequest(req, res, next) {
         res.end();
     } catch (err) {
         return next(err);
-    }
-}
-
-/**
- * Create a payment and return a form for front-end redirection
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function payOrder(req, res, next) {
-    try {
-        return res.send(await ServiceOrder.payOrder(req));
-    } catch (e) {
-        next(e);
     }
 }

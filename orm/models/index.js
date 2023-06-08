@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -33,7 +33,6 @@ const Products              = require('./products');
 const ProductsPreview       = require('./productsPreview');
 const Promo                 = require('./promo');
 const Rules                 = require('./rules');
-const Sequences             = require('./sequences');
 const SetAttributes         = require('./setAttributes');
 const Shipments             = require('./shipments');
 const Slider                = require('./slider');
@@ -52,7 +51,6 @@ const ProductSimple         = require('./productSimple');
 const ProductSimplePreview  = require('./productSimplePreview');
 const ProductVirtual        = require('./productVirtual');
 const ProductVirtualPreview = require('./productVirtualPreview');
-const RelayPoint            = require('./relayPoint');
 const DownloadHistory       = require('./downloadHistory');
 const Shortcodes            = require('./shortcodes');
 
@@ -84,7 +82,6 @@ exports.Products              = Products;
 exports.ProductsPreview       = ProductsPreview;
 exports.Promo                 = Promo;
 exports.Rules                 = Rules;
-exports.Sequences             = Sequences;
 exports.SetAttributes         = SetAttributes;
 exports.Shipments             = Shipments;
 exports.Slider                = Slider;
@@ -103,6 +100,5 @@ exports.ProductSimple         = ProductSimple;
 exports.ProductSimplePreview  = ProductSimplePreview;
 exports.ProductVirtual        = ProductVirtual;
 exports.ProductVirtualPreview = ProductVirtualPreview;
-exports.RelayPoint            = RelayPoint;
 exports.DownloadHistory       = DownloadHistory;
 exports.Shortcodes            = Shortcodes;

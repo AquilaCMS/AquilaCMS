@@ -1,0 +1,50 @@
+{
+  "name": "default_theme_2",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p ${PORT:-3000}",
+    "lint:check": "eslint --ext js,jsx .",
+    "lint:fix": "eslint --fix --ext js,jsx ."
+  },
+  "dependencies": {
+    "@aquilacms/aquila-connector": "1.1.18",
+    "@reduxjs/toolkit": "1.9.1",
+    "aql-utils": "1.5.3",
+    "cookie": "0.5.0",
+    "cookies": "0.8.0",
+    "html-react-parser": "3.0.8",
+    "jwt-decode": "3.1.2",
+    "lightbox-react": "0.3.8",
+    "next": "13.1.4",
+    "next-absolute-url": "1.2.2",
+    "next-seo": "5.15.0",
+    "next-translate": "1.6.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-infinite-scroll-component": "6.1.0",
+    "react-paginate": "8.1.4",
+    "react-range": "1.8.14",
+    "react-redux": "8.0.5",
+    "react-responsive-carousel": "3.2.23",
+    "react-responsive-modal": "6.4.1"
+  },
+  "devDependencies": {
+    "eslint": "8.32.0",
+    "eslint-config-import": "^0.13.0",
+    "eslint-config-next": "12.3.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-module-utils": "^2.6.1",
+    "eslint-plugin-align-assignments": "^1.1.2",
+    "eslint-plugin-align-import": "^1.0.0",
+    "eslint-plugin-jsx-a11y": "6.7.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "redux-devtools-extension": "^2.13.9"
+  },
+  "lint-staged": {
+    "*.{ts,js,jsx,tsx}": "eslint --fix"
+  }
+}

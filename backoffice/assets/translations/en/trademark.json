@@ -11,7 +11,10 @@
         "markSaved": "Saved brand",
         "nameValue": "Enter a value for the name",
         "enterValue": "Enter a value",
-        "creaDate": "Creation date"
+        "creaDate": "Creation date",
+        "logo": "Logo",
+        "link": "Link",
+        "errorName": "Name already exists"
     },
     "new": {
         "t1": "Create New Brand",

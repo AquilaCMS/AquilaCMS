@@ -1,6 +1,6 @@
-<ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/new/settings">
+<ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/simple/new">
     <div class="pull-right" style="display:flex">
-        <label for="filterLang" class="control-label">
+        <label ng-if="langs.length > 1" for="filterLang" class="control-label">
             <span translate>product.list2.searchLang</span>
             <span>:</span>
         </label>
@@ -12,15 +12,16 @@
     <br/>
     <br/>
     <div class="box subbox" ng-show="attribs.length > 0" style="padding: 0 0 0;">
-        <div class="box-header" data-toggle="collapse" ng-click="collapse()" data-target="#filter" style="margin-bottom:0px;cursor:pointer;">
+        <div class="box-header" data-toggle="collapse" ng-click="collapseAdvancedSearch()" data-target="#filter" style="margin-bottom:0px;cursor:pointer;">
             <h2>Recherche avancée</h2>
             <i style="float : right;width: 30px; height: 15px; margin: 12px;" id=collapseIcon class="ico-arrow-down" ></i>
         </div>
         <div class="box-content">
             <form name="form" ng-submit="getProducts(1)" style="padding:15px 0px" class="form-horizontal collapse" id="filter">
-                <div class="row">
-                    <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
-                        <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
+                <div class="row" ng-if="!advancedSearchDisplay" style="text-align: center;margin: auto;"><div class="fa fa-spinner fa-spin" style="font-size: 30px"></div></div>
+                <div class="row" ng-if="advancedSearchDisplay">
+                    <div class="form-group col-sm-6" ng-repeat="attrib in ::attribs track by attrib.code">
+                        <label for="" class="col-sm-4 control-label">{{::attrib.translation[filterLang].name}}</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" ng-change="onChange(attrib.code, filtersAttribs[attrib.code])" ng-model="filtersAttribs[attrib.code]">
                         </div>
@@ -33,7 +34,7 @@
         </div>
     </div>
 
-    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid" hook-product-list>
         <div class="row">
             <div class="col-lg-12" style="height: 45px;">
                 <br>
@@ -58,7 +59,7 @@
                                 <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
-                        <th ng-repeat="column in columns" bind-html-compile="column.filter.component_template"></th>
+                        <th ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
                         <th role="columnheader" style="width: 10%;">
                             <a ng-click="local.sortType = 'type'; local.sortReverse = !local.sortReverse; getProducts();">
                                 <span id="2" translate>product.list2.typePdt</span>
@@ -119,7 +120,7 @@
                     </tr>
                 </thead>
                 <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
-                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products"
+                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products track by product.code"
                     ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
                         <td data-label="Code :" class="text-center" style="vertical-align: middle">{{product.code}}</td>
                         <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template" ng-class="column.cell.class" class="text-center" style="vertical-align: middle" data-label={{column.cell.label}}></td>

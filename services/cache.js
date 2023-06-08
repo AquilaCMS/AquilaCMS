@@ -1,17 +1,18 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const glob           = require('glob');
-const fs             = require('../utils/fsp');
+const path           = require('path');
+const {fs}           = require('aql-utils');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
 
-const flush = () => {
+const flush = async () => {
     global.cache.flush();
     return 'Cache flushed';
 };
@@ -30,8 +31,7 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const _path       = require('../utils/server').getUploadDirectory();
-    const cacheFolder = `${_path}/cache/`;
+    const cacheFolder = path.join(require('../utils/server').getUploadDirectory(), 'cache');
     let fileName      = '';
     let filePathCache = '';
 
@@ -48,11 +48,16 @@ const deleteCacheImage = (type, datas) => {
         filePathCache = `${cacheFolder}medias/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
+    case 'category':
+        const extension = datas.extension || path.extname(datas.filename);
+        fileName        = path.basename(datas.filename, extension);
+        filePathCache   = `${cacheFolder}category/${fileName}*`;
+        deleteFileCache(filePathCache);
+        break;
     case 'slider':
     case 'gallery':
     case 'blog':
     case 'picto':
-    case 'category':
         fileName      = datas.filename;
         filePathCache = `${cacheFolder}${type}/${fileName}*`;
         deleteFileCache(filePathCache);
@@ -77,7 +82,7 @@ function deleteFileCache(filePathCache) {
 
 const cacheSetting = () => {
     const CacheService = require('../utils/CacheService');
-    const cacheTTL     = global.envConfig.environment.cacheTTL ? global.envConfig.environment.cacheTTL : 0;
+    const cacheTTL     = global.aquila.envConfig.environment.cacheTTL ? global.aquila.envConfig.environment.cacheTTL : 0;
     utilsModules.modulesLoadFunctions('useCacheModule', {cacheTTL}, () => {
         global.cache = new CacheService(cacheTTL);
     });

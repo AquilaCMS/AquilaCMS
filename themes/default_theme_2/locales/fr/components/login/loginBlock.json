@@ -1,0 +1,15 @@
+{
+  "forgotPass": "Mot de passe oublié ?",
+  "title1": "Me connecter",
+  "title2": "Je possède déjà un compte",
+  "signin": "JE M'IDENTIFIE",
+  "signinLoading": "IDENTIFICATION...",
+  "password": "Mot de passe",
+  "forgot" : {
+    "email" : "Saisissez votre email",
+    "send" : "ENVOYER",
+    "sendLoading" : "ENVOI...",
+    "back": "RETOUR",
+    "infoGetMail" : "Vous allez recevoir un mail pour réinitialiser votre mot de passe !"
+  }
+}

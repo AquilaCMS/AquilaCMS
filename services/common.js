@@ -1,12 +1,14 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const moment   = require('moment-business-days');
+const path     = require('path');
+const {fs}     = require('aql-utils');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
 
@@ -28,7 +30,7 @@ const getBreadcrumb = async (url) => {
         url.splice(index, 1);
     }
 
-    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code');
+    const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code').lean();
     let lang              = '';
     if (defaultLanguage !== null) {
         lang = defaultLanguage.code;
@@ -76,7 +78,7 @@ const getBreadcrumb = async (url) => {
         });
 
         if (url && url[0]) {
-            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]});
+            const result = await News.findOne({[`translation.${lang}.slug`]: url[0]}).lean();
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].title,
@@ -97,8 +99,10 @@ const getBreadcrumb = async (url) => {
     return parts;
 };
 
-const exportData = async (model, PostBody) => {
-    moment.locale(global.defaultLang);
+const exportData = async (model, PostBody, noCSV = false) => {
+    const server = require('../utils/server');
+
+    moment.locale(global.aquila.defaultLang);
     const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;
@@ -108,12 +112,26 @@ const exportData = async (model, PostBody) => {
         PostBody.structure = !PostBody.structure            ? [] : PostBody.structure;
 
         const {filter, populate, sort, structure} = PostBody;
-        const addStructure                        = {};
-        structure.forEach((struct) => addStructure[struct] = 1);
-        const datas     = await require('mongoose').model(model).find(filter, addStructure).sort(sort).populate(populate).lean();
+        if (model === 'users') {
+            structure.push('-password');
+            structure.push('-resetPassToken');
+        } else if (model === 'products') {
+            structure.push('-reviews');
+        }
+        const datas     = await require('mongoose').model(model).find(filter, structure).sort(sort).populate(populate).lean();
         const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
 
-        return utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
+        if (noCSV) return {datas, csvFields};
+        const uploadDirectory = server.getUploadDirectory();
+        if (!fs.existsSync(path.resolve(uploadDirectory, 'temp'))) {
+            fs.mkdirSync(path.resolve(uploadDirectory, 'temp'));
+        }
+
+        const date   = Date.now();
+        const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
+        fs.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), `\ufeff${result.csv}`, {encoding: 'utf8'});
+        result.url = date;
+        return result;
     }
 };
 

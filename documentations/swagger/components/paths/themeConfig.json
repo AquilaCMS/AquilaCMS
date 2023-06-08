@@ -10,6 +10,52 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/themeConfigSchema"
+                            },
+                            "examples":{
+                                "example1":{
+                                    "value":{
+                                        "_id": null,
+                                        "config": {
+                                            "values": [
+                                                {
+                                                    "key": "showFooter",
+                                                    "value": true,
+                                                    "name": "Afficher le footer",
+                                                    "description": "Affiche ou masque le footer (bas du site)",
+                                                    "group": "Général"
+                                                },
+                                                {
+                                                    "key": "filters",
+                                                    "value": "left",
+                                                    "name": "Emplacement des filtres",
+                                                    "description": "Permet d'afficher les filtres des catégories, soit à droite (right) soit à gauche (left) ou caché (none)",
+                                                    "group": "Général"
+                                                },
+                                                {
+                                                    "key": "reviews",
+                                                    "value": true,
+                                                    "name": "Gestion des avis clients",
+                                                    "description": "Active la gestion des avis clients",
+                                                    "group": "Général"
+                                                },
+                                                {
+                                                    "key": "itsnumber",
+                                                    "value": 2021,
+                                                    "name": "Number",
+                                                    "description": "Ceci est un exemple pour un nombre",
+                                                    "group": "Exemple"
+                                                },
+                                                {
+                                                    "key": "itscolor",
+                                                    "value": "#CCCCCC",
+                                                    "name": "Color",
+                                                    "description": "Ceci est un exemple pour une couleur",
+                                                    "group": "Exemple"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

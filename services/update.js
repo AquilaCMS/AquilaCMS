@@ -1,30 +1,29 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const axios           = require('axios');
-const AdmZip          = require('adm-zip');
-const path            = require('path');
-const fs              = require('../utils/fsp');
-const packageManager  = require('../utils/packageManager');
-const {isProd}        = require('../utils/server');
-const {Configuration} = require('../orm/models');
-
-const tmpPath         = path.resolve('./uploads/temp');
-const packageJSONPath = path.resolve(global.appRoot, 'package.json');
+const axios                  = require('axios');
+const AdmZip                 = require('adm-zip');
+const path                   = require('path');
+const {fs, execCmd, restart} = require('aql-utils');
+const {Configuration}        = require('../orm/models');
+const tmpPath                = path.resolve('./uploads/temp');
+const packageJSONPath        = path.resolve(global.appRoot, 'package.json');
 
 /**
  * Compare local version with distant version
  */
 const verifyingUpdate = async () => {
-    const actualVersion = JSON.parse(await fs.readFile(packageJSONPath)).version;
+    const actualVersion = JSON.parse(fs.readFileSync(packageJSONPath)).version;
 
-    // Créer le dossier /uploads/temp s'il n'existe pas
-    await fs.mkdir(tmpPath, {recursive: true});
+    // Create the /uploads/temp folder if it doesn't exist
+    if (!fs.existsSync(tmpPath)) {
+        fs.mkdirSync(tmpPath, {recursive: true});
+    }
 
     // Get online version
     const fileURL  = 'https://last-aquila.s3-eu-west-1.amazonaws.com/version.txt';
@@ -32,7 +31,7 @@ const verifyingUpdate = async () => {
     let onlineVersion;
     try {
         await downloadURL(fileURL, filePath);
-        onlineVersion = await fs.readFile(filePath).toString().replace('\n', '').trim();
+        onlineVersion = fs.readFileSync(filePath).toString().replace('\n', '').trim();
     } catch (exc) {
         console.error(`Get ${fileURL} failed`);
     }
@@ -44,7 +43,7 @@ const verifyingUpdate = async () => {
 };
 
 async function checkChanges() {
-    const status = await packageManager.execCmd('git status -uno');
+    const status = await execCmd('git status -uno');
     console.log(status);
     if (status.stderr !== '') {
         return {type: 'error', message: status.stderr};
@@ -55,12 +54,12 @@ async function checkChanges() {
 const updateGithub = async () => {
     await setMaintenance(true);
     try {
-        await packageManager.execCmd('git reset --hard');
-        await packageManager.execCmd('git clean -fd');
-        await packageManager.execCmd('git pull');
+        await execCmd('git reset --hard');
+        await execCmd('git clean -fd');
+        await execCmd('git pull');
         await setMaintenance(false);
         console.log('Aquila is updated !');
-        return packageManager.restart();
+        return restart();
     } catch (error) {
         console.error(error);
         return error;
@@ -73,11 +72,12 @@ const update = async () => {
     await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
-    const version   = await fs.readFile(filePathV).toString().replace('\n', '').trim();
+    const version   = fs.readFileSync(filePathV).toString().replace('\n', '').trim();
 
     const fileURL  = `https://last-aquila.s3-eu-west-1.amazonaws.com/Aquila-${version}.zip`;
     const filePath = `${tmpPath}//Aquila-${version}.zip`;
 
+    // Download the file
     try {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
@@ -96,17 +96,18 @@ const update = async () => {
     } catch (err) {
         console.error(`Unzip ${filePath} failed`);
     }
-    const packageJSON      = JSON.parse(await fs.readFile(packageJSONPath));
+    const packageJSON              = JSON.parse(await fs.readFile(packageJSONPath));
     packageJSON.package.workspaces = workspaces;
     await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
 
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+    await execCmd('yarn install');
 
     await fs.unlink(filePath);
     await setMaintenance(false);
 
     console.log('Aquila is updated !');
-    return packageManager.restart();
+    // Reboot
+    return restart();
 };
 
 /**
@@ -151,7 +152,7 @@ const checkGithub = async () => {
     const git = {
         exist : false
     };
-    if (fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
+    if (fs.existsSync(path.resolve('./.git'), {recursive: true})) {
         git.exist = true;
     }
     return git;

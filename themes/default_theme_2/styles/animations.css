@@ -1,0 +1,118 @@
+@keyframes animation-h1 {
+    0%   {
+        -moz-transform: translate3d(0px, 100px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(0px, 100px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(0px, 100px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(0px, 100px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        -moz-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 1;
+    }
+}
+
+.header-h1 {
+    -webkit-animation: animation-h1 ease 1.5s 1;
+    -moz-animation:    animation-h1 ease 1.5s 1;
+    -o-animation:      animation-h1 ease 1.5s 1;
+    animation:         animation-h1 ease 1.5s 1;
+}
+
+@keyframes animation-hero-h1-paragraph-button-wrapper {
+    0%   {
+        -moz-transform: translate3d(-100px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(-100px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(-100px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(-100px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        -moz-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 1;
+    }
+}
+
+.hero-h1,
+.hero-paragraph,
+.button-wrapper {
+    -webkit-animation: animation-hero-h1-paragraph-button-wrapper ease 1.5s 1;
+    -moz-animation:    animation-hero-h1-paragraph-button-wrapper ease 1.5s 1;
+    -o-animation:      animation-hero-h1-paragraph-button-wrapper ease 1.5s 1;
+    animation:         animation-hero-h1-paragraph-button-wrapper ease 1.5s 1;
+}
+
+@keyframes animation-hero-image {
+    0%   {
+        -moz-transform: translate3d(0px, 0px, 0px) scale3d(0.70, 0.70, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(0px, 0px, 0px) scale3d(0.70, 0.70, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(0px, 0px, 0px) scale3d(0.70, 0.70, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(0px, 0px, 0px) scale3d(0.70, 0.70, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        -moz-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -webkit-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -ms-transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+        -moz-transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        opacity: 1;
+    }
+}
+
+.hero-image-wrap {
+    -webkit-animation: animation-hero-image ease 1.5s 1;
+    -moz-animation:    animation-hero-image ease 1.5s 1;
+    -o-animation:      animation-hero-image ease 1.5s 1;
+    animation:         animation-hero-image ease 1.5s 1;
+}
+
+@keyframes animation-cart {
+    0%   {
+        opacity: 0;
+        transform: translate3d(50px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    }
+}
+
+.w-commerce-commercecartcontainer {
+    -webkit-animation: animation-cart ease 0.75s 1;
+    -moz-animation:    animation-cart ease 0.75s 1;
+    -o-animation:      animation-cart ease 0.75s 1;
+    animation:         animation-cart ease 0.75s 1;
+}

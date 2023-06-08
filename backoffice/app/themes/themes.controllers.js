@@ -38,9 +38,14 @@ ThemesController.controller("ThemesCtrl", [
             if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined) {
                 $scope.customiseTheme.arrayGroup = [];
                 for (let i = 0; i < $scope.themeConfig.variables[lang].length; i++) {
+                    // Determine the type (number, text, etc)
+                    $scope.themeConfig.variables[lang][i].type = typeof($scope.themeConfig.variables[lang][i].value);
+                    // Determine if is color (special case)
+                    if($scope.themeConfig.variables[lang][i].type === 'string' && $scope.themeConfig.variables[lang][i].value.startsWith("#") && $scope.themeConfig.variables[lang][i].value.length === 7){
+                        $scope.themeConfig.variables[lang][i].type = "color";
+                    }
                     if ($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1) {
                         $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
-
                     }
                 }
             }
@@ -88,13 +93,7 @@ ThemesController.controller("ThemesCtrl", [
                     themeName: $scope.config.environment.currentTheme,
                     devDependencies: devDependencies
                 }, function (response) {
-                    if (response && response.result) {
-                        console.log(response.result);
-                    }
-                    toastService.toast("success", $translate.instant("global.success"));
-                    $scope.isLoading = false;
-                    $scope.showLoading2 = false;
-                    $scope.showThemeLoading = false;
+                    reloadServer();
                 }, function (err) {
                     if (err && err.error) {
                         console.log(error);
@@ -114,31 +113,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (response) {
-                    if (response && response.msg == "OK") {
-                        toastService.toast("success", $translate.instant("global.success"));
-                    } else {
-                        toastService.toast("danger", $translate.instant("global.standardError"));
-                    }
-                    $scope.isLoading = false;
-                    $scope.showLoading2 = false;
-                    $scope.showThemeLoading = false;
-                    $scope.showLoading = true;
-                    $scope.progressValue = 0;
-                    $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-                    $http.get("/restart");
-                    var timerRestart = $interval(function () {
-                        $scope.progressValue++;
-
-                        if ($scope.progressValue == 100) {
-                            setTimeout(function () {
-                                location.href = window.location = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-                            }, 7000);
-                        }
-
-                        if ($scope.progressValue >= 110) {
-                            $interval.cancel(timerRestart);
-                        }
-                    }, 250);
+                    reloadServer();
                 }, function (err) {
                     if (err && err.error) {
                         console.log(error);
@@ -148,19 +123,6 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", $translate.instant("global.error"));
                 });
-            }
-        };
-
-        $scope.packageRestart = async function () {
-            try {
-                await $http.get("/restart");
-                toastService.toast("success", $translate.instant("global.success"));
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-            } catch (err) {
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-                toastService.toast("danger", $translate.instant("global.error"));
             }
         };
 
@@ -233,7 +195,7 @@ ThemesController.controller("ThemesCtrl", [
                     }
                 }, function (err) {
                     $scope.showLoading2 = false;
-                    console.log(err);
+                    console.error(err);
                 });
             } else {
                 $scope.saveTheme();
@@ -261,14 +223,6 @@ ThemesController.controller("ThemesCtrl", [
                                     }
                                     Themes.saveAfter({ environment: $scope.config.environment }, function (response) {
                                         if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
-                                            if (response.data.success == true) {
-                                                toastService.toast("success", $translate.instant("global.success"));
-                                            } else {
-                                                if (response.data.message) {
-                                                    toastService.toast("warning", response.data.message);
-                                                }
-                                            }
-                                            handleError() // to remove loadings
                                             reloadServer();
                                         } else {
                                             window.location.reload(true);
@@ -307,7 +261,15 @@ ThemesController.controller("ThemesCtrl", [
             $scope.showLoading = true;
             $scope.progressValue = 0;
             $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-            $http.get("/restart");
+            $http.get('/restart').then(function(response) {
+                if(response.data === "ManualRestart") {
+                    toastService.toast("danger", $translate.instant("modules.restartFail"));
+                }
+            }).catch(function(error) {
+                console.error(error);
+                toastService.toast("danger", $translate.instant("modules.restartFail"));
+            });
+
             var timerRestart = $interval(function () {
                 $scope.progressValue++;
 

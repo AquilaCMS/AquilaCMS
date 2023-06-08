@@ -1,15 +1,15 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const helper        = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const Schema        = mongoose.Schema;
+const mongoose                = require('mongoose');
+const {slugify, aquilaEvents} = require('aql-utils');
+const utilsDatabase           = require('../../utils/database');
+const Schema                  = mongoose.Schema;
 
 const LanguagesSchema = new Schema({
     code            : {type: String, required: true, unique: true},
@@ -36,8 +36,10 @@ LanguagesSchema.pre('findOneAndUpdate', async function (next) {
 
 LanguagesSchema.pre('save', async function (next) {
     await utilsDatabase.preUpdates(this, next, LanguagesSchema);
-    this.code = helper.slugify(this.code);
+    this.code = slugify(this.code);
     next();
 });
+
+aquilaEvents.emit('languagesSchemaInit', LanguagesSchema);
 
 module.exports = LanguagesSchema;

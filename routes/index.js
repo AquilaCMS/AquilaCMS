@@ -1,25 +1,23 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path     = require('path');
-const fs       = require('../utils/fsp');
+const {fs}     = require('aql-utils');
 const NSErrors = require('../utils/errors/NSErrors');
 
 const InitRoutes = (express, server) => {
-    const apiRouter        = express.Router(); // Route api for the front for client
-    const adminFrontRouter = express.Router(); // Route for serving the front of the admin
+    const apiRouter = express.Router(); // Route api for the front for client
     server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
-    server.use(`/${global.envConfig.environment.adminPrefix}`, adminFrontRouter);
-    // loading backoffice
-    loadAdminRoutes(adminFrontRouter);
+    loadDynamicRoutes(apiRouter); // Load API routes
 
-    // load others routes
-    loadDynamicRoutes(apiRouter);
+    const adminFrontRouter = express.Router(); // Route for serving the front of the admin
+    server.use(`/${global.aquila.envConfig.environment.adminPrefix}`, adminFrontRouter);
+    loadAdminRoutes(adminFrontRouter); // loading backoffice
     return apiRouter;
 };
 
@@ -27,7 +25,7 @@ const InitRoutes = (express, server) => {
  * Load the admin route
  */
 const loadAdminRoutes = (adminFrontRouter) => {
-    const pathToAdminFile = path.join(global.appRoot, 'routes', 'backoffice.js');
+    const pathToAdminFile = path.join(global.aquila.appRoot, 'routes', 'backoffice.js');
     require(pathToAdminFile)(adminFrontRouter);
 };
 
@@ -36,7 +34,7 @@ const loadAdminRoutes = (adminFrontRouter) => {
  */
 const loadDynamicRoutes = (app) => {
     console.log('Routes : Loading...');
-    const pathToRoutes = path.join(global.appRoot, 'routes');
+    const pathToRoutes = path.join(global.aquila.appRoot, 'routes');
     const date         = Date.now();
     const allRoutes    = fs.readdirSync(pathToRoutes).filter((file) => {
         if (file === path.basename(__filename)
@@ -58,7 +56,7 @@ const loadDynamicRoutes = (app) => {
  * Route exceptions
  */
 const manageExceptionsRoutes = async (req, res, next) => {
-    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico'].includes(path.extname(req.url).toLowerCase())) {
+    if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico', 'mp4'].includes(path.extname(req.url).toLowerCase())) {
         res.setHeader('Cache-Control', 'public, max-age=2592000');
 
         const dt = new Date(Date.now());
@@ -69,86 +67,39 @@ const manageExceptionsRoutes = async (req, res, next) => {
     if (req.url.startsWith('/bo/') && !req.url.startsWith('/bo/api')) {
         if (path.basename(req.url).indexOf('.') > -1) {
             const url = req.url.replace('/bo', '/bo/build');
-            res.sendFile(path.join(global.appRoot, url));
+            res.sendFile(path.join(global.aquila.appRoot, url));
         } else {
-            res.sendFile(path.join(global.appRoot, 'bo/build/index.html'));
+            res.sendFile(path.join(global.aquila.appRoot, 'bo/build/index.html'));
         }
     } else if (req.url.startsWith('/google')) {
-        res.sendFile(path.join(global.appRoot, req.url));
+        res.sendFile(path.join(global.aquila.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
-        const type    = req.url.split('/')[2];
-        let quality;
-        const option  = {};
-        const options = req.url.split('/')[3];
-
-        if (options.includes('crop')) {
-            if (options.split('-crop')[0].split('-').length > 1) {
-                quality = options.split('-')[1];
-            } else {
-                quality = 80;
-            }
-            for (let i = options.split('-').length; options.split('-')[i - 1] !== 'crop'; i--) {
-                if (option.position) {
-                    option.position += `${options.split('-')[i - 1]} `;
-                } else {
-                    option.position = `${options.split('-')[i - 1]} `;
-                }
-            }
-
-            if (!option.position) {
-                option.position = 'center';
-            } else {
-                option.position = option.position.slice(0, -1);
-            }
-        } else {
-            if (options.split('-').length > 2) {
-                quality           = options.split('-')[1];
-                option.background = options.split('-')[2];
-            } else if (options.split('-').length > 1) {
-                if (options.split('-')[1].includes(',')) {
-                    option.background = options.split('-')[1];
-                } else {
-                    quality = options.split('-')[1];
-                }
-            }
-        }
-
-        const size      = req.url.split('/')[3].split('-')[0];
-        const _id       = req.url.split('/')[4];
-        const extension = path.extname(req.url).replace('.', '');
-        if (type && size && extension && _id) {
-            try {
-                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
-                res.set('Content-Type', `image/${extension}`);
-                fs.createReadStream(image, {autoClose: true}).pipe(res);
-            } catch (e) {
-                next(NSErrors.MediaNotFound);
-            }
-        }
+        await require('../services/medias').getImageStream(req.url, res);
     } else if (
-        global.envConfig
-        && req.url.length > global.envConfig.environment.adminPrefix.length + 2
-        && req.url.indexOf(`/${global.envConfig.environment.adminPrefix}/`)  > -1
+        global.aquila.envConfig?.environment?.adminPrefix?.length >= 0
+        && req.url.length > global.aquila.envConfig.environment.adminPrefix.length + 2
+        && req.url.indexOf(`/${global.aquila.envConfig.environment.adminPrefix}/`)  > -1
         && req.url.split('/')[req.url.split('/').length - 1].indexOf('.') > -1
     ) {
-        let url = req.url.replace(global.envConfig.environment.adminPrefix, 'backoffice').split('?')[0];
-        if (fs.existsSync(path.join(global.appRoot, url))) {
-            res.sendFile(path.join(global.appRoot, url));
+        let url = req.url.replace(global.aquila.envConfig.environment.adminPrefix, 'backoffice').split('?')[0];
+        if (fs.existsSync(path.join(global.aquila.appRoot, url))) {
+            res.sendFile(path.join(global.aquila.appRoot, url));
         } else {
-            url = url.replace('backoffice', global.envConfig.environment.photoPath || 'uploads');
-            if (fs.existsSync(path.join(global.appRoot, url))) {
-                res.sendFile(path.join(global.appRoot, url));
+            url = url.replace('backoffice', require('../utils/server').getUploadDirectory());
+            if (fs.existsSync(path.join(global.aquila.appRoot, url))) {
+                res.sendFile(path.join(global.aquila.appRoot, url));
             } else {
                 res.end();
             }
         }
     } else {
-        if (!global.installMode) {
+        const isAdmin = (req && req.info && req.info.isAdmin) || false;
+        if (!global.aquila.installMode && !isAdmin) {
             require('../services/stats').addUserVisitReq(req);
         }
 
         // We add the port to req so that it is available in the req of the getInitialProps of next
-        req.port = global.port;
+        req.port = global.aquila.port;
         next();
     }
 };

@@ -5,10 +5,12 @@ branches:
   
 language: node_js
 node_js:
-  - 14
+  - 16
 
 services:
   - docker
+
+install: skip
 
 before_script:
   - touch .env

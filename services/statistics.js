@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -41,8 +41,8 @@ exports.sendMetrics = async function (licence, date) {
  */
 exports.getFirstDayMetrics = async function () {
     try {
-        const User  = await Users.find().sort({createdAt: 1}).limit(1);
-        const Order = await Orders.find().sort({createdAt: 1}).limit(1);
+        const User  = await Users.find().sort({createdAt: 1}).limit(1).lean();
+        const Order = await Orders.find().sort({createdAt: 1}).limit(1).lean();
         if (User.length === 1 || Order.length === 1) {
             if (User[0].createdAt > Order[0].createdAt) {
                 return Order[0].createdAt;
@@ -119,7 +119,6 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     if (dateStart && dateEnd) {
         periodeStart = moment(dateStart);
         periodeEnd   = moment(dateEnd);
-        // periodeEnd = moment({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     } else {
         periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
@@ -141,39 +140,16 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
             $gte : sPeriodeStart,
             $lte : sPeriodeEnd
         },
-        status : {
-            $in : [
-                // orderStatuses.PAYMENT_PENDING,
-                orderStatuses.PAYMENT_RECEIPT_PENDING,
-                orderStatuses.PAYMENT_CONFIRMATION_PENDING,
-                orderStatuses.PAID,
-                orderStatuses.PROCESSING,
-                orderStatuses.PROCESSED, // Prepared. Not to be confused with Finished
-                orderStatuses.BILLED,
-                orderStatuses.DELIVERY_PROGRESS,
-                orderStatuses.DELIVERY_PARTIAL_PROGRESS,
-                orderStatuses.FINISHED,
-                // orderStatuses.CANCELED,
-                orderStatuses.RETURNED
-            ]
-        }
-    });
+        'historyStatus.status' : orderStatuses.PAID
+    }).lean();
 
-    let orderTotalAmount        = 0; // prices for all orders
-    let nbOrderPaid             = 0; // number of paid orders
-    let nbOrderNotPaid          = 0; // number of unpaid orders
-    let orderTotalAmountPaid    = 0; // total price of paid orders
-    let orderTotalAmountNotPaid = 0; // total price of unpaid orders
+    let orderTotalAmount = 0; // prices for all orders
+    let nbOrderPaid      = 0; // number of paid orders
+    const nbOrderNotPaid = 0; // number of unpaid orders
 
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
-        if (![orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.RETURNED].includes(allOrders[i].status)) {
-            nbOrderPaid++;
-            orderTotalAmountPaid += allOrders[i].priceTotal.ati;
-        } else {
-            nbOrderNotPaid++;
-            orderTotalAmountNotPaid += allOrders[i].priceTotal.ati;
-        }
+        nbOrderPaid++;
     }
 
     // --- frequenting ---
@@ -191,7 +167,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
             for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
                 attendance += attendanceTab[i].value;
             }
-        } else { // if (periode === "TODAY") {
+        } else { // periode === "TODAY"
             const statsToday = await serviceStats.getStatstoday();
             if (statsToday != null && statsToday.visit) {
                 attendance = statsToday.visit.length;
@@ -200,20 +176,19 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
 
-    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
+    // To long to calculate here, and don't need for global stats :
+    // const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
         averageCart : allOrders.length === 0 ? 0 : orderTotalAmount / allOrders.length,
         ca          : orderTotalAmount,
         transfo     : allOrders.length > 0 && attendance > 0 ? ((allOrders.length / attendance) * 100) : 0,
-        nbArticle   : articlesNumber.datasObject.length,
+        // nbArticle   : articlesNumber.datasObject.length,
         newClient   : newClients.datasObject.length,
         attendance,
         nbOrderPaid,
-        nbOrderNotPaid,
-        orderTotalAmountPaid,
-        orderTotalAmountNotPaid
+        nbOrderNotPaid
 
     };
 
@@ -225,13 +200,13 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
  */
 exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd) {
     const granularityQuery = {
-        year : {$substr: ['$oldCart.date', 0, 4]}// {$year: "$oldCart.date"}
+        year : {$substr: ['$oldCart.date', 0, 4]}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$substr: ['$oldCart.date', 5, 2]};// {$month: "$oldCart.date"};
+        granularityQuery.month = {$substr: ['$oldCart.date', 5, 2]};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};// {$dayOfMonth: "$oldCart.date"};
+        granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};
     }
 
     const attendanceTab = await serviceStats.getHistory('oldCart', periodeStart, periodeEnd, granularityQuery);
@@ -249,11 +224,6 @@ exports.getCag = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
         periodeStart,
         periodeEnd,
-        statusMatch : {
-            $nin : [
-                'CANCELED'
-            ]
-        },
         sumGroup : '$priceTotal.ati'
     });
 };
@@ -265,11 +235,6 @@ exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
         periodeStart,
         periodeEnd,
-        statusMatch : {
-            $nin : [
-                'CANCELED'
-            ]
-        },
         sumGroup : 1
     });
 };
@@ -285,7 +250,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
+    }).select({_id: 1, priceTotal: 1, items: 1}).populate(['items.id']).lean();
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
@@ -378,8 +343,9 @@ exports.getNewCustomer = async function (granularity, periodeStart, periodeEnd) 
 /**
  * Query database with aggregate for Orders
  */
-async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatch, sumGroup}) {
-    let datas = [];
+async function statsForOrders({granularity, periodeStart, periodeEnd, sumGroup}) {
+    const {orderStatuses} = require('./orders');
+    let datas             = [];
 
     const granularityQuery = {
         year : {$year: '$createdAt'}
@@ -397,7 +363,7 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             },
-            status : statusMatch
+            'historyStatus.status' : orderStatuses.PAID
         }},
         {$group : {_id   : granularityQuery,
             value : {$sum: sumGroup}}

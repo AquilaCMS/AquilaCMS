@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -9,8 +9,8 @@
 const bcrypt            = require('bcrypt');
 const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
+const {aquilaEvents}    = require('aql-utils');
 const AddressSchema     = require('./addressSchema');
-const aquilaEvents      = require('../../utils/aquilaEvents');
 const NSErrors          = require('../../utils/errors/NSErrors');
 const Schema            = mongoose.Schema;
 const {ObjectId}        = Schema.Types;
@@ -66,6 +66,7 @@ const UserSchema = new Schema({
         },
         validate : {
             validator(email) {
+                // eslint-disable-next-line prefer-regex-literals
                 return (new RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i)).test(email);
             },
             message : () => 'BAD_EMAIL_FORMAT'
@@ -124,20 +125,26 @@ const UserSchema = new Schema({
         {
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
-            values      : String,
             visible     : {type: Boolean, default: true},
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
             position    : {type: Number, default: 1}
         }
-    ]
+    ],
+    lastConnexion : Date,
+    anonymized    : {type: Boolean, default: false}
 }, {
     timestamps : true,
     id         : false
 });
 
 UserSchema.index({email: 1});
+// Need all this index for BO listing
+UserSchema.index({firstname: 1});
+UserSchema.index({lastname: 1});
+UserSchema.index({'company.name': 1});
+UserSchema.index({createdAt: 1});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

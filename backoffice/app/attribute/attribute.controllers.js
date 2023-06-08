@@ -44,7 +44,7 @@ AttributeControllers.controller('AttributeListCtrl', [
                 filter,
                 structure : '*',
                 populate  : 'set_attributes',
-                limit     : 99
+                limit     : 0
             };
             if ($scope.local.search) {
                 PostBody.filter[`translation.${$scope.adminLang}.name`] = {$regex: $scope.local.search, $options: 'i'};
@@ -60,7 +60,7 @@ AttributeControllers.controller('AttributeListCtrl', [
 
         function getAttributesOrphans() {
             // recuperation des attributs n'appartenant a aucun set
-            AttributesV2.list({PostBody: {filter: {'set_attributes.0': {$exists: false}, _type: $scope._type}, limit: 99, structure: '*'}}, function ({datas}) {
+            AttributesV2.list({PostBody: {filter: {'set_attributes.0': {$exists: false}, _type: $scope._type}, limit: 0, structure: '*'}}, function ({datas}) {
                 $scope.attributesOrphans = datas;
             });
         }
@@ -139,13 +139,26 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 $scope.generateInputs();
 
                 $scope.attribute.multiAttributes = $scope.attribute.set_attributes;
+                $scope.attribute.update = true;
+
+                $scope.getParentsAttr();
+            });
+        };
+
+        $scope.getParentsAttr = function () {
+            AttributesV2.list({
+                PostBody: { filter: { code: { $ne: $scope.attribute.code || '' }, set_attributes: { $in: $scope.attribute.set_attributes } }, structure: '*', limit: 0 }
+            }, function (attributesList) {
+                $scope.parentsAttributesList = attributesList.datas;
+            }, function (error) {
+                // deal with error here
             });
         };
 
         if ($routeParams.attributeCode === 'new' || $routeParams.attributeCode === undefined) {
             $scope.isEditMode = false;
             $scope.attribute  = {
-                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false
+                values : [], set_attributes : [], position : 1, param : 'Non', usedInRules : true, usedInFilters : false, usedInSearch : false
             };
 
             if ($routeParams.code) {
@@ -160,7 +173,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
             $scope.getAttr();
         }
 
-        SetAttributesV2.list({PostBody: {filter: {type: $scope._type}, structure: '*', limit: 99}}, function ({datas}) {
+        SetAttributesV2.list({PostBody: {filter: {type: $scope._type}, structure: '*', limit: 0}}, function ({datas}) {
             $scope.setAttributes = datas;
             if ($scope.isEditMode === false) {
                 datas.forEach((element) => {
@@ -175,6 +188,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                         }
                     }
                 });
+                $scope.getParentsAttr();
             }
         });
 
@@ -192,6 +206,11 @@ AttributeControllers.controller('AttributeDetailCtrl', [
             $scope.attribute.translation[$scope.lang].values.push('');
         };
 
+        $scope.changeSetAttributes = function () {
+            $scope.attribute.parents = [];
+            $scope.getParentsAttr();
+        };
+
         $scope.removeValue = function (index) {
             $scope.local.valuesList.splice($scope.local.valuesList.length - 1, 1);
             $scope.attribute.translation[$scope.lang].values.splice(index, 1);
@@ -204,7 +223,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                 let count = 0;
                 let j     = 0;
                 while ($scope.valuesError == '' && j < $scope.attribute.translation[$scope.lang].values.length) {
-                    if ($scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
+                    if (i !== j && $scope.attribute.translation[$scope.lang].values[i] == $scope.attribute.translation[$scope.lang].values[j]) {
                         count++;
                     }
 
@@ -245,7 +264,6 @@ AttributeControllers.controller('AttributeDetailCtrl', [
                     }
                 }
 
-                data.update = true;
                 data._type  = $scope._type;
                 AttributesV2.save(data, function (res) {
                     if (res._id) {
@@ -278,7 +296,7 @@ AttributeControllers.controller('AttributeDetailCtrl', [
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm($translate.instant('confirm.removeAttribute'))) {
+            if (confirm($translate.instant(attr.isVariantable ? 'confirm.removeVariantAttribute' : 'confirm.removeAttribute'))) {
                 AttributesV2.delete({id: attr._id}, function () {
                     toastService.toast('success', $translate.instant('attribute.detail.deleteAttribute'));
                     $location.path(`/${$scope._type}/attributes`);

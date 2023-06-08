@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -15,14 +15,14 @@ const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 const transports = [];
 
 module.exports = () => {
-    if (global.envFile.logs && global.envFile.logs.type && global.envFile.logs.type.console) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.console) {
         transports.push(new winston.transports.Console());
     }
 
-    if (global.envFile.logs && global.envFile.logs.type && global.envFile.logs.type.file) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.file) {
         transports.push(new WinstonDailyRotateFile({
             level       : 'info',
-            filename    : `${global.appRoot}/logs/app.log`,
+            filename    : `${global.aquila.appRoot}/logs/app.log`,
             datePattern : 'YYYY-MM-DD'
         }));
     }
@@ -47,7 +47,7 @@ module.exports = () => {
         }
     };
 
-    if (global.envFile.logs && global.envFile.logs.override) {
+    if (global.aquila.envFile.logs && global.aquila.envFile.logs.override) {
         // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
         // Override the base console log with winston
         console.log   = function () {

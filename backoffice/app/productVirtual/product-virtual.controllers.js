@@ -7,7 +7,7 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             isSelected: false
         };
 
-        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 0 } }, function ({ datas }) {
             $scope.setAttributes = datas;
 
             if ($scope.product && $scope.product.set_attributes === undefined) {
@@ -22,7 +22,7 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
         });
 
         $scope.loadNewAttrs = function () {
-            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 0 } }, function ({ datas }) {
                 $scope.product.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -94,10 +94,9 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             {
                 text: 'product.button.dup',
                 onClick: function () {
-                    const newCode = prompt("Saisir le code du nouveau produit : ");
+                    const newCode = prompt($translate.instant("simple.inputCode"));
                     if (newCode) {
                         const newPrd = {...$scope.product, code: newCode};
-                        delete newPrd._id;
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
                             toastService.toast("success", $translate.instant("simple.productDuplicate"));

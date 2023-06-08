@@ -60,17 +60,25 @@
                 <div class="col-sm-11">
                     <label for="repeatInterval" class="col-sm-2 control-label" translate>job.list.nextExec</label>
                     <div class="col-sm-6">
-                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:'yyyy-MM-dd HH:mm:ss Z')}}</span>
+                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:"dd/MM/yyyy HH'h'mm ss's'")}}</span>
                         <span ng-if="job.disabled" translate>job.list.paused</span>
                     </div>
                 </div>
             </div>
+            <div class="form-group" ng-show="isJobEditable()">
+                <div class="col-sm-11">
+                    <label for="isImportant" class="col-sm-2 control-label" translate>job.list.isImportant</label>
+                    <div class="col-sm-6">
+                        <ns-switch name="default_value" ng-model="job.data.isImportant"></ns-switch>
+                    </div>
+                </div>
+            </div>
 
-            <div class="form-group">
+            <div class="form-group" ng-show="isJobEditable()">
                 <div class="col-sm-11">
                     <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.httpMeth</label>
                     <div class="col-sm-6" ng-show="job.data.flag != 'system'">
-                        <select value="{{job.data.method ? job.data.method: 'get'}}" class="form-control" name="method" id="method" ng-model="job.data.method">
+                        <select ng-change="handleChangeType()" value="{{job.data.method ? job.data.method: 'get'}}" class="form-control" name="method" id="method" ng-model="job.data.method">
                             <option value="service" translate>job.detail.function</option>
                             <option value="get" translate>job.detail.get</option>
                             <option value="post" translate>job.detail.post</option>
@@ -83,7 +91,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group"  ng-show="isJobEditable()">
                 <div class="col-sm-11">
                     <label for="api" class="col-sm-2 control-label" translate>job.detail.lancerAPI</label>
                     <div class="col-sm-6" ng-show="job.data.flag != 'system'">
@@ -98,7 +106,23 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group"  ng-show="isJobEditable()">
+                <div class="col-sm-11">
+                    <label for="api" class="col-sm-2 control-label" translate>job.detail.onMainThread</label>
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system' && !['post','get','ftp'].includes(job.data.method)">
+                        <ns-switch id="onMainThread" name="onMainThread" ng-model="job.data.onMainThread""></ns-switch>
+                        <div class="ns-error-message" ng-show="form.api.$touched || form.nsSubmitted">
+                            <div ng-show="form.api.$error.required" translate>job.detail.fieldRequired</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system' || ['post','get','ftp'].includes(job.data.method)">
+                        <span ng-if="job.data.onMainThread === false" translate>job.detail.no</span>
+                        <span ng-if="job.data.onMainThread !== false" translate>job.detail.yes</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="isJobEditable()">
                 <div class="col-sm-11">
                     <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.params</label>
                     <div class="col-sm-6">
@@ -107,7 +131,7 @@
                 </div>
             </div>
 
-            <div class="form-group" ng-show="isEditMode">
+            <div class="form-group" ng-show="isEditMode && isJobEditable()">
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>job.detail.startStop</label>
                     <a ng-show="job.disabled == true" class="btn btn-inverse" ng-click="play(job._id)">
@@ -143,7 +167,41 @@
             <div class="form-group">
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>job.detail.fqDoc</label>
-<pre class="col-sm-7">
+<pre class="col-sm-7" ng-hide="lang == 'fr'">
+    - <b>00 30 08 10 06 * *</b> : June 10 at 08:30 AM
+        00 – 0th second (beginning of the minute)
+        30 – 30th minute
+        08 – 8 am (cron works in 24 hours)
+        10 – 10th day
+        06 – 6th month (June)
+        * – any day of the week
+        * – any year
+    - <b>00 00 09-18 * * * *</b> : every hour of every day, from 9am to 6pm
+        00 – 0th second (beginning of the minute)
+        00 – 0th minute (start of the hour)
+        09-18 – 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 hours
+        * – every day
+        * – every months
+        * – any day of the week
+        * – any day of the year
+    - <b>* */10 * * * *</b> : Run the cron every 10 minutes.
+
+    * * * * * * *
+    | | | | | | |
+    | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnal (7 fields)
+    | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
+    | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
+    | | | +-------- Day of the Month  (range: 1-31)
+    | | +---------- Hour              (range: 0-23)
+    | +------------ Minute            (range: 0-59)
+    +-------------- Seconde           (range: 0-59) /!\ Optionnal (6 fields)
+
+    /The interval can be noted in different formats:
+        - 7 fields: 00 00 08 1-31 * * * => Second Minute Hour MonthDay Year MonthYear WeekDay
+        - 6 fields: 00 00 08 1-31 * * => Second Minute Hour Month Day Year Month Week Day
+        - 5 fields: 00 08 1-31 * * => Minute Hour DayMonth MonthYear DayWeek
+</pre>
+<pre class="col-sm-7" ng-hide="lang == 'en'">
     - <b>00 30 08 10 06 * *</b> : le 10 juin à 08:30 du matin
         00 – 0ème seconde (début de la minute)
         30 – 30ème minute
@@ -164,13 +222,13 @@
 
     * * * * * * *
     | | | | | | |
-    | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnel (7 champs)
-    | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
-    | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
-    | | | +-------- Day of the Month  (range: 1-31)
-    | | +---------- Hour              (range: 0-23)
-    | +------------ Minute            (range: 0-59)
-    +-------------- Seconde           (range: 0-59) /!\ Optionnel (6 champs)
+    | | | | | | +-- Année               (plage: 1900-3000) /!\ Optionnel (7 champs)
+    | | | | | +---- Jours de la semaine (plage: 1-7, 1 est le lundi)
+    | | | | +------ Mois de l'année     (plage: 1-12) NOTE: Difference
+    | | | +-------- Jour du mois        (plage: 1-31)
+    | | +---------- Heure               (plage: 0-23)
+    | +------------ Minute              (plage: 0-59)
+    +-------------- Seconde             (plage: 0-59) /!\ Optionnel (6 champs)
 
     /!\ L'interval peut être noté sous differents formats:
         - 7 champs: 00 00 08 1-31 * * *  => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine Année

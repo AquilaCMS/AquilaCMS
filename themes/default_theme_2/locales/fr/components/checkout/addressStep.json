@@ -1,0 +1,16 @@
+{
+    "mandatory" : "Obligatoire",
+    "titleBilling":"Adresse de facturation",
+    "titleDelivery":"Adresse de livraison",
+    "firstname":"Prénom",
+    "lastname":"Nom",
+    "line1":"Adresse",
+    "line2":"Adresse 2",
+    "city":"Ville",
+    "postal":"Code postal",
+    "country":"Pays",
+    "sameAddress": "Même adresse de facturation",
+    "previous": "RETOUR",
+    "next": "SUIVANT",
+    "nextLoading": "ENREGISTREMENT..."
+}

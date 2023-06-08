@@ -1,13 +1,13 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const mongoose            = require('mongoose');
-const aquilaEvents        = require('../../utils/aquilaEvents');
+const {aquilaEvents}      = require('aql-utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
@@ -22,12 +22,8 @@ const PaymentMethodsSchema = new Schema({
     sort                     : {type: Number, default: 0},
     translation              : {},
     component_template_front : {type: String, default: null},
-    moduleFolderName         : {type: String, default: null}
-
-    /* name        : {type: String}, // obselete
-    urlLogo     : {type: String}, // obselete
-    description : String, // obselete
-    instruction : {type: String, default: ""} // obselete */
+    moduleFolderName         : {type: String, default: null},
+    paymentServiceFileName   : {type: String, default: null}
 }, {
     id : false
 });
@@ -39,36 +35,30 @@ const PaymentMethodsSchema = new Schema({
  instruction
  */
 
-PaymentMethodsSchema.statics.translationValidation = async function (query, self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+PaymentMethodsSchema.statics.translationValidation = async function (self) {
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
-            errors = checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
+            checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
                 {key: 'name'}, {key: 'urlLogo'}, {key: 'description'}, {key: 'instruction'}
             ]);
         }
     }
-
-    return errors;
 };
 
 PaymentMethodsSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
+    await utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
 });
-
 PaymentMethodsSchema.pre('save', async function (next) {
-    const errors = await PaymentMethodsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
 });
 
 aquilaEvents.emit('paymentMethodSchemaInit', PaymentMethodsSchema);

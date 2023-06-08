@@ -1,23 +1,24 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path         = require('path');
 const mongoose     = require('mongoose');
-const fs           = require('../utils/fsp');
+const {fs}         = require('aql-utils');
 const {Products}   = require('../orm/models');
 const utilsModules = require('../utils/modules');
 
 const createModelData = async () => {
-    const schemas     = [];
-    const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+    const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
+    const schemas        = [];
+    const themeFolder    = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
-        if (['configuration', 'modules', 'BundleProduct', 'SimpleProduct'].indexOf(modelName) === -1) {
+        if (forbidenModels.indexOf(modelName) === -1) {
             schemas.push({collection: modelName, datas: model});
         }
     }
@@ -30,7 +31,7 @@ const createModelData = async () => {
         }
     }
 
-    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
+    const photoPath = path.join(global.aquila.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
     if (!await fs.hasAccess(photoPath)) {
         throw new Error(`"${photoPath}" is not readable`);
@@ -58,9 +59,6 @@ const sortAttribs = async () => {
         const _products = await Products.find({});
 
         for (let i = 0, leni = _products.length; i < leni; i++) {
-            // console.log(`${i}/${_products.length}`);
-            // const attribs = _products[i].attributes;
-
             _products[i].attributes.sort(function (first, second) {
                 if (first.code < second.code) {
                     return -1;
@@ -72,7 +70,6 @@ const sortAttribs = async () => {
             });
 
             await _products[i].save();
-            // await Products.updateOne({_id: _products[i]._id}, {attributes: attribs});
         }
 
         console.log('End of sorting');
@@ -117,7 +114,7 @@ const hotReloadAPI = async (express, server, passport) => {
                     continue;
                 }
                 for (const oneFolder of ['routes', 'services']) {
-                    const pathToFolder = path.join(global.appRoot, oneFolder);
+                    const pathToFolder = path.join(global.aquila.appRoot, oneFolder);
                     if (oneLine.startsWith(pathToFolder)) {
                         delete require.cache[oneLine];
                     }

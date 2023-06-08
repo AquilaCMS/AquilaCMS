@@ -1,15 +1,15 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path         = require('path');
 const mongoose     = require('mongoose');
+const {slugify}    = require('aql-utils');
 const {Gallery}    = require('../orm/models');
-const utils        = require('../utils/utils');
 const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 const cacheService = require('./cache');
@@ -22,7 +22,7 @@ const queryBuilder     = new QueryBuilder(Gallery, restrictedFields, defaultFiel
 /**
  * @description Return all galleries
  */
-const getGalleries = async (PostBody) => queryBuilder.find(PostBody);
+const getGalleries = async (PostBody) => queryBuilder.find(PostBody, true);
 
 /**
  * @description Returns a gallery whose id is passed in parameter
@@ -30,7 +30,7 @@ const getGalleries = async (PostBody) => queryBuilder.find(PostBody);
  */
 const getGallery = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-    const result = await Gallery.findById(_id);
+    const result = await Gallery.findById(_id).lean();
     if (!result) throw NSErrors.GalleryNotFound;
     return result;
 };
@@ -42,7 +42,7 @@ const getGallery = async (_id) => {
  * @param initItemNumber : the number of items to display (equivalent to limit in mongodb)
  */
 const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
-    const doc = await Gallery.findOne({code});
+    const doc = await Gallery.findOne({code}).lean();
     if (!doc) throw NSErrors.GalleryNotFound;
     let items = doc.items.sort((itemA, itemB) => itemA.order - itemB.order);
     if (!skip && !initItemNumber) {
@@ -64,7 +64,7 @@ const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
  */
 const setGallery = async (code, initItemNumber, maxColumnNumber, _id = null) => {
     let result;
-    code = utils.slugify(code);
+    code = slugify(code);
     if (_id) {
         // Update
         if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;

@@ -1,0 +1,2049 @@
+{
+  "collection": "products",
+  "datas": [
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 2.91
+        },
+        "ati": {
+          "normal": 3.2
+        },
+        "priceSort": {
+          "et": 2.91,
+          "ati": 3.2
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "value": 0,
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "605368ba4b9ac91f54fcabe6",
+          "position": 0,
+          "alt": "biere",
+          "name": "biere.jpg",
+          "title": "biere",
+          "url": "photos/product/b/i/biere.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "605368a04b9ac91f54fcabe5",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "biere",
+      "translation": {
+        "fr": {
+          "name": "Bière",
+          "slug": "biere",
+          "metaDesc": "Fraîche, légère et originale",
+          "description2": {
+            "title": "Fraîche, légère et originale",
+            "text": "Fraîche, légère et originale. En bouche, elle révèle une attaque douce, désaltérante, ronde et parfumées."
+          },
+          "canonical": "/boissons/biere",
+          "description1": {
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "beer",
+          "name": "Beer",
+          "metaDesc": "Fresh, light and original",
+          "description2": {
+            "title": "Fresh, light and original",
+            "text": "Fresh, light and original. On the palate, it reveals a soft, thirst-quenching, round and fragrant attack."
+          },
+          "canonical": "/en/drinks/beer"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T12:59:05.601Z",
+      "universe": "boissons-boissons",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 10.91
+        },
+        "ati": {
+          "normal": 12
+        },
+        "priceSort": {
+          "et": 10.91,
+          "ati": 12
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [
+        "607ecb35d23bc05a98874b4b",
+        "607ecb35d23bc05a98874b51",
+        "60a38dc81f60701cac587c8e",
+        "60a38dc81f60701cac587c8f",
+        "60a38dc81f60701cac587c91",
+        "60a38dc81f60701cac587c92"
+      ],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup",
+              "value": 1
+            },
+            "en": {
+              "name": "Ketchup",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise",
+              "value": 0
+            },
+            "en": {
+              "name": "Mayonnaise",
+              "value": 0
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts",
+              "value": 1
+            },
+            "en": {
+              "name": "Covered",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "multiselect",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "627e659aa9987c4488835273",
+          "id": "ff06a08a6350becbd5d0adea",
+          "code": "viande",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Viande",
+              "values": [
+                "Poulet",
+                "Boeuf",
+                "Bacon"
+              ],
+              "value": [
+                "Poulet"
+              ]
+            },
+            "en": {
+              "name": "Meat",
+              "values": [
+                "Chicken",
+                "Beef",
+                "Bacon"
+              ],
+              "value": [
+                "Chicken"
+              ]
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "6053678c4b9ac91f54fcabc8",
+          "position": 0,
+          "alt": "chicken-burger",
+          "name": "chicken-burger.jpg",
+          "title": "chicken-burger",
+          "url": "photos/product/c/h/chicken-burger.jpg"
+        },
+        {
+          "default": false,
+          "extension": ".jpg",
+          "_id": "605367904b9ac91f54fcabc9",
+          "position": 0,
+          "alt": "chicken-burger2",
+          "name": "chicken-burger2.jpg",
+          "title": "chicken-burger2",
+          "url": "photos/product/c/h/chicken-burger2.jpg"
+        }
+      ],
+      "pictos": [
+        {
+          "_id": "612f4e2b27756b19a49a7d44",
+          "code": "veggie",
+          "image": "veggie.png",
+          "pictoId": "612f47f56253e44490f71bde",
+          "title": "Veggie",
+          "location": "TOP_LEFT"
+        }
+      ],
+      "_id": "605366a34b9ac91f54fcabc7",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "chickenburger",
+      "translation": {
+        "fr": {
+          "name": "Chicken burger",
+          "slug": "chicken-burger",
+          "metaDesc": "Poulet panné et croustillant",
+          "description2": {
+            "title": "Poulet panné et croustillant",
+            "text": "Poulet panné et croustillant, fromage, cornichon, salage, tomate et ketchup."
+          },
+          "canonical": "/burgers/chicken-burger",
+          "description1": {
+            "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "chickenburger",
+          "name": "Chicken burger",
+          "metaDesc": "Breaded and crispy chicken",
+          "description2": {
+            "title": "Breaded and crispy chicken",
+            "text": "Breaded and crispy chicken, cheese, pickle, salting, tomato and ketchup."
+          },
+          "canonical": "/en/burgers/chickenburger"
+        }
+      },
+      "universe": "burger-burger",
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T15:12:48.959Z",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "price": {
+        "et": {
+          "normal": 0.25
+        },
+        "ati": {
+          "normal": 0.3
+        },
+        "priceSort": {
+          "et": 0.25,
+          "ati": 0.3
+        },
+        "purchase": 0,
+        "tax": 20
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "downloadLink": null,
+      "downloadInfos": null,
+      "type": "virtual",
+      "active": false,
+      "_visible": false,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": true,
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d096737fc52b22e0c3d836",
+          "param": "Non",
+          "code": "sauce-ketchup",
+          "translation": {
+            "fr": {
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          },
+          "id": "60d06ea4e197fd1fc0d9b6ec"
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "60d09d107fc52b22e0c3da1e",
+          "position": null,
+          "alt": "sauce-mayo",
+          "name": "sauce-mayo_1624284432760.jpg",
+          "title": "sauce-mayo_1624284432760",
+          "url": "photos/product/s/a/sauce-mayo_1624284432760.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "60d096737fc52b22e0c3d835",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "sauce-mayonnaise",
+      "translation": {
+        "fr": {
+          "name": "Mayonnaise",
+          "slug": "sauce-mayonnaise"
+        },
+        "en": {
+          "name": "Mayonnaise",
+          "slug": "sauce-mayonnaise"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "price": {
+        "et": {
+          "normal": 0.25
+        },
+        "ati": {
+          "normal": 0.3
+        },
+        "priceSort": {
+          "et": 0.25,
+          "ati": 0.3
+        },
+        "purchase": 0,
+        "tax": 20
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "downloadLink": null,
+      "downloadInfos": null,
+      "type": "virtual",
+      "active": false,
+      "_visible": false,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": true,
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup",
+              "value": null
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".png",
+          "_id": "60d0858c7fc52b22e0c3d780",
+          "position": null,
+          "alt": "la-sauce-tomate-ketchup",
+          "name": "la-sauce-tomate-ketchup.png",
+          "title": "la-sauce-tomate-ketchup",
+          "url": "photos/product/s/a/la-sauce-tomate-ketchup.png"
+        }
+      ],
+      "pictos": [],
+      "_id": "60d06e1ae197fd1fc0d9b6e3",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "sauce-ketchup",
+      "translation": {
+        "fr": {
+          "name": "Ketchup",
+          "slug": "ketchup"
+        },
+        "en": {
+          "name": "Ketchup",
+          "slug": "ketchup"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 11.36
+        },
+        "ati": {
+          "normal": 12.5
+        },
+        "priceSort": {
+          "et": 11.36,
+          "ati": 12.5
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [
+        "605364234b9ac91f54fcabad",
+        "605366a34b9ac91f54fcabc7"
+      ],
+      "is_new": false,
+      "allergens": [
+        "607ecb35d23bc05a98874b4b",
+        "607ecb35d23bc05a98874b51",
+        "60a38dc81f60701cac587c8e",
+        "60a38dc81f60701cac587c8f",
+        "60a38dc81f60701cac587c91",
+        "60a38dc81f60701cac587c92",
+        "60a38dc81f60701cac587c94"
+      ],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup",
+              "value": 1
+            },
+            "en": {
+              "name": "Ketchup",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise",
+              "value": 0
+            },
+            "en": {
+              "name": "Mayonnaise",
+              "value": 0
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts",
+              "value": 1
+            },
+            "en": {
+              "name": "Covered",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "multiselect",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "627e659aa9987c4488835273",
+          "id": "ff06a08a6350becbd5d0adea",
+          "code": "viande",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Viande",
+              "values": [
+                "Poulet",
+                "Boeuf",
+                "Bacon"
+              ],
+              "value": [
+                "Boeuf",
+                "Bacon"
+              ]
+            },
+            "en": {
+              "name": "Meat",
+              "values": [
+                "Chicken",
+                "Beef",
+                "Bacon"
+              ],
+              "value": [
+                "Beef",
+                "Bacon"
+              ]
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "605365f04b9ac91f54fcabb9",
+          "position": 0,
+          "alt": "le-bacon-burger",
+          "name": "le-bacon-burger.jpg",
+          "title": "le-bacon-burger",
+          "url": "photos/product/l/e/le-bacon-burger.jpg"
+        },
+        {
+          "default": false,
+          "extension": ".jpg",
+          "_id": "605365f54b9ac91f54fcabba",
+          "position": 0,
+          "alt": "le-bacon-burger2",
+          "name": "le-bacon-burger2.jpg",
+          "title": "le-bacon-burger2",
+          "url": "photos/product/l/e/le-bacon-burger2.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "605365894b9ac91f54fcabb8",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "lebacon",
+      "translation": {
+        "fr": {
+          "name": "Le bacon",
+          "slug": "le-bacon-burger",
+          "metaDesc": "Burger steak et bacon",
+          "description2": {
+            "title": "Burger steak et bacon",
+            "text": "Steak haché de boeuf, oignon, fromage, tomage, cheddar, sauce BBQ et tranches de bacon."
+          },
+          "canonical": "/burgers/le-bacon-burger",
+          "description1": {
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "the-bacon",
+          "name": "Bacon Burger",
+          "metaDesc": "Bacon Burger",
+          "description2": {
+            "title": "Bacon Burger",
+            "text": "Ground beef steak, onion, cheese, tomage, cheddar, BBQ sauce and slices of bacon."
+          },
+          "canonical": "/en/burgers/the-bacon"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T15:13:02.181Z",
+      "universe": "burger-burger",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "trademark": {
+        "name": "BrandSample",
+        "code": "brandsample"
+      },
+      "price": {
+        "et": {
+          "normal": 9,
+          "special": 7.73
+        },
+        "ati": {
+          "normal": 9.9,
+          "special": 8.5
+        },
+        "priceSort": {
+          "et": 7.73,
+          "ati": 8.5
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [
+        "605365894b9ac91f54fcabb8",
+        "605366a34b9ac91f54fcabc7"
+      ],
+      "is_new": false,
+      "allergens": [
+        "607ecb35d23bc05a98874b4b",
+        "607ecb35d23bc05a98874b51",
+        "607ecb35d23bc05a98874b4e"
+      ],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup",
+              "value": 1
+            },
+            "en": {
+              "name": "Ketchup",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise",
+              "value": 0
+            },
+            "en": {
+              "name": "Mayonnaise",
+              "value": 0
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts",
+              "value": 1
+            },
+            "en": {
+              "name": "Covered",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "multiselect",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "627e659aa9987c4488835273",
+          "id": "ff06a08a6350becbd5d0adea",
+          "code": "viande",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Viande",
+              "values": [
+                "Poulet",
+                "Boeuf",
+                "Bacon"
+              ],
+              "value": [
+                "Boeuf"
+              ]
+            },
+            "en": {
+              "name": "Meat",
+              "values": [
+                "Chicken",
+                "Beef",
+                "Bacon"
+              ],
+              "value": [
+                "Beef"
+              ]
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "605364c94b9ac91f54fcabb1",
+          "position": 0,
+          "alt": "original-burger",
+          "name": "original-burger.jpg",
+          "title": "original-burger",
+          "url": "photos/product/l/o/original-burger.jpg"
+        },
+        {
+          "default": false,
+          "extension": ".jpg",
+          "_id": "6053652d4b9ac91f54fcabb3",
+          "position": 0,
+          "alt": "original-burger2",
+          "name": "original-burger2.jpg",
+          "title": "original-burger2",
+          "url": "photos/product/l/o/original-burger2.jpg"
+        },
+        {
+          "default": false,
+          "extension": ".jpg",
+          "_id": "605365304b9ac91f54fcabb4",
+          "position": 0,
+          "alt": "original-burger3",
+          "name": "original-burger3.jpg",
+          "title": "original-burger3",
+          "url": "photos/product/l/o/original-burger3.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "605364234b9ac91f54fcabad",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "loriginal",
+      "translation": {
+        "fr": {
+          "name": "L'original",
+          "slug": "original-burger",
+          "metaDesc": "original-burger",
+          "description2": {
+            "title": "Le burger universel",
+            "text": "Authenticité et simplicité à petit prix ! Le burger original, steak, tomate, salade, ketchup."
+          },
+          "canonical": "/burgers/original-burger",
+          "description1": {
+            "title": "",
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "loriginal",
+          "name": "Original burger",
+          "metaDesc": "The universal burger",
+          "description2": {
+            "title": "The universal burger",
+            "text": "Authenticity and simplicity at a low price! The original burger, steak, tomato, salad, ketchup."
+          },
+          "canonical": "/en/burgers/loriginal"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T15:13:20.674Z",
+      "universe": "burger-burger",
+      "code_ean": "1234567896541",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 4.73
+        },
+        "ati": {
+          "normal": 5.2
+        },
+        "priceSort": {
+          "et": 4.73,
+          "ati": 5.2
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [
+        "607ecb35d23bc05a98874b52",
+        "607ecb35d23bc05a98874b51",
+        "607ecb35d23bc05a98874b4b",
+        "60a38dc81f60701cac587c95",
+        "60a38dc81f60701cac587c8f",
+        "60a38dc81f60701cac587c94"
+      ],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "value": 0,
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "6053694a4b9ac91f54fcabea",
+          "position": 0,
+          "alt": "cake-choco",
+          "name": "cake-choco.jpg",
+          "title": "cake-choco",
+          "url": "photos/product/c/a/cake-choco.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "605369344b9ac91f54fcabe9",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "cakechoco",
+      "translation": {
+        "fr": {
+          "slug": "cake-choco",
+          "name": "Cake choco",
+          "metaDesc": "Gâteau au chocolat et son nappage",
+          "description2": {
+            "title": "Gâteau au chocolat et son nappage",
+            "text": "Gâteau au chocolat et son nappage de fruit rouge, le tout délicieusement tiède."
+          },
+          "canonical": "/desserts/cake-choco",
+          "description1": {
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "cake-choco",
+          "name": "Cake choco",
+          "metaDesc": "Chocolate cake and its topping",
+          "description2": {
+            "title": "Chocolate cake and its topping",
+            "text": "Chocolate cake with red fruit topping, all deliciously warm."
+          },
+          "canonical": "/en/desserts/cake-choco"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "universe": "desserts-desserts",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        }
+      },
+      "price": {
+        "et": {
+          "normal": 13.25
+        },
+        "ati": {
+          "normal": 15.9
+        },
+        "priceSort": {
+          "et": 13.25,
+          "ati": 15.9
+        },
+        "purchase": 0,
+        "tax": 20
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "bundle",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [
+        "607ecb35d23bc05a98874b4e",
+        "607ecb35d23bc05a98874b4f",
+        "607ecb35d23bc05a98874b51",
+        "607ecb35d23bc05a98874b52",
+        "60a38dc81f60701cac587c8e",
+        "60a38dc81f60701cac587c94"
+      ],
+      "foodOption": false,
+      "bundle_sections": [
+        {
+          "_id": "6054ca9d1a189d261888c548",
+          "ref": "Burger",
+          "type": "SINGLE",
+          "products": [
+            {
+              "_id": "638621a36947884f68336a01",
+              "id": "605364234b9ac91f54fcabad",
+              "isDefault": false
+            },
+            {
+              "_id": "638621a36947884f68336a02",
+              "id": "605365894b9ac91f54fcabb8",
+              "isDefault": false
+            },
+            {
+              "_id": "638621a36947884f68336a03",
+              "id": "605366a34b9ac91f54fcabc7",
+              "isDefault": false
+            }
+          ],
+          "isRequired": true,
+          "title": "Burger",
+          "displayMode": "RADIO_BUTTON"
+        },
+        {
+          "_id": "6054cbdc1a189d261888c55e",
+          "ref": "Accompagnement",
+          "type": "SINGLE",
+          "products": [
+            {
+              "_id": "638621a36947884f68336a05",
+              "id": "6054a7776153ac1a34d4334a",
+              "isDefault": false
+            }
+          ],
+          "isRequired": true,
+          "title": "Accompagnement",
+          "displayMode": "RADIO_BUTTON"
+        },
+        {
+          "_id": "6054cbdc1a189d261888c560",
+          "ref": "Boisson",
+          "type": "SINGLE",
+          "products": [
+            {
+              "_id": "638621a36947884f68336a07",
+              "id": "605367d64b9ac91f54fcabd9",
+              "isDefault": false
+            },
+            {
+              "modifier_price": {
+                "ati": 1,
+                "et": 0.83
+              },
+              "_id": "638621a36947884f68336a08",
+              "id": "605368a04b9ac91f54fcabe5",
+              "isDefault": false
+            }
+          ],
+          "isRequired": true,
+          "title": "Boisson",
+          "displayMode": "RADIO_BUTTON"
+        }
+      ],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup",
+              "value": 1
+            },
+            "en": {
+              "name": "Ketchup",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise",
+              "value": 0
+            },
+            "en": {
+              "name": "Mayonnaise",
+              "value": 0
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts",
+              "value": 1
+            },
+            "en": {
+              "name": "Covered",
+              "value": 1
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "60536d6a4b9ac91f54fcac06",
+          "position": 0,
+          "alt": "menu-burger",
+          "name": "menu-burger.jpg",
+          "title": "menu-burger",
+          "url": "photos/product/m/e/menu-burger.jpg"
+        },
+        {
+          "default": false,
+          "extension": ".jpg",
+          "_id": "60536d6d4b9ac91f54fcac07",
+          "position": 0,
+          "alt": "menu-burger2",
+          "name": "menu-burger2.jpg",
+          "title": "menu-burger2",
+          "url": "photos/product/m/e/menu-burger2.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "60536cf34b9ac91f54fcac05",
+      "qty": 0,
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "menu",
+      "translation": {
+        "fr": {
+          "name": "Menu",
+          "slug": "menu",
+          "metaDesc": "Menu : 1 burger au choix, une boisson et un dessert",
+          "description2": {
+            "title": "1 burger au choix, une boisson et un dessert",
+            "text": "Dans ce menu, choissisez 1 burger, une boisson et une dessert, le tout à petit prix !"
+          },
+          "canonical": "/burgers/menu",
+          "description1": {
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "menu",
+          "canonical": "/en/burgers/menu",
+          "description2": {
+            "text": "From this menu, choose 1 burger, a drink and a dessert, all at a low price!",
+            "title": "1 burger of your choice, a drink and a dessert"
+          },
+          "metaDesc": "1 burger of your choice, a drink and a dessert",
+          "name": "Menu"
+        }
+      },
+      "universe": "burger-burger",
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T15:13:39.914Z",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 2.73
+        },
+        "ati": {
+          "normal": 3
+        },
+        "priceSort": {
+          "et": 2.73,
+          "ati": 3
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": false,
+      "_visible": false,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "6054ad136153ac1a34d4334e",
+          "position": 0,
+          "alt": "frite",
+          "name": "frite.jpg",
+          "title": "frite",
+          "url": "photos/product/f/r/frite.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "6054a7776153ac1a34d4334a",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "frite",
+      "translation": {
+        "fr": {
+          "name": "Frite",
+          "slug": "frite",
+          "metaDesc": "Frite maison",
+          "description2": {
+            "title": "Frite maison",
+            "text": "Délicieuse frite de pomme de terre faite maison"
+          },
+          "description1": {
+            "title": "frite",
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          },
+          "canonical": "/autre/frite"
+        },
+        "en": {
+          "slug": "french-fries",
+          "canonical": "/en/other/french-fries",
+          "description2": {
+            "text": "Delicious homemade french fries",
+            "title": "Homade french fries"
+          },
+          "name": "French fries",
+          "metaDesc": "French fries"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "universe": "autre-autre",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": true,
+        "status": "liv",
+        "label": "available",
+        "translation": {
+          "fr": {
+            "value": "Produit disponible"
+          },
+          "en": {
+            "value": "Available product"
+          }
+        },
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 1.82
+        },
+        "ati": {
+          "normal": 2
+        },
+        "priceSort": {
+          "et": 1.82,
+          "ati": 2
+        },
+        "purchase": 0,
+        "tax": 10
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [
+        "605368a04b9ac91f54fcabe5"
+      ],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "value": 0,
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "605368394b9ac91f54fcabe1",
+          "position": 0,
+          "alt": "coca-cola",
+          "name": "coca-cola.jpg",
+          "title": "coca-cola",
+          "url": "photos/product/c/o/coca-cola.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "605367d64b9ac91f54fcabd9",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "coca",
+      "translation": {
+        "fr": {
+          "name": "Coca-cola",
+          "slug": "coca-cola",
+          "metaDesc": "Coca-cola",
+          "description2": {
+            "title": "33cl",
+            "text": "Canette de coca-cola 33cl"
+          },
+          "canonical": "/boissons/coca-cola",
+          "description1": {
+            "text": "<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+          }
+        },
+        "en": {
+          "slug": "coca",
+          "name": "Coca-cola",
+          "metaDesc": "Coca-cola",
+          "description2": {
+            "title": "33cl",
+            "text": "33cl can of coca-cola"
+          },
+          "canonical": "/en/drinks/coca"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2022-11-29T12:59:05.593Z",
+      "universe": "boissons-boissons",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "stock": {
+        "qty": 0,
+        "qty_booked": 0,
+        "orderable": false,
+        "status": "epu",
+        "label" : "exhausted",
+        "qty_real": 0
+      },
+      "price": {
+        "et": {
+          "normal": 4.8
+        },
+        "ati": {
+          "normal": 4.8
+        },
+        "priceSort": {
+          "et": 4.8,
+          "ati": 4.8
+        },
+        "purchase": 0,
+        "tax": 0
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "type": "simple",
+      "active": true,
+      "_visible": true,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": false,
+      "variants": [],
+      "variants_values": [],
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d06ea4e197fd1fc0d9b6ed",
+          "id": "60d06ea4e197fd1fc0d9b6ec",
+          "code": "sauce-ketchup",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d097677fc52b22e0c3d83c",
+          "id": "60d097677fc52b22e0c3d83b",
+          "code": "sauce-mayonnaise",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          }
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [],
+      "pictos": [],
+      "_id": "605682531a189d261888c586",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "glace",
+      "translation": {
+        "fr": {
+          "name": "Glace",
+          "slug": "glace",
+          "canonical": "/desserts/glace",
+          "metaDesc": "Choix de différentes glaces ou sorbet",
+          "description2": {
+            "title": "Choix de différentes glaces ou sorbet",
+            "text": "2 boules au choix : chocolat, vanille, café, citron ou poire."
+          }
+        },
+        "en": {
+          "slug": "ice-cream",
+          "canonical": "/en/desserts/ice-cream",
+          "metaDesc": "Choice of different ice creams",
+          "name": "Ice cream",
+          "description2": {
+            "text": "2 scoops of your choice: chocolate, vanilla, coffee, lemon or pear.",
+            "title": "Choice of different ice creams"
+          }
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "component_template": "<food-options-config></food-options-config>"
+    },
+    {
+      "price": {
+        "et": {
+          "normal": 0.42
+        },
+        "ati": {
+          "normal": 0.5
+        },
+        "priceSort": {
+          "et": 0.42,
+          "ati": 0.5
+        },
+        "purchase": 0,
+        "tax": 20
+      },
+      "reviews": {
+        "average": 0,
+        "reviews_nb": 0,
+        "questions": [],
+        "datas": []
+      },
+      "stats": {
+        "views": 0,
+        "sells": 0
+      },
+      "downloadLink": null,
+      "downloadInfos": null,
+      "type": "virtual",
+      "active": false,
+      "_visible": false,
+      "weight": 0,
+      "associated_prds": [],
+      "is_new": false,
+      "allergens": [],
+      "foodOption": true,
+      "attributes": [
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09a1f7fc52b22e0c3d943",
+          "param": "Non",
+          "code": "sauce-ketchup",
+          "translation": {
+            "fr": {
+              "name": "Ketchup"
+            },
+            "en": {
+              "name": "Ketchup"
+            }
+          },
+          "id": "60d06ea4e197fd1fc0d9b6ec"
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09a1f7fc52b22e0c3d944",
+          "param": "Non",
+          "code": "sauce-mayonnaise",
+          "translation": {
+            "fr": {
+              "name": "Mayonnaise"
+            },
+            "en": {
+              "name": "Mayonnaise"
+            }
+          },
+          "id": "60d097677fc52b22e0c3d83b"
+        },
+        {
+          "type": "number",
+          "position": 1,
+          "visible": true,
+          "usedInSearch": false,
+          "parents": [],
+          "_id": "60d09b837fc52b22e0c3d94e",
+          "id": "60d09b837fc52b22e0c3d94d",
+          "code": "couverts",
+          "param": "Non",
+          "translation": {
+            "fr": {
+              "name": "Couverts"
+            },
+            "en": {
+              "name": "Cutlery"
+            }
+          }
+        }
+      ],
+      "images": [
+        {
+          "default": true,
+          "extension": ".jpg",
+          "_id": "60d09b617fc52b22e0c3d949",
+          "position": null,
+          "alt": "couverts",
+          "name": "couverts.jpg",
+          "title": "couverts",
+          "url": "photos/product/c/o/couverts.jpg"
+        }
+      ],
+      "pictos": [],
+      "_id": "60d09a1f7fc52b22e0c3d942",
+      "set_attributes": "5c5abe92c1f87b5f46c451fa",
+      "code": "couverts",
+      "translation": {
+        "fr": {
+          "slug": "couverts",
+          "name": "Couverts"
+        },
+        "en": {
+          "name": "Cutlery",
+          "slug": "cutlery"
+        }
+      },
+      "createdAt": "2021-06-22T00:00:00.000Z",
+      "updatedAt": "2021-06-22T00:00:00.000Z",
+      "component_template": "<food-options-config></food-options-config>"
+    }
+  ]
+}

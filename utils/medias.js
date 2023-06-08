@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -13,11 +13,11 @@ const imageminMozjpeg             = require('imagemin-mozjpeg');
 const {default: imageminPngquant} = require('imagemin-pngquant');
 const imageminSvgo                = require('imagemin-svgo');
 const path                        = require('path');
-const fsp                         = require('./fsp');
+const {fs}                        = require('aql-utils');
 const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
-    const filePathOut = pathOut + path.basename(pathIn);
+    const filePathOut = path.join(pathOut, path.basename(pathIn));
     const extension   = path.extname(filename);
     const filePathIn  = pathIn.replace(extension, '');
     if (quality > 100) {
@@ -42,18 +42,31 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         if (files.length) {
             pathToReturn = files[0].sourcePath;
         } else {
-            await fsp.rename(pathIn, filePathOut);
+            if (pathIn !== filePathOut) await fs.rename(pathIn, filePathOut);
             pathToReturn = filePathOut;
         }
         return pathToReturn.replace(/\\/g, '/');
     } catch (error) {
         console.error('error =>', error);
-        await fsp.rename(pathIn, filePathOut);
+        await fs.rename(pathIn, filePathOut);
         return filePathOut.replace(/\\/g, '/');
     }
 };
 
-const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
+const getProductImageUrl = (product) => {
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default).url : '';
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
+};
+
+const getProductImageId = (product) => {
+    const defaultImage = global.aquila.envConfig.environment.defaultImage ? 'no-image' : '';
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default)._id : defaultImage;
+    }
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : defaultImage;
+};
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {
@@ -62,9 +75,9 @@ const deleteFile = async (filePath) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, filePath);
-            if (pathToRemove && fsp.existsSync(pathToRemove)) {
+            if (pathToRemove && fs.existsSync(pathToRemove)) {
                 try {
-                    await fsp.unlink(pathToRemove);
+                    await fs.unlink(pathToRemove);
                 } catch (err) {
                     console.error(err);
                     throw err;
@@ -83,8 +96,8 @@ const deleteFolder = async (folderPath) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, folderPath);
-            if (fsp.existsSync(pathToRemove)) {
-                await fsp.deleteRecursive(pathToRemove);
+            if (fs.existsSync(pathToRemove)) {
+                await fs.deleteRecursive(pathToRemove);
             }
         });
     } else {
@@ -103,9 +116,9 @@ const renameFile = async (pathIn, filePathOut) => {
             const pathUpload = require('./server').getUploadDirectory();
             const oldPath    = path.resolve(pathUpload, pathIn);
             const newPath    = path.resolve(pathUpload, filePathOut);
-            if (oldPath && fsp.existsSync(oldPath)) {
+            if (oldPath && fs.existsSync(oldPath)) {
                 try {
-                    await fsp.rename(pathIn, newPath);
+                    await fs.rename(pathIn, newPath);
                 } catch (err) {
                     console.error(err);
                     throw err;
@@ -122,10 +135,7 @@ const existsFile = async (key) => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
-                return true;
-            }
-            return false;
+            return !!(pathToCheck && fs.existsSync(pathToCheck) && !(fs.lstatSync(pathToCheck)).isDirectory());
         });
     }
 };
@@ -133,6 +143,7 @@ const existsFile = async (key) => {
 module.exports = {
     compressImg,
     getProductImageUrl,
+    getProductImageId,
     deleteFile,
     deleteFolder,
     renameFile,

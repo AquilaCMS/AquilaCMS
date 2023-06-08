@@ -4,7 +4,7 @@
             "tags": ["Category"],
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -78,7 +78,11 @@
         "delete": {
             "deprecated": false,
             "security": [{"admin_authorization": []}],
-            "responses": {},
+            "responses": {
+                "200":{
+                    "description":"The {id} category has bee deleted"
+                }
+            },
             "parameters": [
                 {
                     "name": "id",
@@ -99,7 +103,7 @@
         "post": {
             "responses": {
                 "200": {
-                    "description": "success",
+                    "description": "",
                     "content": {
                         "application/json": {
                             "schema": {

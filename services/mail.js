@@ -1,22 +1,22 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const nodemailer       = require('nodemailer');
-const moment           = require('moment-timezone');
-const mongoose         = require('mongoose');
-const path             = require('path');
-const ServiceLanguages = require('./languages');
-const utils            = require('../utils/utils');
-const mediasUtils      = require('../utils/medias');
-const NSErrors         = require('../utils/errors/NSErrors');
-const aquilaEvents     = require('../utils/aquilaEvents');
-const utilsServer      = require('../utils/server');
-const fs               = require('../utils/fsp');
+const nodemailer                  = require('nodemailer');
+const moment                      = require('moment-timezone');
+const mongoose                    = require('mongoose');
+const path                        = require('path');
+const {fs, aquilaEvents, slugify} = require('aql-utils');
+const ServiceLanguages            = require('./languages');
+const mediasUtils                 = require('../utils/medias');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const utilsServer                 = require('../utils/server');
+const modulesUtils                = require('../utils/modules');
+const translate                   = require('../utils/translate/common');
 const {
     Users,
     Mail,
@@ -33,7 +33,7 @@ const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields)
 /**
  * @description Get the emails
  */
-const getMails = async (PostBody) => queryBuilder.find(PostBody);
+const getMails = async (PostBody) => queryBuilder.find(PostBody, true);
 /**
  * @description Get the email by _id
  * @param {ObjectId} _id
@@ -42,7 +42,7 @@ const getMail = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
         throw NSErrors.InvalidObjectIdError;
     }
-    const result = await Mail.findOne({_id});
+    const result = await Mail.findOne({_id}).lean();
     if (!result) {
         throw NSErrors.MailNotFound;
     }
@@ -55,9 +55,9 @@ const getMail = async (_id) => {
  * @param {string} [lang] (ie: df, us, uk etc...) (optionnal)
  */
 const getMailByTypeAndLang = async (type, lang = '') => {
-    lang         = ServiceLanguages.getDefaultLang(lang);
+    lang         = await ServiceLanguages.getDefaultLang(lang);
     const query  = {type, [`translation.${lang}`]: {$exists: true}};
-    const result = await Mail.findOne(query);
+    const result = await Mail.findOne(query).lean();
     if (!result) {
         throw NSErrors.MailNotFound;
     }
@@ -89,7 +89,7 @@ const setMail = async (body, _id = null) => {
                 await checkUniqueType(body.type);
             }
 
-            body.code = utils.slugify(body.code);
+            body.code = slugify(body.code);
             result    = await Mail.create(body);
             if (!result) {
                 throw NSErrors.MailCreateError;
@@ -114,7 +114,7 @@ const setMail = async (body, _id = null) => {
  */
 async function checkUniqueType(type) {
     try {
-        const mails = await Mail.find({type});
+        const mails = await Mail.find({type}).lean();
         // If there is no mail with this type then we do nothing
         if (!mails.length) {
             return;
@@ -198,7 +198,7 @@ const sendMailTest = async (mail, values = [], lang = 'fr') => {
  * @returns {{content: string, subject: string, fromName: string, attachments: Array}}
  */
 async function getMailDataByTypeAndLang(type, lang = 'fr') {
-    lang               = ServiceLanguages.getDefaultLang(lang);
+    lang               = await ServiceLanguages.getDefaultLang(lang);
     const mailRegister = await getMailByTypeAndLang(type, lang);
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
@@ -216,12 +216,12 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
 }
 
 const sendMailActivationAccount = async (user_id, lang = '') => {
-    const _config = global.envConfig;
+    const _config = global.aquila.envConfig;
     const _user   = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    lang                                                  = await determineLanguage(lang, _user.preferredLanguage);
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('activationAccount', lang);
     const oDataMail                                       = {
         '{{activate_account_token}}' : `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`,
@@ -229,7 +229,10 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
         '{{company}}'                : _user.company.name,
         '{{fullname}}'               : _user.fullname,
         '{{firstname}}'              : _user.firstname,
-        '{{lastname}}'               : _user.lastname
+        '{{lastname}}'               : _user.lastname,
+        '{{token}}'                  : _user.activateAccountToken,
+        '{{URL_SITE}}'               : _config.environment.appUrl,
+        '{{lang}}'                   : lang
     };
     const htmlBody                                        = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, attachments});
@@ -241,12 +244,12 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
  * @param {string} [lang] - langue du mail (Optionnel)
  */
 const sendRegister = async (user_id, lang = '') => {
-    const _config = global.envConfig;
+    const _config = global.aquila.envConfig;
     const _user   = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang = determineLanguage(lang, _user.preferredLanguage);
+    lang = await determineLanguage(lang, _user.preferredLanguage);
 
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('register', lang);
     const oDataMail                                       = {
@@ -255,7 +258,10 @@ const sendRegister = async (user_id, lang = '') => {
         '{{firstname}}' : _user.firstname,
         '{{company}}'   : _user.company.name,
         '{{lastname}}'  : _user.lastname,
-        '{{login}}'     : _user.email
+        '{{login}}'     : _user.email,
+        '{{token}}'     : _user.activateAccountToken,
+        '{{URL_SITE}}'  : _config.environment.appUrl,
+        '{{lang}}'      : lang
     };
     // if (true) { // Possibility to use a variable: validate the email at registration
     oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
@@ -269,7 +275,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
     }
-    lang                                                  = determineLanguage(lang, _user.preferredLanguage);
+    lang                                                  = await determineLanguage(lang, _user.preferredLanguage);
     const {content, subject, from, fromName, attachments} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
     const oDataMail                                       = {
         '{{name}}'      : _user.fullname,
@@ -289,9 +295,9 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
  * @param {string} tokenlink Password reset validation token
  * @param {string} [lang="fr"] lang
  */
-const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
+const sendResetPassword = async (to, tokenlink, token, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
-    lang               = determineLanguage(lang, _user.preferredLanguage);
+    lang               = await determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
@@ -316,7 +322,9 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
         '{{lastname}}'  : _user.lastname,
         '{{company}}'   : _user.company.name,
         '{{fullname}}'  : _user.fullname,
-        '{{tokenlink}}' : tokenlink
+        '{{tokenlink}}' : tokenlink,
+        '{{token}}'     : token,
+        '{{URL_SITE}}'  : global.aquila.envConfig.environment.appUrl
     };
     const htmlBody  = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, attachments});
@@ -329,24 +337,25 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
  * @param {string} lang email language
  */
 const sendMailOrderToCompany = async (order_id, lang = '') => {
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    const {orderStatuses} = require('./orders');
+    const order           = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    lang                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    lang                                         = await determineLanguage(lang, order.customer.id.preferredLanguage);
     const taxDisplay                             = order.priceTotal.paidTax ? 'ati' : 'et';
     const mailDatas                              = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
     const {subject, from, fromName, attachments} = mailDatas;
     let {content}                                = mailDatas;
 
     // Mailing information is recorded in DB
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== orderStatuses.PAID && order.status !== orderStatuses.FINISHED) {
         throw NSErrors.OrderNotPaid;
     }
     const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = order.addresses.delivery;
     // Create from order's details (the table that will be displayed in the email)
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of order.items) {
@@ -354,26 +363,19 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
             const prdData = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
                 '{{product.sumSpecialPrice}}'  : ''
             };
 
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}']    = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}']  = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}']     = (getUnitPrice(item, order) * item.quantity).toFixed(2);
-            } */
-
             if (item.parent && translation[lang]) {
-                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).name;
             }
             let basePrice  = null;
             let descPromo  = '';
@@ -383,8 +385,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -398,7 +400,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     let hourReceipt = '';
     if (order.orderReceipt && order.orderReceipt.date) {
         const d       = order.orderReceipt.date;
-        const _config = global.envConfig;
+        const _config = global.aquila.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
@@ -407,8 +409,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     const datas = {
-        '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
-        '{{discount}}'                   : global.translate.common.discount[lang],
+        '{{taxdisplay}}'                 : translate[taxDisplay][lang],
+        '{{discount}}'                   : translate.discount[lang],
         '{{order.customer.company}}'     : order.customer.company.name,
         '{{order.customer.fullname}}'    : order.customer.id.fullname,
         '{{order.customer.name}}'        : order.customer.id.fullname,
@@ -419,8 +421,8 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{quantityBreaks}}'             : '',
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
-        '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].toFixed(2)} €`,
-        '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
+        '{{order.priceTotal}}'           : `${order.priceTotal[taxDisplay].aqlRound(2)} €`,
+        '{{order.delivery}}'             : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
         '{{order.shipment}}'             : order._doc.delivery.name,
@@ -438,14 +440,14 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        datas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
+        datas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         datas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
     const htmlBody = await generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, attachments});
@@ -457,16 +459,17 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
  * @param {string} lang email language
  */
 const sendMailOrderToClient = async (order_id, lang = '') => {
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    const {orderStatuses} = require('./orders');
+    const order           = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
     // If an order is paid in credit card the status of the order must be paid or finished to continue
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== orderStatuses.PAID && order.status !== orderStatuses.FINISHED) {
         throw NSErrors.OrderNotPaid;
     }
 
-    lang                                                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    lang                                                                         = await determineLanguage(lang, order.customer.id.preferredLanguage);
     const taxDisplay                                                             = order.priceTotal.paidTax ? 'ati' : 'et';
     const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = order.addresses.delivery;
 
@@ -474,7 +477,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     let hourReceipt = '';
     if (order.orderReceipt && order.orderReceipt.date) {
         const d       = order.orderReceipt.date;
-        const _config = global.envConfig;
+        const _config = global.aquila.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
@@ -482,8 +485,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const mailDatas = {
-        '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
-        '{{discount}}'                  : global.translate.common.discount[lang],
+        '{{taxdisplay}}'                : translate[taxDisplay][lang],
+        '{{discount}}'                  : translate.discount[lang],
         '{{payment.instruction}}'       : '',
         '{{order.customer.company}}'    : order.customer.company.name,
         '{{order.customer.firstname}}'  : order.customer.id.firstname,
@@ -502,8 +505,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         '{{address.country}}'           : country || '',
         '{{order.paymentMode}}'         : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'  : order._doc.payment[0].description,
-        '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
-        '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].toFixed(2)} €`
+        '{{order.delivery}}'            : order._doc.orderReceipt ? translate[order._doc.orderReceipt.method][lang] : translate.delivery[lang],
+        '{{order.priceTotal}}'          : `${order.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
     if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -511,27 +514,27 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        mailDatas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        mailDatas['{{promo.discount}}'] = `${order.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         mailDatas['{{promo.code}}']     = order.promos[0].code;
     } else {
-        mailDatas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        mailDatas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].toFixed(2)} €`;
+        mailDatas['{{delivery.price}}'] = `${order.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (order.additionnalFees && order.additionnalFees[taxDisplay] && order.additionnalFees[taxDisplay] !== 0) {
-        mailDatas['{{additionnalFees}}'] = order.additionnalFees[taxDisplay].toFixed(2);
+        mailDatas['{{additionnalFees}}'] = order.additionnalFees[taxDisplay].aqlRound(2);
     }
 
     let mailByType;
     // Get the payment method for check isDeferred
     let paymentMethod;
     if (order.payment && order.payment[0] && order.payment[0].mode) {
-        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()});
+        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()}).lean();
     }
-    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === 'PAID' || order.status === 'FINISHED') {
+    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === orderStatuses.PAID || order.status === orderStatuses.FINISHED) {
         // We send the order success email to the customer
         mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
     } else {
@@ -546,30 +549,23 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     let {content}                                = mailByType;
     // Create from the order the items ordered (the table that will be displayed in the email)
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of order.items) {
             const {translation} = item.id;
             const prdData       = {
                 '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
+                '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
                 '{{product.sumSpecialPrice}}'  : ''
             };
-
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).toFixed(2);
-            } */
 
             if (item.parent && translation[lang]) {
                 prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
@@ -583,8 +579,8 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -594,7 +590,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         }
         content = content.replace(htmlItem, templateItems);
     }
-    const discountTemplate = content.match(new RegExp(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/, 'g'));
+    const discountTemplate = content.match(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/g);
     if (discountTemplate && discountTemplate[0]) {
         const htmlDiscount = discountTemplate[0].replace('<!--startshowpromo-->', '').replace('<!--endshowpromo-->', '');
         if (order.promos.length === 0) {
@@ -612,12 +608,13 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
  * @param {string} lang email language
  */
 const sendMailOrderStatusEdit = async (order_id, lang = '') => {
-    const _order = await Orders.findOne({_id: order_id}).populate('customer.id');
+    const {orderStatuses} = require('./orders');
+    const _order          = await Orders.findOne({_id: order_id}).populate('customer.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
-    lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    if (_order.status === 'PAID' || _order.status === 'FINISHED') {
+    lang = await determineLanguage(lang, _order.customer.id.preferredLanguage);
+    if (_order.status === orderStatuses.PAID || _order.status === orderStatuses.FINISHED) {
         return sendMailOrderToClient(order_id, lang);
     }
     const {
@@ -637,6 +634,21 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
         '{{firstname}}' : _order.customer.id.firstname,
         '{{lastname}}'  : _order.customer.id.lastname});
     return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, attachments});
+};
+
+const sendMailCheckJobs = async (to, result, lang = '') => {
+    lang           = await determineLanguage(lang, lang);
+    const {
+        content,
+        subject,
+        from,
+        fromName,
+        attachments
+    }              = await getMailDataByTypeAndLang('notifyAdminsJobs', lang);
+    const htmlBody = generateHTML(content, {
+        '{{jobsResult}}' : result
+    });
+    return sendMail({subject, htmlBody, mailTo: to, mailFrom: from, fromName, attachments});
 };
 
 /**
@@ -665,7 +677,11 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailSecure,
             overrideSendTo,
             mailFromContact
-        } = global.envConfig.environment;
+        } = global.aquila.envConfig.environment;
+
+        if (!mailTo || mailTo.length === 0) {
+            console.error('sendMail() : mailTo is empty !!');
+        }
 
         // Check that there is no recipient overload in the config
         if (overrideSendTo) {
@@ -673,7 +689,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
         }
 
         // If we are in DEV mode, the recipient is the dev, and not the real mail
-        const devMode = global.envFile.devMode;
+        const devMode = global.aquila.envFile.devMode;
         if (devMode && devMode.mailTo) {
             mailTo = devMode.mailTo;
         }
@@ -785,12 +801,12 @@ function replaceMultiple(html, obj = {}) {
  * @param {string} lang - Language of subject and content
  */
 const sendGeneric = async (type, to, datas, lang = '') => {
-    lang            = ServiceLanguages.getDefaultLang(lang);
+    lang            = await ServiceLanguages.getDefaultLang(lang);
     const body      = {};
     const datasKeys = Object.keys(datas);
 
     const query = {type, [`translation.${lang}`]: {$exists: true}};
-    const mail  = await Mail.findOne(query);
+    const mail  = await Mail.findOne(query).lean();
     if (!mail) {
         throw NSErrors.MailNotFound;
     }
@@ -819,32 +835,34 @@ const sendGeneric = async (type, to, datas, lang = '') => {
  * @param {Object} datas - Datas of the form sent
  */
 const sendContact = async (datas, lang = '') => {
-    lang              = determineLanguage(lang, datas.lang);
-    const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
-    const contactMail = await Mail.findOne(query);
+    await modulesUtils.modulesLoadFunctions('sendContact', {datas, lang}, async function () {
+        lang              = await determineLanguage(lang, datas.lang);
+        const query       = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
+        const contactMail = await Mail.findOne(query).lean();
 
-    if (!contactMail) {
-        throw NSErrors.MailNotFound;
-    }
-    const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
-    const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
-    let attachments = null;
-    if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
-        attachments = contactMail.translation[lang].attachments;
-    }
-    let bodyString = '';
-    Object.keys(datas).forEach((key) => {
-        if (Array.isArray(datas[key])) {
-            for (let i = 0; i < datas[key].length; i++) {
-                bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
-            }
-        } else {
-            bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+        if (!contactMail) {
+            throw NSErrors.MailNotFound;
         }
-    });
+        const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+        const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
+        let attachments = null;
+        if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
+            attachments = contactMail.translation[lang].attachments;
+        }
+        let bodyString = '';
+        Object.keys(datas).forEach((key) => {
+            if (Array.isArray(datas[key])) {
+                for (let i = 0; i < datas[key].length; i++) {
+                    bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
+                }
+            } else {
+                bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+            }
+        });
 
-    const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
-    return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+        const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
+        return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
+    });
 };
 
 /**
@@ -854,7 +872,7 @@ const sendContact = async (datas, lang = '') => {
  */
 const generateHTML = (html, datas = {}) => {
     if (!datas) datas = {};
-    const {appUrl} = global.envConfig.environment;
+    const {appUrl} = global.aquila.envConfig.environment;
     // Override appUrl
     datas['{{appUrl}}'] = appUrl;
     return replaceMultiple(html, datas);
@@ -865,41 +883,21 @@ const generateHTML = (html, datas = {}) => {
  * @param {string} lang lang
  * @param {string} preferredLanguage preferredLanguage
  */
-function determineLanguage(lang, preferredLanguage) {
+async function determineLanguage(lang, preferredLanguage) {
     if (lang == null || typeof lang === 'undefined' || lang === 'undefined') {
         lang = '';
     }
     if (lang === '' && typeof preferredLanguage !== 'undefined' && preferredLanguage !== '') lang = preferredLanguage;
-    if (lang === '') lang = ServiceLanguages.getDefaultLang(lang);
+    if (lang === '') lang = await ServiceLanguages.getDefaultLang(lang);
     return lang;
 }
-
-/**
- * Allows you to recover the unit price of the product with promo applied if necessary
- * @param {*} item item pour lequel on calcul le prix unitaire
- * @returns {number} prix unitaire
- */
-/* function getUnitPrice(item, order) {
-    const taxDisplay = order.priceTotal.paidTax ? 'ati' : 'et';
-    let price        = item.price.unit[taxDisplay];
-    if (item.price && item.price.special && item.price.special[taxDisplay] >= 0) {
-        price = item.price.special[taxDisplay];
-    }
-    if (order.quantityBreaks && order.quantityBreaks.productsId && order.quantityBreaks.productsId.length) {
-        const qtyBreakFound = order.quantityBreaks.productsId.find((prdId) => prdId.productId.toString() === item.id._id.toString());
-        if (qtyBreakFound) {
-            price -= qtyBreakFound[`discount${taxDisplay.toUpperCase()}`];
-        }
-    }
-    return price;
-} */
 
 async function sendMailOrderRequestCancel(_id, lang = '') {
     const _order = await Orders.findOne({_id}).populate('customer.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
-    lang           = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    lang           = await determineLanguage(lang, _order.customer.id.preferredLanguage);
     const {
         content,
         subject,
@@ -930,7 +928,7 @@ async function sendMailPendingCarts(cart) {
     const {subject, from, fromName, attachments} = mailDatas;
 
     let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (const item of cart.items) {
@@ -939,8 +937,8 @@ async function sendMailPendingCarts(cart) {
                 '{{product.name}}'             : item.name,
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : item.name,
-                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2)} €`,
-                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2)} €`,
+                '{{product.unitPrice}}'        : `${(item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).aqlRound(2)} €`,
+                '{{product.totalPrice}}'       : `${(item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).aqlRound(2)} €`,
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -957,8 +955,8 @@ async function sendMailPendingCarts(cart) {
                 const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
                 if (prdPromoFound) {
                     basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    descPromo                         = basePrice.aqlRound(2);
+                    descPromoT                        = (basePrice * item.quantity).aqlRound(2);
                     prdData['{{product.basePrice}}']  = basePrice;
                     prdData['{{product.descPromo}}']  = descPromo;
                     prdData['{{product.descPromoT}}'] = descPromoT;
@@ -970,13 +968,13 @@ async function sendMailPendingCarts(cart) {
     }
 
     const datas = {
-        '{{taxdisplay}}'         : global.translate.common[taxDisplay][lang],
+        '{{taxdisplay}}'         : translate[taxDisplay][lang],
         '{{customer.fullname}}'  : customer.fullname,
         '{{customer.name}}'      : customer.fullname,
         '{{customer.firstname}}' : customer.firstname,
         '{{customer.lastname}}'  : customer.lastname,
         '{{quantityBreaks}}'     : '',
-        '{{order.priceTotal}}'   : `${cart.priceTotal[taxDisplay].toFixed(2)} €`
+        '{{order.priceTotal}}'   : `${cart.priceTotal[taxDisplay].aqlRound(2)} €`
     };
 
     if (cart.quantityBreaks && cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
@@ -984,31 +982,30 @@ async function sendMailPendingCarts(cart) {
     }
 
     if (cart.delivery && cart.delivery.price && cart.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = `${cart.delivery.price[taxDisplay].toFixed(2)} €`;
+        mailDatas['{{delivery.price}}'] = `${cart.delivery.price[taxDisplay].aqlRound(2)} €`;
     }
 
     if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = `${cart.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${cart.promos[0][`discount${taxDisplay.toUpperCase()}`].aqlRound(2)} €`;
         datas['{{promo.code}}']     = cart.promos[0].code;
     } else {
-        datas['{{promo.discount}}'] = `${(0).toFixed(2)} €`;
+        datas['{{promo.discount}}'] = `${(0).aqlRound(2)} €`;
     }
     const htmlBody = generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, attachments});
     // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 
-const sendError = async (error) => {
-    const errorMail = await Mail.findOne({type: 'error'});
-
+const sendErrorMail = async (error) => {
+    const errorMail = await Mail.findOne({type: 'error'}).lean();
     if (!errorMail) {
         return; // We don't want to generate an error
     }
 
-    const lang     = determineLanguage();
+    const lang     = await determineLanguage();
     const content  = errorMail.translation[lang].content ? errorMail.translation[lang].content : '';
     const subject  = errorMail.translation[lang].subject ? errorMail.translation[lang].subject : 'Error';
-    const htmlBody = content + JSON.stringify(error);
+    const htmlBody = generateHTML(content, {'{{error}}': JSON.stringify(error)});
     sendMail({subject, htmlBody, mailTo: errorMail.from, mailFrom: errorMail.from, fromName: errorMail.fromName});
 };
 
@@ -1020,6 +1017,7 @@ module.exports = {
     getMailByTypeAndLang,
     setMail,
     deleteMail,
+    determineLanguage,
     sendMailTestConfig,
     removePdf,
     sendMailTest,
@@ -1035,5 +1033,6 @@ module.exports = {
     sendContact,
     sendMailOrderRequestCancel,
     sendMailPendingCarts,
-    sendError
+    sendErrorMail,
+    sendMailCheckJobs
 };

@@ -1,26 +1,23 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const fs       = require('../../utils/fsp');
+const mongoose                 = require('mongoose');
+const {toET, fs, aquilaEvents} = require('aql-utils');
+const ItemSchema               = require('./itemSchema');
+const ItemSimpleSchema         = require('./itemSimpleSchema');
+const ItemBundleSchema         = require('./itemBundleSchema');
+const ItemVirtualSchema        = require('./itemVirtualSchema');
+const AddressSchema            = require('./addressSchema');
+const utilsDatabase            = require('../../utils/database');
 
-const ItemSchema        = require('./itemSchema');
-const ItemSimpleSchema  = require('./itemSimpleSchema');
-const ItemBundleSchema  = require('./itemBundleSchema');
-const ItemVirtualSchema = require('./itemVirtualSchema');
-const AddressSchema     = require('./addressSchema');
-
-const utils         = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
-const defaultVAT    = 20;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
+const defaultVAT = 20;
 
 const CartSchema = new Schema({
     updated : {type: Date, default: Date.now},
@@ -87,15 +84,20 @@ const CartSchema = new Schema({
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
 
-/* CartSchema.pre('findOneAndUpdate', function () {
- this.findOneAndUpdate({},{ $set: { updated: Date.now() } });
- }); */
-
 const itemsSchema = CartSchema.path('items');
 
 itemsSchema.discriminator('simple', ItemSimpleSchema);
 itemsSchema.discriminator('bundle', ItemBundleSchema);
 itemsSchema.discriminator('virtual', ItemVirtualSchema);
+
+CartSchema.methods.getItemsStock = async function () {
+    const cart = this;
+    for (let i = 0; i < cart.items.length; i++) {
+        if (typeof cart.items[i].toObject === 'function') cart.items[i] = cart.items[i].toObject();
+        cart.items[i].stock = await utilsDatabase.populateStockData(cart.items[i].id._id || cart.items[i].id);
+    }
+    return cart;
+};
 
 CartSchema.methods.calculateBasicTotal = function () {
     const cart       = this;
@@ -103,7 +105,7 @@ CartSchema.methods.calculateBasicTotal = function () {
     for (let i = 0, l = cart.items.length; i < l; i++) {
         const item = cart.items[i];
 
-        if (item.get('price.special.ati') !== undefined) {
+        if ((item.get && item.get('price.special.ati') !== undefined) || (item.price.special && item.price.special.ati)) {
             if (item.price.special === undefined || item.price.special.ati === undefined) {
                 item.price.special = {
                     et  : item.id.price.et.special,
@@ -128,15 +130,14 @@ CartSchema.virtual('delivery.price').get(function () {
 
         if (!self.delivery.freePriceLimit || priceTotal.ati < self.delivery.freePriceLimit) {
             deliveryPrice.ati = self.delivery.value.ati;
-            deliveryPrice.et  = utils.toET(self.delivery.value.ati, defaultVAT);
+            deliveryPrice.et  = toET(self.delivery.value.ati, defaultVAT);
         }
         return deliveryPrice;
     }
 });
 
 CartSchema.virtual('additionnalFees').get(function () {
-    // const self = this;
-    const {et, tax} = global.envConfig.stockOrder.additionnalFees;
+    const {et, tax} = global.aquila.envConfig.stockOrder.additionnalFees;
     return {
         ati : Number(et + (et * (tax / 100))),
         et  : Number(et),
@@ -182,8 +183,8 @@ CartSchema.virtual('priceTotal').get(function () {
         priceTotal.ati += self.delivery.price.ati || 0;
     }
     // ajout additional
-    if (global.envConfig.stockOrder.additionnalFees) {
-        const {et, tax} = global.envConfig.stockOrder.additionnalFees;
+    if (global.aquila.envConfig.stockOrder.additionnalFees) {
+        const {et, tax} = global.aquila.envConfig.stockOrder.additionnalFees;
         priceTotal.ati += et + (et * (tax / 100));
         priceTotal.et  += et;
     }
@@ -191,7 +192,6 @@ CartSchema.virtual('priceTotal').get(function () {
 });
 
 CartSchema.virtual('priceSubTotal').get(function () {
-    // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;
@@ -227,23 +227,6 @@ CartSchema.post('findOneAndUpdate', async function (doc, next) {
     if (doc) {
         await updateCarts(this.getUpdate(), this.getQuery()._id, next);
     }
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findOne', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
-    next();
-});
-
-CartSchema.post('findById', async function (doc, next) {
-    if (doc && doc.items && doc.items.length) {
-        await utilsDatabase.populateItems(doc.items);
-    }
     next();
 });
 
@@ -255,8 +238,8 @@ async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
-            const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
+        if (await fs.hasAccess(`${global.aquila.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+            const updateCart = require(`${global.aquila.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }
     }

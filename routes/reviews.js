@@ -1,18 +1,18 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}    = require('../middleware/authentication');
-const ServiceReviews = require('../services/reviews');
+const {adminAuthRight} = require('../middleware/authentication');
+const ServiceReviews   = require('../services/reviews');
 
 module.exports = function (app) {
-    app.post('/v2/product/reviews/aggregate', getAggregateReviews);
+    app.post('/v2/product/reviews/aggregate', adminAuthRight('reviews'), getAggregateReviews);
     app.put('/v2/product/:id/review', setProductReview);
-    app.delete('/v2/product/:id/review/:idreview', adminAuth, deleteProductReview);
+    app.delete('/v2/product/:id/review/:idreview', adminAuthRight('reviews'), deleteProductReview);
 };
 
 /**

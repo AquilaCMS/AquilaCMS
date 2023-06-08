@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -15,10 +15,9 @@ const defaultFields    = ['_id', 'code', 'name'];
 const queryBuilder     = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
 
 exports.addAttributesToProduct = async function (product, code = 'defaut') {
-    product.attributes          = [];
-    const setAtt                = await SetAttributes.findOne({code});
-    product.set_attributes_name = setAtt.name;
-    product.set_attributes      = setAtt._id;
+    product.attributes     = [];
+    const setAtt           = await SetAttributes.findOne({code});
+    product.set_attributes = setAtt._id;
     for (const attrs of setAtt.attributes) {
         const attr = await Attributes.findOne({_id: attrs});
         if (attr != null) {
@@ -76,9 +75,9 @@ exports.setSetAttribute = async function (code, name, attributes) {
     return SetAttributes.findOneAndUpdate({code}, {$set: upd}, {upsert: true, new: true});
 };
 
-exports.createOrUpdateSetAttribute = async function (req) {
-    const code                                      = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-    const {name, update : updateF, questions, type} = req.body;
+exports.createOrUpdateSetAttribute = async function (postBody) {
+    const code                                      = postBody.code.replace(/[^A-Z0-9]+/ig, '_');
+    const {name, update : updateF, questions, type} = postBody;
     const setAttribute                              = await SetAttributes.findOne({code});
     if (setAttribute && updateF) {
         const resSetAttribute = await SetAttributes.findOneAndUpdate({code}, {name, questions, type}, {new: true});
@@ -93,9 +92,10 @@ exports.createOrUpdateSetAttribute = async function (req) {
     await SetAttributes.create({code, name, questions, type});
     return {status: true};
 };
-exports.deleteSetAttribute = async function (req) {
-    const setAttr = await SetAttributes.findOne({_id: req.params.id});
+exports.deleteSetAttribute = async function (id) {
+    const setAttr = await SetAttributes.findOne({_id: id});
     if (!setAttr) throw NSErrors.SetAttributeNotFound;
+    if (setAttr.code === 'defaut' || setAttr.code === 'defautUser') throw NSErrors.Unauthorized;
     const product = await Products.findOne({set_attributes: setAttr._id});
     if (product) throw NSErrors.SetAttributeLinkedWithProduct;
     await setAttr.remove();

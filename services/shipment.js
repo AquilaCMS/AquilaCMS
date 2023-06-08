@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -23,7 +23,7 @@ const getShipments = async (PostBody) => queryBuilder.find(PostBody);
 
 const getShipment = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
+const getShipmentsFilter = async (cart, withCountry = null, PostBody = undefined) => {
     let totalWeight = 0;
     cart            = await Cart.findOne({_id: cart._id});
     if (cart.items) {
@@ -60,7 +60,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             const shipObject = shipment.countries[index].toObject();
             const range      = shipObject.prices.find((_price) => totalWeight >= _price.weight_min && totalWeight <= _price.weight_max);
             if (range) {
-                if (shipment.freePriceLimit && cart.priceTotal && cart.priceTotal.ati && (shipment.freePriceLimit <= cart.priceTotal.ati.toFixed(2))) {
+                if (shipment.freePriceLimit && cart.priceTotal && cart.priceTotal.ati && (shipment.freePriceLimit <= cart.priceTotal.ati.aqlRound(2))) {
                     choices.push({shipment, price});
                 } else {
                     const priceR = range.price;
@@ -92,7 +92,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             const range = selectedCountry.prices.find((price) => totalWeight >= price.weight_min && totalWeight <= price.weight_max);
             if (range) {
                 const oShipment = shipment.toObject();
-                if (shipment.freePriceLimit && shipment.freePriceLimit <= cart.priceTotal.ati.toFixed(2)) {
+                if (shipment.freePriceLimit && shipment.freePriceLimit <= cart.priceTotal.ati.aqlRound(2)) {
                     arrayPrices[shipment.code] = 0;
                     oShipment.price            = 0;
                 } else {
@@ -150,12 +150,6 @@ function getShippingDate(cart, shipment) {
         dateSupply = moment(dateSupply).add(1, 'days');
     }
     return dateSupply;
-    /*
-    const finalDelay = moment.duration(dateSupply.diff(moment(new Date())));
-    if (finalDelay._data.months > 0 || finalDelay._data.days > 0) {
-        return {delay: Math.floor(finalDelay._milliseconds / 3600000 / 24), unit: "day"};
-    }
-    return {delay: Math.ceil(finalDelay._millieconds / 3600000), unit: "hour"}; */
 }
 
 /**
@@ -163,7 +157,7 @@ function getShippingDate(cart, shipment) {
  * @param body : body of the request, it will allow to update the shipment or to create it
  * @param _id : string : ObjectId of the shipment, if null then we are in creation mode
  */
-const setShipment = async (_id = null, body) => {
+const setShipment = async (_id, body) => {
     let result;
     if (_id) {
         // Update

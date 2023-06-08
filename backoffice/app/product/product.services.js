@@ -17,7 +17,7 @@ ProductServices.factory("Product", [
 ProductServices.factory("ProductsV2", [
     "$resource", function ($resource) {
         return $resource("v2/:type/:id", {}, {
-            list: {method: "POST", params: {type: "products"}},
+            list: {method: "GET", params: {type: "adm", id: "products"}},
             query: {method: "POST", params: {type: "product"}},
             save: {method: "PUT", params: {type: "product"}},
             delete: {method: "DELETE", params: {type: "product"}},
@@ -112,14 +112,19 @@ ProductServices.service('HookProductInfo', function ()
 ProductServices.service("ProductColumns", function () {
     return [
         {
-            filter : {
+            header : {
                 component_template :  "<span translate>product.list2.picture</span>"
             },
-            inter : {component_template: ""},
+            inter : {component_template: "<select ng-model='searchObj.img' ng-change='getProducts(1)' class='form-control' type='boolean'>"
+                    + "<option value='' translate>product.list2.indiff</option>"
+                    + "<option value='true' translate>product.list2.withImg</option>"
+                    + "<option value='false' translate>product.list2.withoutImg</option>"
+                    + "</select>"
+        },
             cell  : {label : "IMG :",component_template: "<img ng-src='{{getImage(product.images)}}' class='no-product-image' style='min-width: 120px;width:120px;height:90px' />"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.name</span><span>({{filterLang}})</span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
@@ -130,7 +135,7 @@ ProductServices.service("ProductColumns", function () {
             cell  : {label : "Name :",component_template: "{{product.translation[filterLang].name}}"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.price</span>"
                     + "<span ng-show=\"local.sortType == 'price.ati.normal' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
@@ -141,7 +146,7 @@ ProductServices.service("ProductColumns", function () {
             cell  : {label : "Price :",class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
         },
         {
-            filter : {
+            header : {
                 component_template : "<a ng-click=\"local.sortType = 'stock.qty'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.quantity</span>"
                     + "<span ng-show=\"local.sortType == 'stock.qty' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"

@@ -35,7 +35,7 @@
                             <br />
                             <select name="themesList" id="themesList" class="form-control"
                                 ng-model="config.environment.currentTheme">
-                                <!-- <option value="default_theme">Default theme</option> -->
+                                <!-- <option value="default_theme_2">Default theme</option> -->
                                 <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
                             </select>
                             <br />
@@ -104,18 +104,18 @@
                                         ({{themeConfig.variables[lang][var].key}}) :</b>
                                     {{themeConfig.variables[lang][var].description}}
                                     <br />
-                                    <input style="float : right" type="text" class="form-control"
+                                    <input style="float : right" type="string" class="form-control"
                                         ng-model="themeConfig.variables[lang][var].value"
-                                        ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
+                                        ng-if="themeConfig.variables[lang][var].type == 'string'">
                                     <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0"
                                         translate>themes.noThemeVar</label>
                                     <input style="float : right" type="number" class="form-control" step="0.1"
                                         ng-model="themeConfig.variables[lang][var].value"
-                                        ng-if="typeOf(themeConfig.variables[lang][var].value) == 'number'">
+                                        ng-if="themeConfig.variables[lang][var].type == 'number'">
                                     <ns-switch style="float : right" name='{{var}}'
                                         ng-model='themeConfig.variables[lang][var].value'
-                                        ng-if="typeOf(themeConfig.variables[lang][var].value) == 'boolean'"></ns-switch>
-                                    <color-picker style="float : right"
+                                        ng-if="themeConfig.variables[lang][var].type == 'boolean'"></ns-switch>
+                                        <color-picker style="float : right"
                                         ng-model="themeConfig.variables[lang][var].value"
                                         options="{'format': 'hexString'}"
                                         ng-if="typeOf(themeConfig.variables[lang][var].value) == 'color'">

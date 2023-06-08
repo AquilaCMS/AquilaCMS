@@ -1,17 +1,17 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
 const path                        = require('path');
+const {fs}                        = require('aql-utils');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');
 const {Modules}                   = require('../orm/models');
-const fs                          = require('../utils/fsp');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const appdirname                  = path.dirname(require.main.filename);
 
@@ -39,18 +39,16 @@ async function exportData(req, res, next) {
             let modulesData = '';
 
             const _modules = await Modules.find({active: true});
-            if (_modules.length >= 0) {
-                for (const module of _modules) {
-                    await new Promise(async (resolve, reject) => {
-                        if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                            const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                            const data   = await rgpd.exportData(userData, resolve, reject);
-                            modulesData += `\n\n${module.name} :\n`;
-                            modulesData += JSON.stringify(data, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, '');
-                        }
-                        resolve();
-                    });
-                }
+            for (const module of _modules) {
+                await new Promise(async (resolve, reject) => {
+                    if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                        const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                        const data   = await rgpd.exportData(userData, resolve, reject);
+                        modulesData += `\n\n${module.name} :\n`;
+                        modulesData += JSON.stringify(data, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, '');
+                    }
+                    resolve();
+                });
             }
 
             // Data processing (formatting, deletion of password, isAdmin and __v)
@@ -98,7 +96,12 @@ async function copyAndAnonymizeDatabase(req, res, next) {
  */
 async function dumpAnonymizedDatabase(req, res, next) {
     try {
-        await rgpdServices.dumpAnonymizedDatabase(res);
+        const result = await rgpdServices.dumpAnonymizedDatabase(req.body);
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-disposition', 'attachment; filename=medias.zip');
+        res.write(result, 'binary');
+        res.end();
     } catch (error) {
         return next(error);
     }

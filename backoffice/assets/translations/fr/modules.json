@@ -5,8 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Actif ?",
-    "activate": "Activé",
-    "deactivate": "Désactivé",
+    "activate": "Oui",
+    "deactivate": "Non",
     "actions": "ACTIONS",
     "config": "Configurer",
     "delete": "Supprimer",
@@ -32,5 +32,8 @@
     },
     "toast": {
         "errGetPlugins": "Impossible de récupérer la liste des modules"
-    }
+    },
+    "installDepsStart": "L'installation a commencé ...",
+    "installDepsSuccess":"Installation terminée avec succès",
+    "installDepsFailed": "L'installation c'est terminée avec des erreurs"
 }

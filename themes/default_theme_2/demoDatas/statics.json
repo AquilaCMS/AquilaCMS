@@ -1,0 +1,511 @@
+{
+  "collection": "statics",
+  "datas": [
+    {
+      "active": true,
+      "group": null,
+      "_id": "6054bc17b954bd2be84911e9",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Nos"
+            },
+            {
+              "label": "Titre 2",
+              "value": "CGV"
+            },
+            {
+              "label": "Sous titre",
+              "value": "Conditions générales de vente"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupi"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre 1}}<br />‍<span class=\"brand-span\">{{Titre 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Sous titre}}</h2>\n<p>{{Texte}}</p>\n</div>\n</div>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Nos<br />‍<span class=\"brand-span\">CGV</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">Conditions générales de vente</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupi</p>\n</div>\n</div>",
+          "title": "CGV",
+          "metaDesc": "CGV",
+          "slug": "cgv"
+        },
+        "en": {
+          "slug": "cgv",
+          "title": "CGV",
+          "metaDesc": "CGV",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Background image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Title 1}}<br />‍<span class=\"brand-span\">{{Title 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Lead}}</h2>\n<p>{{Text}}</p>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Our"
+            },
+            {
+              "label": "Title 2",
+              "value": "terms"
+            },
+            {
+              "label": "Lead",
+              "value": "General terms of sale"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupi"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Our<br />‍<span class=\"brand-span\">terms</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">General terms of sale</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupi</p>\n</div>\n</div>"
+        }
+      },
+      "code": "CGV",
+      "createdAt": "2021-03-19T14:58:31.838Z",
+      "updatedAt": "2021-08-30T09:52:32.135Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "5b7e7af409c72307ffb3c7cc",
+      "code": "home",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "metaDesc": "home",
+          "title": "home",
+          "content": "<ns-block-slider ns-code=\"Slide-Home-1,Slide-Home-2,Slide-Home-3\"></ns-block-slider> <ns-cms ns-code=\"home-promote-product-1\"></ns-cms> <ns-cms ns-code=\"home-promote-product-2\"></ns-cms>\n<div class=\"content-section-bg\">\n<div class=\"container-col\"><ns-cms ns-code=\"home-product-listing\"></ns-cms></div>\n</div>\n<ns-cms ns-code=\"home-bottom-faq\"></ns-cms> <ns-cms ns-code=\"home-bottom-call\"></ns-cms> <ns-cms ns-code=\"info-bottom-1\"></ns-cms>",
+          "slug": "home",
+          "name": "home",
+          "html": "<ns-block-slider ns-code=\"Slide-Home-1,Slide-Home-2,Slide-Home-3\"></ns-block-slider> <ns-cms ns-code=\"home-promote-product-1\"></ns-cms> <ns-cms ns-code=\"home-promote-product-2\"></ns-cms>\n<div class=\"content-section-bg\">\n<div class=\"container-col\"><ns-cms ns-code=\"home-product-listing\"></ns-cms></div>\n</div>\n<ns-cms ns-code=\"home-bottom-faq\"></ns-cms> <ns-cms ns-code=\"home-bottom-call\"></ns-cms> <ns-cms ns-code=\"info-bottom-1\"></ns-cms>",
+          "variables": []
+        },
+        "en": {
+          "metaDesc": "home",
+          "title": "home",
+          "content": "<ns-block-slider ns-code=\"Slide-Home-1,Slide-Home-2,Slide-Home-3\"></ns-block-slider> <ns-cms ns-code=\"home-promote-product-1\"></ns-cms> <ns-cms ns-code=\"home-promote-product-2\"></ns-cms>\n<div class=\"content-section-bg\">\n<div class=\"container-col\"><ns-cms ns-code=\"home-product-listing\"></ns-cms></div>\n</div>\n<ns-cms ns-code=\"home-bottom-faq\"></ns-cms> <ns-cms ns-code=\"home-bottom-call\"></ns-cms> <ns-cms ns-code=\"info-bottom-1\"></ns-cms>",
+          "slug": "home",
+          "html": "<ns-block-slider ns-code=\"Slide-Home-1,Slide-Home-2,Slide-Home-3\"></ns-block-slider> <ns-cms ns-code=\"home-promote-product-1\"></ns-cms> <ns-cms ns-code=\"home-promote-product-2\"></ns-cms>\n<div class=\"content-section-bg\">\n<div class=\"container-col\"><ns-cms ns-code=\"home-product-listing\"></ns-cms></div>\n</div>\n<ns-cms ns-code=\"home-bottom-faq\"></ns-cms> <ns-cms ns-code=\"home-bottom-call\"></ns-cms> <ns-cms ns-code=\"info-bottom-1\"></ns-cms>",
+          "variables": []
+        }
+      },
+      "updatedAt": "2022-05-03T09:59:44.048Z",
+      "createdAt": "2020-05-13T09:07:33.926Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "612c9206ebf4774d90ceb4d0",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Actualité"
+            },
+            {
+              "label": "Titre 2",
+              "value": "du site"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre 1}}<br />‍<span class=\"brand-span\">{{Titre 2}}</span></h1>\n</div>\n</div>\n</div>\n<ns-blog-articles></ns-blog-articles>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Actualité<br />‍<span class=\"brand-span\">du site</span></h1>\n</div>\n</div>\n</div>\n<ns-blog-articles></ns-blog-articles>",
+          "title": "Blog",
+          "metaDesc": "blog",
+          "slug": "blog"
+        },
+        "en": {
+          "slug": "blog",
+          "title": "Blog",
+          "metaDesc": "Blog",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Background image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Title 1}}<br />‍<span class=\"brand-span\">{{Title 2}}</span></h1>\n</div>\n</div>\n</div>\n<ns-blog-articles></ns-blog-articles>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "All"
+            },
+            {
+              "label": "Title 2",
+              "value": "posts"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">All<br />‍<span class=\"brand-span\">posts</span></h1>\n</div>\n</div>\n</div>\n<ns-blog-articles></ns-blog-articles>"
+        }
+      },
+      "code": "blog",
+      "createdAt": "2021-08-30T08:08:38.980Z",
+      "updatedAt": "2021-09-21T09:13:28.211Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "6054be68b954bd2be84911ea",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Nos"
+            },
+            {
+              "label": "Titre 2",
+              "value": "CGU"
+            },
+            {
+              "label": "Sous titre",
+              "value": "Conditions générales d'utilisation"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre 1}}<br />‍<span class=\"brand-span\">{{Titre 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Sous titre}}</h2>\n<p>{{Texte}}</p>\n</div>\n</div>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Nos<br />‍<span class=\"brand-span\">CGU</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">Conditions générales d'utilisation</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</p>\n</div>\n</div>",
+          "title": "CGU",
+          "metaDesc": "CGU",
+          "slug": "cgu"
+        },
+        "en": {
+          "slug": "cgu",
+          "title": "CGU",
+          "metaDesc": "CGU",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Background image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Title 1}}<br />‍<span class=\"brand-span\">{{Title 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Lead}}</h2>\n<p>{{Text}}</p>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Our"
+            },
+            {
+              "label": "Title 2",
+              "value": "terms"
+            },
+            {
+              "label": "Lead",
+              "value": "General conditions of use"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Our<br />‍<span class=\"brand-span\">terms</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">General conditions of use</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</p>\n</div>\n</div>"
+        }
+      },
+      "code": "CGU",
+      "createdAt": "2021-03-19T15:08:24.146Z",
+      "updatedAt": "2021-08-30T09:50:53.408Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "6054be96b954bd2be84911eb",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Mentions"
+            },
+            {
+              "label": "Titre 2",
+              "value": "légales"
+            },
+            {
+              "label": "Sous titre",
+              "value": "Merci de lire les présentes modalités d'utilisation"
+            },
+            {
+              "label": "Texte",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre 1}}<br />‍<span class=\"brand-span\">{{Titre 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Sous titre}}</h2>\n<p>{{Texte}}</p>\n</div>\n</div>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Mentions<br />‍<span class=\"brand-span\">légales</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">Merci de lire les présentes modalités d'utilisation</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</p>\n</div>\n</div>",
+          "title": "Mentions Légales",
+          "metaDesc": "Mentions Légales",
+          "slug": "mentions-legales"
+        },
+        "en": {
+          "slug": "legal-notice",
+          "title": "Legal Notice",
+          "metaDesc": "Legal Notice",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{background image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Title 1}}<br />‍<span class=\"brand-span\">{{Title 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">{{Subtitle}}</h2>\n<p>{{Text}}</p>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "background image",
+              "value": "/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Legal"
+            },
+            {
+              "label": "Title 2",
+              "value": "Notice"
+            },
+            {
+              "label": "Subtitle",
+              "value": "Please read these Terms of Use"
+            },
+            {
+              "label": "Text",
+              "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b63f49391e1ff81653a4/legal.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Legal<br />‍<span class=\"brand-span\">Notice</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<h2 class=\"heading-5\">Please read these Terms of Use</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborumLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</p>\n</div>\n</div>"
+        }
+      },
+      "code": "MentionsLegales",
+      "createdAt": "2021-03-19T15:09:11.000Z",
+      "updatedAt": "2022-02-16T14:51:21.639Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "6054b7ddb954bd2be84911e8",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081ad5649391e1ff81653a1/nouscontacter.jpeg"
+            },
+            {
+              "label": "Titre principal 1",
+              "value": "Nous&nbsp;"
+            },
+            {
+              "label": "Titre principal 2",
+              "value": "contacter"
+            },
+            {
+              "label": "Sous titre",
+              "value": "Formulaire de contact"
+            },
+            {
+              "label": "text",
+              "value": "Vous pouvez nous contacter via le formulaire ci dessous."
+            },
+            {
+              "label": "Champs obligatoire",
+              "value": "Les champs marqué d'un astérisque (*) sont requis."
+            },
+            {
+              "label": "Prénom",
+              "value": "Prénom"
+            },
+            {
+              "label": "Nom",
+              "value": "Nom"
+            },
+            {
+              "label": "Téléphone",
+              "value": "Téléphone"
+            },
+            {
+              "label": "Message",
+              "value": "Message"
+            },
+            {
+              "label": "Bouton de validation",
+              "value": "Envoyer"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre principal 1}}<span class=\"brand-span\">{{Titre principal 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\"></div>\n<section id=\"contact-form\" class=\"contact-form\">\n<div class=\"w-container\">\n<h2>{{Sous titre}}</h2>\n<p>{{text}}</p>\n<div id=\"formInstructions\" class=\"small-text\"><em>{{Champs obligatoire}}</em></div>\n<div class=\"w-form\"><form id=\"wf-form-Contact-Form\" name=\"wf-form-Contact-Form\">\n<div class=\"contact-form-grid\">\n<div><label for=\"First-Name\">{{Prénom}} *</label><input type=\"text\" class=\"w-input\" name=\"First-Name\" id=\"First-Name\" required=\"\" /></div>\n<div><label for=\"Last-Name\">{{Nom}} *</label><input type=\"text\" class=\"w-input\" name=\"Last-Name\" id=\"Last-Name\" required=\"\" /></div>\n<div><label for=\"Email\">Email *</label><input type=\"email\" class=\"w-input\" name=\"Email\" id=\"Email\" required=\"\" /></div>\n<div><label for=\"Contact-Phone-Number\">{{Téléphone}}</label><input type=\"tel\" class=\"w-input\" name=\"Contact-Phone-Number\" id=\"Contact-Phone-Number\" /></div>\n</div>\n<div><label for=\"Message\">{{Message}}</label><textarea id=\"Message\" name=\"Message\" class=\"w-input\"></textarea></div>\n<ns-contact button-title=\"{{Bouton de validation}}\" mode=\"store+send\"></ns-contact></form></div>\n</div>\n</section>\n</div>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081ad5649391e1ff81653a1/nouscontacter.jpeg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Nous&nbsp;<span class=\"brand-span\">contacter</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\"></div>\n<section id=\"contact-form\" class=\"contact-form\">\n<div class=\"w-container\">\n<h2>Formulaire de contact</h2>\n<p>Vous pouvez nous contacter via le formulaire ci dessous.</p>\n<div id=\"formInstructions\" class=\"small-text\"><em>Les champs marqué d'un astérisque (*) sont requis.</em></div>\n<div class=\"w-form\"><form id=\"wf-form-Contact-Form\" name=\"wf-form-Contact-Form\">\n<div class=\"contact-form-grid\">\n<div><label for=\"First-Name\">Prénom *</label><input type=\"text\" class=\"w-input\" name=\"First-Name\" id=\"First-Name\" required=\"\" /></div>\n<div><label for=\"Last-Name\">Nom *</label><input type=\"text\" class=\"w-input\" name=\"Last-Name\" id=\"Last-Name\" required=\"\" /></div>\n<div><label for=\"Email\">Email *</label><input type=\"email\" class=\"w-input\" name=\"Email\" id=\"Email\" required=\"\" /></div>\n<div><label for=\"Contact-Phone-Number\">Téléphone</label><input type=\"tel\" class=\"w-input\" name=\"Contact-Phone-Number\" id=\"Contact-Phone-Number\" /></div>\n</div>\n<div><label for=\"Message\">Message</label><textarea id=\"Message\" name=\"Message\" class=\"w-input\"></textarea></div>\n<ns-contact button-title=\"Envoyer\" mode=\"store+send\"></ns-contact></form></div>\n</div>\n</section>\n</div>",
+          "title": "Contact",
+          "metaDesc": "Contact",
+          "slug": "contactez-nous"
+        },
+        "en": {
+          "slug": "contact",
+          "title": "Contact",
+          "metaDesc": "Contact",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Background Image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Main title 1}}<span class=\"brand-span\">{{Main title 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\"></div>\n<section id=\"contact-form\" class=\"contact-form\">\n<div class=\"w-container\">\n<h2>{{Lead}}</h2>\n<p>{{text}}</p>\n<div id=\"formInstructions\" class=\"small-text\"><em>{{Mandatory fields}}</em></div>\n<div class=\"w-form\"><form id=\"wf-form-Contact-Form\" name=\"wf-form-Contact-Form\">\n<div class=\"contact-form-grid\">\n<div><label for=\"First-Name\">{{Firsname}} *</label><input type=\"text\" class=\"w-input\" name=\"First-Name\" id=\"First-Name\" required=\"\" /></div>\n<div><label for=\"Last-Name\">{{Lastname}} *</label><input type=\"text\" class=\"w-input\" name=\"Last-Name\" id=\"Last-Name\" required=\"\" /></div>\n<div><label for=\"Email\">Email *</label><input type=\"email\" class=\"w-input\" name=\"Email\" id=\"Email\" required=\"\" /></div>\n<div><label for=\"Contact-Phone-Number\">{{Phone}}</label><input type=\"tel\" class=\"w-input\" name=\"Contact-Phone-Number\" id=\"Contact-Phone-Number\" /></div>\n</div>\n<div><label for=\"Message\">{{Message}}</label><textarea id=\"Message\" name=\"Message\" class=\"w-input\"></textarea></div>\n<ns-contact button-title=\"{{Validation button}}\" mode=\"store+send\"></ns-contact></form></div>\n</div>\n</section>\n</div>",
+          "variables": [
+            {
+              "label": "Background Image",
+              "value": "/images/medias/max-90/6081ad5649391e1ff81653a1/nouscontacter.jpeg"
+            },
+            {
+              "label": "Main title 1",
+              "value": "Contact&nbsp;"
+            },
+            {
+              "label": "Main title 2",
+              "value": "us"
+            },
+            {
+              "label": "Lead",
+              "value": "Contact form"
+            },
+            {
+              "label": "text",
+              "value": "You can contact us using the form below."
+            },
+            {
+              "label": "Mandatory fields",
+              "value": "* Mandatory fields"
+            },
+            {
+              "label": "Firsname",
+              "value": "Firsname"
+            },
+            {
+              "label": "Lastname",
+              "value": "Lastname"
+            },
+            {
+              "label": "Phone",
+              "value": "Phone"
+            },
+            {
+              "label": "Message",
+              "value": "Message"
+            },
+            {
+              "label": "Validation button",
+              "value": "Validate"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081ad5649391e1ff81653a1/nouscontacter.jpeg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Contact&nbsp;<span class=\"brand-span\">us</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\"></div>\n<section id=\"contact-form\" class=\"contact-form\">\n<div class=\"w-container\">\n<h2>Contact form</h2>\n<p>You can contact us using the form below.</p>\n<div id=\"formInstructions\" class=\"small-text\"><em>* Mandatory fields</em></div>\n<div class=\"w-form\"><form id=\"wf-form-Contact-Form\" name=\"wf-form-Contact-Form\">\n<div class=\"contact-form-grid\">\n<div><label for=\"First-Name\">Firsname *</label><input type=\"text\" class=\"w-input\" name=\"First-Name\" id=\"First-Name\" required=\"\" /></div>\n<div><label for=\"Last-Name\">Lastname *</label><input type=\"text\" class=\"w-input\" name=\"Last-Name\" id=\"Last-Name\" required=\"\" /></div>\n<div><label for=\"Email\">Email *</label><input type=\"email\" class=\"w-input\" name=\"Email\" id=\"Email\" required=\"\" /></div>\n<div><label for=\"Contact-Phone-Number\">Phone</label><input type=\"tel\" class=\"w-input\" name=\"Contact-Phone-Number\" id=\"Contact-Phone-Number\" /></div>\n</div>\n<div><label for=\"Message\">Message</label><textarea id=\"Message\" name=\"Message\" class=\"w-input\"></textarea></div>\n<ns-contact button-title=\"Validate\" mode=\"store+send\"></ns-contact></form></div>\n</div>\n</section>\n</div>"
+        }
+      },
+      "code": "Contact",
+      "createdAt": "2021-03-19T14:40:29.708Z",
+      "updatedAt": "2023-01-27T11:38:27.661Z"
+    },
+    {
+      "active": true,
+      "group": null,
+      "_id": "6054beb2b954bd2be84911ec",
+      "type": "page",
+      "translation": {
+        "fr": {
+          "variables": [
+            {
+              "label": "Image de fond",
+              "value": "/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg"
+            },
+            {
+              "label": "Titre 1",
+              "value": "Nos restaurants"
+            },
+            {
+              "label": "Titre 2",
+              "value": "en France"
+            },
+            {
+              "label": "Sous titre",
+              "value": "Nos établissements"
+            },
+            {
+              "label": "Texte",
+              "value": "Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta"
+            },
+            {
+              "label": "Action URL",
+              "value": "/contactez-nous"
+            },
+            {
+              "label": "Action texte",
+              "value": "Contactez-nous"
+            },
+            {
+              "label": "Image URL",
+              "value": "/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg"
+            },
+            {
+              "label": "Image alt",
+              "value": "Nos restaurants"
+            }
+          ],
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Image de fond}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Titre 1}}<br />‍<span class=\"brand-span\">{{Titre 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">{{Sous titre}}</h2>\n<p>{{Texte}}</p>\n<a href=\"{{Action URL}}\" class=\"button button-space w-button\">{{Action texte}}</a></div>\n<div class=\"image-block\"><img src=\"{{Image URL}}\" alt=\"{{Image alt}}\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>",
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Nos restaurants<br />‍<span class=\"brand-span\">en France</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">Nos établissements</h2>\n<p>Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta</p>\n<a href=\"/contactez-nous\" class=\"button button-space w-button\">Contactez-nous</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg\" alt=\"Nos restaurants\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>",
+          "title": "Le Restaurant",
+          "metaDesc": "Le Restaurant",
+          "slug": "le-restaurant"
+        },
+        "en": {
+          "slug": "restaurent",
+          "title": "Restaurant",
+          "metaDesc": "Restaurant",
+          "html": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('{{Background image}}');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">{{Title 1}}<br />‍<span class=\"brand-span\">{{Title 2}}</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">{{Lead}}</h2>\n<p>{{Text}}</p>\n<a href=\"{{Action URL}}\" class=\"button button-space w-button\">{{Text Action}}</a></div>\n<div class=\"image-block\"><img src=\"{{URL Image}}\" alt=\"{{Alt Image}}\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>",
+          "variables": [
+            {
+              "label": "Background image",
+              "value": "/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg"
+            },
+            {
+              "label": "Title 1",
+              "value": "Our restaurants"
+            },
+            {
+              "label": "Title 2",
+              "value": "in France"
+            },
+            {
+              "label": "Lead",
+              "value": "Our establishments"
+            },
+            {
+              "label": "Text",
+              "value": "Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta"
+            },
+            {
+              "label": "Action URL",
+              "value": "/contact"
+            },
+            {
+              "label": "Text Action",
+              "value": "Contact us"
+            },
+            {
+              "label": "URL Image",
+              "value": "/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg"
+            },
+            {
+              "label": "Alt Image",
+              "value": "Our restaurants"
+            }
+          ],
+          "content": "<div class=\"header-section bg-apropos\" style=\"background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg');\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\">Our restaurants<br />‍<span class=\"brand-span\">in France</span></h1>\n</div>\n</div>\n</div>\n<div class=\"content-section\">\n<div class=\"container\">\n<div class=\"w-layout-grid content-grid\">\n<div class=\"content-block\">\n<h2 class=\"heading-5\">Our establishments</h2>\n<p>Quae illi, exhausti sumptibus bellisque maximis, cum omnis Mithridaticos impetus totumque Pontum armatum affervescentem in Asiam atque erumpentem, ore repulsum et cervicibus interclusum suis sustinerent, tum, inquam, Byzantii et postea signa illa et reliqua urbis ornanemta sanctissime custodita tenuerunt.Sed tamen haec cum ita tutius observentur, quidam vigore artuum inminuto rogati ad nuptias ubi aurum dextris manibus cavatis offertur, inpigre vel usque Spoletium pergunt. haec nobilium sunt instituta</p>\n<a href=\"/contact\" class=\"button button-space w-button\">Contact us</a></div>\n<div class=\"image-block\"><img src=\"/images/medias/max-90/6081b44349391e1ff81653a3/restaurant.jpg\" alt=\"Our restaurants\" class=\"image-2\" /></div>\n</div>\n</div>\n</div>"
+        }
+      },
+      "code": "LeRestaurant",
+      "createdAt": "2021-03-19T15:09:38.770Z",
+      "updatedAt": "2021-08-30T09:48:38.411Z"
+    }
+  ]
+}

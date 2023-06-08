@@ -1,0 +1,693 @@
+{
+  "collection": "categories",
+  "datas": [
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": false,
+      "clickable": false,
+      "isDisplayed": false,
+      "action": "catalog",
+      "ancestors": [],
+      "children": [
+        "6053608c4d77e748945f27f0",
+        "605360974d77e748945f27f1",
+        "605360a24d77e748945f27f2",
+        "5c66985b28a49c049c58664c",
+        "612c933bebf4774d90ceb4d1"
+      ],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "5b7ea55c09c72307ffb3c7dd",
+      "code": "menu-header",
+      "translation": {
+        "fr": {
+          "name": "Menu header",
+          "slug": "menu-header"
+        },
+        "en": {
+          "name": "Menu header",
+          "slug": "menu-header"
+        }
+      },
+      "productsList": [],
+      "createdAt": "2020-05-13T09:07:33.482Z",
+      "openDate": "2020-05-13T09:07:33.482Z",
+      "updatedAt": "2022-02-08T14:12:08.720Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes" : [
+          {
+            "_id" : "ff06a08a6350becbd5d0adea",
+            "code" : "viande",
+            "translation" : {
+              "fr" : {
+                "name" : "Viande",
+                "values" : [
+                  "Poulet",
+                  "Boeuf",
+                  "Bacon"
+                ]
+              },
+              "en" : {
+                "name" : "Meat",
+                "values" : [
+                  "Chicken",
+                  "Beef",
+                  "Bacon"
+                ]
+              }
+            },
+            "type" : "multiselect",
+            "id_attribut" : "ff06a08a6350becbd5d0adea",
+            "position" : 1
+          }
+        ]
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "6053608c4d77e748945f27f0",
+      "translation": {
+        "fr": {
+          "name": "Burgers",
+          "slug": "burgers",
+          "metaDescription": "Découvrez nos burgers",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081a8d449391e1ff8165385/catburger.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Découvrez nos</span> <br />Burgers</h1>\n</div>\n</div>\n</div>",
+          "extraText2": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vel risus commodo viverra maecenas accumsan lacus vel facilisis volutpat. Pellentesque id nibh tortor id aliquet lectus proin",
+          "extraText3": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vel risus commodo viverra maecenas accumsan lacus vel facilisis volutpat. Pellentesque id nibh tortor id"
+        },
+        "en": {
+          "name": "Burgers",
+          "metaDescription": "Discover our burgers",
+          "slug": "burgers",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081a8d449391e1ff8165385/catburger.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Discover our</span> <br />burgers</h1>\n</div>\n</div>\n</div>",
+          "extraText2": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vel risus commodo viverra maecenas accumsan lacus vel facilisis volutpat. Pellentesque id nibh tortor id aliquet lectus proin",
+          "extraText3": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vel risus commodo viverra maecenas accumsan lacus vel facilisis volutpat. Pellentesque id nibh tortor id"
+        }
+      },
+      "code": "Burgers",
+      "openDate": "2021-03-18T14:15:40.873Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce766",
+          "id": "605364234b9ac91f54fcabad"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce767",
+          "id": "605365894b9ac91f54fcabb8"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce768",
+          "id": "605366a34b9ac91f54fcabc7"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce769",
+          "id": "60536cf34b9ac91f54fcac05"
+        }
+      ],
+      "createdAt": "2021-03-18T14:15:40.878Z",
+      "updatedAt": "2022-02-08T14:12:08.721Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605360d84d77e748945f27f4"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "605361004d77e748945f27f5",
+      "translation": {
+        "fr": {
+          "name": "CGV",
+          "slug": "cgv",
+          "pageSlug": "cgv"
+        },
+        "en": {
+          "name": "CGV",
+          "pageSlug": "cgv",
+          "slug": "CGV"
+        }
+      },
+      "code": "CGV",
+      "openDate": "2021-03-18T14:17:36.057Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:17:36.061Z",
+      "updatedAt": "2022-02-08T14:12:08.725Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": false,
+      "action": "catalog",
+      "ancestors": [
+        "607dabeab33c8e623487b5d1"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "6054a7c86153ac1a34d4334c",
+      "translation": {
+        "fr": {
+          "name": "Autre",
+          "slug": "autre"
+        },
+        "en": {
+          "name": "Other",
+          "slug": "other"
+        }
+      },
+      "code": "Autre",
+      "openDate": "2021-03-19T13:31:52.412Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce76e",
+          "id": "6054a7776153ac1a34d4334a"
+        }
+      ],
+      "createdAt": "2021-03-19T13:31:52.419Z",
+      "updatedAt": "2022-02-08T14:12:08.726Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [],
+      "displayOrder": 3,
+      "canonical_weight": 0,
+      "_id": "605360a24d77e748945f27f2",
+      "translation": {
+        "fr": {
+          "name": "Desserts",
+          "slug": "desserts",
+          "metaDescription": "Découvrez nos desserts",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081acf949391e1ff81653a0/catdesserts.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Découvrez nos</span> <br />Desserts</h1>\n</div>\n</div>\n</div>"
+        },
+        "en": {
+          "name": "Desserts",
+          "metaDescription": "Discover our desserts",
+          "slug": "desserts",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081acf949391e1ff81653a0/catdesserts.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Discover our</span> <br />Desserts</h1>\n</div>\n</div>\n</div>"
+        }
+      },
+      "code": "Desserts",
+      "openDate": "2021-03-18T14:16:02.434Z",
+      "productsList": [
+        {
+          "checked": true,
+          "sortWeight": 0,
+          "_id": "6056827c1a189d261888c588",
+          "id": "605682531a189d261888c586"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce76d",
+          "id": "605369344b9ac91f54fcabe9"
+        }
+      ],
+      "createdAt": "2021-03-18T14:16:02.438Z",
+      "updatedAt": "2022-02-08T14:12:08.723Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": false,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605360b64d77e748945f27f3"
+      ],
+      "children": [
+        "6054becbb954bd2be84911ed",
+        "605361534d77e748945f27fa"
+      ],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "605361314d77e748945f27f8",
+      "translation": {
+        "fr": {
+          "name": "A propos",
+          "slug": "a-propos",
+          "pageSlug": "le-restaurant"
+        },
+        "en": {
+          "name": "About",
+          "slug": "n/a",
+          "pageSlug": "restaurent"
+        }
+      },
+      "code": "APropos",
+      "openDate": "2021-03-18T14:18:25.170Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:18:25.176Z",
+      "updatedAt": "2022-02-08T14:12:08.724Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "605360974d77e748945f27f1",
+      "translation": {
+        "fr": {
+          "name": "Boissons",
+          "slug": "boissons",
+          "metaDescription": "Découvrez nos boissons",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081ac9c49391e1ff816539f/catboisson.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Découvrez nos</span> <br />Boissons</h1>\n</div>\n</div>\n</div>"
+        },
+        "en": {
+          "name": "Drinks",
+          "metaDescription": "Discover our Drinks",
+          "slug": "drinks",
+          "extraText": "<div class=\"header-section-carte\" style=\"background-image:linear-gradient(180deg, rgba(0, 0, 0, 0.59), rgba(250, 140, 78, 0.72)), url('/images/medias/max-90/6081ac9c49391e1ff816539f/catboisson.jpeg')\">\n<div class=\"container-flex-2\">\n<div class=\"title-wrap-centre\">\n<h1 class=\"header-h1\"><span class=\"brand-span\">Discover our</span> <br />Drinks</h1>\n</div>\n</div>\n</div>"
+        }
+      },
+      "code": "Boissons",
+      "openDate": "2021-03-18T14:15:51.105Z",
+      "productsList": [
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce76a",
+          "id": "605367d64b9ac91f54fcabd9"
+        },
+        {
+          "checked": false,
+          "sortWeight": 0,
+          "_id": "6059e85f1e9d2b18902ce76b",
+          "id": "605368a04b9ac91f54fcabe5"
+        }
+      ],
+      "createdAt": "2021-03-18T14:15:51.111Z",
+      "updatedAt": "2022-02-08T14:12:08.727Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605360d84d77e748945f27f4"
+      ],
+      "children": [],
+      "displayOrder": 3,
+      "canonical_weight": 0,
+      "_id": "605361234d77e748945f27f7",
+      "translation": {
+        "fr": {
+          "name": "CGU",
+          "slug": "cgu",
+          "pageSlug": "cgu"
+        },
+        "en": {
+          "name": "CGU",
+          "slug": "CGU",
+          "pageSlug": "cgu"
+        }
+      },
+      "code": "CGU",
+      "openDate": "2021-03-18T14:18:11.215Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:18:11.219Z",
+      "updatedAt": "2022-02-08T14:12:08.728Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": false,
+      "action": "catalog",
+      "ancestors": [
+        "607dabeab33c8e623487b5d1"
+      ],
+      "children": [],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "607cc2719097544c40b432b2",
+      "translation": {
+        "fr": {
+          "name": "Mise en avant",
+          "slug": "promote"
+        },
+        "en": {
+          "slug": "promote",
+          "name": "Promote"
+        }
+      },
+      "code": "promote",
+      "openDate": "2021-04-18T23:36:17.934Z",
+      "productsList": [
+        {
+          "checked": true,
+          "sortWeight": 0,
+          "_id": "607cc28a9097544c40b432b7",
+          "id": "605366a34b9ac91f54fcabc7"
+        },
+        {
+          "checked": true,
+          "sortWeight": 0,
+          "_id": "607cc28a9097544c40b432b8",
+          "id": "60536cf34b9ac91f54fcac05"
+        }
+      ],
+      "createdAt": "2021-04-18T23:36:17.945Z",
+      "updatedAt": "2022-02-08T14:12:08.729Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": false,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "ancestors": [],
+      "children": [
+        "607cc2719097544c40b432b2",
+        "6054a7c86153ac1a34d4334c"
+      ],
+      "displayOrder": 0,
+      "canonical_weight": 0,
+      "_id": "607dabeab33c8e623487b5d1",
+      "translation": {
+        "fr": {
+          "name": "Marketing",
+          "slug": "marketing"
+        },
+        "en": {
+          "name": "Marketing",
+          "slug": "marketing"
+        }
+      },
+      "code": "marketing",
+      "openDate": "2021-04-19T16:12:26.200Z",
+      "productsList": [],
+      "createdAt": "2021-04-19T16:12:26.207Z",
+      "updatedAt": "2022-02-08T14:12:08.730Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [],
+      "displayOrder": 4,
+      "canonical_weight": 0,
+      "_id": "612c933bebf4774d90ceb4d1",
+      "translation": {
+        "fr": {
+          "name": "Blog",
+          "slug": "blog",
+          "pageSlug": "blog"
+        },
+        "en": {
+          "name": "Blog",
+          "pageSlug": "blog",
+          "slug": "blog"
+        }
+      },
+      "code": "blog",
+      "openDate": "2021-08-30T08:13:47.772Z",
+      "productsList": [],
+      "createdAt": "2021-08-30T08:13:47.787Z",
+      "updatedAt": "2022-02-08T14:12:08.731Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "5b7ea55c09c72307ffb3c7dd"
+      ],
+      "children": [],
+      "displayOrder": 5,
+      "canonical_weight": 0,
+      "_id": "5c66985b28a49c049c58664c",
+      "code": "contact",
+      "translation": {
+        "en": {
+          "name": "Contact",
+          "slug": " ",
+          "metaDescription": "",
+          "pageSlug": "contact"
+        },
+        "fr": {
+          "name": "Contact",
+          "slug": " ",
+          "metaDescription": "",
+          "pageSlug": "contactez-nous"
+        }
+      },
+      "openDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
+      "productsList": [],
+      "updatedAt": "2022-02-08T14:12:08.732Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": false,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "catalog",
+      "ancestors": [],
+      "children": [
+        "605360d84d77e748945f27f4",
+        "605361314d77e748945f27f8"
+      ],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "605360b64d77e748945f27f3",
+      "translation": {
+        "fr": {
+          "name": "Menu footer",
+          "slug": "menu-footer"
+        },
+        "en": {
+          "name": "Menu footer",
+          "slug": "menu-footer"
+        }
+      },
+      "code": "menu-footer",
+      "openDate": "2021-03-18T14:16:22.179Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:16:22.182Z",
+      "updatedAt": "2022-02-08T14:12:08.733Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": false,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605360b64d77e748945f27f3"
+      ],
+      "children": [
+        "605361004d77e748945f27f5",
+        "605361194d77e748945f27f6",
+        "605361234d77e748945f27f7"
+      ],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "605360d84d77e748945f27f4",
+      "translation": {
+        "fr": {
+          "name": "Informations",
+          "slug": "informations",
+          "pageSlug": "le-restaurant"
+        },
+        "en": {
+          "name": "Informations",
+          "pageSlug": "restaurent",
+          "slug": "restaurant"
+        }
+      },
+      "code": "Informations",
+      "openDate": "2021-03-18T14:16:56.794Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:16:56.799Z",
+      "updatedAt": "2022-02-08T14:12:08.734Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605360d84d77e748945f27f4"
+      ],
+      "children": [],
+      "displayOrder": 1,
+      "canonical_weight": 0,
+      "_id": "605361194d77e748945f27f6",
+      "translation": {
+        "fr": {
+          "name": "Mentions légales",
+          "pageSlug": "mentions-legales"
+        },
+        "en": {
+          "name": "Legal notice",
+          "pageSlug": "legal-notice"
+        }
+      },
+      "code": "MentionsLegales",
+      "openDate": "2021-03-18T14:18:01.697Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:18:01.702Z",
+      "updatedAt": "2022-02-08T14:12:08.735Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605361314d77e748945f27f8"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "605361534d77e748945f27fa",
+      "translation": {
+        "fr": {
+          "name": "Contactez-nous",
+          "slug": "contact",
+          "pageSlug": "contactez-nous"
+        },
+        "en": {
+          "name": "Contact us",
+          "pageSlug": "contact",
+          "slug": "contact"
+        }
+      },
+      "code": "Contact",
+      "openDate": "2021-03-18T14:18:59.402Z",
+      "productsList": [],
+      "createdAt": "2021-03-18T14:18:59.407Z",
+      "updatedAt": "2022-02-08T14:12:08.736Z"
+    },
+    {
+      "filters": {
+        "pictos": [],
+        "attributes": []
+      },
+      "active": true,
+      "clickable": true,
+      "isDisplayed": true,
+      "action": "page",
+      "ancestors": [
+        "605361314d77e748945f27f8"
+      ],
+      "children": [],
+      "displayOrder": 2,
+      "canonical_weight": 0,
+      "_id": "6054becbb954bd2be84911ed",
+      "translation": {
+        "fr": {
+          "name": "Le Restaurant",
+          "slug": "le-restaurant",
+          "pageSlug": "le-restaurant"
+        },
+        "en": {
+          "name": "Restaurant",
+          "pageSlug": "restaurent",
+          "slug": "Restaurent"
+        }
+      },
+      "code": "Restaurant",
+      "openDate": "2021-03-19T15:10:03.377Z",
+      "productsList": [],
+      "createdAt": "2021-03-19T15:10:03.382Z",
+      "updatedAt": "2022-02-08T14:12:08.737Z"
+    }
+  ]
+}

@@ -1,18 +1,16 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose            = require('mongoose');
-const utils               = require('../../utils/utils');
-const utilsDatabase       = require('../../utils/database');
-const {checkCustomFields} = require('../../utils/translation');
-const aquilaEvents        = require('../../utils/aquilaEvents');
-const translation         = require('../../utils/translation');
-const Schema              = mongoose.Schema;
+const mongoose                               = require('mongoose');
+const {aquilaEvents, slugify}                = require('aql-utils');
+const utilsDatabase                          = require('../../utils/database');
+const {checkCustomFields, checkTranslations} = require('../../utils/translation');
+const Schema                                 = mongoose.Schema;
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -24,25 +22,14 @@ const NewsSchema = new Schema({
     id         : false
 });
 
-/* translation:
- slug: unique
- title
- content: {
- resume
- text
- }
- */
-
-NewsSchema.statics.translationValidation = async function (updateQuery, self) {
-    let errors = [];
-
-    if (self.translation === undefined) return errors; // No translation
+NewsSchema.statics.translationValidation = async function (self, updateQuery) {
+    if (self.translation === undefined) return; // No translation
 
     let translationKeys = Object.keys(self.translation);
 
     if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
+        self.translation[global.aquila.defaultLang] = {};
+        translationKeys                             = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -50,9 +37,9 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.slug === undefined || lang.slug === '') {
-                lang.slug = utils.slugify(lang.title);
+                lang.slug = slugify(lang.title);
             } else {
-                lang.slug = utils.slugify(lang.slug);
+                lang.slug = slugify(lang.slug);
             }
 
             if (updateQuery) {
@@ -61,23 +48,16 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
                 slugEdit.translation[translationKeys[i]].slug = lang.slug;
                 updateQuery.updateOne(slugEdit);
             }
-
-            if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push('slug déjà existant');
-            }
-
-            errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'slug'}, {key: 'title'}
-            ]));
+            ]);
 
             if (lang.content) {
-                errors = translation.checkTranslations(lang.content.resume, 'content.resume', errors, translationKeys[i]);
-                errors = translation.checkTranslations(lang.content.text, 'content.text', errors, translationKeys[i]);
+                checkTranslations(lang.content.resume, 'content.resume');
+                checkTranslations(lang.content.text, 'content.text');
             }
         }
     }
-
-    return errors;
 };
 
 NewsSchema.statics.checkSlugExist = async function (that) {
@@ -99,5 +79,7 @@ NewsSchema.pre('save', async function (next) {
 NewsSchema.post('save', async function (doc) {
     aquilaEvents.emit('aqNewArticle', doc);
 });
+
+aquilaEvents.emit('newsSchemaInit', NewsSchema);
 
 module.exports = NewsSchema;

@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -77,9 +77,11 @@ module.exports = class QueryBuilder {
                 postBodyChecked.skip = (postBodyChecked.page - 1) * postBodyChecked.limit;
             }
             return postBodyChecked;
-        } if (request === 'findOne') {
+        }
+        if (request === 'findOne') {
             return PostBody ? new PostBodyCheck(PostBody.filter, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
-        } if (request === 'findById') {
+        }
+        if (request === 'findById') {
             return PostBody ? new PostBodyCheck({}, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
         }
     }

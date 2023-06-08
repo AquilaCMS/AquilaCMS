@@ -1,5 +1,5 @@
 <ns-box data-title="order.list.t1" title-icon="fa fa-shopping-cart fa-lg">
-    <div class="box-content">
+    <div class="box-content" hook-order-list>
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
             <div class="row">
                 <div class="col-lg-12">
@@ -46,11 +46,9 @@
                                 </a>
                             </th>
                             <th style="text-align: center">
-                                <a ng-click="sort.type = 'status'; sort.reverse = !sort.reverse; getOrders(1);">
                                     <span translate>order.list.status</span>
                                     <span ng-show="sort.type == 'status' && !sort.reverse" class="ico-chevron-down"></span>
                                     <span ng-show="sort.type == 'status' && sort.reverse" class="ico-chevron-up"></span>
-                                </a>
                             </th>
                             <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
                         </tr>

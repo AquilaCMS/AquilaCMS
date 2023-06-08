@@ -1,7 +1,7 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * Copyright  : 2023 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
@@ -90,7 +90,9 @@ const expressErrorHandler = (err, req, res, next) => {
         if (req.headers && req.headers.lang) lang = req.headers.lang;
         else if (req.query && req.query.lang) lang = req.query.lang;
         else if (req.body && req.body.lang && typeof req.body.lang === 'string') lang = req.body.lang;
-        else if (global.defaultLang) lang = global.defaultLang;
+        else if (global.aquila.defaultLang) lang = global.aquila.defaultLang;
+
+        if (lang === 'null' || lang == null || lang === 'undefined') lang = 'en';
 
         if (err instanceof MongoError) {
             if (getEnv('NODE_ENV') !== 'test') log(err);
