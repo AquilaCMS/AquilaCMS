@@ -13,7 +13,7 @@ const serverUtils              = require('../utils/server');
 const {themeInstallAndCompile} = require('../utils/themes');
 const {createListModuleFile}   = require('../utils/modules');
 const NSErrors                 = require('../utils/errors/NSErrors');
-const {PackageJSON}          = require('../utils');
+const {PackageJSON}            = require('../utils');
 
 /**
  * If it's the first launch (/config/env.js exist or not), display the configurator

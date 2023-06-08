@@ -10,21 +10,21 @@ const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
 const ModulesSchema = new Schema({
-    name                     : {type: String, index: true, unique: true},
-    description              : {type: String},
-    version                  : {type: String},
-    path                     : {type: String},
-    url                      : {type: String},
-    cronNames                : [String],
-    mailTypeCode             : [String],
-    loadApp                  : {type: Boolean, default: true},
-    loadTranslationBack      : {type: Boolean, default: false},
-    loadTranslationFront     : {type: Boolean, default: false},
-    files                    : [String],
-    active                   : {type: Boolean, default: false},
-    config                   : {type: Object, default: {}},
-    type                     : {type: String},
-    types : [{
+    name                 : {type: String, index: true, unique: true},
+    description          : {type: String},
+    version              : {type: String},
+    path                 : {type: String},
+    url                  : {type: String},
+    cronNames            : [String],
+    mailTypeCode         : [String],
+    loadApp              : {type: Boolean, default: true},
+    loadTranslationBack  : {type: Boolean, default: false},
+    loadTranslationFront : {type: Boolean, default: false},
+    files                : [String],
+    active               : {type: Boolean, default: false},
+    config               : {type: Object, default: {}},
+    type                 : {type: String},
+    types                : [{
         component : {type: String},
         type      : {type: String}
     }],
