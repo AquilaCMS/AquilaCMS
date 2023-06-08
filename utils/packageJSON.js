@@ -1,7 +1,7 @@
 const path = require('path');
 const {fs} = require('aql-utils');
 
-const packageJSONPath = path.resolve(global.appRoot, 'package.json');
+const packageJSONPath = path.resolve(global.aquila.appRoot, 'package.json');
 
 function PackageJSON() {
     this.package = undefined;

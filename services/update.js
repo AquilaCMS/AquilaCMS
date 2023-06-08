@@ -12,7 +12,7 @@ const path                   = require('path');
 const {fs, execCmd, restart} = require('aql-utils');
 const {Configuration}        = require('../orm/models');
 const tmpPath                = path.resolve('./uploads/temp');
-const packageJSONPath        = path.resolve(global.appRoot, 'package.json');
+const packageJSONPath        = path.resolve(global.aquila.appRoot, 'package.json');
 
 /**
  * Compare local version with distant version
