@@ -5,7 +5,8 @@
   "main": "server.js",
   "private": true,
   "workspaces": [
-    "themes/default_theme_2"
+    "themes/!(*.disabled)/**",
+    "modules/!(*.disabled)/**"
   ],
   "license": "OSL-3.0",
   "engines": {

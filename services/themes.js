@@ -9,7 +9,6 @@
 const mongoose                     = require('mongoose');
 const path                         = require('path');
 const {fs}                         = require('aql-utils');
-const PackageJSON                  = require('../utils/packageJSON');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
@@ -30,6 +29,7 @@ const CSS_FOLDERS = [
  * @param {string} selectedTheme Name of the selected theme
  */
 const changeTheme = async (selectedTheme, type) => {
+    // TODO : rename le dossier pour enlever ou mettre le .disabled à la fin
     const oldConfig = await Configuration.findOne({});
     // If the theme has changed
     const returnObject = {
@@ -45,14 +45,6 @@ const changeTheme = async (selectedTheme, type) => {
         }
         if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
-
-            // Add current theme to the workspaces field in the AquilaCMS package.json
-            const packageJSON = new PackageJSON();
-            await packageJSON.read();
-            const currentThemeIndex = packageJSON.package.workspaces.indexOf(`themes/${global.envConfig.environment.currentTheme}`);
-            if (currentThemeIndex !== -1) packageJSON.package.workspaces.splice(currentThemeIndex, 1);
-            packageJSON.package.workspaces.push(`themes/${selectedTheme}`);
-            await packageJSON.save();
 
             await updateService.setMaintenance(false);
             returnObject.msg = 'OK';

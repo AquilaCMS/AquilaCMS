@@ -307,6 +307,27 @@ const stringifyError = (err, filter, space) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Rename folder with or without .disabled at the end
+ * Useful with modules and themes in order to not be taken into account by yarn workspaces algorithm
+ * @param {string} moduleName
+ * @param {boolean} toBeDisabled
+ * @returns
+ */
+const folderDeactivationMgmt = (moduleName, toBeDisabled) => {
+    const moduleFolderName    = 'modules/';
+    const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, moduleName);
+    const moduleNameDisabled  = path.join(global.aquila.appRoot, moduleFolderName, `${moduleName}.disabled`);
+
+    if (toBeDisabled && !fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
+        fs.renameSync(moduleFolderAbsPath, moduleNameDisabled);
+    }
+
+    if (!toBeDisabled && fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
+        fs.renameSync(moduleNameDisabled, moduleFolderAbsPath);
+    }
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -317,5 +338,6 @@ module.exports = {
     isEqual,
     isJsonString,
     isAdmin,
-    stringifyError
+    stringifyError,
+    folderDeactivationMgmt
 };

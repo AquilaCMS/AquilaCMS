@@ -13,7 +13,7 @@ const rimraf                      = require('rimraf');
 const semver                      = require('semver');
 const slash                       = require('slash');
 const {fs, aquilaEvents, execCmd} = require('aql-utils');
-const {PackageJSON}               = require('../utils');
+const {folderDeactivationMgmt}    = require('../utils/utils');
 const utilsThemes                 = require('../utils/themes');
 const QueryBuilder                = require('../utils/QueryBuilder');
 const modulesUtils                = require('../utils/modules');
@@ -25,6 +25,7 @@ const themesService               = require('./themes');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
+const moduleFolderName = 'modules/';
 
 /**
  * Get modules
@@ -71,7 +72,6 @@ const initModule = async (files) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolderName    = 'modules/';
     const moduleFolderAbsPath = path.resolve(global.aquila.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
     const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
     const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
@@ -120,21 +120,24 @@ const initModule = async (files) => {
             });
         });
         console.log('Unzip module ok, reading info.json...');
+
         const infoPath = path.resolve(extractZipFilePath, 'info.json');
-        if (!fs.existsSync(infoPath)) {
-            throw NSErrors.ModuleInfoNotFound;
-        }
-        const infoFile    = await fs.readFile(infoPath, 'utf8');
-        const packageFile = await fs.readFile(path.resolve(extractZipFilePath, 'package.json'), 'utf8');
+        if (!fs.existsSync(infoPath)) throw NSErrors.ModuleInfoNotFound;
+        const infoFile = await fs.readFile(infoPath, 'utf8'); // TODO : to be removed when no more info.json is used
+
+        const packageFilePath = path.resolve(extractZipFilePath, 'package.json');
+        if (!fs.existsSync(packageFilePath)) throw NSErrors.ModulePackageJsonNotFound;
+        const packageFile = await fs.readFile(packageFilePath, 'utf8');
+
         const packageJSON = JSON.parse(packageFile);
         const {info}      = JSON.parse(infoFile);
         console.log('Installing module...');
 
         const myModule  = await Modules.findOne({name: info.name});
         const newModule = await Modules.findOneAndUpdate({name: info.name}, {
-            name                     : packageJSON.package.name,
-            description              : packageJSON.package.description,
-            version                  : packageJSON.package.version,
+            name                     : packageJSON.name,
+            description              : packageJSON.description,
+            version                  : packageJSON.version,
             path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
@@ -205,8 +208,13 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy  = path.resolve(`backoffice/app/${myModule.name}`);
-        const copyF = path.resolve(`modules/${myModule.name}/app/`);
+        const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, myModule.name);
+
+        // Remove the .disabled from the module folder name
+        folderDeactivationMgmt(myModule.name, false);
+
+        const copy  = path.join(global.aquila.appRoot, 'backoffice', 'app', myModule.name);
+        const copyF = path.join(moduleFolderAbsPath, 'app');
         let copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
@@ -238,12 +246,6 @@ const activateModule = async (idModule, toBeChanged) => {
                 copyTab.push(dest);
             }
         }
-
-        // Add new module to the workspaces field in the AquilaCMS package.json
-        const packageJSON = new PackageJSON();
-        await packageJSON.read();
-        packageJSON.package.workspaces.push(`modules/${myModule.name}`);
-        await packageJSON.save();
 
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
@@ -332,6 +334,10 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             throw NSErrors.ModuleNotFound;
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+
+        // Add the .disabled in the module folder name
+        folderDeactivationMgmt(_module.name, true);
+
         await removeModuleAddon(_module);
 
         // Deleting copied files
@@ -355,14 +361,6 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         }
 
         await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
-
-        // Remove module from the workspaces field of the AquilaCMS package.json
-        console.log('Removing dependencies of the module...');
-        const packageJSON = new PackageJSON();
-        await packageJSON.read();
-        const workspaceIndex = packageJSON.package.workspaces.indexOf(`/modules/${_module.name}`);
-        packageJSON.package.workspaces.splice(workspaceIndex, 1);
-        await packageJSON.save();
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module deactivated');

@@ -17,7 +17,6 @@ const QueryBuilder = require('./QueryBuilder');
 const CacheService = require('./CacheService');
 const NSError      = require('./errors/NSError');
 const NSErrors     = require('./errors/NSErrors');
-const PackageJSON  = require('./packageJSON');
 
 module.exports = {
     mongoose,
@@ -30,6 +29,5 @@ module.exports = {
     QueryBuilder,
     CacheService,
     NSError,
-    NSErrors,
-    PackageJSON
+    NSErrors
 };
