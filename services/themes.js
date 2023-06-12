@@ -9,6 +9,7 @@
 const mongoose                     = require('mongoose');
 const path                         = require('path');
 const {fs}                         = require('aql-utils');
+const {folderDeactivationMgmt}     = require('../utils/utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
@@ -29,7 +30,6 @@ const CSS_FOLDERS = [
  * @param {string} selectedTheme Name of the selected theme
  */
 const changeTheme = async (selectedTheme, type) => {
-    // TODO : rename le dossier pour enlever ou mettre le .disabled à la fin
     const oldConfig = await Configuration.findOne({});
     // If the theme has changed
     const returnObject = {
@@ -40,6 +40,11 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
+
+            // Deactivate old theme and activate new theme
+            folderDeactivationMgmt(oldConfig.environment.currentTheme, 'themes/', true);
+            folderDeactivationMgmt(selectedTheme, 'themes/', false);
+
             await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
         }
@@ -54,6 +59,11 @@ const changeTheme = async (selectedTheme, type) => {
         console.error(err);
         returnObject.message = err;
         returnObject.success = false;
+
+        // Reactivate old theme and deactivate selected theme
+        folderDeactivationMgmt(oldConfig.environment.currentTheme, 'themes/', false);
+        folderDeactivationMgmt(selectedTheme, 'themes/', true);
+
         return returnObject;
     }
     throw NSErrors.SameTheme;

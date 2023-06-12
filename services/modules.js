@@ -211,7 +211,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, myModule.name);
 
         // Remove the .disabled from the module folder name
-        folderDeactivationMgmt(myModule.name, false);
+        folderDeactivationMgmt(myModule.name, moduleFolderName, false);
 
         const copy  = path.join(global.aquila.appRoot, 'backoffice', 'app', myModule.name);
         const copyF = path.join(moduleFolderAbsPath, 'app');
@@ -336,7 +336,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
 
         // Add the .disabled in the module folder name
-        folderDeactivationMgmt(_module.name, true);
+        folderDeactivationMgmt(_module.name, moduleFolderName, true);
 
         await removeModuleAddon(_module);
 
