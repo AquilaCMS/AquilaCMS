@@ -1,12 +1,13 @@
-import Link                       from 'next/link';
-import useTranslation             from 'next-translate/useTranslation';
-import CartDiscount               from '@components/cart/CartDiscount';
-import CartItem                   from '@components/cart/CartItem';
-import Layout                     from '@components/layouts/Layout';
-import NextSeoCustom              from '@components/tools/NextSeoCustom';
-import { useCart, useSiteConfig } from '@lib/hooks';
-import { initAxios, formatPrice } from '@lib/utils';
-import { dispatcher }             from '@lib/redux/dispatcher';
+import { useEffect }                                         from 'react';
+import Link                                                  from 'next/link';
+import useTranslation                                        from 'next-translate/useTranslation';
+import CartDiscount                                          from '@components/cart/CartDiscount';
+import CartItem                                              from '@components/cart/CartItem';
+import Layout                                                from '@components/layouts/Layout';
+import NextSeoCustom                                         from '@components/tools/NextSeoCustom';
+import { useAqModules, useCart, useSiteConfig }              from '@lib/hooks';
+import { initAxios, formatPrice, isAllAqModulesInitialised } from '@lib/utils';
+import { dispatcher }                                        from '@lib/redux/dispatcher';
 
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
@@ -16,9 +17,18 @@ export async function getServerSideProps({ locale, req, res }) {
 }
 
 export default function CheckoutCart() {
+    const { aqModules }   = useAqModules();
     const { cart }        = useCart();
     const { environment } = useSiteConfig();
     const { t }           = useTranslation();
+
+    useEffect(() => {
+        // Event when all Aquila modules ("global" type) are initialised
+        if (isAllAqModulesInitialised(aqModules)) {
+            const addTransaction = new CustomEvent('viewCart', { detail: { cart } });
+            window.dispatchEvent(addTransaction);
+        }
+    }, [aqModules]);
 
     return (
         <Layout>

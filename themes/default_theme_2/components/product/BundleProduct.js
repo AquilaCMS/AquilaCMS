@@ -95,6 +95,11 @@ export default function BundleProduct({ product, qty, onCloseModal }) {
             }
 
             setCart(newCart);
+
+            // Event
+            const addTransaction = new CustomEvent('addToCart', { detail: { product, quantity: qty } });
+            window.dispatchEvent(addTransaction);
+
             setShowCartSidebar(true);
         } catch (err) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });

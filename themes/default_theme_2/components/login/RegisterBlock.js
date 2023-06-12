@@ -28,7 +28,17 @@ export default function RegisterBlock() {
         };
         try {
             await setUser(user);
+
+            // Event
+            const addTransaction = new CustomEvent('signUp', { detail: {} });
+            window.dispatchEvent(addTransaction);
+
             await auth(user.email, user.password);
+
+            // Event
+            const addTransaction2 = new CustomEvent('login', { detail: {} });
+            window.dispatchEvent(addTransaction2);
+
             router.push(redirect);
         } catch (err) {
             setMessageRegister({ type: 'error', message: err.message || t('common:message.unknownError') });

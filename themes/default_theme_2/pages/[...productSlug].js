@@ -1,32 +1,32 @@
-import { useState }                                                                            from 'react';
-import { ProductJsonLd }                                                                       from 'next-seo';
-import absoluteUrl                                                                             from 'next-absolute-url';
-import { useRouter }                                                                           from 'next/router';
-import getT                                                                                    from 'next-translate/getT';
-import useTranslation                                                                          from 'next-translate/useTranslation';
-import parse                                                                                   from 'html-react-parser';
-import Cookies                                                                                 from 'cookies';
-import { Modal }                                                                               from 'react-responsive-modal';
-import Lightbox                                                                                from 'lightbox-react';
-import ErrorPage                                                                               from '@pages/_error';
-import BundleProduct                                                                           from '@components/product/BundleProduct';
-import ProductVariants                                                                         from '@components/product/ProductVariants';
-import Layout                                                                                  from '@components/layouts/Layout';
-import NextSeoCustom                                                                           from '@components/tools/NextSeoCustom';
-import Breadcrumb                                                                              from '@components/navigation/Breadcrumb';
-import ProductList                                                                             from '@components/product/ProductList';
-import BlockCMS                                                                                from '@components/common/BlockCMS';
-import Button                                                                                  from '@components/ui/Button';
-import { dispatcher }                                                                          from '@lib/redux/dispatcher';
-import { getBlocksCMS }                                                                        from '@aquilacms/aquila-connector/api/blockcms';
-import { getBreadcrumb }                                                                       from '@aquilacms/aquila-connector/api/breadcrumb';
-import { addToCart, deleteCartShipment }                                                       from '@aquilacms/aquila-connector/api/cart';
-import { getCategories }                                                                       from '@aquilacms/aquila-connector/api/category';
-import { getProduct, downloadFreeVirtualProduct }                                              from '@aquilacms/aquila-connector/api/product';
-import { getImage, getMainImage, getTabImageURL }                                              from '@aquilacms/aquila-connector/api/product/helpersProduct';
-import { generateURLImageCache }                                                               from '@aquilacms/aquila-connector/lib/utils';
-import { useCart, useProduct, useShowCartSidebar, useSiteConfig }                              from '@lib/hooks';
-import { initAxios, authProtectedPage, formatPrice, formatStock, getAvailability, moduleHook } from '@lib/utils';
+import { useEffect, useState }                                                                                            from 'react';
+import { ProductJsonLd }                                                                                                  from 'next-seo';
+import absoluteUrl                                                                                                        from 'next-absolute-url';
+import { useRouter }                                                                                                      from 'next/router';
+import getT                                                                                                               from 'next-translate/getT';
+import useTranslation                                                                                                     from 'next-translate/useTranslation';
+import parse                                                                                                              from 'html-react-parser';
+import Cookies                                                                                                            from 'cookies';
+import { Modal }                                                                                                          from 'react-responsive-modal';
+import Lightbox                                                                                                           from 'lightbox-react';
+import ErrorPage                                                                                                          from '@pages/_error';
+import BundleProduct                                                                                                      from '@components/product/BundleProduct';
+import ProductVariants                                                                                                    from '@components/product/ProductVariants';
+import Layout                                                                                                             from '@components/layouts/Layout';
+import NextSeoCustom                                                                                                      from '@components/tools/NextSeoCustom';
+import Breadcrumb                                                                                                         from '@components/navigation/Breadcrumb';
+import ProductList                                                                                                        from '@components/product/ProductList';
+import BlockCMS                                                                                                           from '@components/common/BlockCMS';
+import Button                                                                                                             from '@components/ui/Button';
+import { dispatcher }                                                                                                     from '@lib/redux/dispatcher';
+import { getBlocksCMS }                                                                                                   from '@aquilacms/aquila-connector/api/blockcms';
+import { getBreadcrumb }                                                                                                  from '@aquilacms/aquila-connector/api/breadcrumb';
+import { addToCart, deleteCartShipment }                                                                                  from '@aquilacms/aquila-connector/api/cart';
+import { getCategories }                                                                                                  from '@aquilacms/aquila-connector/api/category';
+import { getProduct, downloadFreeVirtualProduct }                                                                         from '@aquilacms/aquila-connector/api/product';
+import { getImage, getMainImage, getTabImageURL }                                                                         from '@aquilacms/aquila-connector/api/product/helpersProduct';
+import { generateURLImageCache }                                                                                          from '@aquilacms/aquila-connector/lib/utils';
+import { useCart, useAqModules, useProduct, useShowCartSidebar, useSiteConfig }                                           from '@lib/hooks';
+import { initAxios, authProtectedPage, formatPrice, formatStock, getAvailability, moduleHook, isAllAqModulesInitialised } from '@lib/utils';
 
 import 'lightbox-react/style.css';
 import 'react-responsive-modal/styles.css';
@@ -52,7 +52,7 @@ export async function getServerSideProps({ defaultLocale, locale, params, query,
         const postBody = {
             PostBody: {
                 filter   : { [`translation.${locale}.slug`]: productSlug },
-                structure: { allergens: 1, trademark: 1 },
+                structure: { allergens: 1, trademark: 1, universe: 1 },
                 populate : [
                     'allergens',
                     'associated_prds',
@@ -165,12 +165,21 @@ export default function Product({ breadcrumb, origin }) {
     const [isLoading, setIsLoading]    = useState(false);
     const [openModal, setOpenModal]    = useState(false);
     const [tabs, setTabs]              = useState(0);
+    const { aqModules }                = useAqModules();
     const { cart, setCart }            = useCart();
     const { product }                  = useProduct();
     const { environment, themeConfig } = useSiteConfig();
     const { lang, t }                  = useTranslation();
     const { setShowCartSidebar }       = useShowCartSidebar();
     const router                       = useRouter();
+
+    useEffect(() => {
+        // Event when all Aquila modules ("global" type) are initialised
+        if (isAllAqModulesInitialised(aqModules)) {
+            const addTransaction = new CustomEvent('viewItem', { detail: { product } });
+            window.dispatchEvent(addTransaction);
+        }
+    }, [aqModules]);
 
     if (!product) return <ErrorPage statusCode={404} />;
 
@@ -212,6 +221,11 @@ export default function Product({ breadcrumb, origin }) {
             }
 
             setCart(newCart);
+
+            // Event
+            const addTransaction = new CustomEvent('addToCart', { detail: { product, quantity: qty } });
+            window.dispatchEvent(addTransaction);
+            
             setShowCartSidebar(true);
         } catch (err) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });

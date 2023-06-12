@@ -11,13 +11,13 @@ import ProductCard                              from '@components/product/Produc
 import ProductList                              from '@components/product/ProductList';
 import Slider                                   from '@components/common/Slider';
 import { useCmsBlocks, useComponentData }       from '@lib/hooks';
-import { getNsModules }                         from '@lib/utils';
+import { getAqModules }                         from '@lib/utils';
 
 export default function BlockCMS({ nsCode, content = '', displayerror = false, recursion = 0 }) {
     const cmsBlocks     = useCmsBlocks();
     const componentData = useComponentData();
 
-    const nsModules = getNsModules();
+    const aqModules = getAqModules();
     
     let html = '';
     if (content) {
@@ -57,11 +57,11 @@ export default function BlockCMS({ nsCode, content = '', displayerror = false, r
                 return component;
             }
 
-            // Replace <aq-[...]> by Next Sourcia Module
-            if (type === 'tag' && name && nsModules?.find((comp) => comp.code === name)) {
-                const NsModule  = nsModules.find((comp) => comp.code === name).jsx.default;
+            // Replace <aq-[...]> by Aquila Module
+            if (type === 'tag' && name && aqModules?.find((comp) => comp.code === name)) {
+                const AqModule  = aqModules.find((comp) => comp.code === name).jsx.default;
                 const component = React.cloneElement(
-                    <NsModule />,
+                    <AqModule />,
                     {
                         ...attribs
                     }
