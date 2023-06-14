@@ -82,11 +82,12 @@ const initModule = async (files) => {
     await fs.unlink(path.resolve(global.aquila.appRoot, filepath));
 
     try {
-        const zip      = new AdmZip(zipFilePath);
-        const infojson = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
-        if (!infojson) {
-            throw NSErrors.ModuleInfoNotFound; // info.json not found in zip
-        } else if (originalname.replace('.zip', '') !== JSON.parse(infojson.getData().toString()).info.name) {
+        const zip         = new AdmZip(zipFilePath);
+        const packageJson = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
+        const infojson    = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
+        if (!packageJson) {
+            throw NSErrors.ModuleInfoNotFound; // package.json not found in zip
+        } else if (originalname.replace('.zip', '') !== JSON.parse(packageJson.getData().toString()).name) {
             throw NSErrors.ModuleNameMissmatch;
         }
         const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
@@ -133,8 +134,8 @@ const initModule = async (files) => {
         const {info}      = JSON.parse(infoFile);
         console.log('Installing module...');
 
-        const myModule  = await Modules.findOne({name: info.name});
-        const newModule = await Modules.findOneAndUpdate({name: info.name}, {
+        const myModule  = await Modules.findOne({name: packageJSON.name});
+        const newModule = await Modules.findOneAndUpdate({name: packageJSON.name}, {
             name                     : packageJSON.name,
             description              : packageJSON.description,
             version                  : packageJSON.version,
@@ -157,22 +158,22 @@ const initModule = async (files) => {
         // Check if the functions init, initAfter, uninit and rgpd are present
         const pathUninit = path.join(extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
-            console.error(`Uninit file is missing for : ${info.name}`);
+            console.error(`Uninit file is missing for : ${packageJSON.name}`);
         }
 
         const pathInit = path.join(extractZipFilePath, 'init.js');
         if (!fs.existsSync(pathInit)) {
-            console.error(`Init file is missing for : ${info.name}`);
+            console.error(`Init file is missing for : ${packageJSON.name}`);
         }
 
         const pathInitAfter = path.join(extractZipFilePath, 'initAfter.js');
         if (!fs.existsSync(pathInitAfter)) {
-            console.error(`InitAfter file is missing for : ${info.name}`);
+            console.error(`InitAfter file is missing for : ${packageJSON.name}`);
         }
 
         const pathRgpd = path.join(extractZipFilePath, 'rgpd.js');
         if (!fs.existsSync(pathRgpd)) {
-            console.error(`RGPD file is missing for : ${info.name}`);
+            console.error(`RGPD file is missing for : ${packageJSON.name}`);
         }
 
         console.log('Module installed');
@@ -541,10 +542,13 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     const currentTheme       = theme || global.aquila.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const pathToThemeModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules');
 
+    const packageJson   = await fs.readFile(path.join(savePath, 'package.json'));
+    const parsedpkgJson = JSON.parse(packageJson);
+
     const info       = await fs.readFile(path.join(savePath, 'info.json'));
     const parsedInfo = JSON.parse(info);
 
-    const moduleFolderInTheme = path.join(pathToThemeModules, parsedInfo.info.name);
+    const moduleFolderInTheme = path.join(pathToThemeModules, parsedpkgJson.name);
     if (!fs.existsSync(moduleFolderInTheme)) {
         fs.mkdirSync(moduleFolderInTheme);
     }
@@ -564,7 +568,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
             type = '';
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
-        const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const jsxModuleToImport     = `{jsx: require('./${parsedpkgJson.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
         const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
