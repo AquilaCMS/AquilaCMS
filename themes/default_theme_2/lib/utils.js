@@ -534,7 +534,7 @@ export const nsComponentDataLoader = async (html, lang, data = {}) => {
     return nsComponentData;
 };
 
-export const getNsModules = () => {
+export const getAqModules = () => {
     try {
         const nsModules = require('modules/list_modules');
         return nsModules.default;
@@ -544,7 +544,7 @@ export const getNsModules = () => {
 };
 
 export const moduleHook = (type, props = {}) => {
-    const nsModules = getNsModules();
+    const nsModules = getAqModules();
     const modules   = nsModules?.filter((m) => m.type === type);
     if (!modules || !modules.length) return null;
     for (let index in modules) {
@@ -557,6 +557,21 @@ export const moduleHook = (type, props = {}) => {
     }
 };
 
+export const isAllAqModulesInitialised = (aqModules) => {
+    if (!aqModules) return false;
+
+    // If modules object has no key, return true
+    if (!Object.keys(aqModules).length) {
+        return true;
+    }
+
+    for (let key in aqModules) {
+        if (!aqModules[key]) {
+            return false;
+        }
+    }
+    return true;
+};
 export class ConnectorError extends Error {
     constructor(code, message = '') {
         super(message);

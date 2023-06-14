@@ -57,6 +57,10 @@ export default function CartItem({ item }) {
             }
 
             setCart(newCart);
+
+            // Event
+            const addTransaction = new CustomEvent('removeFromCart', { detail: { product: item } });
+            window.dispatchEvent(addTransaction);
         } catch (err) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
             const st      = setTimeout(() => { setMessage(); }, 3000);

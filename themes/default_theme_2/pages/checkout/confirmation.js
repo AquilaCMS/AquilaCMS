@@ -1,15 +1,15 @@
-import { useEffect, useState }                                       from 'react';
-import Link                                                          from 'next/link';
-import { useRouter }                                                 from 'next/router';
-import useTranslation                                                from 'next-translate/useTranslation';
-import cookie                                                        from 'cookie';
-import Layout                                                        from '@components/layouts/Layout';
-import OrderDetails                                                  from '@components/order/OrderDetails';
-import NextSeoCustom                                                 from '@components/tools/NextSeoCustom';
-import { getOrderById }                                              from '@aquilacms/aquila-connector/api/order';
-import { useSiteConfig }                                             from '@lib/hooks';
-import { initAxios, authProtectedPage, serverRedirect, unsetCookie } from '@lib/utils';
-import { dispatcher }                                                from '@lib/redux/dispatcher';
+import { useEffect, useState }                                                                  from 'react';
+import Link                                                                                     from 'next/link';
+import { useRouter }                                                                            from 'next/router';
+import useTranslation                                                                           from 'next-translate/useTranslation';
+import cookie                                                                                   from 'cookie';
+import Layout                                                                                   from '@components/layouts/Layout';
+import OrderDetails                                                                             from '@components/order/OrderDetails';
+import NextSeoCustom                                                                            from '@components/tools/NextSeoCustom';
+import { getOrderById }                                                                         from '@aquilacms/aquila-connector/api/order';
+import { useAqModules, useSiteConfig }                                                          from '@lib/hooks';
+import { initAxios, authProtectedPage, serverRedirect, unsetCookie, isAllAqModulesInitialised } from '@lib/utils';
+import { dispatcher }                                                                           from '@lib/redux/dispatcher';
 
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
@@ -23,6 +23,7 @@ export async function getServerSideProps({ locale, req, res }) {
 
 export default function CheckoutConfirmation() {
     const [order, setOrder] = useState();
+    const { aqModules }     = useAqModules();
     const router            = useRouter();
     const { environment }   = useSiteConfig();
     const { lang, t }       = useTranslation();
@@ -45,6 +46,14 @@ export default function CheckoutConfirmation() {
             router.push('/');
         }
     }, []);
+
+    useEffect(() => {
+        // Event when all Aquila modules ("global" type) are initialised
+        if (order && isAllAqModulesInitialised(aqModules)) {
+            const addTransaction = new CustomEvent('purchase', { detail: { order } });
+            window.dispatchEvent(addTransaction);
+        }
+    }, [order, aqModules]);
 
     if (!order) {
         return null;
