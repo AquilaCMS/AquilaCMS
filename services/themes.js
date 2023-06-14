@@ -475,7 +475,9 @@ const listTheme = async () => {
         const pathToFolder = path.join(pathToTheme, element);
         const fileOrFolder = await fs.stat(pathToFolder);
         if (fileOrFolder.isDirectory()) {
-            allTheme.push(element);
+            let theme = element;
+            if (theme.includes('.disabled')) theme = theme.split('.disabled')[0].trim(); // We don't want to see the '.disabled' when list themes
+            allTheme.push(theme);
         }
     }
     return allTheme;
