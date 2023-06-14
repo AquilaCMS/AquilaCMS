@@ -122,14 +122,34 @@ export const useProduct = () => {
 
 // GET / SET show or hide bool for cart sidebar (redux)
 export const useShowCartSidebar = () => {
+    const cart               = useSelector((state) => state.cart);
     const showCartSidebar    = useSelector((state) => state.showCartSidebar);
     const dispatch           = useDispatch();
-    const setShowCartSidebar = (value) =>
-        dispatch({
-            type: 'SET_SHOW_CART_SIDEBAR',
-            value
-        });
+    const setShowCartSidebar = (value) => {
+        if (value) {
+            const addTransaction = new CustomEvent('viewCart', { detail: { cart } });
+            window.dispatchEvent(addTransaction);
+        }
+        return (
+            dispatch({
+                type: 'SET_SHOW_CART_SIDEBAR',
+                value
+            })
+        );
+    };
     return { showCartSidebar, setShowCartSidebar };
+};
+
+// GET modules info (redux)
+export const useAqModules = () => {
+    const aqModules    = useSelector((state) => state.aqModules);
+    const dispatch     = useDispatch();
+    const setAqModules = (data) =>
+        dispatch({
+            type: 'SET_AQMODULES',
+            data
+        });
+    return { aqModules, setAqModules };
 };
 
 // GET site infos (redux)

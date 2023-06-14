@@ -12,6 +12,10 @@ export default function SearchBar() {
         
         // Min 2 caracters
         if (search?.length >= 2) {
+            // Event
+            const addTransaction = new CustomEvent('search', { detail: { search } });
+            window.dispatchEvent(addTransaction);
+
             router.push(`/search/${encodeURIComponent(search)}`);
         }
     };

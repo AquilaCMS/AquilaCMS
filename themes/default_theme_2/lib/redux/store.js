@@ -30,7 +30,8 @@ const initialState = {
     selectPage         : 1,
     showCartSidebar    : false,
     componentData      : {},
-    cookieNotice       : null
+    cookieNotice       : null,
+    aqModules          : null,
 };
 
 // TODO : https://openclassrooms.com/fr/courses/5511091-organisez-votre-application-avec-la-logique-redux/5880761-appelez-les-actions-dans-les-reducers
@@ -125,6 +126,11 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             cookieNotice: action.data || initialState.cookieNotice
+        };
+    case 'SET_AQMODULES':
+        return {
+            ...state,
+            aqModules: { ...state.aqModules, ...action.data }
         };
     // Default
     default:
