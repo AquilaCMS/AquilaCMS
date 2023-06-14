@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Provider }                   from 'react-redux';
 import { DefaultSeo }                 from 'next-seo';
-import { useRouter }                  from 'next/router';
 import GoogleTagManager               from '@components/tools/GoogleTagManager';
 import FacebookPixel                  from '@components/tools/FacebookPixel';
 import { useStore }                   from '@lib/redux/store';
@@ -17,11 +16,6 @@ import '@styles/custom.css';
 const AquilaTheme = ({ Component, pageProps }) => {
     const [stateModuleHook, setStateModuleHook] = useState(null);
     const store                                 = useStore(pageProps.initialReduxState);
-    const router                                = useRouter();
-
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
 
     useEffect(() => {
         const globalNsModules = getAqModules()?.filter((nsModule) => nsModule.type === 'global');
