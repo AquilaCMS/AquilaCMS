@@ -184,6 +184,15 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             }, 10000);
         });
     };
+    
+    $scope.installModulesDeps = function () {
+        toastService.toast("success", $translate.instant("modules.installDepsStart"));
+        ModuleService.installModulesDeps(function(res) {
+            toastService.toast("success", $translate.instant("modules.installDepsSuccess"));
+        }, function(err) {
+            toastService.toast("danger", $translate.instant("modules.installDepsFailed"));
+        })
+    }
 }]);
 
 ModulesControllers.controller("PluginsNewCtrl", [

@@ -248,6 +248,9 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
+        await execCmd('yarn install', global.aquila.appRoot);
+        await execCmd('yarn upgrade', global.aquila.appRoot);
+
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
 
@@ -259,6 +262,14 @@ const activateModule = async (idModule, toBeChanged) => {
         err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
+};
+
+const installDependencies = async () => {
+    console.log('Modules packageDependencies install start');
+    await execCmd('yarn install', global.aquila.appRoot);
+    await execCmd('yarn upgrade', global.aquila.appRoot);
+    console.log('Modules packageDependencies installed');
+    return true;
 };
 
 const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
@@ -390,22 +401,8 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
         // Remove the dependencies of the module
         if (_module.packageDependencies) {
             for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
-                let installPath;
                 let savePackagedependenciesPath;
                 let packagePath;
-                if (apiOrTheme === 'api') {
-                    installPath                 = global.aquila.appRoot;
-                    savePackagedependenciesPath = path.join(global.aquila.appRoot, 'package-aquila.json');
-                    packagePath                 = path.resolve(installPath, 'package.json');
-                } else if (apiOrTheme === 'theme') {
-                    installPath                 = path.resolve(
-                        global.aquila.appRoot,
-                        'themes',
-                        global.aquila.envConfig.environment.currentTheme
-                    );
-                    savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
-                    packagePath                 = path.resolve(installPath, 'package.json');
-                }
                 const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
                 const packageJSON             = JSON.parse(await fs.readFile(packagePath));
                 packageJSON.dependencies      = {
@@ -428,7 +425,7 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await execCmd('yarn install', installPath);
+                await execCmd('yarn install', global.aquila.appRoot);
                 // await execCmd('yarn upgrade', installPath);
             }
         }
@@ -837,6 +834,7 @@ module.exports = {
     setModuleConfigById,
     initModule,
     activateModule,
+    installDependencies,
     deactivateModule,
     removeModule,
     frontModuleComponentManagement,
