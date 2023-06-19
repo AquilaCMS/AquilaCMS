@@ -8,7 +8,9 @@
 
 /* eslint-disable prefer-spread */
 /* eslint-disable prefer-rest-params */
-const winston                      = require('winston');
+const winston     = require('winston');
+const WinstonGelf = require('winston-gelf');
+
 const {combine, timestamp, printf} = winston.format;
 const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 
@@ -24,6 +26,27 @@ module.exports = () => {
             level       : 'info',
             filename    : `${global.aquila.appRoot}/logs/app.log`,
             datePattern : 'YYYY-MM-DD'
+        }));
+    }
+
+    if (global.aquila.envFile.logs.type === 'graylog') {
+        const graylogConfig = global.aquila.envFile.logs.config;
+        if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
+            throw new Error('Graylog enable but invalide config config is missing');
+        }
+
+        transports.push(new WinstonGelf({
+        // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
+            gelfPro : {
+                fields : {
+                    env : process.env.NODE_ENV || 'development'
+                },
+                adapterName    : 'udp',
+                adapterOptions : {
+                    host : graylogConfig.host, // Replace per your Graylog domain
+                    port : graylogConfig.port
+                }
+            }
         }));
     }
 
@@ -48,20 +71,25 @@ module.exports = () => {
     };
 
     if (global.aquila.envFile.logs && global.aquila.envFile.logs.override) {
+        const logStdout = (...args) => {
+            const text = args.join('').replaceAll('%s', '');
+            process.stdout.write(`${text}\n`);
+            return logger.info.call(logger, ...args);
+        };
+
+        const logStderr = (...args) => {
+            const text = args.join('').replaceAll('%s', '');
+            process.stderr.write(`${text}\n`);
+            logger.error.call(logger, ...args);
+        };
+
         // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
         // Override the base console log with winston
-        console.log   = function () {
-            return logger.info.apply(logger, arguments);
-        };
-        console.error = function () {
-            return logger.error.apply(logger, arguments);
-        };
-        console.info  = function () {
-            return logger.info.apply(logger, arguments);
-        };
-        console.warn  = function () {
-            return logger.warn.apply(logger, arguments);
-        };
+        console.log   = (...args) => logStdout(...args);
+        console.error = (...args) => logStderr(...args);
+        console.info  = (...args) => logStdout(...args);
+        console.warn  = (...args) => logStdout(...args);
     }
+    console.log('Logger initialisé');
     return logger;
 };
