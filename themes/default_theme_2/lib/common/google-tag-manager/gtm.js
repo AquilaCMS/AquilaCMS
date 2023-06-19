@@ -1,4 +1,4 @@
-export const GTM_ID = ''; // Use GTM-MWGZHLC fo test
+export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export const pageview = (url) => {
     if (GTM_ID) {

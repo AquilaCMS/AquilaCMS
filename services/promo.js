@@ -337,6 +337,10 @@ const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo = null)
             && mongoose.Types.ObjectId.isValid(cart)
         ) {
             cart = await Cart.findOne({_id: cart}).populate('items.id');
+
+            // Check if products exists in the cart
+            const ServiceCart = require('./cart');
+            cart              = await ServiceCart.checkCartProductsExist(cart);
         }
         let code;
         if (codePromo) {

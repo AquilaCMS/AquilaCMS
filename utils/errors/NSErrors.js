@@ -172,6 +172,7 @@ class NSErrors {
     static get RequiredModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'RequiredModuleDependencies'); }
     static get ModuleAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'ModuleAquilaVersionNotSatisfied'); }
     static get ThemeAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'ThemeAquilaVersionNotSatisfied'); }
+    static get IncompatibleModuleComponentType() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'IncompatibleModuleComponentType'); }
 
     static get InternalError() { return new NSError(500, 'InternalError'); }
     static get PaymentFailed() { return this.makeErrorAlias(NSErrors.InternalError, 'PaymentFailed'); }

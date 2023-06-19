@@ -25,6 +25,11 @@ export default function LoginBlock() {
         const password = postForm.password.value;
         try {
             await auth(email, password);
+
+            // Event
+            const addTransaction = new CustomEvent('login', { detail: {} });
+            window.dispatchEvent(addTransaction);
+
             router.push(redirect);
         } catch (err) {
             setMessageLogin({ type: 'error', message: err.message || t('common:message.unknownError') });

@@ -125,6 +125,8 @@
         "code": "Code",
         "name": "Nom",
         "picture": "Image",
+        "withImg": "Avec image",
+        "withoutImg": "Sans image",
         "price": "Prix base TTC",
         "quantity": "Quantité",
         "min": "Min",

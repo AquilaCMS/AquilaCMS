@@ -34,7 +34,7 @@ export default function AddressStep({ user }) {
 
         // Check if the cart is empty
         if (!cart?.items?.length) {
-            router.push('/');
+            router.push('/checkout/cart');
         } else {
             const billingAddress  = user.addresses[user.billing_address];
             const deliveryAddress = user.addresses[user.delivery_address];

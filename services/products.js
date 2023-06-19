@@ -52,6 +52,23 @@ const objectPathCrawler = (object, pathAsArray) => {
     }
 };
 
+const objectSortConditions = (firstValue, secondValue) => {
+    if (typeof firstValue === 'number' && typeof secondValue === 'number') {
+        return firstValue - secondValue;
+    }
+
+    if (typeof firstValue === 'string' && typeof secondValue === 'string') {
+        return firstValue.localeCompare(secondValue);
+    }
+
+    if (typeof firstValue === 'boolean' && typeof secondValue === 'boolean') {
+        if (firstValue === secondValue) return 0;
+        return firstValue ? 1 : -1;
+    }
+
+    return 0;
+};
+
 const sortProductList = (products, PostBodySort, category) => {
     if (!PostBodySort || PostBodySort?.sortWeight) {
         /**
@@ -93,13 +110,15 @@ const sortProductList = (products, PostBodySort, category) => {
                 products.sort((p1, p2) => {
                     const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
                     const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p1Value - p2Value;
+
+                    return objectSortConditions(p1Value, p2Value);
                 });
             } else {
                 products.sort((p1, p2) => {
                     const p1Value = objectPathCrawler(p1, sortArray.map((x) => x));
                     const p2Value = objectPathCrawler(p2, sortArray.map((x) => x));
-                    return p2Value - p1Value;
+
+                    return objectSortConditions(p2Value, p1Value);
                 });
             }
         }
@@ -342,7 +361,6 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
 
         if (sort && !sort.sortWeight) {
             result.datas = sortProductList(result.datas, sort);
-            // To create the pagination
         } else {
             // We order the products according to the order given by the fuzzy search just before
             result.datas.sort((a, b) => {
@@ -410,6 +428,61 @@ const getProducts = async (PostBody, reqRes, lang, withFilters) => {
     result.allProductsAfterFilters = allFilteredProducts; // List B
 
     return result;
+};
+
+const parseSortObject = (sort) => {
+    let parsedSort = sort;
+
+    if (sort.includes('asc') || sort.includes('desc')) {
+        const splitSort = sort.split('.');
+        const orderWord = splitSort.pop();
+        const field     = splitSort.join('.');
+
+        // If no order specified, order will be asc
+        let order = 1;
+        if (orderWord === 'desc') order = -1;
+
+        parsedSort = `{"${field}": ${order}}`;
+    }
+
+    return JSON.parse(parsedSort);
+};
+
+const getProductsAsAdmin = async ({page, limit, sort, filter, select}, lang = global.aquila.defaultLang) => {
+    if (!select) select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation.${lang}.name": 1}`;
+
+    let ormSort = {};
+    if (sort) ormSort = parseSortObject(sort);
+
+    let allProducts = await Products
+        .find(filter ? JSON.parse(filter) : {})
+        .select(select ? JSON.parse(select) : {})
+        .sort(ormSort)
+        .lean();
+
+    const count = allProducts.length;
+
+    // To create a pagination
+    page  = +page;
+    limit = +limit;
+    if (page) {
+        const res = [];
+        let i     = 0;
+        if (page !== 1) {
+            i = (page - 1) * limit;
+        }
+        while (i < limit + (page - 1) * limit && i < count) {
+            res.push(allProducts[i]);
+            i++;
+        }
+        allProducts = res;
+    }
+
+    const res = {
+        datas : allProducts,
+        count
+    };
+    return res;
 };
 
 /**
@@ -1454,6 +1527,7 @@ const changeProductType = async (product, newType) => {
 
 module.exports = {
     getProducts,
+    getProductsAsAdmin,
     getProduct,
     getPromosByProduct,
     duplicateProduct,

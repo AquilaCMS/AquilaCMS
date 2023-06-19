@@ -11,15 +11,13 @@ const {fs}     = require('aql-utils');
 const NSErrors = require('../utils/errors/NSErrors');
 
 const InitRoutes = (express, server) => {
-    const apiRouter        = express.Router(); // Route api for the front for client
-    const adminFrontRouter = express.Router(); // Route for serving the front of the admin
+    const apiRouter = express.Router(); // Route api for the front for client
     server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
-    server.use(`/${global.aquila.envConfig.environment.adminPrefix}`, adminFrontRouter);
-    // loading backoffice
-    loadAdminRoutes(adminFrontRouter);
+    loadDynamicRoutes(apiRouter); // Load API routes
 
-    // load others routes
-    loadDynamicRoutes(apiRouter);
+    const adminFrontRouter = express.Router(); // Route for serving the front of the admin
+    server.use(`/${global.aquila.envConfig.environment.adminPrefix}`, adminFrontRouter);
+    loadAdminRoutes(adminFrontRouter); // loading backoffice
     return apiRouter;
 };
 

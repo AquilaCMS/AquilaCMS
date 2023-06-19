@@ -521,6 +521,10 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                                     });
                                 }
                             }
+
+                            // Remove duplicates based on the product id
+                            cat.productsList = cat.productsList.filter((thing, index, self) => index === self.findIndex((t) => t.id.toString() === thing.id.toString()));
+
                             await cat.save();
                         }
                     // Segementation picto

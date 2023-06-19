@@ -2,5 +2,8 @@
     "noPayment": "Aucun mode de paiement !",
     "previous" : "RETOUR",
     "pay" : "PAYER",
-    "submitLoading" : "PAIEMENT..."
+    "submitLoading" : "PAIEMENT...",
+    "error": {
+        "notFoundProducts": "Un ou plusieurs produits ne sont plus disponibles, vous allez être redirigé vers le panier."
+    }
 }

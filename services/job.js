@@ -11,11 +11,9 @@ const axios        = require('axios');
 const {fork}       = require('child_process');
 const mongoose     = require('mongoose');
 const moment       = require('moment');
-const ServiceMail  = require('./mail');
 const NSErrors     = require('../utils/errors/NSErrors');
 const utils        = require('../utils/utils');
 const errorMessage = require('../utils/translate/errors');
-const {Users}      = require('../orm/models');
 
 /** @type {Agenda} */
 let agenda;
@@ -420,7 +418,7 @@ const execDefineServiceOnChildProcess = async (modulePath, funcName, params, opt
         return new Promise((resolve, reject) => {
             const cmd = fork(
                 `${global.aquila.appRoot}/services/jobChild.js`,
-                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...params],
+                [Buffer.from(JSON.stringify(apiParams)).toString('base64'), Buffer.from(JSON.stringify(global.aquila)).toString('base64'), ...(params || [])],
                 {cwd: global.aquila.appRoot, shell: true}
             );
             cmd.on('error', (err) => reject(err));
@@ -537,7 +535,9 @@ const checkJobsExecution = async () => {
 
 const notifyJobChecker = async (jobResult) => {
     try {
-        const admins = await Users.find({isAdmin: true});
+        const {Users}     = require('../orm/models');
+        const admins      = await Users.find({isAdmin: true});
+        const ServiceMail = require('./mail');
         for (const admin of admins) {
             await ServiceMail.sendMailCheckJobs(
                 admin.email,

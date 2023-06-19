@@ -42,8 +42,8 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     $scope.currentPage = 1
 
     $scope.getTradeMarkPrds = function (trdmk, page = 1) {
-        
-        ProductsV2.list({PostBody: {filter: {'trademark.code': trdmk.code}, limit: 12, page, structure: '*'}}, function (result) {
+        const select = `{"code": 1, "images": 1, "active": 1, "_visible": 1, "stock.qty": 1,  "type": 1, "price.ati.normal": 1, "translation": 1}`; 
+        ProductsV2.list({filter: {'trademark.code': trdmk.code}, limit: 12, page, select}, function (result) {
             $scope.products = result.datas
             $scope.totalItems = result.count
             $scope.currentPage = page

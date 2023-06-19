@@ -102,6 +102,10 @@ const setCartAddresses = async (cartId, addresses, userInfo) => {
             await populateItems(newCart.items);
             return {code: 'CART_CREATED', data: {cart: await newCart.getItemsStock()}};
         }
+
+        // Check if products exists in the cart
+        resp = await checkCartProductsExist(resp);
+
         await populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: await resp.getItemsStock()}};
     } catch (err) {
@@ -116,8 +120,12 @@ const setComment = async (cartId, comment, userInfo) => {
         _id : mongoose.Types.ObjectId(cartId),
         ...(userInfo?.isAdmin ? {} : {'customer.id': (userInfo?._id)})
     };
-    const resp   = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
+    let resp     = await Cart.findOneAndUpdate(filter, {comment}, {new: true});
     if (!resp) return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: null}};
+
+    // Check if products exists in the cart
+    resp = await checkCartProductsExist(resp);
+
     return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: await resp.getItemsStock()}};
 };
 
@@ -134,6 +142,10 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
     filter.status = 'IN_PROGRESS';
     cart          = await Cart.findOne(filter);
     if (!cart) throw NSErrors.CartInactive;
+
+    // Check if products exists in the cart
+    cart = await checkCartProductsExist(cart);
+
     const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId);
     if (itemIndex > -1) {
         if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
@@ -159,8 +171,6 @@ const deleteCartItem = async (cartId, itemId, userInfo) => {
             {$pull: {items: {_id: itemId}}},
             {new: true}
         );
-    } else {
-        throw NSErrors.CartItemNotFound;
     }
     await populateItems(cart.items);
     const products        = cart.items.map((product) => product.id);
@@ -196,13 +206,16 @@ const addItem = async (postBody, userInfo, lang = '') => {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
 
-    const _product = await Products.findOne({_id: postBody.item.id});
+    const _product = await Products.findOne({_id: postBody.item.id, active: true});
 
     let variant;
     await linkCustomerToCart(cart, userInfo);
     if (!_product || (_product.type === 'simple' && (!_product.stock?.orderable || _product.stock?.date_selling > Date.now()))) { // TODO : check if product is orderable with real function (stock control, etc)
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
+
+    // Check if products exists in the cart
+    cart = await checkCartProductsExist(cart);
 
     const _lang = await servicesLanguages.getDefaultLang(lang);
 
@@ -341,70 +354,98 @@ const updateQty = async (postBody, userInfo) => {
         throw NSErrors.InactiveCart;
     }
 
-    const item     = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
-    const _product = await Products.findOne({_id: item.id});
+    // Check if products exists in the cart
+    cart = await checkCartProductsExist(cart);
+    if (cart.items.length) {
+        const item = cart.items.find((item) => item._id.toString() === postBody.item._id.toString());
+        if (item) {
+            const _product = await Products.findOne({_id: item.id});
+            if (_product) {
+                if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
+                    const ServicesProducts = require('./products');
 
-    if (global.aquila.envConfig.stockOrder.bookingStock === 'panier') {
-        const ServicesProducts = require('./products');
-
-        const quantityToAdd = postBody.item.quantity - item.quantity;
-        if (_product.type === 'simple') {
-            if (
-                quantityToAdd > 0
-                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, item.selected_variant)).ordering.orderable
-            ) {
-                throw NSErrors.ProductNotInStock;
-            }
-            // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variant);
-        } else if (_product.type === 'bundle') {
-            for (let i = 0; i < item.selections.length; i++) {
-                const selectionProducts = item.selections[i].products;
-                // we check that each product is orderable
-                for (let j = 0; j < selectionProducts.length; j++) {
-                    const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
-                    if (selectionProduct.type === 'simple') {
+                    const quantityToAdd = postBody.item.quantity - item.quantity;
+                    if (_product.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd, item.selected_variant).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd, item.selected_variant)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
-                        await ServicesProducts.updateStock(selectionProduct._id, -quantityToAdd);
+                        // quantity reservation
+                        await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variant);
+                    } else if (_product.type === 'bundle') {
+                        for (let i = 0; i < item.selections.length; i++) {
+                            const selectionProducts = item.selections[i].products;
+                            // we check that each product is orderable
+                            for (let j = 0; j < selectionProducts.length; j++) {
+                                const selectionProduct = await Products.findOne({_id: selectionProducts[j].id});
+                                if (selectionProduct.type === 'simple') {
+                                    if (
+                                        quantityToAdd > 0
+                                        && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd, item.selected_variant).ordering.orderable
+                                    ) {
+                                        throw NSErrors.ProductNotInStock;
+                                    }
+                                    await ServicesProducts.updateStock(selectionProduct._id, -quantityToAdd);
+                                }
+                            }
+                        }
                     }
                 }
+
+                // Manage stock
+                // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
+                cart = await Cart.findOneAndUpdate({_id: cart._id}, {
+                    $set : {'items.$[item].quantity': postBody.item.quantity}
+                }, {
+                    arrayFilters : [{'item._id': postBody.item._id}],
+                    new          : true
+                });
             }
         }
-    }
-
-    // Manage stock
-    // await servicesProducts.handleStock(item, _product, postBody.item.quantity);
-    cart = await Cart.findOneAndUpdate({_id: cart._id}, {
-        $set : {'items.$[item].quantity': postBody.item.quantity}
-    }, {
-        arrayFilters : [{'item._id': postBody.item._id}],
-        new          : true
-    });
-    await linkCustomerToCart(cart, userInfo);
-    await populateItems(cart.items);
-    const products        = cart.items.map((product) => product.id);
-    const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
-    if (productsCatalog) {
-        for (let i = 0; i < cart.items.length; i++) {
-            let itemCart = cart.items[i];
-            if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
-            itemCart      = await aquilaHooks('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
-            cart.items[i] = itemCart;
+        await linkCustomerToCart(cart, userInfo);
+        await populateItems(cart.items);
+        const products        = cart.items.map((product) => product.id);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(products, userInfo, undefined, false);
+        if (productsCatalog) {
+            for (let i = 0; i < cart.items.length; i++) {
+                let itemCart = cart.items[i];
+                if (itemCart.type !== 'bundle' && !itemCart.selected_variant) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                itemCart      = await aquilaHooks('aqGetCartItem', {item: itemCart, PostBody: postBody, cart}, async () => itemCart);
+                cart.items[i] = itemCart;
+            }
+            cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
         }
-        cart = await ServicePromo.checkQuantityBreakPromo(cart, userInfo, undefined, false);
+        cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     }
-    cart = await ServicePromo.checkForApplyPromo(userInfo, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
     await populateItems(cart.items);
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: await cart.getItemsStock()}};
+};
+
+// Check if products in cart exist
+// Return the cart with only existing products
+const checkCartProductsExist = async (cart) => {
+    const products  = cart.items.map((item) => item.id);
+    const _products = await Products.find({_id: {$in: products}});
+    // Delete products that don't exist anymore & disabled products
+    let save   = false;
+    cart.items = cart.items.filter((item) => {
+        const _product = _products.find((product) => product._id.toString() === item.id?._id?.toString() || product._id.toString() === item.id?.toString());
+        if (!_product || !_product.active) {
+            save = true;
+            return false;
+        }
+        return true;
+    });
+    if (save) {
+        await cart.save();
+    }
+    return cart;
 };
 
 const checkCountryTax = async (_cart, _user) => {
@@ -443,7 +484,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         aquilaEvents.emit('cartToOrder', _cart);
         lang = await servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
-        const result = validateForCheckout(_cart);
+        const result = await validateForCheckout(_cart);
         if (result.code !== 'VALID') {
             throw {status: 400, code: result.code, translations: {fr: result.message}};
         }
@@ -642,6 +683,10 @@ const linkCustomerToCart = async (cart, userInfo) => {
 
 const updateDelivery = async (datas, removeDeliveryDatas = false) => {
     let cart = {};
+    cart     = await Cart.findOne({_id: datas.cartId});
+    // Check if products exists in the cart
+    cart = await checkCartProductsExist(cart);
+
     if (removeDeliveryDatas) {
         cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
     } else {
@@ -694,16 +739,35 @@ const removeDelivery = async (body) => {
 };
 
 const removeDiscount = async (id) => {
-    const updCart = await Cart.findOneAndUpdate({_id: id, status: 'IN_PROGRESS'}, {$pop: {promos: 1}}, {new: true});
+    let updCart = await Cart.findOneAndUpdate({_id: id, status: 'IN_PROGRESS'}, {$pop: {promos: 1}}, {new: true});
     if (!updCart) {
         throw NSErrors.InactiveCart;
     }
+    // Check if products exists in the cart
+    updCart = await checkCartProductsExist(updCart);
     return {code: 'CART_DISCOUNT_REMOVE', data: {cart: await updCart.getItemsStock()}};
 };
 
-const validateForCheckout = (cart) => {
+const validateForCheckout = async (cart) => {
     if (!cart.orderReceipt || !cart.orderReceipt.method) {
         return {code: 'NOTFOUND_RECEIPT_METHOD', message: 'Mode de réception de commande non indiqué.'};
+    }
+    // Check if cart items are available
+    const products  = cart.items.map((item) => item.id);
+    const _products = await Products.find({_id: {$in: products}});
+    // Delete products that don't exist anymore & disabled products
+    let save   = false;
+    cart.items = cart.items.filter((item) => {
+        const _product = _products.find((product) => product._id.toString() === item.id.toString());
+        if (!_product || !_product.active) {
+            save = true;
+            return false;
+        }
+        return true;
+    });
+    if (save) {
+        await cart.save();
+        return {code: 'NOTAVAILABLE_PRODUCTS_FOR_ORDER', message: 'Un ou plusieurs produits ne sont plus disponibles.'};
     }
 
     return {code: 'VALID'};
@@ -761,6 +825,7 @@ module.exports = {
     deleteCartItem,
     cartToOrder,
     removeOldCarts,
+    checkCartProductsExist,
     checkProductOrderable,
     linkCustomerToCart,
     updateQty,

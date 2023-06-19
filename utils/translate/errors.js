@@ -555,6 +555,10 @@ module.exports = {
         fr : 'Version du module Aquila non satisfaite',
         en : 'Module aquila version not satisfied'
     },
+    IncompatibleModuleComponentType : {
+        fr : 'Le type de composant requis par le thème n\'a pas été trouvé dans le module',
+        en : 'The component type required by the theme was not found in the module'
+    },
     ThemePackageNotFound : {
         fr : 'Thème Package.json introuvable',
         en : 'Theme package.json not found'
