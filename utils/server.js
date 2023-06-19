@@ -141,8 +141,6 @@ const showAquilaLogo = () => {
         + '\x1b[94m@@@@@@@@@@@@@@@@@@@@@((\x1b[33m/*****************/\x1b[94m@@@@@@@@@@@@@@@@@@@@@',
         '\x1b[0m'
     );
-
-    console.log('Starting Aquila...');
 };
 
 const controlNodeVersion = async () => {
