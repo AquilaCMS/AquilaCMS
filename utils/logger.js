@@ -17,11 +17,11 @@ const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 const transports = [];
 
 module.exports = () => {
-    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.console) {
+    if (global.aquila.envFile?.logs?.type?.console) {
         transports.push(new winston.transports.Console());
     }
 
-    if (global.aquila.envFile.logs && global.aquila.envFile.logs.type && global.aquila.envFile.logs.type.file) {
+    if (global.aquila.envFile?.logs?.type?.file) {
         transports.push(new WinstonDailyRotateFile({
             level       : 'info',
             filename    : `${global.aquila.appRoot}/logs/app.log`,
@@ -29,7 +29,7 @@ module.exports = () => {
         }));
     }
 
-    if (global.aquila.envFile.logs.type === 'graylog') {
+    if (global.aquila.envFile?.logs?.type === 'graylog') {
         const graylogConfig = global.aquila.envFile.logs.config;
         if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
             throw new Error('Graylog enable but invalide config config is missing');
