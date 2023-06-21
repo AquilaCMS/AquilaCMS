@@ -29,7 +29,7 @@ module.exports = () => {
         }));
     }
 
-    if (global.aquila.envFile?.logs?.type === 'graylog') {
+    if (global.aquila.envFile?.logs?.type?.graylog) {
         const graylogConfig = global.aquila.envFile.logs.config;
         if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
             throw new Error('Graylog enable but invalide config config is missing');
@@ -70,7 +70,7 @@ module.exports = () => {
         }
     };
 
-    if (global.aquila.envFile.logs && global.aquila.envFile.logs.override) {
+    if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
         const logStdout = (...args) => {
             const text = args.join('').replaceAll('%s', '');
             process.stdout.write(`${text}\n`);
