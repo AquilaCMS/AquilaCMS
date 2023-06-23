@@ -100,6 +100,22 @@ To start a silent installation, you need to set the following environment variab
 
 If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
 
+### env.json file
+The config/env.json file is created during the AquilaCMS installation phase, the various parameters it can take are present in the config/env.example.json. These parameters are:
+- `encryption` corresponds to parameters used when passwords are encrypted
+- `jwt` has a few parameters to configure JWT creation
+- `ssl` is used to enable https (and http2) API launch
+- `logs` allows to configure log management:
+  - `type` can take three parameters: `console`, `file` and `graylog`
+  - `http` allows http request logs via Morgan
+  - `override` allows to replace all console.log and console.error with log functions from Winston
+  - `alertMails` enable the sending to admins of e-mails related to alerts raised by the system (for example, if it has been detected that an important cron has been deactivated)
+  - `config` contains the fields for setting the parameters for sending logs to Graylog
+- `devMode` has parameters used in development mode, such as non-compilation of the theme or global mail overload
+- `db` is the connection string to MongoDB
+
+They are all under one parameter which corresponds to the AQUILA_ENV.
+
 ### Environment variables
 
 You can define two environment variables inside AquilaCMS (you can copy .env.sample into a .env file).

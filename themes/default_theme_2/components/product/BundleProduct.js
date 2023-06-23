@@ -100,7 +100,7 @@ export default function BundleProduct({ product, qty, onCloseModal }) {
             const addTransaction = new CustomEvent('addToCart', { detail: { product, quantity: qty } });
             window.dispatchEvent(addTransaction);
 
-            setShowCartSidebar(true);
+            setShowCartSidebar(true, newCart);
         } catch (err) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
         } finally {

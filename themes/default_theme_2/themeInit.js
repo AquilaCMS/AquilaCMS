@@ -1,6 +1,6 @@
 const path                              = require('path');
 const fs                                = require('fs');
-const next                              = require('next').default;
+const next                              = require('next');
 const { execCmd, decodeBase64ToObject } = require('aql-utils');
 const serverUtils                       = require('../../utils/server');
 const dev                               = serverUtils.dev;

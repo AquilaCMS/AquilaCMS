@@ -507,28 +507,29 @@ const checkJobsExecution = async () => {
         const nextRunAt      = job.attrs.nextRunAt;
         const lastFinishedAt = job.attrs.lastFinishedAt;
 
-        // if job is disabled
+        // If the job has never been activated once
         if (!nextRunAt) {
-            console.log(`- La tache ${job.attrs.name} est inactive`);
-            jobStatus += `- La tache ${job.attrs.name} est inactive<br/>`;
-            console.log(job);
+            console.error(`[cron] Alert! Job ${job.attrs.name} has never been activated !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has never been activated !<br/>`;
 
-        // if job is enabled and nextRunAt is before now but not disabled
-        } else if (nextRunAt && moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
-            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${nextRunAt}`);
-            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(nextRunAt).format('LLL')}<br/>`;
-
-        // if job is enabled and nextRunAt is before now and disabled
+        // If the job is disabled and the next execution date has already passed
         } else if (moment(nextRunAt).isBefore(moment()) && job.attrs.disabled) {
-            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${nextRunAt} car elle est inactive`);
-            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(nextRunAt).format('LLL')} car elle est inactive<br/>`;
-        } else if (moment(lastFinishedAt).isBefore(moment().add(-7, 'days'))) {
-            console.log(`- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${lastFinishedAt}`);
-            jobStatus += `- La tache ${job.attrs.name} ne s'est pas lancée depuis le ${moment(lastFinishedAt).format('LLL')}<br/>`;
+            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt} because it is inactive !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')} because it is inactive !<br/>`;
+
+        // If the job is enabled and the next execution date has already passed
+        } else if (moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
+            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt}, even though it is active !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')}, even though it is active !<br/>`;
+
+        // If job is disabled but the next execution date has not yet been passed
+        } else if (job.attrs.disabled) {
+            console.error(`[cron] Be careful! Job ${job.attrs.name} (not launched since ${lastFinishedAt}), is currently deactivated and its next run is scheduled for ${nextRunAt} !`);
+            jobStatus += `[cron] Be careful! Job ${job.attrs.name} (not launched since ${moment(lastFinishedAt).format('LLL')}), is currently deactivated and its next run is scheduled for ${nextRunAt} !<br/>`;
         }
     }
 
-    if (jobStatus.length > 0) await notifyJobChecker(jobStatus);
+    if (jobStatus.length > 0 && global.aquila.envFile.logs.alertMails) await notifyJobChecker(jobStatus);
 
     return jobStatus;
 };
@@ -546,7 +547,7 @@ const notifyJobChecker = async (jobResult) => {
             );
         }
     } catch (err) {
-        console.log('Envoi de mail echoué: ', err.message);
+        console.error('Envoi de mail echoué: ', err.message);
     }
 };
 
