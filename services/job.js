@@ -528,7 +528,7 @@ const checkJobsExecution = async () => {
         }
     }
 
-    if (jobStatus.length > 0) await notifyJobChecker(jobStatus);
+    if (jobStatus.length > 0 && global.aquila.envFile.logs.alertMails) await notifyJobChecker(jobStatus);
 
     return jobStatus;
 };
@@ -546,7 +546,7 @@ const notifyJobChecker = async (jobResult) => {
             );
         }
     } catch (err) {
-        console.log('Envoi de mail echoué: ', err.message);
+        console.error('Envoi de mail echoué: ', err.message);
     }
 };
 

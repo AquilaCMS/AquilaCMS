@@ -107,8 +107,9 @@ The config/env.json file is created during the AquilaCMS installation phase, the
 - `ssl` is used to enable https (and http2) API launch
 - `logs` allows to configure log management:
   - `type` can take three parameters: `console`, `file` and `graylog`
-  - `http` allows http request logs via Morgan 
-  - `override` allows to replace all console.log and console.error with log functions from Winston 
+  - `http` allows http request logs via Morgan
+  - `override` allows to replace all console.log and console.error with log functions from Winston
+  - `alertMails` enable the sending to admins of e-mails related to alerts raised by the system (for example, if it has been detected that an important cron has been deactivated)
   - `config` contains the fields for setting the parameters for sending logs to Graylog
 - `devMode` has parameters used in development mode, such as non-compilation of the theme or global mail overload
 - `db` is the connection string to MongoDB
