@@ -509,18 +509,18 @@ const checkJobsExecution = async () => {
 
         // If the job has never been activated once
         if (!nextRunAt) {
-            console.error(`[cron] Job ${job.attrs.name} has never been activated !`);
-            jobStatus += `[cron] Job ${job.attrs.name} has never been activated !<br/>`;
+            console.error(`[cron] Alert! Job ${job.attrs.name} has never been activated !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has never been activated !<br/>`;
 
         // If the job is disabled and the next execution date has already passed
         } else if (moment(nextRunAt).isBefore(moment()) && job.attrs.disabled) {
-            console.error(`[cron] Job ${job.attrs.name} has not launched since ${nextRunAt} because it is inactive !`);
-            jobStatus += `[cron] Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')} because it is inactive !<br/>`;
+            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt} because it is inactive !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')} because it is inactive !<br/>`;
 
         // If the job is enabled and the next execution date has already passed
         } else if (moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
-            console.error(`[cron] Job ${job.attrs.name} has not launched since ${nextRunAt}, even though it is active !`);
-            jobStatus += `[cron] Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')}, even though it is active !<br/>`;
+            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt}, even though it is active !`);
+            jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')}, even though it is active !<br/>`;
 
         // If job is disabled but the next execution date has not yet been passed
         } else if (job.attrs.disabled) {
