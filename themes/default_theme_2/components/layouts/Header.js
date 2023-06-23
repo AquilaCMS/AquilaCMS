@@ -9,7 +9,7 @@ export default function Header() {
     const { environment }                         = useSiteConfig();
     
     const onToggleShowCartSidebar = () => {
-        setShowCartSidebar(!showCartSidebar);
+        setShowCartSidebar(!showCartSidebar, cart);
     };
 
     const hideCartSidebar = () => {

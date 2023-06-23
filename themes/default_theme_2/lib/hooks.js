@@ -21,7 +21,7 @@ export const useCart = () => {
     return { cart, setCart };
 };
 
-// GET selected page (redux)
+// GET / SET selected page (redux)
 export const useSelectPage = () => {
     const selectPage    = useSelector((state) => state.selectPage);
     const dispatch      = useDispatch();
@@ -34,7 +34,7 @@ export const useSelectPage = () => {
     return { selectPage, setSelectPage };
 };
 
-// GET category body request (redux)
+// GET / SET category body request (redux)
 export const useCategoryBodyRequest = () => {
     const categoryBodyRequest    = useSelector((state) => state.categoryBodyRequest);
     const dispatch               = useDispatch();
@@ -47,7 +47,7 @@ export const useCategoryBodyRequest = () => {
     return { categoryBodyRequest, setCategoryBodyRequest };
 };
 
-// GET category price end (redux)
+// GET / SET category price end (redux)
 export const useCategoryPriceEnd = () => {
     const categoryPriceEnd    = useSelector((state) => state.categoryPriceEnd);
     const dispatch            = useDispatch();
@@ -78,7 +78,7 @@ export const useCmsBlocks = () => {
     return cmsBlocks;
 };
 
-// GET cookie notice (redux)
+// GET / SET cookie notice (redux)
 export const useCookieNotice = () => {
     const cookieNotice    = useSelector((state) => state.cookieNotice);
     const dispatch        = useDispatch();
@@ -122,11 +122,11 @@ export const useProduct = () => {
 
 // GET / SET show or hide bool for cart sidebar (redux)
 export const useShowCartSidebar = () => {
-    const cart               = useSelector((state) => state.cart);
     const showCartSidebar    = useSelector((state) => state.showCartSidebar);
     const dispatch           = useDispatch();
-    const setShowCartSidebar = (value) => {
+    const setShowCartSidebar = (value, cart = {}) => {
         if (value) {
+            // Event
             const addTransaction = new CustomEvent('viewCart', { detail: { cart } });
             window.dispatchEvent(addTransaction);
         }
@@ -140,7 +140,7 @@ export const useShowCartSidebar = () => {
     return { showCartSidebar, setShowCartSidebar };
 };
 
-// GET modules info (redux)
+// GET / SET modules info (redux)
 export const useAqModules = () => {
     const aqModules    = useSelector((state) => state.aqModules);
     const dispatch     = useDispatch();
@@ -184,7 +184,7 @@ export const usePaymentMethods = () => {
     return paymentMethods;
 };
 
-// GET orders (redux)
+// GET / SET orders (redux)
 export const useOrders = () => {
     const orders    = useSelector((state) => state.orders);
     const dispatch  = useDispatch();
@@ -196,7 +196,7 @@ export const useOrders = () => {
     return { orders, setOrders };
 };
 
-// GET user (redux)
+// GET / SET static page (redux)
 export const useStaticPage = () => {
     const staticPage    = useSelector((state) => state.staticPage);
     const dispatch      = useDispatch();

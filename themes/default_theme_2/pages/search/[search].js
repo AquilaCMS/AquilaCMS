@@ -1,17 +1,25 @@
-import { useEffect, useState }                                                                                        from 'react';
-import useTranslation                                                                                                 from 'next-translate/useTranslation';
-import Cookies                                                                                                        from 'cookies';
-import PageError                                                                                                      from '@pages/_error';
-import Filters                                                                                                        from '@components/category/Filters';
-import Pagination                                                                                                     from '@components/category/Pagination';
-import Layout                                                                                                         from '@components/layouts/Layout';
-import NextSeoCustom                                                                                                  from '@components/tools/NextSeoCustom';
-import ProductList                                                                                                    from '@components/product/ProductList';
-import { dispatcher }                                                                                                 from '@lib/redux/dispatcher';
-import { getProducts }                                                                                                from '@aquilacms/aquila-connector/api/product';
-import { getSiteInfo }                                                                                                from '@aquilacms/aquila-connector/api/site';
-import { useCategoryProducts, useSiteConfig }                                                                         from '@lib/hooks';
-import { initAxios, serverRedirect, stringToBase64, getBodyRequestProductsFromCookie, convertFilter, filterPriceFix } from '@lib/utils';
+import { useEffect, useState }                              from 'react';
+import useTranslation                                       from 'next-translate/useTranslation';
+import Cookies                                              from 'cookies';
+import PageError                                            from '@pages/_error';
+import Filters                                              from '@components/category/Filters';
+import Pagination                                           from '@components/category/Pagination';
+import Layout                                               from '@components/layouts/Layout';
+import NextSeoCustom                                        from '@components/tools/NextSeoCustom';
+import ProductList                                          from '@components/product/ProductList';
+import { dispatcher }                                       from '@lib/redux/dispatcher';
+import { getProducts }                                      from '@aquilacms/aquila-connector/api/product';
+import { getSiteInfo }                                      from '@aquilacms/aquila-connector/api/site';
+import { useAqModules, useCategoryProducts, useSiteConfig } from '@lib/hooks';
+import { 
+    initAxios, 
+    serverRedirect, 
+    stringToBase64, 
+    getBodyRequestProductsFromCookie, 
+    convertFilter, 
+    filterPriceFix,
+    isAllAqModulesInitialised
+} from '@lib/utils';
 
 export async function getServerSideProps({ locale, params, query, req, res, resolvedUrl }) {
     initAxios(locale, req, res);
@@ -168,9 +176,18 @@ export async function getServerSideProps({ locale, params, query, req, res, reso
 
 export default function Search({ search, error }) {
     const [message, setMessage]        = useState();
+    const { aqModules }                = useAqModules();
     const { categoryProducts }         = useCategoryProducts();
     const { environment, themeConfig } = useSiteConfig();
     const { lang, t }                  = useTranslation();
+
+    useEffect(() => {
+        // Event when all Aquila modules ("global" type) are initialised
+        if (isAllAqModulesInitialised(aqModules)) {
+            const addTransaction = new CustomEvent('search', { detail: { search } });
+            window.dispatchEvent(addTransaction);
+        }
+    }, [aqModules, search]);
 
     useEffect(() => {
         const handleScroll = () => {

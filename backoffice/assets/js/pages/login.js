@@ -47,6 +47,7 @@ $(document).ready(function () {
                 beforeSend: function (jqXHR, settings) { jqXHR.setRequestHeader("lang", 'en') ;}
             });
             window.localStorage.setItem("jwtAdmin", response.data);
+            window.localStorage.removeItem("pageAdmin");
             location.href = "/" + window.location.pathname.split("/")[1];
         } catch (err) {
             if (err.responseJSON.code === "DeactivateAccount"){
