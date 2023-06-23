@@ -18,21 +18,23 @@ ClientControllers.controller("ClientCtrl", [
 
         if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
             const pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
-            for (const key in pageAdmin.search) {
-                if(key !== "tri"){
-                    $scope.filter[key] = pageAdmin.search[key];
+            if (pageAdmin.location === "clients") {
+                for (const key in pageAdmin.search) {
+                    if(key !== "tri"){
+                        $scope.filter[key] = pageAdmin.search[key];
+                    }
                 }
-            }
-            if(pageAdmin.page){
-                $scope.page = pageAdmin.page;
-            }
-            if (pageAdmin.search && pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
-                $scope.tri = {};
-                $scope.valeurTri = pageAdmin.search.tri.value;
-                $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
-            }else{
-                $scope.valeurTri = -1;
-                $scope.tri = { lastConnexion: -1 }
+                if(pageAdmin.page){
+                    $scope.page = pageAdmin.page;
+                }
+                if (pageAdmin.search && pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
+                    $scope.tri = {};
+                    $scope.valeurTri = pageAdmin.search.tri.value;
+                    $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
+                }else{
+                    $scope.valeurTri = -1;
+                    $scope.tri = { lastConnexion: -1 }
+                }
             }
         }
         
@@ -75,18 +77,22 @@ ClientControllers.controller("ClientCtrl", [
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
             }
-            for (const key in $scope.filter) {
-                if ($scope.filter[key] != "" && $scope.filter[key] != null) {
-                    search[key] = $scope.filter[key];
+            if (pageAdmin.location === "clients") {
+                for (const key in $scope.filter) {
+                    if ($scope.filter[key] != "" && $scope.filter[key] != null) {
+                        search[key] = $scope.filter[key];
+                    }
                 }
+                if ($scope.tri) {
+                    search.tri = {};
+                    search.tri.field = Object.keys($scope.tri)[0];
+                    search.tri.value = $scope.valeurTri;
+                    
+                }
+                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: $scope.page, search }));
+            } else {
+                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: 1 }));
             }
-            if ($scope.tri) {
-                search.tri = {};
-                search.tri.field = Object.keys($scope.tri)[0];
-                search.tri.value = $scope.valeurTri;
-                
-            }
-            window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: $scope.page, search }));
         }
 
         $scope.sortSearch = function(name, pageNumber){
