@@ -83,7 +83,7 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
             const addTransaction = new CustomEvent('addToCart', { detail: { product, quantity: qty } });
             window.dispatchEvent(addTransaction);
 
-            setShowCartSidebar(true);
+            setShowCartSidebar(true, newCart);
         } catch (err) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
             const st      = setTimeout(() => { setMessage(); }, 3000);

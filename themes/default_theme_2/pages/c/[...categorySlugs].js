@@ -247,8 +247,8 @@ export async function getServerSideProps({ defaultLocale, locale, params, query,
 
 export default function Category({ breadcrumb, category, limit, origin, error }) {
     const [message, setMessage]        = useState();
-    const { categoryProducts }         = useCategoryProducts();
     const { aqModules }                = useAqModules();
+    const { categoryProducts }         = useCategoryProducts();
     const { environment, themeConfig } = useSiteConfig();
     const router                       = useRouter();
     const { lang, t }                  = useTranslation();

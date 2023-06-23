@@ -18,11 +18,11 @@ const AquilaTheme = ({ Component, pageProps }) => {
     const store                                 = useStore(pageProps.initialReduxState);
 
     useEffect(() => {
-        const globalNsModules = getAqModules()?.filter((nsModule) => nsModule.type === 'global');
-        if (globalNsModules) {
+        const globalAqModules = getAqModules()?.filter((aqModule) => aqModule.type === 'global');
+        if (globalAqModules) {
             const modules = {};    
-            for (const nsModule of globalNsModules) {
-                modules[nsModule.code] = false;
+            for (const aqModule of globalAqModules) {
+                modules[aqModule.code] = false;
             }
             store.dispatch({
                 type: 'SET_AQMODULES',
