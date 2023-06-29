@@ -10,7 +10,7 @@ export default function Slider({ 'ns-code': nsCode, sliderContent }) {
     const componentData = useComponentData();
     const { t }         = useTranslation();
     
-    const slider = sliderContent || componentData[`nsSlider_${nsCode}`];
+    const slider = JSON.parse(JSON.stringify(sliderContent || componentData[`nsSlider_${nsCode}`]));
     
     if (!slider) {
         return <div className="w-dyn-empty">{t('components/slider:noSlider', { nsCode })}</div>;
@@ -42,7 +42,7 @@ export default function Slider({ 'ns-code': nsCode, sliderContent }) {
                 )
             }
         >
-            {slider.items.map((item) => {
+            {slider.items.sort((a, b) => a.order - b.order).map((item) => {
                 const img = <img
                     src={generateURLImageCache('slider', 'max', item._id, item.name, item.extension)}
                     alt={item.name || ''}
