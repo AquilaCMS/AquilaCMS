@@ -39,7 +39,8 @@ module.exports = () => {
         // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
             gelfPro : {
                 fields : {
-                    env : process.env.NODE_ENV || 'development'
+                    env    : process.env.NODE_ENV || 'development',
+                    source : graylogConfig.source || 'AquilaCMS'
                 },
                 adapterName    : 'udp',
                 adapterOptions : {
