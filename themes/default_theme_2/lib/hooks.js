@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect }      from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import useTranslation               from 'next-translate/useTranslation';

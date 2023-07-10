@@ -1,3 +1,5 @@
+'use client';
+
 import { useState }      from 'react';
 import useTranslation    from 'next-translate/useTranslation';
 import Button            from '@components/ui/Button';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import crypto                          from 'crypto';
 import useTranslation                  from 'next-translate/useTranslation';

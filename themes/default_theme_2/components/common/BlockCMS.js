@@ -1,46 +1,46 @@
 import React                                    from 'react';
 import Link                                     from 'next/link';
 import parse, { attributesToProps, domToReact } from 'html-react-parser';
-import Accordion                                from '@components/common/Accordion';
-import BlockSlider                              from '@components/common/BlockSlider';
-import BlogList                                 from '@components/common/BlogList';
-import Contact                                  from '@components/common/Contact';
-import Gallery                                  from '@components/common/Gallery';
-import Newsletter                               from '@components/common/Newsletter';
-import ProductCard                              from '@components/product/ProductCard';
-import ProductList                              from '@components/product/ProductList';
-import Slider                                   from '@components/common/Slider';
-import { useCmsBlocks, useComponentData }       from '@lib/hooks';
-import { getAqModules }                         from '@lib/utils';
+import useTranslation                           from 'next-translate/useTranslation';
+import { getBlockCMS }                          from '@aquilacms/aquila-connector/api/blockcms';
+//import Accordion                                from '@components/common/Accordion';
+//import BlockSlider                              from '@components/common/BlockSlider';
+//import BlogList                                 from '@components/common/BlogList';
+import Contact from '@components/common/Contact';
+//import Gallery                                  from '@components/common/Gallery';
+import Newsletter from '@components/common/Newsletter';
+//import ProductCard                              from '@components/product/ProductCard';
+//import ProductList                              from '@components/product/ProductList';
+//import Slider                                   from '@components/common/Slider';
+//import { getAqModules } from '@lib/utils';
 
-export default function BlockCMS({ nsCode, content = '', displayerror = false, recursion = 0 }) {
-    const cmsBlocks     = useCmsBlocks();
-    const componentData = useComponentData();
-
-    const aqModules = getAqModules();
+export default async function BlockCMS({ nsCode, content = '', displayerror = false, recursion = 0 }) {
+    const { lang } = useTranslation();
     
     let html = '';
     if (content) {
         // Live use in code (data in "content" prop)
         html = content;
     } else {
-        // 2 options :
-        // Live use in code (data in redux store => PUSH_CMSBLOCKS)
-        // Use in CMS block (data in redux store => SET_COMPONENT_DATA)
-        html = cmsBlocks.find(cms => cms.code === nsCode)?.content || componentData[`nsCms_${nsCode}`]?.content;
+        const res = await getBlockCMS(nsCode, lang);
+        if (res?.content) {
+            html = res.content;
+        }
     }
+
+    //const aqModules = getAqModules();
 
     // Next Sourcia components array
     const nsComponents = {
-        'ns-accordion'        : <Accordion />,
-        'ns-block-slider'     : <BlockSlider />,
-        'ns-blog-articles'    : <BlogList />,
-        'ns-contact'          : <Contact />,
-        'ns-gallery'          : <Gallery />,
-        'ns-newsletter'       : <Newsletter />,
-        'ns-product-card'     : <ProductCard col="12" />,
-        'ns-product-card-list': <ProductList />,
-        'ns-slider'           : <Slider />,
+        //'ns-accordion'        : <Accordion />,
+        //'ns-block-slider'     : <BlockSlider />,
+        //'ns-blog-articles'    : <BlogList />,
+        'ns-contact'   : <Contact />,
+        //'ns-gallery'          : <Gallery />,
+        'ns-newsletter': <Newsletter />,
+        //'ns-product-card'     : <ProductCard col="12" />,
+        //'ns-product-card-list': <ProductList />,
+        //'ns-slider'           : <Slider />,
     };
 
     const options = {
@@ -58,7 +58,7 @@ export default function BlockCMS({ nsCode, content = '', displayerror = false, r
             }
 
             // Replace <aq-[...]> by Aquila Module
-            if (type === 'tag' && name && aqModules?.find((comp) => comp.code === name)) {
+            /*if (type === 'tag' && name && aqModules?.find((comp) => comp.code === name)) {
                 const AqModule  = aqModules.find((comp) => comp.code === name).jsx.default;
                 const component = React.cloneElement(
                     <AqModule />,
@@ -67,7 +67,7 @@ export default function BlockCMS({ nsCode, content = '', displayerror = false, r
                     }
                 );
                 return component;
-            }
+            }*/
 
             // Replace <ns-cms> by <BlockCMS>
             if (name === 'ns-cms') {

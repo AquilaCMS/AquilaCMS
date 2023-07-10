@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useRouter }           from 'next/router';
+import { useRouter }           from 'next/navigation';
 import useTranslation          from 'next-translate/useTranslation';
 import parse                   from 'html-react-parser';
 import cookie                  from 'cookie';

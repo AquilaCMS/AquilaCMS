@@ -1,5 +1,5 @@
 import React                                       from 'react';
-import Cookies                                     from 'cookies';
+import { getServerCookie, unsetServerCookie }      from './serverCookies';
 import cookie                                      from 'cookie';
 import crypto                                      from 'crypto';
 import jwt_decode                                  from 'jwt-decode';
@@ -43,17 +43,17 @@ export const serverRedirect = (url, permanent = false) => {
 };
 
 // Get user ID from JWT
-export const getUserIdFromJwt = (cookies) => {
+/*export const getUserIdFromJwt = (cookies) => {
     const jwt = cookie.parse(cookies).jwt;
     if (!jwt) return null;
     const user = jwt_decode(jwt);
     if (!user) return null;
     return user.userId;
-};
+};*/
 
 // Return client data or false
 // Protect next pages requiring authentication
-export const authProtectedPage = async (cookies) => {
+/*export const authProtectedPage = async (cookies) => {
     if (!cookies) {
         return false;
     }
@@ -71,7 +71,7 @@ export const authProtectedPage = async (cookies) => {
         console.error(err);
         return false;
     }
-};
+};*/
 
 // Set token Axios
 export const setTokenAxios = (jwt) => {
@@ -83,30 +83,32 @@ export const setTokenAxios = (jwt) => {
 };
 
 // Set lang & token Axios
-export const initAxios = (lang, req, res) => {
+/*export const initAxios = (lang, req, res) => {
     const cookiesServerInstance = new Cookies(req, res);
     cookiesServerInstance.set('lang', lang, { path: '/', httpOnly: false });
     axios.defaults.headers.common['lang'] = lang;
 
     const jwt = cookiesServerInstance.get('jwt');
     setTokenAxios(jwt);
+};*/
+
+// Get cookie
+export const getCookie = (name, server = false) => {
+    if (server) {
+        return getServerCookie(name);
+    } else {
+        return cookie.parse(document.cookie)[name];
+    }
 };
 
-// Unset cookie (serverside/clientside)
-export const unsetCookie = (name, cookiesServerInstance = undefined) => {
-    if (Array.isArray(name)) {
-        for (const n in name) {
-            if (cookiesServerInstance) {
-                cookiesServerInstance.set(name[n]);
-            } else {
-                document.cookie = name[n] + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            }
-        }
-    } else {
-        if (cookiesServerInstance) {
-            cookiesServerInstance.set(name);
+// Unset cookie
+export const unsetCookie = (name, server = false) => {
+    const array = Array.isArray(name) ? name : [name];
+    for (const i in array) {
+        if (server) {
+            unsetServerCookie(name[i]);
         } else {
-            document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = name[i] + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         }
     }
 };
@@ -216,19 +218,14 @@ export const getAvailability = (stock) => {
 };
 
 // Getting body request from cookie (serverside/clientside)
-export const getBodyRequestProductsFromCookie = (cookiesServerInstance) => {
-    let cookieBody = '';
-    if (cookiesServerInstance) {
-        cookieBody = base64ToString(cookiesServerInstance.get('bodyRequestProducts'));
-    } else {
-        cookieBody = base64ToString(cookie.parse(document.cookie).bodyRequestProducts); // "parse" function use already decodeURIComponent (see https://github.com/jshttp/cookie)
-    }
-    let body = {};
+export const getBodyRequestProductsFromCookie = (server = false) => {
+    const cookieBody = base64ToString(getCookie('bodyRequestProducts', server)); // "parse" function use already decodeURIComponent (see https://github.com/jshttp/cookie)
+    let body         = {};
     if (cookieBody) {
         try {
             body = JSON.parse(cookieBody);
         } catch (err) {
-            unsetCookie('bodyRequestProducts', cookiesServerInstance);
+            unsetCookie('bodyRequestProducts', server);
         }
     }
 

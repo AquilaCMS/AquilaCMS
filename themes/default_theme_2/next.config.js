@@ -22,4 +22,7 @@ module.exports      = nextTranslate({
         ignoreDuringBuilds: true,
     },
     optimizeFonts: false,
+    experimental : {
+        serverActions: true,
+    },
 });

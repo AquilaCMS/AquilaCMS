@@ -1,5 +1,7 @@
+'use client';
+
 import { Fragment, useEffect, useState } from 'react';
-import { useRouter }                     from 'next/router';
+import { usePathname }                   from 'next/navigation';
 import useTranslation                    from 'next-translate/useTranslation';
 import Link                              from 'next/link';
 import { useNavMenu }                    from '@lib/hooks';
@@ -10,12 +12,12 @@ export default function NavMenu() {
     const [view, setView]                       = useState([]);
     const [boolOpenSubMenu, setBoolOpenSubMenu] = useState(false);
     const navMenu                               = useNavMenu();
-    const { asPath }                            = useRouter();
+    const pathname                              = usePathname();
     const { lang, t }                           = useTranslation();
 
     useEffect(() => {
         setBurger(false);
-    }, [asPath]);
+    }, [pathname]);
 
     const toggleBurger = () => {
         setBurger(!burger);
@@ -60,7 +62,7 @@ export default function NavMenu() {
             <nav className={`nav-menu w-nav-menu${burger ? ' w-nav-button-open' : ''}`}>
                 {navMenu ? navMenu.children?.map((item) => {
                     let current = false;
-                    if ((item.action === 'catalog' && asPath.indexOf(`/c/${item.slug[lang]}`) > -1) || asPath.indexOf(`/${item.pageSlug}`) > -1) {
+                    if ((item.action === 'catalog' && pathname.indexOf(`/c/${item.slug[lang]}`) > -1) || pathname.indexOf(`/${item.pageSlug}`) > -1) {
                         current = true;
                     }
                     return (
@@ -157,7 +159,7 @@ export default function NavMenu() {
                     );
                 }) : null}
 
-                <Link href="/account/login" className={`nav-link-2 w-nav-link${asPath.indexOf('/account') > -1 ? ' w--current' : ''}`}>
+                <Link href="/account/login" className={`nav-link-2 w-nav-link${pathname.indexOf('/account') > -1 ? ' w--current' : ''}`}>
                     {t('components/navigation:myAccount')}
                 </Link>
             </nav>

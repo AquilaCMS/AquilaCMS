@@ -1,3 +1,5 @@
+'use client';
+
 import Newsletter        from '@components/common/Newsletter';
 import FooterMenu        from '@components/navigation/FooterMenu';
 import { useSiteConfig } from '@lib/hooks';

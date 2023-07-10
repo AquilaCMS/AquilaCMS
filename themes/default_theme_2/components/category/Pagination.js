@@ -1,7 +1,9 @@
+'use client';
+
 import { useEffect, useState }                                                             from 'react';
 import InfiniteScroll                                                                      from 'react-infinite-scroll-component';
 import ReactPaginate                                                                       from 'react-paginate';
-import { useRouter }                                                                       from 'next/router';
+import { useRouter, usePathname, useSearchParams }                                         from 'next/navigation';
 import useTranslation                                                                      from 'next-translate/useTranslation';
 import Button                                                                              from '@components/ui/Button';
 import { useCategoryPriceEnd, useCategoryBodyRequest, useCategoryProducts, useSiteConfig } from '@lib/hooks';
@@ -14,12 +16,14 @@ export default function Pagination({ children, getProductsList }) {
     const { categoryBodyRequest, setCategoryBodyRequest } = useCategoryBodyRequest();
     const { categoryProducts, setCategoryProducts }       = useCategoryProducts();
     const { themeConfig }                                 = useSiteConfig();
+    const pathname                                        = usePathname();
     const router                                          = useRouter();
+    const searchParams                                    = useSearchParams();
     const { lang, t }                                     = useTranslation();
 
     // Force page
     let forcePage   = false;
-    const queryPage = Number(router.query.page);
+    const queryPage = Number(searchParams.page);
     if (queryPage) {
         forcePage = true;
     }
@@ -31,7 +35,7 @@ export default function Pagination({ children, getProductsList }) {
     const paginationMode = themeConfig?.values?.find(t => t.key === 'infiniteScroll')?.value || 0;
 
     // Getting URL page
-    const [url] = router.asPath.split('?');
+    const [url] = pathname.split('?');
 
     useEffect(() => {
         // Getting body request from cookie

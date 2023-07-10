@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 
 export default function Button({ type = 'submit', text = 'Bouton', loadingText = 'Loading...', isLoading = false, hookOnClick = undefined, className = 'log-button w-button', disabled = false, style = {} }) {

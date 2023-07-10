@@ -1,6 +1,8 @@
+'use client';
+
 import { useEffect, useRef, useState }                                  from 'react';
 import Link                                                             from 'next/link';
-import { useRouter }                                                    from 'next/router';
+import { useSearchParams }                                              from 'next/navigation';
 import useTranslation                                                   from 'next-translate/useTranslation';
 import { Modal }                                                        from 'react-responsive-modal';
 import BundleProduct                                                    from '@components/product/BundleProduct';
@@ -21,7 +23,7 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
     const [openModal, setOpenModal] = useState(false);
     const productRef                = useRef();
     const timer                     = useRef();
-    const { query }                 = useRouter();
+    const query                     = useSearchParams();
     const { cart, setCart }         = useCart();
     const { setShowCartSidebar }    = useShowCartSidebar();
     const { themeConfig }           = useSiteConfig();

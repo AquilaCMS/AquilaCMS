@@ -1,13 +1,15 @@
-import { useState }   from 'react';
-import Link           from 'next/link';
-import { useRouter }  from 'next/router';
-import useTranslation from 'next-translate/useTranslation';
-import { useNavMenu } from '@lib/hooks';
+'use client';
+
+import { useState }    from 'react';
+import Link            from 'next/link';
+import { usePathname } from 'next/navigation';
+import useTranslation  from 'next-translate/useTranslation';
+import { useNavMenu }  from '@lib/hooks';
 
 export default function MenuCategories() {
     const [open, setOpen] = useState(false);
     const navMenu         = useNavMenu();
-    const { asPath }      = useRouter();
+    const pathname        = usePathname();
     const { lang, t }     = useTranslation();
 
     const openBlock = () => {
@@ -27,7 +29,7 @@ export default function MenuCategories() {
                 <div className={`tab-menu-round w-tab-menu${open ? ' tab-menu-round-open' : ''}`}>
                     {menuCat?.map((item) => {
                         let current = false;
-                        if (asPath.indexOf(`/c/${item.slug[lang]}`) > -1) {
+                        if (pathname.indexOf(`/c/${item.slug[lang]}`) > -1) {
                             current = true;
                         }
                         return (

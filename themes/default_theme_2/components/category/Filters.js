@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useRef, useState }                                                               from 'react';
-import { useRouter }                                                                                 from 'next/router';
+import { useRouter, usePathname }                                                                    from 'next/navigation';
 import useTranslation                                                                                from 'next-translate/useTranslation';
 import { Range, getTrackBackground }                                                                 from 'react-range';
 import { useCategoryPriceEnd, useCategoryBodyRequest, useCategoryProducts, useSiteConfig }           from '@lib/hooks';
@@ -13,6 +15,7 @@ export default function Filters({ filtersData, getProductsList }) {
     const { categoryBodyRequest, setCategoryBodyRequest } = useCategoryBodyRequest();
     const { setCategoryProducts }                         = useCategoryProducts();
     const { themeConfig }                                 = useSiteConfig();
+    const pathname                                        = usePathname();
     const router                                          = useRouter();
     const { lang, t }                                     = useTranslation();
 
@@ -20,7 +23,7 @@ export default function Filters({ filtersData, getProductsList }) {
     const defaultLimit = themeConfig?.values?.find(t => t.key === 'productsPerPage')?.value || 16;
 
     // Getting URL page
-    const [url] = router.asPath.split('?');
+    const [url] = pathname.split('?');
 
     useEffect(() => {
         // Checking if the price, attributes or pictos filters are empty
