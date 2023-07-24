@@ -1,161 +1,353 @@
-import { Fragment, useEffect, useState }                                                             from 'react';
-import ReactPaginate                                                                                 from 'react-paginate';
-import { useRouter }                                                                                 from 'next/router';
-import useTranslation                                                                                from 'next-translate/useTranslation';
-import Cookies                                                                                       from 'cookies';
-import AccountLayout                                                                                 from '@components/account/AccountLayout';
-import OrderDetails                                                                                  from '@components/order/OrderDetails';
-import NextSeoCustom                                                                                 from '@components/tools/NextSeoCustom';
-import { getOrders }                                                                                 from '@aquilacms/aquila-connector/api/order';
-import { useSelectPage, useOrders, useSiteConfig }                                                   from '@lib/hooks';
-import { initAxios, authProtectedPage, serverRedirect, formatPrice, formatOrderStatus, unsetCookie } from '@lib/utils';
-import { dispatcher }                                                                                from '@lib/redux/dispatcher';
+import { useEffect, useRef, useState }                  from 'react';
+import useTranslation                                   from 'next-translate/useTranslation';
+import AccountLayout                                    from '@components/account/AccountLayout';
+import Button                                           from '@components/ui/Button';
+import NextSeoCustom                                    from '@components/tools/NextSeoCustom';
+import { deleteCartShipment, setCartAddresses }         from '@aquilacms/aquila-connector/api/cart';
+import { sendMailResetPassword }                        from '@aquilacms/aquila-connector/api/login';
+import { getNewsletter, setNewsletter }                 from '@aquilacms/aquila-connector/api/newsletter';
+import { getTerritories }                               from '@aquilacms/aquila-connector/api/territory';
+import { setUser as setGlobalUser, setAddressesUser }   from '@aquilacms/aquila-connector/api/user';
+import { useCart, useSiteConfig }                       from '@lib/hooks';
+import { initAxios, authProtectedPage, serverRedirect } from '@lib/utils';
+import { dispatcher }                                   from '@lib/redux/dispatcher';
 
-export async function getServerSideProps({ locale, req, res, resolvedUrl }) {
+export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
 
     const user = await authProtectedPage(req.headers.cookie);
     if (!user) {
-        return serverRedirect('/account/login?redirect=' + encodeURI('/account'));
+        return serverRedirect('/account/login?redirect=' + encodeURI('/account/informations'));
     }
 
-    // Get cookie server instance
-    const cookiesServerInstance = new Cookies(req, res);
-
-    // Get page from cookie
-    let page         = 1;
-    const [url]      = resolvedUrl.split('?');
-    const cookiePage = cookiesServerInstance.get('page');
-    // If cookie page exists
-    if (cookiePage) {
-        try {
-            const dataPage = JSON.parse(cookiePage);
-            // We take the value only if category ID matches
-            // Otherwise, we delete "page" cookie
-            if (dataPage.url === url) {
-                page = dataPage.page;
-            } else {
-                unsetCookie('page', cookiesServerInstance);
-            }
-        } catch (err) {
-            unsetCookie('page', cookiesServerInstance);
-        }
+    // Territories
+    let territories      = [];
+    const resTerritories = await getTerritories();
+    if (resTerritories?.datas?.length) {
+        territories = resTerritories.datas.map((t) => ({ code: t.code, name: t.name }));
     }
 
-    const limit = 15;
-
-    const actions = [
-        {
-            type : 'SET_SELECT_PAGE',
-            value: page
-        }, {
-            type: 'SET_ORDERS',
-            func: getOrders.bind(this, locale, { PostBody: { page, limit } })
-        }
-    ];
-
-    const pageProps       = await dispatcher(locale, req, res, actions);
-    pageProps.props.limit = limit;
-    pageProps.props.user  = user;
+    const pageProps             = await dispatcher(locale, req, res);
+    pageProps.props.territories = territories;
+    pageProps.props.initUser    = user;
     return pageProps;
 }
 
-export default function Account({ limit }) {
-    const [viewOrders, setViewOrders]   = useState([]);
-    const { selectPage, setSelectPage } = useSelectPage();
-    const { orders, setOrders }         = useOrders();
-    const router                        = useRouter();
-    const { environment }               = useSiteConfig();
-    const { lang, t }                   = useTranslation();
-
-    // Getting URL page
-    const [url] = router.asPath.split('?');
+export default function Account({ territories, initUser }) {
+    const [user, setUser]                       = useState(initUser);
+    const [sameAddress, setSameAddress]         = useState(false);
+    const [optinNewsletter, setOptinNewsletter] = useState(false);
+    const [messageReset, setMessageReset]       = useState();
+    const [message, setMessage]                 = useState();
+    const [isLoading, setIsLoading]             = useState(false);
+    const billingCountryRef                     = useRef(null);
+    const { cart, setCart }                     = useCart();
+    const { environment }                       = useSiteConfig();
+    const { lang, t }                           = useTranslation();
 
     useEffect(() => {
-        return () => unsetCookie('page');
+        const billingAddress  = user.addresses[user.billing_address];
+        const deliveryAddress = user.addresses[user.delivery_address];
+        if (billingAddress) {
+            delete billingAddress['_id'];
+        }
+        if (deliveryAddress){
+            delete deliveryAddress['_id'];
+        }
+        if (JSON.stringify(billingAddress) === JSON.stringify(deliveryAddress)) { 
+            setSameAddress(true);
+        }
+        
+        const fetchData = async () => {
+            try {
+                // Newsletter
+                const res = await getNewsletter(user.email);
+                if (res?.segment?.length) {
+                    setOptinNewsletter(res.segment.find((n) => n.name === 'DefaultNewsletter')?.optin || false);
+                }
+            } catch (err) {
+                setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
+            }
+        };
+        fetchData();
     }, []);
 
-    const onChangeViewOrders = (index) => {
-        viewOrders[index] = !viewOrders[index];
-        setViewOrders([...viewOrders]);
-    };
+    const onSetUser = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
 
-    const handlePageClick = async (data) => {
-        const page = data.selected + 1;
+        const postForm = e.currentTarget;
 
-        setViewOrders([]);
+        // Get form data
+        const updateUser = {
+            _id             : user._id,
+            firstname       : postForm.firstname.value,
+            lastname        : postForm.lastname.value,
+            phone_mobile    : postForm.phone_mobile.value,
+            billing_address : 0,
+            delivery_address: 1
+        };
 
-        // Updating the products list
-        const orders = await getOrders(lang, { PostBody: { page, limit } });
-        setOrders(orders);
+        let addresses       = [];
+        let deliveryAddress = {
+            firstname     : postForm.delivery_address_firstname.value,
+            lastname      : postForm.delivery_address_lastname.value,
+            line1         : postForm.delivery_address_line1.value,
+            line2         : postForm.delivery_address_line2.value,
+            city          : postForm.delivery_address_city.value,
+            zipcode       : postForm.delivery_address_zipcode.value,
+            isoCountryCode: postForm.delivery_address_isoCountryCode.value
+        };
+        if (sameAddress) {
+            addresses = [deliveryAddress, deliveryAddress];
 
-        // Updating page
-        setSelectPage(page);
-
-        // Setting category page cookie
-        if (page > 1) {
-            document.cookie = 'page=' + JSON.stringify({ url, page }) + '; path=/; max-age=43200;';
+            // Select billing country
+            if (billingCountryRef.current) {
+                billingCountryRef.current.value = deliveryAddress.isoCountryCode;
+            }
         } else {
-            // Page 1... so useless "page" cookie
-            unsetCookie('page');
+            const billingAddress = {
+                firstname     : postForm.billing_address_firstname.value,
+                lastname      : postForm.billing_address_lastname.value,
+                line1         : postForm.billing_address_line1.value,
+                line2         : postForm.billing_address_line2.value,
+                city          : postForm.billing_address_city.value,
+                zipcode       : postForm.billing_address_zipcode.value,
+                isoCountryCode: postForm.billing_address_isoCountryCode.value
+            };
+            addresses            = [billingAddress, deliveryAddress];
+        }
+
+        try {
+            // Set user
+            await setGlobalUser(updateUser);
+
+            // Update newsletter
+            await setNewsletter(user.email, 'DefaultNewsletter', optinNewsletter);
+
+            // Set user addresses
+            const newUser = await setAddressesUser(updateUser._id, updateUser.billing_address, updateUser.delivery_address, addresses);
+            setUser(newUser);
+
+            if (cart._id) {
+                // Set cart addresses
+                let newCart = await setCartAddresses(cart._id, { billing: addresses[0], delivery: addresses[1] });
+
+                // Deletion of the cart delivery
+                if (newCart.delivery?.method) {
+                    newCart = await deleteCartShipment(newCart._id);
+                }
+                setCart(newCart);
+            }
+            
+            setMessage({ type: 'info', message: t('common:message.saveData') });
+        } catch (err) {
+            setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const pageCount = Math.ceil(orders.count / limit);
-    
+    const resetPassword = async () => {
+        setIsLoading(true);
+        try {
+            await sendMailResetPassword(user.email, lang);
+            setMessageReset({ type: 'info', message: t('pages/account/index:password.msgInfo') });
+        } catch (err) {
+            setMessageReset({ type: 'error', message: err.message || t('common:message.unknownError') });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <AccountLayout active="2">
+        <AccountLayout active="1">
             <NextSeoCustom
                 noindex={true}
                 title={`${environment?.siteName} - ${t('pages/account/index:title')}`}
                 description=""
             />
             
-            <div className="container-tunnel-02">
+            <div className="container-tunnel-01">
                 <h2 className="heading-2-steps">{t('pages/account/index:titleNav')}</h2>
             </div>
-            <div className="container-order-list">
-                <div className="div-block-order-liste">
+            <div className="container-account">
+                <div className="div-block-tunnel w-form">
+                    <form onSubmit={onSetUser}>
+                        <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
+                            <h5>{t('pages/account/index:titleInformation')}</h5>
+                            <label className="required">* {t('pages/account/index:mandatory')}</label>
+                        </div>
+                        <div className="block-content-tunnel">
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:firstname')} *</label>
+                                    <input type="text" className="input-field w-input" name="firstname" defaultValue={user.firstname} maxLength={256} required />
+                                </div>
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:lastname')} *</label>
+                                    <input type="text" className="input-field w-input" name="lastname" defaultValue={user.lastname} maxLength={256} required />
+                                </div>
+                            </div>
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:email')} *</label>
+                                    <input type="email" className="input-field w-input" name="email" defaultValue={user.email} maxLength={256} required disabled />
+                                </div>
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:phone')} *</label>
+                                    <input type="text" className="input-field w-input" name="phone_mobile" defaultValue={user.phone_mobile} maxLength={256} required />
+                                </div>
+                            </div>
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label className="w-checkbox checkbox-field-allergene">
+                                        <input 
+                                            type="checkbox"
+                                            name="newsletter"
+                                            checked={optinNewsletter}
+                                            onChange={(e) => setOptinNewsletter(e.target.checked)}
+                                            style={{ opacity: 0, position: 'absolute', zIndex: -1 }}
+                                        />
+                                        <div className="w-checkbox-input w-checkbox-input--inputType-custom checkbox-allergene"></div>
+                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/index:newsletter')}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="w-commerce-commercecheckoutrow" style={{ marginTop: '10px' }}>
+                                <p className="checkbox-label-allergene w-form-label">{t('pages/account/index:password.email')}</p>
+                            </div>
+                            <div className="w-commerce-commercecheckoutrow" style={{ justifyContent: 'center' }}>
+                                <Button
+                                    type="button"
+                                    className="w-button"
+                                    text={t('pages/account/index:password.title')}
+                                    hookOnClick={resetPassword}
+                                />
+                            </div>
+                            {
+                                messageReset && (
+                                    <div className={`w-commerce-commerce${messageReset.type}`}>
+                                        <div>
+                                            {messageReset.message}
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
+                            <h5>{t('pages/account/index:titleDelivery')}</h5>
+                            <label className="required">* {t('pages/account/index:mandatory')}</label>
+                        </div>
+                        <div className="block-content-tunnel">
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:firstname')} *</label>
+                                    <input type="text" className="input-field w-input" name="delivery_address_firstname" defaultValue={user.addresses[user.delivery_address]?.firstname} maxLength={256} required />
+                                </div>
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label>{t('pages/account/index:lastname')} *</label>
+                                    <input type="text" className="input-field w-input" name="delivery_address_lastname" defaultValue={user.addresses[user.delivery_address]?.lastname} maxLength={256} required />
+                                </div>
+                            </div>
+                            <label className="field-label">{t('pages/account/index:line1')} *</label>
+                            <input type="text" className="input-field w-input" name="delivery_address_line1" defaultValue={user.addresses[user.delivery_address]?.line1} maxLength={256} required />
+                            <label className="field-label">{t('pages/account/index:line2')}</label>
+                            <input type="text" className="input-field w-input" name="delivery_address_line2" defaultValue={user.addresses[user.delivery_address]?.line2} maxLength={256} />
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:city')} *</label>
+                                    <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="delivery_address_city" defaultValue={user.addresses[user.delivery_address]?.city} required />
+                                </div>
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:postal')} *</label>
+                                    <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="delivery_address_zipcode" defaultValue={user.addresses[user.delivery_address]?.zipcode} required />
+                                </div>
+                            </div>
+                            <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:country')} *</label>
+                            <select name="delivery_address_isoCountryCode" defaultValue={user.addresses[user.delivery_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required>
+                                {
+                                    territories.map((territory) => (
+                                        <option key={territory.code} value={territory.code}>{territory.name}</option>
+                                    ))
+                                }
+                            </select>
+                            <br />
+                            <div className="w-commerce-commercecheckoutrow">
+                                <div className="w-commerce-commercecheckoutcolumn">
+                                    <label className="w-checkbox checkbox-field-allergene">
+                                        <input 
+                                            type="checkbox"
+                                            name="sameAddress"
+                                            checked={sameAddress}
+                                            onChange={(e) => setSameAddress(e.target.checked)}
+                                            style={{ opacity: 0, position: 'absolute', zIndex: -1 }}
+                                        />
+                                        <div className="w-checkbox-input w-checkbox-input--inputType-custom checkbox-allergene"></div>
+                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/index:sameAddress')}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style={{ display: sameAddress === false ? 'block' : 'none' }}>
+                            <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
+                                <h5>{t('pages/account/index:titleBilling')}</h5>
+                                <label className="required">* {t('pages/account/index:mandatory')}</label>
+                            </div>
+                            <div className="block-content-tunnel">
+                                <div className="w-commerce-commercecheckoutrow">
+                                    <div className="w-commerce-commercecheckoutcolumn">
+                                        <label>{t('pages/account/index:firstname')} *</label>
+                                        <input type="text" className="input-field w-input" name="billing_address_firstname" defaultValue={user.addresses[user.billing_address]?.firstname} maxLength={256} required={!sameAddress} />
+                                    </div>
+                                    <div className="w-commerce-commercecheckoutcolumn">
+                                        <label>{t('pages/account/index:lastname')} *</label>
+                                        <input type="text" className="input-field w-input" name="billing_address_lastname" defaultValue={user.addresses[user.billing_address]?.lastname} maxLength={256} required={!sameAddress} />
+                                    </div>
+                                </div>
+                                <label className="field-label">{t('pages/account/index:line1')} *</label>
+                                <input type="text" className="input-field w-input" name="billing_address_line1" defaultValue={user.addresses[user.billing_address]?.line1} maxLength={256} required={!sameAddress} />
+                                <label className="field-label">{t('pages/account/index:line2')}</label>
+                                <input type="text" className="input-field w-input" name="billing_address_line2" defaultValue={user.addresses[user.billing_address]?.line2} maxLength={256} />
+                                <div className="w-commerce-commercecheckoutrow">
+                                    <div className="w-commerce-commercecheckoutcolumn">
+                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:city')} *</label>
+                                        <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="billing_address_city" defaultValue={user.addresses[user.billing_address]?.city} required={!sameAddress} />
+                                    </div>
+                                    <div className="w-commerce-commercecheckoutcolumn">
+                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:postal')} *</label>
+                                        <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="billing_address_zipcode" defaultValue={user.addresses[user.billing_address]?.zipcode} required={!sameAddress} />
+                                    </div>
+                                </div>
+                                <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:country')} *</label>
+                                <select ref={billingCountryRef} name="billing_address_isoCountryCode" defaultValue={user.addresses[user.billing_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required={!sameAddress}>
+                                    {
+                                        territories.map((territory) => (
+                                            <option key={territory.code} value={territory.code}>{territory.name}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <Button 
+                            text={t('pages/account/index:save')}
+                            loadingText={t('pages/account/index:saveLoading')}
+                            isLoading={isLoading}
+                            className="submit-button-tunnel w-button"
+                        />
+                    </form>
                     {
-                        orders.datas.length ? orders.datas.map((order, index) => {
-                            return (
-                                <Fragment key={order._id}>
-                                    <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
-                                        <h5 className="heading-6" style={{ width: '230px' }}>{t('pages/account/index:order')} : #{order.number}</h5>
-                                        <p className="paragraph" style={{ width: '100px' }}>{formatPrice(order.priceTotal.ati)}</p>
-                                        <p className="paragraph" style={{ width: '300px' }}>{formatOrderStatus(order.status, t)}</p>
-                                        <div className="lien_voir w-inline-block" style={{ cursor: 'pointer' }} onClick={() => onChangeViewOrders(index)}>
-                                            <h6 className="heading-bouton-voir">{t('pages/account/index:view')}</h6>
-                                            <img src="/images/Plus.svg" alt="" className={`plus-2${viewOrders[index] ? ' plus-2-active' : ''}`} />
-                                        </div>
-                                    </div>
-                                    <div className="section-detail-order" style={{ display: !viewOrders[index] ? 'none' : 'block' }}>
-                                        <div className="container-tunnel-02">
-                                            <h2 className="heading-5 center">{t('pages/account/index:orderSummary')} : #{order.number}</h2>
-                                        </div>
-                                        <OrderDetails order={order} setOrders={setOrders} />
-                                    </div>
-                                </Fragment>
-                            );
-                        }) : <p>{t('pages/account/index:noOrder')}</p>
+                        message && (
+                            <div className={`w-commerce-commerce${message.type}`}>
+                                <div>
+                                    {message.message}
+                                </div>
+                            </div>
+                        )
                     }
                 </div>
-                {
-                    pageCount > 1 && (
-                        <ReactPaginate
-                            previousLabel={'<'}
-                            nextLabel={'>'}
-                            breakLabel={'...'}
-                            forcePage={selectPage - 1}
-                            pageCount={pageCount}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={5}
-                            onPageChange={handlePageClick}
-                            containerClassName={'w-pagination-wrapper pagination'}
-                            activeClassName={'active'}
-                        />
-                    )
-                }
             </div>
         </AccountLayout>
     );
