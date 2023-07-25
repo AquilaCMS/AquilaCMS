@@ -10,7 +10,7 @@ export default function RegisterBlock() {
     const [isLoading, setIsLoading]             = useState(false);
     const router                                = useRouter();
     const { t }                                 = useTranslation();
-    const redirect                              = router?.query?.redirect || '/account/informations';
+    const redirect                              = router?.query?.redirect || '/account';
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();

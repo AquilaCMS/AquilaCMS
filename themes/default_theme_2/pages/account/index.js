@@ -17,7 +17,7 @@ export async function getServerSideProps({ locale, req, res }) {
 
     const user = await authProtectedPage(req.headers.cookie);
     if (!user) {
-        return serverRedirect('/account/login?redirect=' + encodeURI('/account/informations'));
+        return serverRedirect('/account/login?redirect=' + encodeURI('/account'));
     }
 
     // Territories

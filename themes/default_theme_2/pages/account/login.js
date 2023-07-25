@@ -10,10 +10,10 @@ import { dispatcher }                                   from '@lib/redux/dispatc
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
 
-    // If the user is already logged in, we will automatically redirect to the page /account/informations
+    // If the user is already logged in, we will automatically redirect to the page /account
     const user = await authProtectedPage(req.headers.cookie);
     if (user) {
-        return serverRedirect('/account/informations');
+        return serverRedirect('/account');
     }
     return dispatcher(locale, req, res);
 }
