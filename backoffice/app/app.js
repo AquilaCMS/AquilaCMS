@@ -196,6 +196,7 @@ adminCatagenApp.config([
                         config.url = config.url.replace("/", "");
                     }
                     if(
+                        !config.url.startsWith("http") &&
                         config.url.indexOf(".html") === -1 &&
                         config.url.indexOf(".tpl") === -1 &&
                         config.url.indexOf("assets/") === -1
