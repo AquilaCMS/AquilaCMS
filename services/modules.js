@@ -760,7 +760,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
             type = '';
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
-        const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const jsxModuleToImport     = `{jsx: ${moduleComponentType !== '' ? 'import' : 'require'}('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
         const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
