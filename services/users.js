@@ -206,7 +206,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const emailRegex     = new RegExp(`^${email}$`, 'i');
     const user           = await Users.findOneAndUpdate({email: emailRegex}, {resetPassToken}, {new: true});
     if (!user) {
-        throw NSErrors.NotFound;
+        return {message: email};
     }
     const {appUrl, adminPrefix} = global.aquila.envConfig.environment;
     let link;
