@@ -33,6 +33,7 @@
         "yes": "Yes",
         "no": "No",
         "infoInvalid": "The information entered is not valid.",
+        "infoInvalidFrequency": "The frequency is invalid, the cron cannot be launched less than 30 seconds apart.",
         "cronSaved": "Scheduled task saved!",
         "errorDeleteCron": "Cannot delete a System Scheduled Task",
         "cronDelete": "Scheduled task deleted",

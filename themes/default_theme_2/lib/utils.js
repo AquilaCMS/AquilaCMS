@@ -172,16 +172,16 @@ export const formatOrderStatus = (code, t) => {
     case 'PAYMENT_FAILED':
     case 'PROCESSED':
     case 'PROCESSING':
-        return <span style={{ color: 'red' }}>{t(`pages/account/index:status.${code}`)}</span>;
+        return <span style={{ color: 'red' }}>{t(`pages/account/orders:status.${code}`)}</span>;
     case 'FINISHED':
     case 'BILLED':
     case 'PAID':
     case 'DELIVERY_PROGRESS':
     case 'DELIVERY_PARTIAL_PROGRESS':
     case 'RETURNED':
-        return <span style={{ color: 'green' }}>{t(`pages/account/index:status.${code}`)}</span>;
+        return <span style={{ color: 'green' }}>{t(`pages/account/orders:status.${code}`)}</span>;
     default:
-        return t('pages/account/index:status.DEFAULT');
+        return t('pages/account/orders:status.DEFAULT');
     }
 };
 
@@ -545,7 +545,7 @@ export const moduleHook = (type, props = {}) => {
     const modules   = nsModules?.filter((m) => m.type === type);
     if (!modules || !modules.length) return null;
     for (let index in modules) {
-        const Comp = modules[index].jsx.default;
+        const Comp = dynamic(() => modules[index].jsx);
         if (Comp) {
             return <Comp key={index + modules[index].code} {...props} />;
         } else {

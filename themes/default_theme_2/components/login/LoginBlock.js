@@ -11,7 +11,7 @@ export default function LoginBlock() {
     const [isLoading, setIsLoading]       = useState(false);
     const router                          = useRouter();
     const { lang, t }                     = useTranslation();
-    const redirect                        = router?.query?.redirect || '/account/informations';
+    const redirect                        = router?.query?.redirect || '/account';
 
 
     const handleLoginSubmit = async (e) => {

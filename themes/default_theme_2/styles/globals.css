@@ -137,7 +137,7 @@ input:disabled, button:disabled { opacity: 0.5; }
 
 /* 
   FUSION / REMOVE
-  Submit button in account/informations page 
+  Submit button in account index page 
 */
 .submit-button-tunnel { 
   width: 100%; /* FUSION => .submit-button-tunnel l.5855 mon-restaurant.webflow.css */

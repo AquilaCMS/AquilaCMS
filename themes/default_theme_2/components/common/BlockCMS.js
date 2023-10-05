@@ -1,9 +1,11 @@
 import React                                    from 'react';
 import Link                                     from 'next/link';
+import dynamic                                  from 'next/dynamic';
 import parse, { attributesToProps, domToReact } from 'html-react-parser';
 import useTranslation                           from 'next-translate/useTranslation';
 import { getBlockCMS }                          from '@aquilacms/aquila-connector/api/blockcms';
 //import Accordion                                from '@components/common/Accordion';
+//import AccountMenu                              from '@components/account/AccountMenu';
 //import BlockSlider                              from '@components/common/BlockSlider';
 //import BlogList                                 from '@components/common/BlogList';
 import Contact from '@components/common/Contact';
@@ -33,6 +35,7 @@ export default async function BlockCMS({ nsCode, content = '', displayerror = fa
     // Next Sourcia components array
     const nsComponents = {
         //'ns-accordion'        : <Accordion />,
+        //'ns-account-menu'     : <AccountMenu />,
         //'ns-block-slider'     : <BlockSlider />,
         //'ns-blog-articles'    : <BlogList />,
         'ns-contact'   : <Contact />,
@@ -59,7 +62,7 @@ export default async function BlockCMS({ nsCode, content = '', displayerror = fa
 
             // Replace <aq-[...]> by Aquila Module
             /*if (type === 'tag' && name && aqModules?.find((comp) => comp.code === name)) {
-                const AqModule  = aqModules.find((comp) => comp.code === name).jsx.default;
+                const AqModule  = dynamic(() => aqModules.find((comp) => comp.code === name).jsx);
                 const component = React.cloneElement(
                     <AqModule />,
                     {

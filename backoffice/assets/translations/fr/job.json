@@ -33,6 +33,7 @@
         "yes": "Oui",
         "no": "Non",
         "infoInvalid": "Les informations saisies ne sont pas valides.",
+        "infoInvalidFrequency": "La fréquence est invalide, le cron ne peut être lancé à moins de 30 secondes d'intervalle.",
         "cronSaved": "Tâche planifiée sauvegardée !",
         "errorDeleteCron": "Impossible de supprimer une Tâche planifiée système",
         "cronDelete": "Tâche planifiée supprimée",
