@@ -17,7 +17,7 @@ export async function getServerSideProps({ locale, req, res }) {
 
     const user = await authProtectedPage(req.headers.cookie);
     if (!user) {
-        return serverRedirect('/account/login?redirect=' + encodeURI('/account'));
+        return serverRedirect('/account/login?redirect=' + encodeURI('/account/informations'));
     }
 
     // Territories
@@ -152,7 +152,7 @@ export default function Account({ territories, initUser }) {
         setIsLoading(true);
         try {
             await sendMailResetPassword(user.email, lang);
-            setMessageReset({ type: 'info', message: t('pages/account/index:password.msgInfo') });
+            setMessageReset({ type: 'info', message: t('pages/account/informations:password.msgInfo') });
         } catch (err) {
             setMessageReset({ type: 'error', message: err.message || t('common:message.unknownError') });
         } finally {
@@ -164,38 +164,38 @@ export default function Account({ territories, initUser }) {
         <AccountLayout active="1">
             <NextSeoCustom
                 noindex={true}
-                title={`${environment?.siteName} - ${t('pages/account/index:title')}`}
+                title={`${environment?.siteName} - ${t('pages/account/informations:title')}`}
                 description=""
             />
             
             <div className="container-tunnel-01">
-                <h2 className="heading-2-steps">{t('pages/account/index:titleNav')}</h2>
+                <h2 className="heading-2-steps">{t('pages/account/informations:titleNav')}</h2>
             </div>
             <div className="container-account">
                 <div className="div-block-tunnel w-form">
                     <form onSubmit={onSetUser}>
                         <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
-                            <h5>{t('pages/account/index:titleInformation')}</h5>
-                            <label className="required">* {t('pages/account/index:mandatory')}</label>
+                            <h5>{t('pages/account/informations:titleInformation')}</h5>
+                            <label className="required">* {t('pages/account/informations:mandatory')}</label>
                         </div>
                         <div className="block-content-tunnel">
                             <div className="w-commerce-commercecheckoutrow">
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:firstname')} *</label>
+                                    <label>{t('pages/account/informations:firstname')} *</label>
                                     <input type="text" className="input-field w-input" name="firstname" defaultValue={user.firstname} maxLength={256} required />
                                 </div>
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:lastname')} *</label>
+                                    <label>{t('pages/account/informations:lastname')} *</label>
                                     <input type="text" className="input-field w-input" name="lastname" defaultValue={user.lastname} maxLength={256} required />
                                 </div>
                             </div>
                             <div className="w-commerce-commercecheckoutrow">
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:email')} *</label>
+                                    <label>{t('pages/account/informations:email')} *</label>
                                     <input type="email" className="input-field w-input" name="email" defaultValue={user.email} maxLength={256} required disabled />
                                 </div>
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:phone')} *</label>
+                                    <label>{t('pages/account/informations:phone')} *</label>
                                     <input type="text" className="input-field w-input" name="phone_mobile" defaultValue={user.phone_mobile} maxLength={256} required />
                                 </div>
                             </div>
@@ -210,18 +210,18 @@ export default function Account({ territories, initUser }) {
                                             style={{ opacity: 0, position: 'absolute', zIndex: -1 }}
                                         />
                                         <div className="w-checkbox-input w-checkbox-input--inputType-custom checkbox-allergene"></div>
-                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/index:newsletter')}</span>
+                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/informations:newsletter')}</span>
                                     </label>
                                 </div>
                             </div>
                             <div className="w-commerce-commercecheckoutrow" style={{ marginTop: '10px' }}>
-                                <p className="checkbox-label-allergene w-form-label">{t('pages/account/index:password.email')}</p>
+                                <p className="checkbox-label-allergene w-form-label">{t('pages/account/informations:password.email')}</p>
                             </div>
                             <div className="w-commerce-commercecheckoutrow" style={{ justifyContent: 'center' }}>
                                 <Button
                                     type="button"
                                     className="w-button"
-                                    text={t('pages/account/index:password.title')}
+                                    text={t('pages/account/informations:password.title')}
                                     hookOnClick={resetPassword}
                                 />
                             </div>
@@ -236,35 +236,35 @@ export default function Account({ territories, initUser }) {
                             }
                         </div>
                         <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
-                            <h5>{t('pages/account/index:titleDelivery')}</h5>
-                            <label className="required">* {t('pages/account/index:mandatory')}</label>
+                            <h5>{t('pages/account/informations:titleDelivery')}</h5>
+                            <label className="required">* {t('pages/account/informations:mandatory')}</label>
                         </div>
                         <div className="block-content-tunnel">
                             <div className="w-commerce-commercecheckoutrow">
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:firstname')} *</label>
+                                    <label>{t('pages/account/informations:firstname')} *</label>
                                     <input type="text" className="input-field w-input" name="delivery_address_firstname" defaultValue={user.addresses[user.delivery_address]?.firstname} maxLength={256} required />
                                 </div>
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label>{t('pages/account/index:lastname')} *</label>
+                                    <label>{t('pages/account/informations:lastname')} *</label>
                                     <input type="text" className="input-field w-input" name="delivery_address_lastname" defaultValue={user.addresses[user.delivery_address]?.lastname} maxLength={256} required />
                                 </div>
                             </div>
-                            <label className="field-label">{t('pages/account/index:line1')} *</label>
+                            <label className="field-label">{t('pages/account/informations:line1')} *</label>
                             <input type="text" className="input-field w-input" name="delivery_address_line1" defaultValue={user.addresses[user.delivery_address]?.line1} maxLength={256} required />
-                            <label className="field-label">{t('pages/account/index:line2')}</label>
+                            <label className="field-label">{t('pages/account/informations:line2')}</label>
                             <input type="text" className="input-field w-input" name="delivery_address_line2" defaultValue={user.addresses[user.delivery_address]?.line2} maxLength={256} />
                             <div className="w-commerce-commercecheckoutrow">
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:city')} *</label>
+                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:city')} *</label>
                                     <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="delivery_address_city" defaultValue={user.addresses[user.delivery_address]?.city} required />
                                 </div>
                                 <div className="w-commerce-commercecheckoutcolumn">
-                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:postal')} *</label>
+                                    <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:postal')} *</label>
                                     <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="delivery_address_zipcode" defaultValue={user.addresses[user.delivery_address]?.zipcode} required />
                                 </div>
                             </div>
-                            <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:country')} *</label>
+                            <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:country')} *</label>
                             <select name="delivery_address_isoCountryCode" defaultValue={user.addresses[user.delivery_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required>
                                 {
                                     territories.map((territory) => (
@@ -284,7 +284,7 @@ export default function Account({ territories, initUser }) {
                                             style={{ opacity: 0, position: 'absolute', zIndex: -1 }}
                                         />
                                         <div className="w-checkbox-input w-checkbox-input--inputType-custom checkbox-allergene"></div>
-                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/index:sameAddress')}</span>
+                                        <span className="checkbox-label-allergene w-form-label">{t('pages/account/informations:sameAddress')}</span>
                                     </label>
                                 </div>
                             </div>
@@ -292,35 +292,35 @@ export default function Account({ territories, initUser }) {
                         
                         <div style={{ display: sameAddress === false ? 'block' : 'none' }}>
                             <div className="w-commerce-commercecheckoutsummaryblockheader block-header">
-                                <h5>{t('pages/account/index:titleBilling')}</h5>
-                                <label className="required">* {t('pages/account/index:mandatory')}</label>
+                                <h5>{t('pages/account/informations:titleBilling')}</h5>
+                                <label className="required">* {t('pages/account/informations:mandatory')}</label>
                             </div>
                             <div className="block-content-tunnel">
                                 <div className="w-commerce-commercecheckoutrow">
                                     <div className="w-commerce-commercecheckoutcolumn">
-                                        <label>{t('pages/account/index:firstname')} *</label>
+                                        <label>{t('pages/account/informations:firstname')} *</label>
                                         <input type="text" className="input-field w-input" name="billing_address_firstname" defaultValue={user.addresses[user.billing_address]?.firstname} maxLength={256} required={!sameAddress} />
                                     </div>
                                     <div className="w-commerce-commercecheckoutcolumn">
-                                        <label>{t('pages/account/index:lastname')} *</label>
+                                        <label>{t('pages/account/informations:lastname')} *</label>
                                         <input type="text" className="input-field w-input" name="billing_address_lastname" defaultValue={user.addresses[user.billing_address]?.lastname} maxLength={256} required={!sameAddress} />
                                     </div>
                                 </div>
-                                <label className="field-label">{t('pages/account/index:line1')} *</label>
+                                <label className="field-label">{t('pages/account/informations:line1')} *</label>
                                 <input type="text" className="input-field w-input" name="billing_address_line1" defaultValue={user.addresses[user.billing_address]?.line1} maxLength={256} required={!sameAddress} />
-                                <label className="field-label">{t('pages/account/index:line2')}</label>
+                                <label className="field-label">{t('pages/account/informations:line2')}</label>
                                 <input type="text" className="input-field w-input" name="billing_address_line2" defaultValue={user.addresses[user.billing_address]?.line2} maxLength={256} />
                                 <div className="w-commerce-commercecheckoutrow">
                                     <div className="w-commerce-commercecheckoutcolumn">
-                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:city')} *</label>
+                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:city')} *</label>
                                         <input type="text" className="w-commerce-commercecheckoutshippingcity input-field" name="billing_address_city" defaultValue={user.addresses[user.billing_address]?.city} required={!sameAddress} />
                                     </div>
                                     <div className="w-commerce-commercecheckoutcolumn">
-                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:postal')} *</label>
+                                        <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:postal')} *</label>
                                         <input type="text" className="w-commerce-commercecheckoutshippingzippostalcode input-field" name="billing_address_zipcode" defaultValue={user.addresses[user.billing_address]?.zipcode} required={!sameAddress} />
                                     </div>
                                 </div>
-                                <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/index:country')} *</label>
+                                <label className="w-commerce-commercecheckoutlabel field-label">{t('pages/account/informations:country')} *</label>
                                 <select ref={billingCountryRef} name="billing_address_isoCountryCode" defaultValue={user.addresses[user.billing_address]?.isoCountryCode} className="w-commerce-commercecheckoutshippingcountryselector dropdown" required={!sameAddress}>
                                     {
                                         territories.map((territory) => (
@@ -332,8 +332,8 @@ export default function Account({ territories, initUser }) {
                         </div>
                         
                         <Button 
-                            text={t('pages/account/index:save')}
-                            loadingText={t('pages/account/index:saveLoading')}
+                            text={t('pages/account/informations:save')}
+                            loadingText={t('pages/account/informations:saveLoading')}
                             isLoading={isLoading}
                             className="submit-button-tunnel w-button"
                         />
