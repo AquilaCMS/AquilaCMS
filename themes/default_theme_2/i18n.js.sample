@@ -4,6 +4,7 @@ module.exports = {
     pages        : {
         '*': [
             'common',
+            'components/account/accountLayout',
             'components/blockSlider',
             'components/blogList',
             'components/bundleProduct',
@@ -24,12 +25,12 @@ module.exports = {
         ],
         '/account': [
             'pages/account/index',
+            'components/account/accountLayout'
+        ],
+        '/account/orders': [
+            'pages/account/orders',
             'components/account/accountLayout',
             'components/orderDetails'
-        ],
-        '/account/informations': [
-            'pages/account/informations',
-            'components/account/accountLayout'
         ],
         '/account/rgpd': [
             'pages/account/rgpd',
