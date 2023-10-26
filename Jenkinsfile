@@ -25,6 +25,13 @@ pipeline {
                 sh 'docker image push satyabrata36/aquila:1.0'
             }
         }
+        stage('deploy on k8s') {
+		    agent { label 'JDK-17' }
+			steps {
+			    sh 'kubectl apply -f deployment.yaml'
+				sh 'kubectl apply -f service.yaml'
+			}
+		}
     }
 }           
         
