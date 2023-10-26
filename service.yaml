@@ -7,6 +7,6 @@ spec:
     app: aquila
   ports:
     - protocol: TCP
-      port: 8080
+      port: 3010
       targetPort: 8081
   type: NodePort
