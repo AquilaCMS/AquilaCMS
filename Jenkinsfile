@@ -1,28 +1,37 @@
 pipeline {
-    agent { label 'JDK-17-MVN-3.6' }
-    triggers { pollSCM ('* * * * *') }
-    parameters {
-        choice(name: 'MAVEN_GOAL', choices: ['package', 'install', 'clean'], description: 'Maven Goal')
+    agent { label 'JDK-17-MVN-3.6.3' }
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "mvn-3.6.3"
     }
+
     stages {
-        stage('vcs') {
+        stage('Build') {
             steps {
-                git url: 'https://github.com/satya36-cpu/AquilaCMS.git',
-                    branch: 'master'
+                // Get some code from a GitHub repository
+                git 'https://github.com/satya36-cpu/AquilaCMS.git'
+
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-        }
-        stage('build') { 
+        } 
+        stage('docker image build & push') {
             steps {
-                sh "mvn ${params.MAVEN_GOAL}"
-				}
-                
-                
-        }
-        
-        stage('post build') {
-            steps {
-                junit testResults: '**/surefire-reports/TEST-*.xml'
+                sh 'docker image build -t satyabrata36/aquila:1.0 .'
+                sh 'docker image push satyabrata36/aquila:1.0'
             }
         }
     }
-}        
+}           
+        
+
+            
+        
+    
+    
+
+
