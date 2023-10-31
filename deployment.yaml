@@ -17,4 +17,4 @@ spec:
       - name: aquila
         image: satya36-cpu/aquila:1.0
         ports:
-        - containerPort: 3010
+        - containerPort: 8005
