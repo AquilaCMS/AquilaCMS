@@ -15,6 +15,7 @@ const ServiceOrders                                   = require('./orders');
 const ServiceMail                                     = require('./mail');
 const ServicesProducts                                = require('./products');
 const modulesUtils                                    = require('../utils/modules');
+const logger                                          = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
@@ -105,7 +106,7 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
             } else if (updateObject.payment) {
                 filterCode = updateObject.payment[0].mode;
             } else {
-                console.error('successfulPayment() : no payment in object');
+                logger.error('successfulPayment() : no payment in object');
                 return;
             }
         }
@@ -122,13 +123,13 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
         }
         try {
             await ServiceMail.sendMailOrderToClient(_order._id);
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            logger.error(err.message);
         }
         try {
             await ServiceMail.sendMailOrderToCompany(_order._id);
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            logger.error(err.message);
         }
         // We check that the products of the basket are well orderable
         const {bookingStock} = global.aquila.envConfig.stockOrder;
@@ -194,13 +195,13 @@ const successfulPayment = async (query, updateObject, paymentCode = '') => {
             // TODO P6 : Decrease the stock of the product offered
             // if (_cart.promos[0].gifts.length)
             } catch (err) {
-                console.error(err);
+                logger.error(err.message);
             }
         }
         aquilaEvents.emit('aqPaymentReturn', _order._id);
         return _order;
     } catch (err) {
-        console.error('La commande est introuvable:', err);
+        logger.error(`La commande est introuvable: ${err.message}`);
         throw err;
     }
 };
@@ -240,7 +241,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
             await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.amount, date: returnData.operationDate});
         } else {
             ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
-                console.error(err);
+                logger.error(err.message);
             });
         }
     }
@@ -348,10 +349,10 @@ async function immediateCashPayment(req, method) {
         req.params.paymentCode = req.body.paymentMethod;
         const form             = await paymentService.getPaymentForm(req);
         return form;
-    } catch (e) {
-        console.error(e);
-        if (e.status === 404) return {status: 404, code: e.code, message: 'Error with the payment method configuration'};
-        return e;
+    } catch (err) {
+        logger.error(err.message);
+        if (err.status === 404) return {status: 404, code: err.code, message: 'Error with the payment method configuration'};
+        return err;
     }
 }
 

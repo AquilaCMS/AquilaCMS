@@ -9,6 +9,7 @@
 const {AdminRights} = require('../orm/models');
 const QueryBuilder  = require('../utils/QueryBuilder');
 const NSErrors      = require('../utils/errors/NSErrors');
+const logger        = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -20,9 +21,9 @@ const addAdminRight = async (right) => {
     if (!right.code || !right.translate) throw NSErrors.InvalidParameters;
     try {
         return await AdminRights.create(right);
-    } catch (e) {
-        console.error(e);
-        return e;
+    } catch (err) {
+        logger.error(err.message);
+        return err;
     }
 };
 
@@ -30,9 +31,9 @@ const removeAdminRight = async (code) => {
     if (!code) throw NSErrors.InvalidParameters;
     try {
         return await AdminRights.deleteOne({code});
-    } catch (e) {
-        console.error(e);
-        return e;
+    } catch (err) {
+        logger.error(err.message);
+        return err;
     }
 };
 

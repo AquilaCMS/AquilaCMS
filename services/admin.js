@@ -9,6 +9,7 @@
 const {AdminInformation, Categories} = require('../orm/models');
 const servicesLanguages              = require('./languages');
 const utils                          = require('../utils/utils');
+const logger                         = require('../utils/logger');
 
 /**
  * @description Insert adminInformation
@@ -64,7 +65,9 @@ const welcome = async () => {
                 }
             }
         });
-    } catch (e) { console.error(e); }
+    } catch (err) {
+        logger.error(err.message);
+    }
 };
 
 /**

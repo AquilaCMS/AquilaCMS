@@ -13,6 +13,7 @@ const {adminAuth}        = require('../middleware/authentication');
 const serviceModule      = require('../services/modules');
 const NSErrors           = require('../utils/errors/NSErrors');
 const {multerUpload}     = require('../middleware/multer');
+const logger             = require('../utils/logger');
 
 module.exports = function (app) {
     app.post('/v2/modules', adminAuth, getAllModules);
@@ -156,7 +157,7 @@ async function installDependencies(req, res, next) {
     try {
         return res.json(await serviceModule.installDependencies());
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
         next(error);
     }
 }

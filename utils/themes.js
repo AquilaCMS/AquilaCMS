@@ -10,6 +10,7 @@ const path                     = require('path');
 const slash                    = require('slash');
 const fs                       = require('fs');
 const {execCmd, execCmdBase64} = require('aql-utils');
+const logger                   = require('./logger');
 /* /!\ Do not require models so as not to break the order of initiation of models with modules */
 
 /**
@@ -23,11 +24,11 @@ const themeInstallAndCompile = async (theme) => {
             await yarnInstall(themeName);
             await yarnBuildCustom(themeName);
         } else {
-            console.error(`Can't access to ${pathToTheme}`);
+            logger.error(`Can't access to ${pathToTheme}`);
             console.log('Example of use: `npm run build my_theme_folder`');
         }
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         throw new Error(err);
     }
 };
@@ -65,7 +66,7 @@ const yarnBuildCustom = async (themeName = '') => {
             if (typeof initFileOfConfig.build === 'function') {
                 returnValues = await execThemeFile(pathToInit, 'build()', pathToTheme);
                 console.log(returnValues.stdout);
-                console.error(returnValues.stderr);
+                logger.error(returnValues.stderr);
 
                 process.chdir(global.aquila.appRoot);
             } else {
@@ -84,11 +85,11 @@ const yarnBuildCustom = async (themeName = '') => {
                 };
             }
         }
-    } catch (e) {
-        console.error(e);
+    } catch (err) {
+        logger.error(err.message);
         returnValues = {
             stdout : 'Build failed',
-            stderr : e
+            stderr : err
         };
     }
     if (!require('./server').dev) await require('../orm/models/configuration').findOneAndUpdate({}, {'environment.needRebuild': false});

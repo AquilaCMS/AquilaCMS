@@ -12,6 +12,7 @@ const path                     = require('path');
 const {fs, execCmd, restart}   = require('aql-utils');
 const {Modules, Configuration} = require('../orm/models');
 const tmpPath                  = path.resolve('./uploads/temp');
+const logger                   = require('../utils/logger');
 
 /**
  * Compare local version with distant version
@@ -32,7 +33,7 @@ const verifyingUpdate = async () => {
         await downloadURL(fileURL, filePath);
         onlineVersion = fs.readFileSync(filePath).toString().replace('\n', '').trim();
     } catch (exc) {
-        console.error(`Get ${fileURL} failed`);
+        logger.error(`Get ${fileURL} failed`);
     }
     return {
         version    : actualVersion,
@@ -60,7 +61,7 @@ const updateGithub = async () => {
         console.log('Aquila is updated !');
         return restart();
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
         return error;
     }
 };
@@ -87,7 +88,7 @@ const update = async () => {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
     } catch (exc) {
-        console.error(`Get ${fileURL} failed`);
+        logger.error(`Get ${fileURL} failed`);
     }
 
     // Unzip temporary folder
@@ -96,7 +97,7 @@ const update = async () => {
         const zip = new AdmZip(filePath);
         zip.extractAllTo(aquilaPath, true);
     } catch (exc) {
-        console.error(`Unzip ${filePath} failed`);
+        logger.error(`Unzip ${filePath} failed`);
     }
 
     // yarn install du aquila

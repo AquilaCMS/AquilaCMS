@@ -1,6 +1,7 @@
-const path  = require('path');
-const {fs}  = require('aql-utils');
-const utils = require('./utils');
+const path   = require('path');
+const {fs}   = require('aql-utils');
+const utils  = require('./utils');
+const logger = require('./logger');
 
 let loadedModules = '';
 
@@ -59,7 +60,7 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                             if (fs.existsSync(filePath)) {
                                 require(filePath)(resolve, reject, params.server, params.apiRouter, params.passport);
                             } else {
-                                console.error(`File ${filePath} is not present`);
+                                logger.error(`File ${filePath} is not present`);
                             }
                             resolve();
                         } catch (err) {
@@ -79,11 +80,11 @@ const runStepFile = async (aqlModule, filePath, params) => {
         if (fs.existsSync(filePath)) {
             require(filePath)(params);
         } else {
-            console.error(`File ${filePath} is not present`);
+            logger.error(`File ${filePath} is not present`);
         }
     } catch (err) {
         process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
-        console.error(err);
+        logger.error(err.message);
     }
 };
 

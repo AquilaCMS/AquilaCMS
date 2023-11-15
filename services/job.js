@@ -14,6 +14,7 @@ const moment       = require('moment');
 const NSErrors     = require('../utils/errors/NSErrors');
 const utils        = require('../utils/utils');
 const errorMessage = require('../utils/translate/errors');
+const logger       = require('../utils/logger');
 
 /** @type {Agenda} */
 let agenda;
@@ -65,7 +66,7 @@ const initAgendaDB = async () => {
             try {
                 tAgendaJobs = await agenda.jobs({'data.flag': 'system'});
             } catch (error) {
-                console.error(error);
+                logger.error(error.message);
             }
             if (!tAgendaJobs) return;
 
@@ -135,7 +136,7 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[17], '0 0 1 * * *', '/services/job/checkJobsExecution', {fr: 'Verifie l\'execution des crons importants', en: 'Check execution result of important crons'}, 'service', 'system', '', true, '', true);
                         }
                     } catch (error) {
-                        console.error(error);
+                        logger.error(error.message);
                     }
                 }
             }
@@ -148,7 +149,7 @@ const initAgendaDB = async () => {
                         await getPlayJob(job.attrs._id);
                     }
                 } catch (error) {
-                    console.error(error);
+                    logger.error(error.message);
                 }
             }
 
@@ -209,9 +210,9 @@ const agendaDefine = async (name) => {
                     error.job.disable();
                     error.job.attrs.data.lastExecutionResult = 'job_not_supported_request_method';
                     await error.job.save();
-                    console.error(`job_not_supported_request_method: disabled_job_${error.job.attrs.name}`);
+                    logger.error(`job_not_supported_request_method: disabled_job_${error.job.attrs.name}`);
                 } else {
-                    console.error(`job_api_${error}`);
+                    logger.error(`job_api_${error}`);
                 }
                 done();
             }
@@ -395,9 +396,9 @@ const getPlayImmediateJob = async (_id, option, lang) => {
         if (foundJobs && job && job.attrs && job.attrs.data) {
             sError += ` with error ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `;
         }
-        console.error(sError);
+        logger.error(sError);
         if (err.error && err.error.code) {
-            console.error(`Error -> ${err.error.code.toString()}`);
+            logger.error(`Error -> ${err.error.code.toString()}`);
         }
 
         err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : err.message;
@@ -509,22 +510,22 @@ const checkJobsExecution = async () => {
 
         // If the job has never been activated once
         if (!nextRunAt) {
-            console.error(`[cron] Alert! Job ${job.attrs.name} has never been activated !`);
+            logger.error(`[cron] Alert! Job ${job.attrs.name} has never been activated !`);
             jobStatus += `[cron] Alert! Job ${job.attrs.name} has never been activated !<br/>`;
 
         // If the job is disabled and the next execution date has already passed
         } else if (moment(nextRunAt).isBefore(moment()) && job.attrs.disabled) {
-            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt} because it is inactive !`);
+            logger.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt} because it is inactive !`);
             jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')} because it is inactive !<br/>`;
 
         // If the job is enabled and the next execution date has already passed
         } else if (moment(nextRunAt).isBefore(moment()) && !job.attrs.disabled) {
-            console.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt}, even though it is active !`);
+            logger.error(`[cron] Alert! Job ${job.attrs.name} has not launched since ${nextRunAt}, even though it is active !`);
             jobStatus += `[cron] Alert! Job ${job.attrs.name} has not launched since ${moment(nextRunAt).format('LLL')}, even though it is active !<br/>`;
 
         // If job is disabled but the next execution date has not yet been passed
         } else if (job.attrs.disabled) {
-            console.error(`[cron] Be careful! Job ${job.attrs.name} (not launched since ${lastFinishedAt}), is currently deactivated and its next run is scheduled for ${nextRunAt} !`);
+            logger.error(`[cron] Be careful! Job ${job.attrs.name} (not launched since ${lastFinishedAt}), is currently deactivated and its next run is scheduled for ${nextRunAt} !`);
             jobStatus += `[cron] Be careful! Job ${job.attrs.name} (not launched since ${moment(lastFinishedAt).format('LLL')}), is currently deactivated and its next run is scheduled for ${nextRunAt} !<br/>`;
         }
     }
@@ -547,7 +548,7 @@ const notifyJobChecker = async (jobResult) => {
             );
         }
     } catch (err) {
-        console.error('Envoi de mail echoué: ', err.message);
+        logger.error(`Envoi de mail echoué: ${err.message}`);
     }
 };
 

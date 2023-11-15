@@ -12,6 +12,7 @@ const {fs}                         = require('aql-utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
+const logger                       = require('../utils/logger');
 const ServiceLanguages             = require('./languages');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
@@ -49,7 +50,7 @@ const changeTheme = async (selectedTheme, type) => {
             return returnObject;
         }
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         returnObject.message = err;
         returnObject.success = false;
         return returnObject;
@@ -244,7 +245,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
                     });
                 } catch (err) {
                     // error can occur when the "override" is set to false
-                    console.error(err);
+                    logger.error(err.message);
                 }
             }
         }
@@ -268,7 +269,7 @@ const getCustomCss = async (cssName) => {
                 return (await fs.readFile(fullPath)).toString();
             }
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
         }
     }
     throw NSErrors.DesignThemeCssGetAll;
@@ -290,7 +291,7 @@ const setCustomCss = async (cssName, cssValue) => {
                 return;
             }
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
             throw NSErrors.DesignThemeCssSave;
         }
     }
@@ -318,7 +319,7 @@ const getAllCssComponentName = async () => {
                 if (err.code === 'ENOENT') {
                     console.log(`can't find css in folder "${fullPath}"`);
                 } else {
-                    console.error(err);
+                    logger.error(err.message);
                 }
             }
         }
@@ -410,7 +411,7 @@ async function languageInitExec(theme = global.aquila.envConfig.environment.curr
                 console.log('Language init exec log : ', returnValues.stdout);
             } else {
                 returnValues.stdout = 'Language init exec failed';
-                console.error(returnValues.stderr);
+                logger.error(returnValues.stderr);
             }
             return 'OK';
         }

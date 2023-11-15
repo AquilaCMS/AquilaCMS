@@ -12,6 +12,7 @@ const QueryBuilder                                                            = 
 const NSErrors                                                                = require('../utils/errors/NSErrors');
 const utilsMedia                                                              = require('../utils/medias');
 const {Attributes, Categories, SetAttributes, Products, Users, ProductSimple} = require('../orm/models');
+const logger                                                                  = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
@@ -65,7 +66,7 @@ const setAttribute = async (body) => {
     const attribute = await Attributes.findOne({code: body.code});
     if (updateF) {
         if (!attribute) {
-            console.error(`Attribute ${body.code} not found for update`);
+            logger.error(`Attribute ${body.code} not found for update`);
             return;
         }
         // If the usedInFilters is changed from true to false
@@ -228,8 +229,8 @@ const updateObjectAttribute = async (list, attr, path) => {
                 break;
             }
         }
-    } catch (e) {
-        console.error(e);
+    } catch (err) {
+        logger.error(err.message);
     }
 };
 

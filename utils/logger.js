@@ -51,9 +51,21 @@ module.exports = () => {
         }));
     }
 
+    const levels = {
+        emerg  : 0,
+        alert  : 1,
+        crit   : 2,
+        error  : 3,
+        warn   : 4,
+        notice : 5,
+        info   : 6,
+        debug  : 7
+    };
+
     // instantiate a new Winston Logger with the settings defined above
     // eslint-disable-next-line new-cap
-    const logger = new winston.createLogger({
+    const winstonLogger = new winston.createLogger({
+        levels,
         format : combine(timestamp(), printf((info) => {
             if (info.stack) {
                 return `${info.timestamp} [${info.level}] : ${info.message} ${info.stack}`;
@@ -63,31 +75,69 @@ module.exports = () => {
         transports,
         exitOnError : false // do not exit on handled exceptions
     });
+
     // // create a stream object with a 'write' function that will be used by `morgan`
-    logger.stream = {
+    const stream = {
         write(message) {
             // use the 'info' log level so the output will be picked up by both transports (file and console)
-            console.log(message.substring(0, message.lastIndexOf('\n')));
+            winstonLogger.info(message.substring(0, message.lastIndexOf('\n')));
         }
     };
 
-    if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
-        const logStdout = (...args) => {
-            const text = args.join('').replaceAll('%s', '');
-            logger.info.call(logger, text);
-        };
+    class Logger {
+        emerg(...args) {
+            winstonLogger.emerg(...args);
+        }
 
-        const logStderr = (...args) => {
-            logger.error.call(logger, ...args);
-        };
+        alert(...args) {
+            winstonLogger.alert(...args);
+        }
 
-        // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
-        // Override the base console log with winston
-        console.log   = (...args) => logStdout(...args);
-        console.error = (...args) => logStderr(...args);
-        console.info  = (...args) => logStdout(...args);
-        console.warn  = (...args) => logStdout(...args);
+        crit(...args) {
+            winstonLogger.crit(...args);
+        }
+
+        error(...args) {
+            winstonLogger.error(...args);
+        }
+
+        warn(...args) {
+            winstonLogger.warn(...args);
+        }
+
+        notice(...args) {
+            winstonLogger.notice(...args);
+        }
+
+        info(...args) {
+            winstonLogger.info(...args);
+        }
+
+        debug(...args) {
+            winstonLogger.debug(...args);
+        }
+
+        /* if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
+            const logStdout = (...args) => {
+                const text = args.join('').replaceAll('%s', '');
+                logger.info.call(logger, text);
+            };
+
+            const logStderr = (...args) => {
+                logger.error.call(logger, ...args);
+            };
+
+            // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
+            // Override the base console log with winston
+            console.log   = (...args) => logStdout(...args);
+            console.error = (...args) => logStderr(...args);
+            console.info  = (...args) => logStdout(...args);
+            console.warn  = (...args) => logStdout(...args);
+        } */
     }
+
+    const logger = new Logger();
     console.log('Logger initialisé');
-    return logger;
+
+    return {logger, stream};
 };
