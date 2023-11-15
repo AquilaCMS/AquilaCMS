@@ -13,131 +13,151 @@ const WinstonGelf = require('winston-gelf');
 
 const {combine, timestamp, printf} = winston.format;
 const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
-
-const transports = [];
-
-module.exports = () => {
-    if (global.aquila.envFile?.logs?.type?.console) {
-        transports.push(new winston.transports.Console());
+class Logger {
+    constructor() {
+        this.logger = null;
+        this.stream = null;
     }
 
-    if (global.aquila.envFile?.logs?.type?.file) {
-        transports.push(new WinstonDailyRotateFile({
-            level       : 'info',
-            filename    : `${global.aquila.appRoot}/logs/app.log`,
-            datePattern : 'YYYY-MM-DD'
-        }));
-    }
+    init() {
+        const transports = [];
 
-    if (global.aquila.envFile?.logs?.type?.graylog) {
-        const graylogConfig = global.aquila.envFile.logs.config;
-        if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
-            throw new Error('Graylog enable but invalide config config is missing');
+        if (global.aquila.envFile?.logs?.type?.console) {
+            console.log('Logger console activé');
+            transports.push(new winston.transports.Console());
         }
 
-        transports.push(new WinstonGelf({
-        // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
-            gelfPro : {
-                fields : {
-                    env  : process.env.NODE_ENV || 'development',
-                    host : graylogConfig.source || 'AquilaCMS'
-                },
-                adapterName    : 'udp',
-                adapterOptions : {
-                    host : graylogConfig.host, // Replace per your Graylog domain
-                    port : graylogConfig.port
+        if (global.aquila.envFile?.logs?.type?.file) {
+            transports.push(new WinstonDailyRotateFile({
+                level       : 'info',
+                filename    : `${global.aquila.appRoot}/logs/app.log`,
+                datePattern : 'YYYY-MM-DD'
+            }));
+        }
+
+        if (global.aquila.envFile?.logs?.type?.graylog) {
+            const graylogConfig = global.aquila.envFile.logs.config;
+            if (!graylogConfig || !graylogConfig.host || !graylogConfig.port) {
+                throw new Error('Graylog enable but invalide config config is missing');
+            }
+
+            transports.push(new WinstonGelf({
+            // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
+                gelfPro : {
+                    fields : {
+                        env  : process.env.NODE_ENV || 'development',
+                        host : graylogConfig.source || 'AquilaCMS'
+                    },
+                    adapterName    : 'udp',
+                    adapterOptions : {
+                        host : graylogConfig.host, // Replace per your Graylog domain
+                        port : graylogConfig.port
+                    }
                 }
+            }));
+        }
+
+        const levels = {
+            emerg  : 0,
+            alert  : 1,
+            crit   : 2,
+            error  : 3,
+            warn   : 4,
+            notice : 5,
+            info   : 6,
+            debug  : 7
+        };
+
+        // instantiate a new Winston Logger with the settings defined above
+        // eslint-disable-next-line new-cap
+        this.logger = new winston.createLogger({
+            levels,
+            format : combine(timestamp(), printf((info) => {
+                if (info.stack) {
+                    return `${info.timestamp} [${info.level}] : ${info.message} ${info.stack}`;
+                }
+                return `${info.timestamp} [${info.level}] : ${info.message}`;
+            })),
+            transports,
+            exitOnError : false // do not exit on handled exceptions
+        });
+
+        // // create a stream object with a 'write' function that will be used by `morgan`
+        this.stream = {
+            write(message) {
+                // use the 'info' log level so the output will be picked up by both transports (file and console)
+                this.logger.info(message.substring(0, message.lastIndexOf('\n')));
             }
-        }));
+        };
+
+        console.log('Logger initialisé');
     }
 
-    const levels = {
-        emerg  : 0,
-        alert  : 1,
-        crit   : 2,
-        error  : 3,
-        warn   : 4,
-        notice : 5,
-        info   : 6,
-        debug  : 7
-    };
-
-    // instantiate a new Winston Logger with the settings defined above
-    // eslint-disable-next-line new-cap
-    const winstonLogger = new winston.createLogger({
-        levels,
-        format : combine(timestamp(), printf((info) => {
-            if (info.stack) {
-                return `${info.timestamp} [${info.level}] : ${info.message} ${info.stack}`;
-            }
-            return `${info.timestamp} [${info.level}] : ${info.message}`;
-        })),
-        transports,
-        exitOnError : false // do not exit on handled exceptions
-    });
-
-    // // create a stream object with a 'write' function that will be used by `morgan`
-    const stream = {
-        write(message) {
-            // use the 'info' log level so the output will be picked up by both transports (file and console)
-            winstonLogger.info(message.substring(0, message.lastIndexOf('\n')));
+    setLog(level, message) {
+        if (!this.logger) {
+            this.init();
         }
-    };
-
-    class Logger {
-        emerg(...args) {
-            winstonLogger.emerg(...args);
+        if (typeof message !== 'string') {
+            message = JSON.stringify(message);
         }
-
-        alert(...args) {
-            winstonLogger.alert(...args);
-        }
-
-        crit(...args) {
-            winstonLogger.crit(...args);
-        }
-
-        error(...args) {
-            winstonLogger.error(...args);
-        }
-
-        warn(...args) {
-            winstonLogger.warn(...args);
-        }
-
-        notice(...args) {
-            winstonLogger.notice(...args);
-        }
-
-        info(...args) {
-            winstonLogger.info(...args);
-        }
-
-        debug(...args) {
-            winstonLogger.debug(...args);
-        }
-
-        /* if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
-            const logStdout = (...args) => {
-                const text = args.join('').replaceAll('%s', '');
-                logger.info.call(logger, text);
-            };
-
-            const logStderr = (...args) => {
-                logger.error.call(logger, ...args);
-            };
-
-            // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
-            // Override the base console log with winston
-            console.log   = (...args) => logStdout(...args);
-            console.error = (...args) => logStderr(...args);
-            console.info  = (...args) => logStdout(...args);
-            console.warn  = (...args) => logStdout(...args);
-        } */
+        this.logger.log(level, message);
     }
 
-    const logger = new Logger();
-    console.log('Logger initialisé');
+    emerg(...args) {
+        this.setLog('emerg', ...args);
+    }
 
-    return {logger, stream};
-};
+    alert(...args) {
+        this.setLog('alert', ...args);
+    }
+
+    crit(...args) {
+        this.setLog('crit', ...args);
+    }
+
+    error(...args) {
+        this.setLog('error', ...args);
+    }
+
+    warn(...args) {
+        this.setLog('warn', ...args);
+    }
+
+    notice(...args) {
+        this.setLog('notice', ...args);
+    }
+
+    info(...args) {
+        this.setLog('info', ...args);
+    }
+
+    debug(...args) {
+        this.setLog('debug', ...args);
+    }
+
+    log(level, message) {
+        this.setLog(level, message);
+    }
+
+    /* if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
+        const logStdout = (...args) => {
+            const text = args.join('').replaceAll('%s', '');
+            logger.info.call(logger, text);
+        };
+
+        const logStderr = (...args) => {
+            logger.error.call(logger, ...args);
+        };
+
+        // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
+        // Override the base console log with winston
+        console.log   = (...args) => logStdout(...args);
+        console.error = (...args) => logStderr(...args);
+        console.info  = (...args) => logStdout(...args);
+        console.warn  = (...args) => logStdout(...args);
+    } */
+}
+
+const logger = new Logger();
+
+module.exports = logger;
