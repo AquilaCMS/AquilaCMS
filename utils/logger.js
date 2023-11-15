@@ -93,7 +93,7 @@ class Logger {
         console.log('Logger initialisé');
     }
 
-    setLog(level, message) {
+    log(level, message) {
         if (!this.logger) {
             this.init();
         }
@@ -104,39 +104,35 @@ class Logger {
     }
 
     emerg(...args) {
-        this.setLog('emerg', ...args);
+        this.log('emerg', ...args);
     }
 
     alert(...args) {
-        this.setLog('alert', ...args);
+        this.log('alert', ...args);
     }
 
     crit(...args) {
-        this.setLog('crit', ...args);
+        this.log('crit', ...args);
     }
 
     error(...args) {
-        this.setLog('error', ...args);
+        this.log('error', ...args);
     }
 
     warn(...args) {
-        this.setLog('warn', ...args);
+        this.log('warn', ...args);
     }
 
     notice(...args) {
-        this.setLog('notice', ...args);
+        this.log('notice', ...args);
     }
 
     info(...args) {
-        this.setLog('info', ...args);
+        this.log('info', ...args);
     }
 
     debug(...args) {
-        this.setLog('debug', ...args);
-    }
-
-    log(level, message) {
-        this.setLog(level, message);
+        this.log('debug', ...args);
     }
 
     /* if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
