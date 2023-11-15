@@ -134,24 +134,6 @@ class Logger {
     debug(...args) {
         this.log('debug', ...args);
     }
-
-    /* if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
-        const logStdout = (...args) => {
-            const text = args.join('').replaceAll('%s', '');
-            logger.info.call(logger, text);
-        };
-
-        const logStderr = (...args) => {
-            logger.error.call(logger, ...args);
-        };
-
-        // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
-        // Override the base console log with winston
-        console.log   = (...args) => logStdout(...args);
-        console.error = (...args) => logStderr(...args);
-        console.info  = (...args) => logStdout(...args);
-        console.warn  = (...args) => logStdout(...args);
-    } */
 }
 
 const logger = new Logger();
