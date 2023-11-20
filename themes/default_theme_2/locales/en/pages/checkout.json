@@ -42,5 +42,12 @@
     "titleH1" : "Thank you for your order !",
     "summary" : "Recap of my order",
     "viewOrders" : "View my orders"
+  },
+  "error" : {
+    "title" : "My order - Error",
+    "description" : "My order - Error",
+    "titleH1" : "Payment failed!",
+    "paymentNotValidated" : "Order #{{orderId}} has not been validated.",
+    "homeReturn" : "Home page"
   }
 }
