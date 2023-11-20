@@ -23,12 +23,8 @@ const ModulesSchema = new Schema({
     files                : [String],
     active               : {type: Boolean, default: false},
     config               : {type: Object, default: {}},
-    packageDependencies  : {
-        theme : {type: {}, default: {}},
-        api   : {type: {}, default: {}}
-    },
-    type  : {type: String},
-    types : [{
+    type                 : {type: String},
+    types                : [{
         component : {type: String},
         type      : {type: String}
     }],
