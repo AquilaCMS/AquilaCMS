@@ -1,0 +1,25 @@
+{
+  "title": "My orders",
+  "titleNav" : "My orders",
+  "order" : "Order",
+  "view" : "View",
+  "orderSummary" : "Recap of my order",
+  "noOrder": "No order",
+  "status": {
+    "ASK_CANCEL": "Cancellation requested by the customer",
+    "BILLED": "Invoiced",
+    "CANCELED": "cancelled",
+    "DEFAULT": "No status",
+    "DELIVERY_PARTIAL_PROGRESS": "Partial shipment",
+    "DELIVERY_PROGRESS": "Shipped",
+    "FINISHED": "Treaty",
+    "PAID": "Paid",
+    "PAYMENT_CONFIRMATION_PENDING": "Waiting for payment confirmation",
+    "PAYMENT_FAILED": "Payment failed",
+    "PAYMENT_PENDING": "Pending payment",
+    "PAYMENT_RECEIPT_PENDING": "Pending receipt of payment",
+    "PROCESSED": "Processed",
+    "PROCESSING": "In process",
+    "RETURNED": "Return and refund"
+  }
+}

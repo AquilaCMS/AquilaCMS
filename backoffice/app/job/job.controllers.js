@@ -129,6 +129,23 @@ JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', '
                 toastService.toast("danger", $translate.instant("job.detail.infoInvalid"));
                 return;
             }
+            // La fréquence du cron doit être supérieure à 30 secondes
+            if ($scope.job.repeatInterval) {
+                const frequency = $scope.job.repeatInterval.split(' ');
+                if (frequency.length === 6) {
+                    if (frequency[0] === '*') {
+                        toastService.toast("danger", $translate.instant("job.detail.infoInvalidFrequency"));
+                        return;
+                    }
+                    if (frequency[0].includes('/')) {
+                        const interval = frequency[0].split('/')[1];
+                        if (interval < 30) {
+                            toastService.toast("danger", $translate.instant("job.detail.infoInvalidFrequency"));
+                            return;
+                        }
+                    }
+                }
+            }
             var deferred = $q.defer();
             if ($scope.isEditMode) {
                 JobUpdate.update($scope.job, function (response) {

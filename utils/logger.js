@@ -39,7 +39,8 @@ module.exports = () => {
         // You will find all gelfPro options here: https://www.npmjs.com/package/gelf-pro
             gelfPro : {
                 fields : {
-                    env : process.env.NODE_ENV || 'development'
+                    env  : process.env.NODE_ENV || 'development',
+                    host : graylogConfig.source || 'AquilaCMS'
                 },
                 adapterName    : 'udp',
                 adapterOptions : {
@@ -73,13 +74,10 @@ module.exports = () => {
     if (global.aquila.envFile?.logs && global.aquila.envFile?.logs?.override) {
         const logStdout = (...args) => {
             const text = args.join('').replaceAll('%s', '');
-            process.stdout.write(`${text}\n`);
-            return logger.info.call(logger, ...args);
+            logger.info.call(logger, text);
         };
 
         const logStderr = (...args) => {
-            const text = args.join('').replaceAll('%s', '');
-            process.stderr.write(`${text}\n`);
             logger.error.call(logger, ...args);
         };
 

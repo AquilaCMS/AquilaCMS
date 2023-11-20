@@ -166,6 +166,9 @@ const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunc
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
+    if (body.sendResetPassword) {
+        await generateTokenSendMail(body.email, body.lang);
+    }
     servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
         console.error(err);
     });
@@ -203,7 +206,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const emailRegex     = new RegExp(`^${email}$`, 'i');
     const user           = await Users.findOneAndUpdate({email: emailRegex}, {resetPassToken}, {new: true});
     if (!user) {
-        throw NSErrors.NotFound;
+        return {message: email};
     }
     const {appUrl, adminPrefix} = global.aquila.envConfig.environment;
     let link;
