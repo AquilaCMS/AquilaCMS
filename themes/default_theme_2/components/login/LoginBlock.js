@@ -3,6 +3,7 @@ import { useRouter }                   from 'next/router';
 import useTranslation                  from 'next-translate/useTranslation';
 import Button                          from '@components/ui/Button';
 import { auth, sendMailResetPassword } from '@aquilacms/aquila-connector/api/login';
+import { moduleHook }                  from '@lib/utils';
 
 export default function LoginBlock() {
     const [step, setStep]                 = useState(0);
@@ -76,6 +77,9 @@ export default function LoginBlock() {
                                 </div>
                             </div>
                         </div>
+                        {
+                            moduleHook('login')
+                        }
                         {
                             messageLogin && (
                                 <div className={`w-commerce-commerce${messageLogin.type}`}>
