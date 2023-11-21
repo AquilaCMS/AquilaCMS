@@ -551,6 +551,10 @@ module.exports = {
         fr : 'Module info not found',
         en : 'Module info.json introuvable'
     },
+    ModulePackageJsonNotFound : {
+        fr : 'Module package.json not found',
+        en : 'Module package.json introuvable'
+    },
     ModuleAquilaVersionNotSatisfied : {
         fr : 'Version du module Aquila non satisfaite',
         en : 'Module aquila version not satisfied'

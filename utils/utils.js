@@ -307,6 +307,30 @@ const stringifyError = (err, filter, space) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Rename folder with or without .disabled at the end
+ * Useful with modules and themes in order to not be taken into account by yarn workspaces algorithm
+ * @param {string} moduleName
+ * @param {string} subfolderPath
+ * @param {boolean} toBeDisabled
+ * @returns
+ */
+const folderDeactivationMgmt = (moduleName, subfolderPath, toBeDisabled) => {
+    // If we are in devMode, it's way more convenient to not rename folders (be careful, the node_modules folder can become huge)
+    if (!global.aquila.envFile.devMode) {
+        const moduleFolderAbsPath = path.join(global.aquila.appRoot, subfolderPath, moduleName);
+        const moduleNameDisabled  = path.join(global.aquila.appRoot, subfolderPath, `${moduleName}.disabled`);
+
+        if (toBeDisabled && !fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
+            fs.renameSync(moduleFolderAbsPath, moduleNameDisabled);
+        }
+
+        if (!toBeDisabled && fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
+            fs.renameSync(moduleNameDisabled, moduleFolderAbsPath);
+        }
+    }
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -317,5 +341,6 @@ module.exports = {
     isEqual,
     isJsonString,
     isAdmin,
-    stringifyError
+    stringifyError,
+    folderDeactivationMgmt
 };
