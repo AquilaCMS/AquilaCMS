@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState }                    from 'react';
-import Link                                               from 'next/link';
-import { useRouter }                                      from 'next/router';
-import useTranslation                                     from 'next-translate/useTranslation';
-import parse                                              from 'html-react-parser';
-import Button                                             from '@components/ui/Button';
-import { getShipmentCart, cartToOrder }                   from '@aquilacms/aquila-connector/api/cart';
-import { makePayment }                                    from '@aquilacms/aquila-connector/api/payment';
-import { useCart, usePaymentMethods }                     from '@lib/hooks';
-import { formatPrice, isAllVirtualProducts, unsetCookie } from '@lib/utils';
-import i18n                                               from '/i18n';
+import React, { useEffect, useRef, useState }                           from 'react';
+import Link                                                             from 'next/link';
+import { useRouter }                                                    from 'next/router';
+import dynamic                                                          from 'next/dynamic';
+import useTranslation                                                   from 'next-translate/useTranslation';
+import parse                                                            from 'html-react-parser';
+import Button                                                           from '@components/ui/Button';
+import { getShipmentCart, cartToOrder }                                 from '@aquilacms/aquila-connector/api/cart';
+import { makePayment }                                                  from '@aquilacms/aquila-connector/api/payment';
+import { useCart, usePaymentMethods }                                   from '@lib/hooks';
+import { formatPrice, isAllVirtualProducts, unsetCookie, getAqModules } from '@lib/utils';
+import i18n                                                             from '/i18n';
 
 export default function PaymentStep() {
     const timer                         = useRef();
@@ -21,6 +22,7 @@ export default function PaymentStep() {
     const paymentMethods                = usePaymentMethods();
     const { lang, t }                   = useTranslation();
 
+    const aqModules       = getAqModules();
     const defaultLanguage = i18n.defaultLocale;
     
     useEffect(() => {
@@ -112,6 +114,41 @@ export default function PaymentStep() {
     if (!show) {
         return null;
     }
+
+    const renderPaymentMethods = (method, index) => {
+        if (method.component_template_front && aqModules.find((comp) => comp.code === method.component_template_front)) {
+            const AqModule  = dynamic(() => aqModules.find((comp) => comp.code === method.component_template_front).jsx);
+            const component = React.cloneElement(
+                <AqModule />,
+                {
+                    paymentMethod: method,
+                    currency     : 'EUR'
+                }
+            );
+            return (
+                <div key={method._id} className="column-center w-col w-col-12">
+                    <label className="checkbox-click-collect w-radio">
+                        {component}
+                    </label>
+                </div>
+            );
+        }
+        return (
+            <div key={method._id} className="column-center w-col w-col-12">
+                <label className="checkbox-click-collect w-radio">
+                    <input type="radio" name="payment" value={method.code} defaultChecked={index === 0} required style={{ opacity: 0, position: 'absolute', zIndex: -1 }} />
+                    <div className="w-form-formradioinput w-form-formradioinput--inputType-custom radio-retrait w-radio-input"></div>
+                    {
+                        method.urlLogo ? (
+                            <img src={method.urlLogo} alt={method.code} style={{ width: '100px' }} />
+                        ) : (
+                            <span className="checkbox-label w-form-label">{method.name}</span>
+                        )
+                    }
+                </label>
+            </div>
+        );
+    };
     
     return (
         <>
@@ -119,19 +156,7 @@ export default function PaymentStep() {
                 <div className="columns-picker-paiement-tunnel delivery">
                     {
                         paymentMethods ? paymentMethods.map((payment, index) => (
-                            <div key={payment._id} className="column-center w-col w-col-12">
-                                <label className="checkbox-click-collect w-radio">
-                                    <input type="radio" name="payment" value={payment.code} defaultChecked={index === 0} required style={{ opacity: 0, position: 'absolute', zIndex: -1 }} />
-                                    <div className="w-form-formradioinput w-form-formradioinput--inputType-custom radio-retrait w-radio-input"></div>
-                                    {
-                                        payment.urlLogo ? (
-                                            <img src={payment.urlLogo} alt={payment.code} style={{ width: '100px' }} />
-                                        ) : (
-                                            <span className="checkbox-label w-form-label">{payment.name}</span>
-                                        )
-                                    }
-                                </label>
-                            </div>
+                            renderPaymentMethods(payment, index)
                         )) : <p>{t('components/checkout/paymentStep:noPayment')}</p>
                     }
                 </div>

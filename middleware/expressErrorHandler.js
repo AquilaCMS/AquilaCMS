@@ -98,9 +98,11 @@ const expressErrorHandler = (err, req, res, next) => {
             if (getEnv('NODE_ENV') !== 'test') log(err);
             const knownError = mongoErrorCodeToNsError[err.code];
             if (knownError) err = knownError;
-            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
+            // si une traduction existe pour le message d'erreur, on prends le message traduit, sion, on prends le message original
+            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : (err.message || '');
         } else if (err instanceof NSError) {
-            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
+            // si une traduction existe pour le message d'erreur, on prends le message traduit, sion, on prends le message original
+            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : (err.message || '');
             if (getEnv('NODE_ENV') !== 'test') log(err);
         } else if (err instanceof Object && !(err instanceof Error)) {
             err.message = applyTranslation(err, lang);
