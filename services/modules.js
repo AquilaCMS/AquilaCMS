@@ -590,15 +590,18 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(path.resolve(pathModule, file), copyTo);
         console.log(`Copy module's files front : ${path.resolve(pathModule, file)} -> ${copyTo}`);
+        // Delete file in resultDir
+        const index = resultDir.findIndex((f) => f.name === file);
+        if (index !== -1) {
+            resultDir.splice(index, 1);
+        }
     }
 
     // Add the rest of the folders and files
     if (moduleComponentType && moduleComponentType !== 'no-installation') {
         for (let i = 0; i < resultDir.length; i++) {
             const thisDir = path.join(moduleFolderInTheme, resultDir[i].name);
-            if (!fs.existsSync(thisDir)) {
-                await fs.copyRecursive(pathModule + resultDir[i].name, thisDir);
-            }
+            await fs.copyRecursive(pathModule + resultDir[i].name, thisDir, true);
         }
     }
 };
