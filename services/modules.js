@@ -605,10 +605,16 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
             }
         }
 
-        const moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
+        let moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
         if (fs.existsSync(moduleFolderInTheme)) {
             fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
             console.log(`Delete ${moduleFolderInTheme}`);
+        } else {
+            moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', `${moduleName}.disabled`);
+            if (fs.existsSync(moduleFolderInTheme)) {
+                fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
+                console.log(`Delete ${moduleFolderInTheme}`);
+            }
         }
     } else {
         await frontModuleComponentManagement(currentTheme, pathThemeComponents);
