@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Provider }                   from 'react-redux';
 import { DefaultSeo }                 from 'next-seo';
-import GoogleTagManager               from '@components/tools/GoogleTagManager';
+import GenericHoc                     from '@components/common/GenericHoc';
 import FacebookPixel                  from '@components/tools/FacebookPixel';
 import { useStore }                   from '@lib/redux/store';
 import { getAqModules, moduleHook }   from '@lib/utils';
@@ -39,7 +39,7 @@ const AquilaTheme = ({ Component, pageProps }) => {
 
     return (
         <Provider store={store}>
-            <GoogleTagManager>
+            <GenericHoc>
                 <FacebookPixel>
                     <DefaultSeo
                         openGraph={{
@@ -54,7 +54,7 @@ const AquilaTheme = ({ Component, pageProps }) => {
                     { stateModuleHook }
                     <Component {...pageProps} />
                 </FacebookPixel>
-            </GoogleTagManager>
+            </GenericHoc>
         </Provider>
     );
 };
