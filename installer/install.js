@@ -155,6 +155,7 @@ const postConfiguratorDatas = async (req) => {
                 console.log('Installer : end installation of the default theme datas');
             }
             await createListModuleFile('default_theme_2');
+
             // Compilation du theme par default
             console.log('Installer : start default theme compilation');
             await themeInstallAndCompile('default_theme_2');

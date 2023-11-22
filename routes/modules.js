@@ -11,7 +11,6 @@ const {middlewareServer} = require('../middleware');
 const {adminAuthRight}   = require('../middleware/authentication');
 const {adminAuth}        = require('../middleware/authentication');
 const serviceModule      = require('../services/modules');
-const NSErrors           = require('../utils/errors/NSErrors');
 const {multerUpload}     = require('../middleware/multer');
 
 module.exports = function (app) {
@@ -20,7 +19,6 @@ module.exports = function (app) {
     app.post('/v2/modules/upload', adminAuthRight('modules'), multerUpload.any(), uploadModule);
     app.post('/v2/modules/toggle', adminAuthRight('modules'), toggleActiveModule);
     app.delete('/v2/modules/:id', adminAuthRight('modules'), removeModule);
-    app.get('/v2/modules/check', adminAuthRight('modules'), checkDependencies);
     app.post('/v2/module/setConfig', adminAuthRight('modules'), setModuleConfig);
     app.get('/v2/module/installDependencies', adminAuthRight('modules'), installDependencies);
     app.post('/v2/modules/md', adminAuthRight('modules'), getModuleMd);
@@ -42,23 +40,6 @@ const setModuleConfig = async (req, res, next) => {
     try {
         const newConfig = await serviceModule.setConfig(req.body.name, req.body.config);
         return res.json({config: newConfig});
-    } catch (err) {
-        next(err);
-    }
-};
-
-const checkDependencies = async (req, res, next) => {
-    req.setTimeout(300000);
-    try {
-        const {idModule, installation} = req.query;
-        if (!idModule || !installation) throw NSErrors.UnprocessableEntity;
-        let result;
-        if (installation === 'true') {
-            result = await serviceModule.checkDependenciesAtInstallation(idModule);
-        } else {
-            result = await serviceModule.checkDependenciesAtUninstallation(idModule);
-        }
-        res.json(result);
     } catch (err) {
         next(err);
     }
@@ -106,12 +87,12 @@ const uploadModule = async (req, res, next) => {
 const toggleActiveModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
-        const {idModule, toBeChanged, toBeRemoved, active} = req.body;
-        let modules                                        = [];
+        const {idModule, active} = req.body;
+        let modules              = [];
         if (active) {
-            modules = await serviceModule.activateModule(idModule, toBeChanged);
+            modules = await serviceModule.activateModule(idModule);
         } else {
-            modules = await serviceModule.deactivateModule(idModule, toBeChanged, toBeRemoved);
+            modules = await serviceModule.deactivateModule(idModule);
         }
         return res.json(modules);
     } catch (error) {
