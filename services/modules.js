@@ -339,7 +339,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
  * to the backoffice and the theme if exists
  * @param {String} idModule
  */
-const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
+const deactivateModule = async (idModule) => {
     try {
         const _module = (await Modules.findById(idModule)).toObject();
         if (!_module) {
@@ -372,7 +372,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
+        await frontUninstallationActions(_module);
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module deactivated');
@@ -384,7 +384,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
     }
 };
 
-const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => {
+const frontUninstallationActions = async (_module) => {
     const {currentTheme}       = global.aquila.envConfig.environment;
     const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
     if (themeModuleComponent === 'no-installation') {
@@ -398,46 +398,11 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
             true
         );
         console.log('Removing dependencies of the module...');
-        // Remove the dependencies of the module
         if (_module.packageDependencies) {
-            for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
-                let savePackagedependenciesPath;
-                let packagePath;
-                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
-                const packageJSON             = JSON.parse(await fs.readFile(packagePath));
-                packageJSON.dependencies      = {
-                    ...packageJSON.dependencies,
-                    ...toBeChanged[apiOrTheme]
-                };
-                for (const packageToDelete of toBeRemoved[apiOrTheme]) {
-                    delete packageJSON.dependencies[packageToDelete];
-                }
-                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    let found = false;
-                    for (const [name2] of Object.entries(packageJSON.dependencies)) {
-                        if (name === name2) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) packageJSON.dependencies[name] = version;
-                }
-
-                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await execCmd('yarn install', global.aquila.appRoot);
-                // await execCmd('yarn upgrade', installPath);
-            }
+            // At this point the module folder has a ".disabled" at the end so a yarn install will remove the associate dependencies
+            await execCmd('yarn install', global.aquila.appRoot);
         }
     }
-};
-
-const orderPackages = (dependencies) => {
-    const ordered = {};
-    for (const pkg of Object.keys(dependencies).sort()) {
-        ordered[pkg] = dependencies[pkg];
-    }
-    return ordered;
 };
 
 /**
