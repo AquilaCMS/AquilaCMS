@@ -249,7 +249,6 @@ const activateModule = async (idModule, toBeChanged) => {
         }
 
         await execCmd('yarn install', global.aquila.appRoot);
-        await execCmd('yarn upgrade', global.aquila.appRoot);
 
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
@@ -267,7 +266,6 @@ const activateModule = async (idModule, toBeChanged) => {
 const installDependencies = async () => {
     console.log('Modules packageDependencies install start');
     await execCmd('yarn install', global.aquila.appRoot);
-    await execCmd('yarn upgrade', global.aquila.appRoot);
     console.log('Modules packageDependencies installed');
     return true;
 };
