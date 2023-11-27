@@ -308,27 +308,30 @@ const stringifyError = (err, filter, space) => {
 const isAdmin = (info) => info && info.isAdmin;
 
 /**
- * Rename folder with or without .disabled at the end
- * Useful with modules and themes in order to not be taken into account by yarn workspaces algorithm
- * @param {string} moduleName
- * @param {string} subfolderPath
- * @param {boolean} toBeDisabled
+ * Adds or removes module or theme names in workspaces
+ * Useful with modules and themes in order to not be taken into account by yarn workspaces algorithm TODO
+ * @param {string} workspaceName
+ * @param {string} packageJsonFolder
+ * @param {boolean} isAnActivation
  * @returns
  */
-const folderDeactivationMgmt = (moduleName, subfolderPath, toBeDisabled) => {
-    // If we are in devMode, it's way more convenient to not rename folders (be careful, the node_modules folder can become huge)
-    if (!global.aquila.envFile.devMode) {
-        const moduleFolderAbsPath = path.join(global.aquila.appRoot, subfolderPath, moduleName);
-        const moduleNameDisabled  = path.join(global.aquila.appRoot, subfolderPath, `${moduleName}.disabled`);
+const dynamicWorkspacesMgmt = async (workspaceName, packageJsonFolder, isAnActivation) => {
+    const packageJsonAbsPath = path.join(global.aquila.appRoot, packageJsonFolder, 'package.json');
+    const packageJson        = JSON.parse(await fs.readFile(packageJsonAbsPath));
 
-        if (toBeDisabled && !fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
-            fs.renameSync(moduleFolderAbsPath, moduleNameDisabled);
-        }
-
-        if (!toBeDisabled && fs.existsSync(`${moduleFolderAbsPath}.disabled`)) {
-            fs.renameSync(moduleNameDisabled, moduleFolderAbsPath);
-        }
+    if (!packageJson.workspaces) {
+        packageJson.workspaces = [];
     }
+
+    const workspaceIndex = packageJson.workspaces.indexOf(workspaceName);
+    if (workspaceIndex === -1 && isAnActivation) {
+        packageJson.workspaces.push(workspaceName);
+    } else if (workspaceIndex !== -1 && !isAnActivation) {
+        packageJson.workspaces.splice(workspaceIndex, 1);
+    }
+
+    const updatedPackageJson = JSON.stringify(packageJson, null, 2);
+    await fs.writeFile(packageJsonAbsPath, updatedPackageJson);
 };
 
 module.exports = {
@@ -342,5 +345,5 @@ module.exports = {
     isJsonString,
     isAdmin,
     stringifyError,
-    folderDeactivationMgmt
+    dynamicWorkspacesMgmt
 };

@@ -2,7 +2,7 @@ name: Update AquilaCMS Version
 
 on:
   push:
-    branches: [ preprod ]
+    branches: [ master ]
 
 jobs:
   build:

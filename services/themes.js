@@ -9,7 +9,7 @@
 const mongoose                     = require('mongoose');
 const path                         = require('path');
 const {fs}                         = require('aql-utils');
-const {folderDeactivationMgmt}     = require('../utils/utils');
+const {dynamicWorkspacesMgmt}      = require('../utils/utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
@@ -42,8 +42,8 @@ const changeTheme = async (selectedTheme, type) => {
             await updateService.setMaintenance(true);
 
             // Deactivate old theme and activate new theme
-            folderDeactivationMgmt(oldConfig.environment.currentTheme, 'themes/', true);
-            folderDeactivationMgmt(selectedTheme, 'themes/', false);
+            dynamicWorkspacesMgmt(oldConfig.environment.currentTheme, 'themes', false);
+            dynamicWorkspacesMgmt(selectedTheme, 'themes', true);
 
             await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
@@ -61,8 +61,8 @@ const changeTheme = async (selectedTheme, type) => {
         returnObject.success = false;
 
         // Reactivate old theme and deactivate selected theme
-        folderDeactivationMgmt(oldConfig.environment.currentTheme, 'themes/', false);
-        folderDeactivationMgmt(selectedTheme, 'themes/', true);
+        dynamicWorkspacesMgmt(oldConfig.environment.currentTheme, 'themes', true);
+        dynamicWorkspacesMgmt(selectedTheme, 'themes', false);
 
         return returnObject;
     }

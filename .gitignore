@@ -45,7 +45,8 @@ config/dynamic_langs.js
 
 /config/envPath
 /uploads
-/modules
+modules/*
+!modules/package.json
 log
 /_VS
 /logs
@@ -126,5 +127,5 @@ log
 # Themes exceptions
 !/themes/default_theme_2
 !/themes/README.md
-!/themes/.gitignore
+!/themes/package.json
 package-lock.json
