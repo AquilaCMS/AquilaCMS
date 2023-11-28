@@ -88,60 +88,12 @@ const errorModule = async (target_path_full) => {
     }
 };
 
-/**
- *
- * @param {any} myModule
- * @param {any} modulesActivated
- * @param {boolean} install
- * @returns {{api: {[index: string]: string}, theme: {[index: string]: string}}}
- */
-const compareDependencies = (myModule, modulesActivated, install = true) => {
-    const sameDependencies = {
-        api   : {},
-        theme : {}
-    };
-    for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-        for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
-            if (!sameDependencies[apiOrTheme][name]) {
-                sameDependencies[apiOrTheme][name] = install ? new Set() : [];
-            }
-            if (install) {
-                sameDependencies[apiOrTheme][name].add(version);
-            } else {
-                sameDependencies[apiOrTheme][name].push(version);
-            }
-            if (modulesActivated.length > 0) {
-                for (const elem of modulesActivated) {
-                    if (
-                        elem.packageDependencies
-                        && elem.packageDependencies[apiOrTheme]
-                    ) {
-                        for (const [name1, version1] of Object.entries(elem.packageDependencies[apiOrTheme])) {
-                            if (name1 === name) {
-                                if (install) {
-                                    sameDependencies[apiOrTheme][name1].add(version1);
-                                } else {
-                                    sameDependencies[apiOrTheme][name1].push(version1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return sameDependencies;
-};
-
-/**
- * @param {any} module
- */
 const checkModuleDepencendiesAtInstallation = async (module) => {
     if (module.moduleDependencies) {
         const missingDependencies = [];
         const needActivation      = [];
         const {Modules}           = require('../orm/models');
-        const allmodule           = await Modules.find({}, {name: 1, active: 1});
+        const allmodule           = await Modules.find({}, {name: 1, active: 1}).lean();
 
         for (const elem of module.moduleDependencies) {
             const found = allmodule.find((mod) => mod.name === elem);
@@ -199,7 +151,6 @@ module.exports = {
     createListModuleFile,
     displayListModule,
     errorModule,
-    compareDependencies,
     checkModuleDepencendiesAtInstallation,
     checkModuleDepencendiesAtUninstallation
 };

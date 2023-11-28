@@ -1,6 +1,7 @@
 # Themes
 
 Theme folders must be placed in this directory
+Be careful: the name field in the theme package.json and the theme folder must have the same name.
 
 ## Options
 

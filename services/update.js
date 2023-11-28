@@ -6,19 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const axios                    = require('axios');
-const AdmZip                   = require('adm-zip');
-const path                     = require('path');
-const {fs, execCmd, restart}   = require('aql-utils');
-const {Modules, Configuration} = require('../orm/models');
-const tmpPath                  = path.resolve('./uploads/temp');
-const logger                   = require('../utils/logger');
+const axios                  = require('axios');
+const AdmZip                 = require('adm-zip');
+const path                   = require('path');
+const {fs, execCmd, restart} = require('aql-utils');
+const logger                 = require('../utils/logger');
+const {Configuration}        = require('../orm/models');
+const tmpPath                = path.resolve('./uploads/temp');
+const packageJSONPath        = path.resolve(global.aquila.appRoot, 'package.json');
 
 /**
  * Compare local version with distant version
  */
 const verifyingUpdate = async () => {
-    const actualVersion = JSON.parse(fs.readFileSync(path.resolve(global.aquila.appRoot, './package.json'))).version;
+    const actualVersion = JSON.parse(fs.readFileSync(packageJSONPath)).version;
 
     // Create the /uploads/temp folder if it doesn't exist
     if (!fs.existsSync(tmpPath)) {
@@ -76,39 +77,31 @@ const update = async () => {
 
     const fileURL  = `https://last-aquila.s3-eu-west-1.amazonaws.com/Aquila-${version}.zip`;
     const filePath = `${tmpPath}//Aquila-${version}.zip`;
-    let aquilaPath = './';
-
-    const devMode = global.aquila.envFile.devMode;
-    if (typeof devMode !== 'undefined') {
-        aquilaPath = tmpPath;
-    }
 
     // Download the file
     try {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
-    } catch (exc) {
+    } catch (err) {
         logger.error(`Get ${fileURL} failed`);
     }
 
-    // Unzip temporary folder
+    const oldPackageJSON = JSON.parse(await fs.readFile(packageJSONPath));
+    const workspaces     = oldPackageJSON.workspaces;
+
     try {
         console.log('Extracting archive...');
-        const zip = new AdmZip(filePath);
+        const zip        = new AdmZip(filePath);
+        const aquilaPath = global.envFile.devMode ? tmpPath : './';
         zip.extractAllTo(aquilaPath, true);
-    } catch (exc) {
+    } catch (err) {
         logger.error(`Unzip ${filePath} failed`);
     }
+    const packageJSON              = JSON.parse(await fs.readFile(packageJSONPath));
+    packageJSON.package.workspaces = workspaces;
+    await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
 
-    // yarn install du aquila
     await execCmd('yarn install');
-    const modules = await Modules.find({active: true});
-
-    for (const module of modules) {
-        if (module.packageDependencies && module.packageDependencies.api && module.packageDependencies.api.length > 0) {
-            await execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`);
-        }
-    }
 
     await fs.unlink(filePath);
     await setMaintenance(false);
@@ -121,7 +114,7 @@ const update = async () => {
 /**
  * Download file from url to destination folder
  * @param {String | Buffer | URL} url
- * @param {String Buffer | | URL} dest
+ * @param {String | Buffer | URL} dest
  */
 async function downloadURL(url, dest) {
     const request = await axios({

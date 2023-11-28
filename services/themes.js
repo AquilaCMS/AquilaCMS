@@ -9,6 +9,7 @@
 const mongoose                     = require('mongoose');
 const path                         = require('path');
 const {fs}                         = require('aql-utils');
+const {dynamicWorkspacesMgmt}      = require('../utils/utils');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
@@ -40,11 +41,17 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
+
+            // Deactivate old theme and activate new theme
+            dynamicWorkspacesMgmt(oldConfig.environment.currentTheme, 'themes', false);
+            dynamicWorkspacesMgmt(selectedTheme, 'themes', true);
+
             await require('./modules').frontModuleComponentManagement(selectedTheme);
             return returnObject;
         }
         if (type === 'after') {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+
             await updateService.setMaintenance(false);
             returnObject.msg = 'OK';
             return returnObject;
@@ -53,6 +60,11 @@ const changeTheme = async (selectedTheme, type) => {
         logger.error(err.message);
         returnObject.message = err;
         returnObject.success = false;
+
+        // Reactivate old theme and deactivate selected theme
+        dynamicWorkspacesMgmt(oldConfig.environment.currentTheme, 'themes', true);
+        dynamicWorkspacesMgmt(selectedTheme, 'themes', false);
+
         return returnObject;
     }
     throw NSErrors.SameTheme;
@@ -464,7 +476,9 @@ const listTheme = async () => {
         const pathToFolder = path.join(pathToTheme, element);
         const fileOrFolder = await fs.stat(pathToFolder);
         if (fileOrFolder.isDirectory()) {
-            allTheme.push(element);
+            let theme = element;
+            if (theme.includes('.disabled')) theme = theme.split('.disabled')[0].trim(); // We don't want to see the '.disabled' when list themes
+            allTheme.push(theme);
         }
     }
     return allTheme;

@@ -42,5 +42,12 @@
     "titleH1" : "Merci pour votre commande !",
     "summary" : "Récapitulatif de ma commande",
     "viewOrders" : "Voir mes commandes"
+  },
+  "error" : {
+    "title" : "Ma commande - Erreur",
+    "description" : "Ma commande - Erreur",
+    "titleH1" : "Paiement échoué !",
+    "paymentNotValidated" : "La commande #{{orderId}} n'a pas été validée",
+    "homeReturn" : "Retour à l'accueil"
   }
 }

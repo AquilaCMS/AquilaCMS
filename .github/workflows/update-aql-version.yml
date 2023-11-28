@@ -2,7 +2,7 @@ name: Update AquilaCMS Version
 
 on:
   push:
-    branches: [ preprod ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -16,6 +16,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    # Test outdated componants
+    - name: Test outdated componants
+      continue-on-error: true
+      run: npm outdated
+
     - name: Add new version in package.json
       run: |
         export packageFile=`cat package.json`
@@ -67,4 +73,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'preprod'
+        branch: 'master'

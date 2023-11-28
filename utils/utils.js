@@ -308,6 +308,33 @@ const stringifyError = (err, filter, space) => {
  */
 const isAdmin = (info) => info && info.isAdmin;
 
+/**
+ * Adds or removes module or theme names in workspaces
+ * Useful with modules and themes in order to not be taken into account by yarn workspaces algorithm TODO
+ * @param {string} workspaceName
+ * @param {string} packageJsonFolder
+ * @param {boolean} isAnActivation
+ * @returns
+ */
+const dynamicWorkspacesMgmt = async (workspaceName, packageJsonFolder, isAnActivation) => {
+    const packageJsonAbsPath = path.join(global.aquila.appRoot, packageJsonFolder, 'package.json');
+    const packageJson        = JSON.parse(await fs.readFile(packageJsonAbsPath));
+
+    if (!packageJson.workspaces) {
+        packageJson.workspaces = [];
+    }
+
+    const workspaceIndex = packageJson.workspaces.indexOf(workspaceName);
+    if (workspaceIndex === -1 && isAnActivation) {
+        packageJson.workspaces.push(workspaceName);
+    } else if (workspaceIndex !== -1 && !isAnActivation) {
+        packageJson.workspaces.splice(workspaceIndex, 1);
+    }
+
+    const updatedPackageJson = JSON.stringify(packageJson, null, 2);
+    await fs.writeFile(packageJsonAbsPath, updatedPackageJson);
+};
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -318,5 +345,6 @@ module.exports = {
     isEqual,
     isJsonString,
     isAdmin,
-    stringifyError
+    stringifyError,
+    dynamicWorkspacesMgmt
 };

@@ -13,8 +13,8 @@ const rimraf                      = require('rimraf');
 const semver                      = require('semver');
 const slash                       = require('slash');
 const {fs, aquilaEvents, execCmd} = require('aql-utils');
+const {dynamicWorkspacesMgmt}     = require('../utils/utils');
 const utilsThemes                 = require('../utils/themes');
-const {isEqual}                   = require('../utils/utils');
 const QueryBuilder                = require('../utils/QueryBuilder');
 const modulesUtils                = require('../utils/modules');
 const {getEnv}                    = require('../utils/server');
@@ -26,6 +26,7 @@ const themesService               = require('./themes');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
+const moduleFolderName = 'modules/';
 
 /**
  * Get modules
@@ -72,7 +73,6 @@ const initModule = async (files) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolderName    = 'modules/';
     const moduleFolderAbsPath = path.resolve(global.aquila.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
     const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
     const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
@@ -83,11 +83,12 @@ const initModule = async (files) => {
     await fs.unlink(path.resolve(global.aquila.appRoot, filepath));
 
     try {
-        const zip      = new AdmZip(zipFilePath);
-        const infojson = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
-        if (!infojson) {
-            throw NSErrors.ModuleInfoNotFound; // info.json not found in zip
-        } else if (originalname.replace('.zip', '') !== JSON.parse(infojson.getData().toString()).info.name) {
+        const zip         = new AdmZip(zipFilePath);
+        const packageJson = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
+        const infojson    = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
+        if (!packageJson) {
+            throw NSErrors.ModuleInfoNotFound; // package.json not found in zip
+        } else if (originalname.replace('.zip', '') !== JSON.parse(packageJson.getData().toString()).name) {
             throw NSErrors.ModuleNameMissmatch;
         }
         const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
@@ -102,7 +103,7 @@ const initModule = async (files) => {
         for (const zipEntry of zip.getEntries()) {
             if (
                 zipEntry.entryName === originalname.replace('.zip', '/')
-                    || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
+                || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
             ) {
                 found = true;
             }
@@ -121,20 +122,24 @@ const initModule = async (files) => {
             });
         });
         console.log('Unzip module ok, reading info.json...');
+
         const infoPath = path.resolve(extractZipFilePath, 'info.json');
-        if (!fs.existsSync(infoPath)) {
-            throw NSErrors.ModuleInfoNotFound;
-        }
-        let infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'));
-        infoFile     = infoFile.toString();
-        const {info} = JSON.parse(infoFile);
+        if (!fs.existsSync(infoPath)) throw NSErrors.ModuleInfoNotFound;
+        const infoFile = await fs.readFile(infoPath, 'utf8'); // TODO : to be removed when no more info.json is used
+
+        const packageFilePath = path.resolve(extractZipFilePath, 'package.json');
+        if (!fs.existsSync(packageFilePath)) throw NSErrors.ModulePackageJsonNotFound;
+        const packageFile = await fs.readFile(packageFilePath, 'utf8');
+
+        const packageJSON = JSON.parse(packageFile);
+        const {info}      = JSON.parse(infoFile);
         console.log('Installing module...');
 
-        const myModule  = await Modules.findOne({name: info.name});
-        const newModule = await Modules.findOneAndUpdate({name: info.name}, {
-            name                     : info.name,
-            description              : info.description,
-            version                  : info.version,
+        const myModule  = await Modules.findOne({name: packageJSON.name});
+        const newModule = await Modules.findOneAndUpdate({name: packageJSON.name}, {
+            name                     : packageJSON.name,
+            description              : packageJSON.description,
+            version                  : packageJSON.version,
             path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
@@ -142,7 +147,6 @@ const initModule = async (files) => {
             loadApp                  : info.loadApp,
             loadTranslationBack      : info.loadTranslationBack,
             loadTranslationFront     : info.loadTranslationFront,
-            packageDependencies      : info.packageDependencies || {},
             moduleDependencies       : info.moduleDependencies,
             component_template_front : info.component_template_front || null,
             files                    : info.files || [],
@@ -155,22 +159,22 @@ const initModule = async (files) => {
         // Check if the functions init, initAfter, uninit and rgpd are present
         const pathUninit = path.join(extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
-            logger.error(`Uninit file is missing for : ${info.name}`);
+            logger.error(`Uninit file is missing for : ${packageJSON.name}`);
         }
 
         const pathInit = path.join(extractZipFilePath, 'init.js');
         if (!fs.existsSync(pathInit)) {
-            logger.error(`Init file is missing for : ${info.name}`);
+            logger.error(`Init file is missing for : ${packageJSON.name}`);
         }
 
         const pathInitAfter = path.join(extractZipFilePath, 'initAfter.js');
         if (!fs.existsSync(pathInitAfter)) {
-            logger.error(`InitAfter file is missing for : ${info.name}`);
+            logger.error(`InitAfter file is missing for : ${packageJSON.name}`);
         }
 
         const pathRgpd = path.join(extractZipFilePath, 'rgpd.js');
         if (!fs.existsSync(pathRgpd)) {
-            logger.error(`RGPD file is missing for : ${info.name}`);
+            logger.error(`RGPD file is missing for : ${packageJSON.name}`);
         }
 
         console.log('Module installed');
@@ -196,160 +200,6 @@ const initModule = async (files) => {
     }
 };
 
-const checkDependenciesAtInstallation = async (idModule) => {
-    const myModule = (await Modules.findById(idModule)).toObject();
-    const response = {
-        toBeChanged : {
-            api   : {},
-            theme : {}
-        },
-        alreadyInstalled : {
-            api   : {},
-            theme : {}
-        },
-        needUpgrade : false
-    };
-    if (myModule.packageDependencies && (myModule.packageDependencies.api || myModule.packageDependencies.theme)) {
-        const modulesActivated = await Modules.find({_id: {$ne: idModule}, active: true}, 'packageDependencies');
-        response.toBeChanged   = modulesUtils.compareDependencies(myModule, modulesActivated, true);
-
-        /**
-         * We use npm because yarn currently can't return only installed package
-         * from package.json but from all dependencies of all packages
-         * @see https://github.com/yarnpkg/yarn/issues/3569
-         */
-        for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-            if (myModule.packageDependencies[apiOrTheme]) {
-                let savePackagedependenciesPath;
-                if (apiOrTheme === 'api') {
-                    savePackagedependenciesPath = path.join(global.aquila.appRoot, 'package.json');
-                } else if (apiOrTheme === 'theme') {
-                    savePackagedependenciesPath = path.join(
-                        global.aquila.appRoot,
-                        'themes',
-                        global.aquila.envConfig.environment.currentTheme,
-                        'package.json'
-                    );
-                }
-                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
-                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    if (response.toBeChanged[apiOrTheme][name]) {
-                        response.toBeChanged[apiOrTheme][name].add(version);
-                        response.alreadyInstalled[apiOrTheme][name] = version;
-                    }
-                }
-            }
-        }
-        for (const apiOrTheme of Object.keys(response.toBeChanged)) {
-            for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
-                response.toBeChanged[apiOrTheme][value] = [...response.toBeChanged[apiOrTheme][value]];
-            }
-        }
-        for (const apiOrTheme of Object.keys(response.toBeChanged)) {
-            for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
-                if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
-                    response.needUpgrade = true;
-                    break;
-                }
-            }
-            if (response.needUpgrade) break;
-        }
-    }
-    return response;
-};
-
-const checkDependenciesAtUninstallation = async (idModule) => {
-    const myModule = (await Modules.findById(idModule)).toObject();
-    const response = {
-        toBeRemoved : {
-            api   : [],
-            theme : []
-        },
-        toBeChanged : {
-            api   : {},
-            theme : {}
-        },
-        alreadyInstalled : {
-            api   : {},
-            theme : {}
-        },
-        needUpgrade : false
-    };
-    if (myModule.packageDependencies && (myModule.packageDependencies.api || myModule.packageDependencies.theme)) {
-        const modulesActivated = await Modules.find({_id: {$ne: idModule}, active: true}, 'packageDependencies');
-        const result           = {
-            api   : {},
-            theme : {}
-        };
-
-        for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-            for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
-                if (!result[apiOrTheme][name]) {
-                    result[apiOrTheme][name] = [];
-                }
-                result[apiOrTheme][name].push(version);
-            }
-
-            for (const pkg of modulesActivated) {
-                if (pkg.packageDependencies && pkg.packageDependencies[apiOrTheme]) {
-                    for (const [name, version] of Object.entries(pkg.packageDependencies[apiOrTheme])) {
-                        if (result[apiOrTheme][name]) {
-                            result[apiOrTheme][name].push(version);
-                        }
-                    }
-                }
-            }
-            for (const [name, versions] of Object.entries(result[apiOrTheme])) {
-                if (!response.toBeChanged[apiOrTheme][name]) {
-                    if (versions.length > 1) {
-                        response.toBeChanged[apiOrTheme][name] = [];
-                        response.toBeChanged[apiOrTheme][name].push(...[...new Set(versions)]);
-                    } else if (versions.length === 1) {
-                        response.toBeRemoved[apiOrTheme].push(name);
-                    }
-                }
-            }
-            if (myModule.packageDependencies[apiOrTheme]) {
-                let packageDependenciesPath;
-                if (apiOrTheme === 'api') {
-                    packageDependenciesPath = path.join(global.aquila.appRoot, 'package.json');
-                } else if (apiOrTheme === 'theme') {
-                    packageDependenciesPath = path.join(
-                        global.aquila.appRoot,
-                        'themes',
-                        global.aquila.envConfig.environment.currentTheme,
-                        'package.json'
-                    );
-                }
-                const savePackagedependencies = JSON.parse(await fs.readFile(packageDependenciesPath));
-                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    if (result[apiOrTheme][name]) {
-                        response.alreadyInstalled[apiOrTheme][name] = version.version ? version.version : version;
-                    }
-                }
-            }
-            for (const [name, versions] of Object.entries(response.toBeChanged[apiOrTheme])) {
-                if (
-                    response.alreadyInstalled[name]
-                    && versions.indexOf(response.alreadyInstalled[apiOrTheme][name]) === -1
-                ) {
-                    response.toBeChanged[apiOrTheme][name].push(response.alreadyInstalled[apiOrTheme][name]);
-                }
-            }
-        }
-        for (const apiOrTheme of Object.keys(response.toBeChanged)) {
-            for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
-                if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
-                    response.needUpgrade = true;
-                    break;
-                }
-            }
-            if (response.needUpgrade) break;
-        }
-    }
-    return response;
-};
-
 /**
  * Module : copy (back & front) from / modules, activate the module,
  * npm install back (in aquila), npm install for the theme (with active modules)
@@ -360,8 +210,13 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy  = `backoffice/app/${myModule.name}`;
-        const copyF = `modules/${myModule.name}/app/`;
+        const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, myModule.name);
+
+        // Add module name to the module package json workspaces field
+        dynamicWorkspacesMgmt(myModule.name, 'modules', true);
+
+        const copy  = path.join(global.aquila.appRoot, 'backoffice', 'app', myModule.name);
+        const copyF = path.join(moduleFolderAbsPath, 'app');
         let copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
@@ -394,11 +249,7 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
-        // If the module contains dependencies usable in the front or api
-        // then we run the install to install the dependencies in aquila
-        if (myModule.packageDependencies) {
-            await installModulesDependencies(myModule, toBeChanged);
-        }
+        await execCmd('yarn install', global.aquila.appRoot);
 
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
@@ -411,6 +262,13 @@ const activateModule = async (idModule, toBeChanged) => {
         err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
+};
+
+const installDependencies = async () => {
+    console.log('Modules packageDependencies install start');
+    await execCmd('yarn install', global.aquila.appRoot);
+    console.log('Modules packageDependencies installed');
+    return true;
 };
 
 const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
@@ -475,66 +333,25 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     return copyTab;
 };
 
-const installModulesDependencies = async (myModule, toBeChanged) => {
-    for (const apiOrTheme of Object.keys(toBeChanged)) {
-        if (apiOrTheme !== 'theme' && apiOrTheme !== 'api') continue;
-        let installPath = global.aquila.appRoot;
-        let position    = 'aquila';
-        let packagePath = path.resolve(installPath, 'package.json');
-        if (apiOrTheme === 'theme') {
-            installPath = path.resolve(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme);
-            position    = 'the theme';
-            packagePath = path.resolve(installPath, 'package.json');
-        }
-        if (myModule.packageDependencies && myModule.packageDependencies[apiOrTheme]) {
-            const packageJSON  = JSON.parse(await fs.readFile(packagePath));
-            const dependencies = {
-                ...packageJSON.dependencies,
-                ...myModule.packageDependencies[apiOrTheme],
-                ...toBeChanged[apiOrTheme]
-            };
-            if (!isEqual(packageJSON.dependencies, dependencies)) {
-                packageJSON.dependencies = {
-                    ...packageJSON.dependencies,
-                    ...myModule.packageDependencies[apiOrTheme],
-                    ...toBeChanged[apiOrTheme]
-                };
-                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                console.log(`Installing dependencies of the module in ${position}...`);
-                await execCmd('yarn install', installPath);
-                // await execCmd('yarn upgrade', installPath);
-            }
-        }
-    }
-};
-
-const installDependencies = async () => {
-    // get active modules
-    console.log('Modules packageDependecies install start');
-    const modules = await getModules({filter: {active: true}, structure: '*', limit: 99, lean: true});
-    for (const module of modules.datas) {
-        const moduleDependencies = require(path.join((module.path.startsWith('module') ? (`../${module.path}`) :  module.path), 'info.json')).info.packageDependencies;
-        if (moduleDependencies) {await installModulesDependencies(module, moduleDependencies);}
-    }
-    console.log('Modules packageDependecies installed');
-    return true;
-};
-
 /**
  * Deactivate a module by id and delete file moved
  * to the backoffice and the theme if exists
  * @param {String} idModule
- * @param {{api: {}, theme: {}}} toBeChanged
- * @param {{api: {}, theme: {}}} toBeRemoved
  */
-const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
+const deactivateModule = async (idModule) => {
     try {
         const _module = (await Modules.findById(idModule)).toObject();
         if (!_module) {
             throw NSErrors.ModuleNotFound;
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+
+        // Add module name to the module package json workspaces field
+        dynamicWorkspacesMgmt(_module.name, 'modules', false);
+
+        // We have to update dependencies to remove dependencies from this module
+        await execCmd('yarn install', global.aquila.appRoot);
+
         await removeModuleAddon(_module);
 
         // Deleting copied files
@@ -557,7 +374,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await frontUninstallationActions(_module, toBeChanged, toBeRemoved);
+        await frontUninstallationActions(_module);
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module deactivated');
@@ -569,7 +386,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
     }
 };
 
-const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => {
+const frontUninstallationActions = async (_module) => {
     const {currentTheme}       = global.aquila.envConfig.environment;
     const themeModuleComponent = await retrieveModuleComponentType(currentTheme);
     if (themeModuleComponent === 'no-installation') {
@@ -583,60 +400,11 @@ const frontUninstallationActions = async (_module, toBeChanged, toBeRemoved) => 
             true
         );
         console.log('Removing dependencies of the module...');
-        // Remove the dependencies of the module
         if (_module.packageDependencies) {
-            for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
-                let installPath;
-                let savePackagedependenciesPath;
-                let packagePath;
-                if (apiOrTheme === 'api') {
-                    installPath                 = global.aquila.appRoot;
-                    savePackagedependenciesPath = path.join(global.aquila.appRoot, 'package-aquila.json');
-                    packagePath                 = path.resolve(installPath, 'package.json');
-                } else if (apiOrTheme === 'theme') {
-                    installPath                 = path.resolve(
-                        global.aquila.appRoot,
-                        'themes',
-                        global.aquila.envConfig.environment.currentTheme
-                    );
-                    savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
-                    packagePath                 = path.resolve(installPath, 'package.json');
-                }
-                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
-                const packageJSON             = JSON.parse(await fs.readFile(packagePath));
-                packageJSON.dependencies      = {
-                    ...packageJSON.dependencies,
-                    ...toBeChanged[apiOrTheme]
-                };
-                for (const packageToDelete of toBeRemoved[apiOrTheme]) {
-                    delete packageJSON.dependencies[packageToDelete];
-                }
-                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    let found = false;
-                    for (const [name2] of Object.entries(packageJSON.dependencies)) {
-                        if (name === name2) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) packageJSON.dependencies[name] = version;
-                }
-
-                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await execCmd('yarn install', installPath);
-                // await execCmd('yarn upgrade', installPath);
-            }
+            // At this point the module folder has a ".disabled" at the end so a yarn install will remove the associate dependencies
+            await execCmd('yarn install', global.aquila.appRoot);
         }
     }
-};
-
-const orderPackages = (dependencies) => {
-    const ordered = {};
-    for (const pkg of Object.keys(dependencies).sort()) {
-        ordered[pkg] = dependencies[pkg];
-    }
-    return ordered;
 };
 
 /**
@@ -738,10 +506,13 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     const currentTheme       = theme || global.aquila.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const pathToThemeModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules');
 
+    const packageJson   = await fs.readFile(path.join(savePath, 'package.json'));
+    const parsedpkgJson = JSON.parse(packageJson);
+
     const info       = await fs.readFile(path.join(savePath, 'info.json'));
     const parsedInfo = JSON.parse(info);
 
-    const moduleFolderInTheme = path.join(pathToThemeModules, parsedInfo.info.name);
+    const moduleFolderInTheme = path.join(pathToThemeModules, parsedpkgJson.name);
     if (!fs.existsSync(moduleFolderInTheme)) {
         fs.mkdirSync(moduleFolderInTheme);
     }
@@ -761,7 +532,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
             type = '';
         }
         const fileNameWithoutModule = file.replace('.js', '').toLowerCase(); // ComponentName.js -> componentname
-        const jsxModuleToImport     = `{jsx: require('./${parsedInfo.info.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
+        const jsxModuleToImport     = `{jsx: ${moduleComponentType !== '' ? 'import' : 'require'}('./${parsedpkgJson.name}/${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}'},`;
         const result                = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
@@ -784,17 +555,20 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         ];
         // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
-        fs.copyFileSync(pathModule + file, copyTo);
-        console.log(`Copy module's files front : ${pathModule + file} -> ${copyTo}`);
+        fs.copyFileSync(path.resolve(pathModule, file), copyTo);
+        console.log(`Copy module's files front : ${path.resolve(pathModule, file)} -> ${copyTo}`);
+        // Delete file in resultDir
+        const index = resultDir.findIndex((f) => f.name === file);
+        if (index !== -1) {
+            resultDir.splice(index, 1);
+        }
     }
 
     // Add the rest of the folders and files
     if (moduleComponentType && moduleComponentType !== 'no-installation') {
         for (let i = 0; i < resultDir.length; i++) {
             const thisDir = path.join(moduleFolderInTheme, resultDir[i].name);
-            if (!fs.existsSync(thisDir)) {
-                await fs.copyRecursive(pathModule + resultDir[i].name, thisDir);
-            }
+            await fs.copyRecursive(pathModule + resultDir[i].name, thisDir, true);
         }
     }
 };
@@ -833,10 +607,16 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
             }
         }
 
-        const moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
+        let moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
         if (fs.existsSync(moduleFolderInTheme)) {
             fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
             console.log(`Delete ${moduleFolderInTheme}`);
+        } else {
+            moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', `${moduleName}.disabled`);
+            if (fs.existsSync(moduleFolderInTheme)) {
+                fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
+                console.log(`Delete ${moduleFolderInTheme}`);
+            }
         }
     } else {
         await frontModuleComponentManagement(currentTheme, pathThemeComponents);
@@ -1029,8 +809,6 @@ module.exports = {
     getModule,
     setModuleConfigById,
     initModule,
-    checkDependenciesAtInstallation,
-    checkDependenciesAtUninstallation,
     activateModule,
     installDependencies,
     deactivateModule,
