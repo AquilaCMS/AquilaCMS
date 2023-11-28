@@ -16,6 +16,7 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
+const logger           = require('../utils/logger');
 const ServiceRules     = require('./rules');
 const ServiceCache     = require('./cache');
 const ServiceLanguages = require('./languages');
@@ -466,8 +467,8 @@ const applyTranslatedAttribs = async (PostBody) => {
             }
         }
         return 'OK';
-    } catch (e) {
-        console.error(e);
+    } catch (err) {
+        logger.error(err.message);
         return 'ERROR';
     }
 };

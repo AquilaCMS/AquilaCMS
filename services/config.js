@@ -14,6 +14,7 @@ const ServiceCache              = require('./cache');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const utils                     = require('../utils/utils');
+const logger                    = require('../utils/logger');
 const {Configuration, Products} = require('../orm/models');
 
 const isProd = !serverUtils.dev;
@@ -107,7 +108,7 @@ const saveEnvFile = async (body, files) => {
                         global.aquila.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
                         body.needRestart                          = true;
                     } catch (err) {
-                        console.error(err);
+                        logger.error(err.message);
                     }
                 }
             }

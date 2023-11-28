@@ -10,6 +10,7 @@ const {Contacts}   = require('../orm/models');
 const ServiceMail  = require('./mail');
 const QueryBuilder = require('../utils/QueryBuilder');
 const queryBuilder = new QueryBuilder(Contacts, [], []);
+const logger       = require('../utils/logger');
 
 const getContacts = async (body) => queryBuilder.find(body.PostBody, true);
 
@@ -53,7 +54,7 @@ async function sendContact(body) {
     try {
         await ServiceMail.sendContact(_body);
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
     }
     return 'ok';
 }

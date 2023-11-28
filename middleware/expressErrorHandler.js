@@ -11,6 +11,7 @@ const NSError               = require('../utils/errors/NSError');
 const NSErrors              = require('../utils/errors/NSErrors');
 const {getEnv}              = require('../utils/server');
 const errorMessage          = require('../utils/translate/errors');
+const logger                = require('../utils/logger');
 
 const mongoErrorCodeToNsError = {
     11000 : NSErrors.Conflict
@@ -18,9 +19,9 @@ const mongoErrorCodeToNsError = {
 
 const log = (err) => {
     if (err instanceof NSError && err.level !== 'none') {
-        console[err.level](err);
+        logger.log(err.level, err.message);
     } else if (!(err instanceof NSError)) {
-        console.error(err);
+        logger.error(err.message);
     }
 };
 
@@ -80,9 +81,9 @@ const expressErrorHandler = (err, req, res, next) => {
         if (!err.status) err.status = 500;
         if (getEnv('NODE_ENV') !== 'test') {
             if (err instanceof NSError && err.level !== 'none') {
-                console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+                logger.log(err.level, `"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
             } else if (!(err instanceof NSError)) {
-                console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+                logger.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
             }
         }
 

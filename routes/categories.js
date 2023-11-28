@@ -12,6 +12,7 @@ const {filterCategories}   = require('../middleware/categories');
 const ServiceCategory      = require('../services/categories');
 const ServiceRules         = require('../services/rules');
 const {autoFillCode}       = require('../middleware/autoFillCode');
+const logger               = require('../utils/logger');
 
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
@@ -93,7 +94,7 @@ async function execCanonical(req, res, next) {
     try {
         res.json(await ServiceCategory.execCanonical());
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         next(err);
     }
 }
@@ -112,7 +113,7 @@ async function importCategoryProducts(req, res, next) {
         const {data, category} = req.body;
         res.json(await ServiceCategory.importCategoryProducts(data, category));
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         next(err);
     }
 }
@@ -121,7 +122,7 @@ async function exportCategoryProducts(req, res, next) {
     try {
         res.json(await ServiceCategory.exportCategoryProducts(req.params.catId));
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         next(err);
     }
 }

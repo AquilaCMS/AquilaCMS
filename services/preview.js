@@ -10,6 +10,7 @@
 const URL          = require('url');
 const ModelPreview = require('../orm/models/staticsPreview');
 const QueryBuilder = require('../utils/QueryBuilder');
+const logger       = require('../utils/logger');
 
 const restrictedFields              = [];
 const defaultFields                 = ['_id', 'code', 'translation'];
@@ -92,7 +93,7 @@ const removePreviews = async () => {
         await ProductsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
         await NewsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         throw err;
     }
 };

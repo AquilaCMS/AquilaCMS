@@ -10,6 +10,7 @@ const path     = require('path');
 const {fs}     = require('aql-utils');
 const NSError  = require('./errors/NSError');
 const NSErrors = require('./errors/NSErrors');
+const logger   = require('./logger');
 
 /**
  * Module : Load the functions in the init.js of the modules if necessary
@@ -30,7 +31,7 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
             const fct = await global.aquila.moduleExtend[property].function(params);
             return fct; // Be careful, we need to define 'fct' before return it ! (don't know why)
         } catch (err) {
-            console.error(`Overide function ${property} from module rise an error, use native function instead.`, err);
+            logger.error(`Overide function ${property} from module rise an error, use native function instead. ${err}`);
         }
     }
     if (functionToExecute && typeof functionToExecute === 'function') {
@@ -52,7 +53,7 @@ const createListModuleFile = async (theme = global.aquila.envConfig.environment.
             await fs.writeFile(pathToListModules, 'export default [];');
         }
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
     }
 };
 
@@ -66,7 +67,7 @@ const displayListModule = async (theme = global.aquila.envConfig.environment.cur
         const fileContent    = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
-        console.error('Cannot read list_module !');
+        logger.error('Cannot read list_module !');
     }
 };
 
@@ -77,13 +78,13 @@ const errorModule = async (target_path_full) => {
     try {
         await fs.unlink(target_path_full);
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
     }
     const path = target_path_full.replace('.zip', '/');
     try {
         await fs.unlink(path);
     } catch (err) {
-        console.error('Error: ', err);
+        logger.error(`Error: ${err.message}`);
     }
 };
 

@@ -11,6 +11,7 @@ const mongoose     = require('mongoose');
 const {fs}         = require('aql-utils');
 const {Products}   = require('../orm/models');
 const utilsModules = require('../utils/modules');
+const logger       = require('../utils/logger');
 
 const createModelData = async () => {
     const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
@@ -75,7 +76,7 @@ const sortAttribs = async () => {
         console.log('End of sorting');
         return {message: 'ok'};
     } catch (err) {
-        console.error('Error of sorting');
+        logger.error('Error of sorting');
         throw err;
     }
 };

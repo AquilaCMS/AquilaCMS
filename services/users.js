@@ -15,6 +15,7 @@ const QueryBuilder                       = require('../utils/QueryBuilder');
 const utilsModules                       = require('../utils/modules');
 const NSErrors                           = require('../utils/errors/NSErrors');
 const modulesUtils                       = require('../utils/modules');
+const logger                             = require('../utils/logger');
 
 const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -164,13 +165,13 @@ const createUser = async (body, isAdmin = false) => utilsModules.modulesLoadFunc
         throw err;
     }
     servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
-        console.error(err);
+        logger.error(err.message);
     });
     if (body.sendResetPassword) {
         await generateTokenSendMail(body.email, body.lang);
     }
     servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
-        console.error(err);
+        logger.error(err.message);
     });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
@@ -226,7 +227,7 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
  * @deprecated
  */
 const changePassword = async (email, password) => {
-    console.error('changePassword is deprecated !');
+    logger.error('changePassword is deprecated !');
     const user = await Users.findOne({email});
     if (!user) {
         return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};

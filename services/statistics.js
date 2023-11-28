@@ -11,6 +11,7 @@ const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
+const logger                    = require('../utils/logger');
 
 /**
  * Adds a view to the product (synchronous)
@@ -20,7 +21,7 @@ exports.setProductViews = function (product_id) {
         Products.findOneAndUpdate({_id: product_id}, {$inc: {'stats.views': 1}})
             .exec();
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 
@@ -51,7 +52,7 @@ exports.getFirstDayMetrics = async function () {
         }
         return false;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 
@@ -64,7 +65,7 @@ exports.generateStatistics = function (data) {
         const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['No datas'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 

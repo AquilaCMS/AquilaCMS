@@ -9,6 +9,7 @@
 const moment                                    = require('moment-business-days');
 const {StatsToday, StatsHistory, Configuration} = require('../orm/models');
 const ServiceStatistics                         = require('./statistics');
+const logger                                    = require('../utils/logger');
 
 /**
  * Count the number of deleted baskets
@@ -17,7 +18,7 @@ const addOldCart = async (cartNb) => {
     try {
         await StatsToday.findOneAndUpdate({}, {$inc: {oldCart: cartNb}}, {upsert: true, new: true});
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 
@@ -61,7 +62,7 @@ const addUserVisitIP = async (ipClient) => {
             );
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 
@@ -125,13 +126,13 @@ const buildStats = async () => {
                         result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
                     }
                 } catch (error) {
-                    console.error(error);
+                    logger.error(error.message);
                     return `Ok - But metrics not sent : ${error}`;
                 }
             }
         }
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
     }
     return result;
 };
@@ -152,7 +153,7 @@ async function insertType(type, nb) {
             await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 }
 

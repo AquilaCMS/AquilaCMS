@@ -8,6 +8,7 @@
 
 const {adminAuthRight} = require('../middleware/authentication');
 const ServiceMail      = require('../services/mail');
+const logger           = require('../utils/logger');
 
 module.exports = function (app) {
     app.post('/v2/mails', adminAuthRight('mails'), getMails);
@@ -134,7 +135,7 @@ async function sendContact(req, res, next) {
  */
 async function sendErrorMail(req, res, next) {
     try {
-        console.error('sendErrorMail', req.body);
+        logger.error(`sendErrorMail: ${JSON.stringify(req.body)}`);
         const result = await ServiceMail.sendErrorMail(req.body);
         return res.json(result);
     } catch (error) {

@@ -24,6 +24,7 @@ const {
     Products,
     Configuration
 } = require('../orm/models');
+const logger                                     = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt', 'customer'];
@@ -109,7 +110,7 @@ const setCartAddresses = async (cartId, addresses, userInfo) => {
         await populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: await resp.getItemsStock()}};
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         throw err;
     }
 };
@@ -513,7 +514,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                     }
                 }
             } catch (error) {
-                console.error(error);
+                logger.error(error.message);
                 throw NSErrors.PromoCodePromoInvalid;
             }
         }
@@ -803,7 +804,7 @@ const mailPendingCarts = async () => {
                         nbMails++;
                     }
                 } catch (error) {
-                    console.error(error);
+                    logger.error(error.message);
                     throw error;
                 }
             }
@@ -811,7 +812,7 @@ const mailPendingCarts = async () => {
         }
         return `Success : ${now.toString()}`;
     } catch (error) {
-        console.error('mailPendingCarts', error);
+        logger.error(error.message);
         throw error;
     }
 };
