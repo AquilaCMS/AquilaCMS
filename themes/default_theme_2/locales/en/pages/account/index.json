@@ -2,6 +2,7 @@
   "title": "My information",
   "titleNav" : "Customer information",
   "mandatory" : "mandatory",
+  "requiredInformationFields" : "Please fill in the required fields!",
   "titleInformation":"Your information",
   "titleDelivery":"Shipment address",
   "titleBilling":"Billing address",

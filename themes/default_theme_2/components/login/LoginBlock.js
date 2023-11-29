@@ -78,9 +78,6 @@ export default function LoginBlock() {
                             </div>
                         </div>
                         {
-                            moduleHook('login')
-                        }
-                        {
                             messageLogin && (
                                 <div className={`w-commerce-commerce${messageLogin.type}`}>
                                     <div>
@@ -89,8 +86,9 @@ export default function LoginBlock() {
                                 </div>
                             )
                         }
-                
+                    
                         <Button text={t('components/login/loginBlock:signin')} loadingText={t('components/login/loginBlock:signinLoading')} isLoading={isLoading} className="log-button w-button" />
+                        <div style={{ marginTop: '20px' }}>{ moduleHook('login') }</div>
                     </form>
                 )
             }
