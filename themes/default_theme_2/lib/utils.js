@@ -548,14 +548,14 @@ export const moduleHook = (type, props = {}) => {
     const nsModules = getAqModules();
     const modules   = nsModules?.filter((m) => m.type === type);
     if (!modules || !modules.length) return null;
+    const components = [];
     for (let index in modules) {
         const Comp = dynamic(() => modules[index].jsx);
         if (Comp) {
-            return <Comp key={index + modules[index].code} {...props} />;
-        } else {
-            return null;
+            components.push(<Comp key={index + modules[index].code} {...props} />);
         }
     }
+    return components;
 };
 
 export const isAllAqModulesInitialised = (aqModules) => {
