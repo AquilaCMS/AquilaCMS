@@ -2,7 +2,7 @@ name: Update AquilaCMS Version
 
 on:
   push:
-    branches: [ preprod ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -73,4 +73,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'preprod'
+        branch: 'master'
