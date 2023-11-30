@@ -69,7 +69,7 @@ const getOrCreateEnvFile = async () => {
             {encoding: 'utf8'}
         ));
         if (fs.existsSync(path.resolve(global.aquila.envPath))) {
-            envFile = await fs.readFile(global.aquila.envPath, {encoding: 'utf8'});
+            envFile = await fs.readFile(path.join(global.aquila.appRoot, global.aquila.envPath), {encoding: 'utf8'});
             if (envFile === '') {
                 envFile = {};
             } else {
@@ -78,7 +78,7 @@ const getOrCreateEnvFile = async () => {
                 } catch (error) {
                     console.error('Access to the env file is possible but the file is invalid');
                     const newPathTemp = `${global.aquila.envPath}.temp`;
-                    await fs.writeFile(newPathTemp, envFile);
+                    await fs.writeFile(path.join(global.aquila.appRoot, newPathTemp), envFile);
                     console.error(`The content of ${global.aquila.envPath} has been copied to ${newPathTemp}`);
                     envFile = {};
                 }
@@ -97,7 +97,7 @@ const getOrCreateEnvFile = async () => {
         } else {
             envFile = generateNewEnv(envExample);
         }
-        await fs.writeFile(global.aquila.envPath, JSON.stringify(envFile, null, 2));
+        await fs.writeFile(path.join(global.aquila.appRoot, global.aquila.envPath), JSON.stringify(envFile, null, 2));
         global.aquila.envFile = envFile[getEnv('AQUILA_ENV')];
     } catch (err) {
         console.error(err);
