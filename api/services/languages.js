@@ -145,11 +145,11 @@ const getListOfAllTranslationFiles = async (dir, translateList) => {
  *
  */
 async function getTranslatePath(lang) {
-    const newPath = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'locales', lang);
+    const newPath = path.join(global.aquila.themesPath, global.aquila.envConfig.environment.currentTheme, 'locales', lang);
     if (await fs.existsSync(newPath)) {
         return newPath;
     }
-    return path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
+    return path.join(global.aquila.themesPath, global.aquila.envConfig.environment.currentTheme, 'assets', 'i18n', lang);
 }
 
 /**
@@ -159,7 +159,7 @@ const createDynamicLangFile = async (selectedTheme = global.aquila.envConfig.env
     try {
         const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
         const contentFile = `module.exports = [${_languages}];`;
-        const linkToFile  = path.join(global.aquila.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
+        const linkToFile  = path.join(global.aquila.themesPath, selectedTheme, 'dynamic_langs.js');
         if (await fs.existsSync(linkToFile)) {
             const originalContentFile = await fs.readFile(linkToFile);
 

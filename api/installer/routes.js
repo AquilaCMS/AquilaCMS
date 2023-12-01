@@ -68,7 +68,7 @@ module.exports = (installRouter) => {
     installRouter.post('/config', async (req, res) => {
         try {
             global.aquila.envConfig = {environment: {appUrl: req.body.appUrl}}; // We take the appUrl info as soon as possible
-            await require('./install').firstLaunch(req, true);
+            await require('./install').firstLaunch(req);
             jobServices.initAgendaDB();
             await require('../utils/database').initDBValues();
             adminServices.welcome();
@@ -81,19 +81,6 @@ module.exports = (installRouter) => {
             // Recreating the env.json 'empty'
             await fs.unlink('./config/env.json');
             await require('../utils/server').getOrCreateEnvFile();
-        }
-    });
-
-    installRouter.post('/recover', async (req, res) => {
-        try {
-            await require('./install').firstLaunch(req, false);
-            jobServices.initAgendaDB();
-            adminServices.welcome();
-            const result = await restart();
-            res.send(result);
-        } catch (err) {
-            console.error(err);
-            res.status(500).send(getErrorText(err));
         }
     });
 

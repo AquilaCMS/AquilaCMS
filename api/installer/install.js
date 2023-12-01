@@ -19,14 +19,10 @@ const NSErrors                 = require('../utils/errors/NSErrors');
  * @param {Object} req
  * @param {Boolean} install true / false - full install or recover from envFile
  */
-const firstLaunch = async (req, install) => {
+const firstLaunch = async (req) => {
     // First launch : Start installer !
     console.log('-= Process installer =-');
-    if (install) {
-        await postConfiguratorDatas(req);
-    } else {
-        await recoverConfiguration(req);
-    }
+    await postConfiguratorDatas(req);
 };
 
 /**
@@ -121,15 +117,15 @@ const postConfiguratorDatas = async (req) => {
         const datas     = req.body;
         const bOverride = datas.override === 'on';
         if (datas.compilation === undefined) datas.compilation = true;
-        if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
+        if (path.extname(datas.envPath) !== '.json' || !fs.existsSync(path.join(global.aquila.appRoot, datas.envPath))) {
             throw new Error('envPath is not correct');
         }
 
         console.log('Installer : write env file');
-        await fs.writeFile('./config/envPath', datas.envPath);
+        await fs.writeFile(path.join(global.aquila.appRoot, '/config/envPath'), datas.envPath);
         const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
         global.aquila.envPath  = datas.envPath;
-        let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
+        let envFile            = JSON.parse((await fs.readFile(path.join(global.aquila.appRoot, datas.envPath))).toString());
         envFile[aquila_env].db = datas.databaseAdd;
         await fs.writeFile(path.join(global.aquila.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
         envFile               = envFile[aquila_env];
@@ -165,31 +161,6 @@ const postConfiguratorDatas = async (req) => {
         console.error(err);
         throw err;
     }
-};
-
-/**
- * Catch the RecoverConfiguration's datas and save it in envPath
- */
-const recoverConfiguration = async (req) => {
-    console.log('Installer : fetching new env path');
-    let {envPath} = req.body;
-
-    if (fs.existsSync(envPath)) {
-        throw new Error('Path is not correct');
-    }
-
-    if (path.extname(envPath) === '.js') {
-        const tmpPath = `../${envPath.slice(2)}`;
-        const oldFile = require(tmpPath);
-        await fs.writeFile(`${envPath}on`, JSON.stringify(oldFile, null, 2));
-        await fs.unlink(envPath);
-        envPath = `${envPath}on`;
-    }
-    const envPathFile = path.join(global.aquila.appRoot, 'config', 'envPath');
-    await fs.writeFile(envPathFile, envPath);
-    global.aquila.envPath = envPath;
-    global.aquila.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
-    console.log('Installer : finish fetching new env path');
 };
 
 /**

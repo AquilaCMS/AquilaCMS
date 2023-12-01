@@ -21,7 +21,7 @@ const logger                  = require('./logger');
  */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
-        let registryFile    = path.resolve(global.aquila.appRoot, 'modules', moduleName, 'licence.json');
+        let registryFile    = path.resolve(global.aquila.modulesPath, moduleName, 'licence.json');
         const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {

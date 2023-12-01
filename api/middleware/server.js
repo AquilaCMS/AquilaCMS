@@ -142,7 +142,7 @@ const initExpress = async (server, passport) => {
     useHelmet(server);
 
     const photoPath = serverUtils.getUploadDirectory();
-    server.use(express.static(path.join(global.aquila.appRoot, 'backoffice'))); // BackOffice V1
+    server.use(express.static(path.join(global.aquila.boPath))); // BackOffice V1
     server.use(express.static(path.join(global.aquila.appRoot, 'acme'), {dotfiles: 'allow'}));
     server.use('/', express.static(path.join(global.aquila.appRoot, photoPath))); // Photos
     server.use('/bo', express.static(path.join(global.aquila.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
@@ -190,7 +190,7 @@ const maintenance = async (req, res, next) => {
         global.aquila.envConfig.environment.maintenance
             && global.aquila.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
-        const maintenanceFile = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme, 'maintenance.html');
+        const maintenanceFile = path.join(global.aquila.themesPath, global.aquila.envConfig.environment.currentTheme, 'maintenance.html');
         if (fs.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }

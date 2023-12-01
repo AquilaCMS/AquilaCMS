@@ -2,14 +2,13 @@ const path                              = require('path');
 const fs                                = require('fs');
 const next                              = require('next');
 const { execCmd, decodeBase64ToObject } = require('aql-utils');
-const serverUtils                       = require('../../utils/server');
-const dev                               = serverUtils.dev;
+const dev                               = process.env.NODE_ENV === 'development';
 
 const themeName = path.basename(__dirname);
 
 global.aquila = decodeBase64ToObject(global.aquila);
 
-const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName, '/');
+const pathToTheme = path.join(global.aquila.themesPath, themeName, '/');
 
 const start = async () => {
     const app   = next({ dev, dir: pathToTheme });

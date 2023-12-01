@@ -68,7 +68,7 @@ const getOrCreateEnvFile = async () => {
             path.join(global.aquila.appRoot, 'config/env.template.json'),
             {encoding: 'utf8'}
         ));
-        if (fs.existsSync(path.resolve(global.aquila.envPath))) {
+        if (fs.existsSync(path.join(global.aquila.appRoot, global.aquila.envPath))) {
             envFile = await fs.readFile(path.join(global.aquila.appRoot, global.aquila.envPath), {encoding: 'utf8'});
             if (envFile === '') {
                 envFile = {};

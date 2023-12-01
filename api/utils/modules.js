@@ -45,7 +45,7 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
  */
 const createListModuleFile = async (theme = global.aquila.envConfig.environment.currentTheme) => {
     try {
-        const modules_folder = path.join(global.aquila.appRoot, 'themes', theme, 'modules');
+        const modules_folder = path.join(global.aquila.themesPath, theme, 'modules');
         await fs.ensureDir(modules_folder);
         const pathToListModules = path.join(modules_folder, 'list_modules.js');
         const isFileExists      = await fs.hasAccess(pathToListModules);

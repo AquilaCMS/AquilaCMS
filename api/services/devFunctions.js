@@ -16,7 +16,7 @@ const logger       = require('../utils/logger');
 const createModelData = async () => {
     const forbidenModels = ['configuration', 'modules', 'BundleProduct', 'SimpleProduct', 'simple', 'staticsPreview', 'statstoday', 'cart', 'admininformation', 'adminRights', 'newsPreview', 'SimpleProductPreview', 'VirtualProductPreview', 'BundleProductPreview', 'productsPreview', 'shortcodes', 'statshistory', 'statsToday', 'staticsPreview'];
     const schemas        = [];
-    const themeFolder    = path.join(global.aquila.appRoot, 'themes', global.aquila.envConfig.environment.currentTheme);
+    const themeFolder    = path.join(global.aquila.themesPath, global.aquila.envConfig.environment.currentTheme);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
         if (forbidenModels.indexOf(modelName) === -1) {

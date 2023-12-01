@@ -15,9 +15,13 @@ const {fs}     = require('aql-utils');
 
 // GLOBAL VAR
 global.aquila              = {};
+global.aquila.appRoot      = path.resolve(__dirname); // TODO : rename into apiPath + take env var if they exist
+global.aquila.appsPath     = path.dirname(path.resolve(__dirname));
+global.aquila.boPath       = path.join(global.aquila.appsPath, 'backoffice');
+global.aquila.themesPath   = path.join(global.aquila.appsPath, 'themes');
+global.aquila.modulesPath  = path.join(global.aquila.appsPath, 'modules');
 global.aquila.envPath      = null;
 global.aquila.envFile      = null;
-global.aquila.appRoot      = path.resolve(__dirname);
 global.aquila.port         = Number(process.env.PORT || 3010);
 global.aquila.defaultLang  = '';
 global.aquila.moduleExtend = {};
@@ -116,7 +120,7 @@ const initFrontFramework = async (themeName = null) => {
     if (themeName === null) {
         themeName =  global.aquila.envConfig.environment.currentTheme;
     }
-    const pathToTheme  = path.join(global.aquila.appRoot, 'themes', themeName, '/');
+    const pathToTheme  = path.join(global.aquila.themesPath, themeName, '/');
     const pathToInit   = path.join(pathToTheme, 'themeInit.js');
     const languageInit = await require('./services/themes').languageManagement(themeName);
     if (languageInit === 'OK') {
@@ -161,7 +165,7 @@ const initFrontFramework = async (themeName = null) => {
         } else if (type === 'normal') {
             console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
             // normal type
-            const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName, '/');
+            const pathToTheme = path.join(global.aquila.themesPath, themeName, '/');
             if (fs.existsSync(pathToTheme)) {
                 let pathToPages = pathToTheme;
                 if (typeof themeInfo.expose !== 'undefined') {
@@ -202,7 +206,7 @@ const initServer = async () => {
         const compile = (typeof global?.aquila?.envFile?.devMode?.compile === 'undefined' || (typeof global?.aquila?.envFile?.devMode?.compile !== 'undefined' && global.aquila.envFile.devMode.compile === true));
         if (compile) {
             const {currentTheme} = global.aquila.envConfig.environment;
-            const themeFolder    = path.join(global.aquila.appRoot, 'themes', currentTheme, '/');
+            const themeFolder    = path.join(global.aquila.themesPath, currentTheme, '/');
             if (!fs.existsSync(themeFolder)) {
                 throw new Error(`themes folder ${themeFolder} not found`);
             }
