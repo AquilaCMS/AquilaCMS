@@ -143,11 +143,11 @@ const initExpress = async (server, passport) => {
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.aquila.boPath))); // BackOffice V1
-    server.use(express.static(path.join(global.aquila.appRoot, 'acme'), {dotfiles: 'allow'}));
+    server.use(express.static(path.join(global.aquila.appRoot, 'acme'), {dotfiles: 'allow'})); // ACME folder
     server.use('/', express.static(path.join(global.aquila.appRoot, photoPath))); // Photos
-    server.use('/bo', express.static(path.join(global.aquila.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
+    server.use('/bo', express.static(path.join(global.aquila.appsPath, 'bo/build'))); // BackOffice V2 (proof of concept)
 
-    server.set('views', path.join(global.aquila.appRoot, 'backoffice/views/ejs'));
+    server.set('views', path.join(global.aquila.boPath, 'views/ejs'));
     server.set('view engine', 'ejs');
     if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.aquila.envFile.logs && global.aquila.envFile.logs.http) {
         server.use(morgan('combined', {stream: require('../utils/logger').stream}));

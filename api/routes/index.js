@@ -81,9 +81,9 @@ const manageExceptionsRoutes = async (req, res, next) => {
         && req.url.indexOf(`/${global.aquila.envConfig.environment.adminPrefix}/`)  > -1
         && req.url.split('/')[req.url.split('/').length - 1].indexOf('.') > -1
     ) {
-        let url = req.url.replace(global.aquila.envConfig.environment.adminPrefix, 'backoffice').split('?')[0];
-        if (fs.existsSync(path.join(global.aquila.appRoot, url))) {
-            res.sendFile(path.join(global.aquila.appRoot, url));
+        let url = req.url.replace(global.aquila.envConfig.environment.adminPrefix, '').split('?')[0];
+        if (fs.existsSync(path.join(global.aquila.boPath, url))) {
+            res.sendFile(path.join(global.aquila.boPath, url));
         } else {
             url = url.replace('backoffice', require('../utils/server').getUploadDirectory());
             if (fs.existsSync(path.join(global.aquila.appRoot, url))) {
