@@ -12,6 +12,8 @@ export async function getServerSideProps({ locale, req, res }) {
     const user = await authProtectedPage(req.headers.cookie);
     if (!user) {
         return serverRedirect('/checkout/login?redirect=' + encodeURI('/checkout/address'));
+    } else if (!user.firstname || !user.lastname) {
+        return serverRedirect('/account?redirect=' + encodeURI('/checkout/delivery'));
     }
     const pageProps      = await dispatcher(locale, req, res);
     pageProps.props.user = user;

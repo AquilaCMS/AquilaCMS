@@ -174,7 +174,7 @@ export default function OrderDetails({ order, setOrders = undefined }) {
                             <div className="w-row">
                                 <div className="w-col w-col-6">
                                     <label htmlFor="email-3">{t('components/orderDetails:name')}</label>
-                                    <p className="label-tunnel">{order.customer.fullname}</p>
+                                    <p className="label-tunnel">{order.addresses.delivery.firstname} {order.addresses.delivery.lastname}</p>
                                     <label htmlFor="email-3">{t('components/orderDetails:email')}</label>
                                     <p className="label-tunnel">{order.customer.email}</p>
                                 </div>

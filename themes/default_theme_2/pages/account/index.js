@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState }                  from 'react';
+import { useRouter }                                    from 'next/router';
 import useTranslation                                   from 'next-translate/useTranslation';
 import AccountLayout                                    from '@components/account/AccountLayout';
 import Button                                           from '@components/ui/Button';
@@ -43,6 +44,7 @@ export default function Account({ territories, initUser }) {
     const billingCountryRef                     = useRef(null);
     const { cart, setCart }                     = useCart();
     const { environment }                       = useSiteConfig();
+    const router                                = useRouter();
     const { lang, t }                           = useTranslation();
 
     useEffect(() => {
@@ -139,6 +141,10 @@ export default function Account({ territories, initUser }) {
                 }
                 setCart(newCart);
             }
+
+            if (router.query.redirect) {
+                router.push(router.query.redirect);
+            }
             
             setMessage({ type: 'info', message: t('common:message.saveData') });
         } catch (err) {
@@ -179,6 +185,15 @@ export default function Account({ territories, initUser }) {
                             <label className="required">* {t('pages/account/index:mandatory')}</label>
                         </div>
                         <div className="block-content-tunnel">
+                            {
+                                (!user.firstname || !user.lastname || !user.phone_mobile) && (
+                                    <div className="w-commerce-commerceerror">
+                                        <div>
+                                            {t('pages/account/index:requiredInformationFields')}
+                                        </div>
+                                    </div>
+                                )
+                            }
                             <div className="w-commerce-commercecheckoutrow">
                                 <div className="w-commerce-commercecheckoutcolumn">
                                     <label>{t('pages/account/index:firstname')} *</label>

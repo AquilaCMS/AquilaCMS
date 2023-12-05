@@ -2,6 +2,7 @@
   "title": "Mes informations",
   "titleNav" : "Informations client",
   "mandatory" : "Obligatoire",
+  "requiredInformationFields" : "Veuillez renseigner les champs obligatoires !",
   "titleInformation":"Vos informations",
   "titleDelivery":"Adresse de livraison",
   "titleBilling":"Adresse de facturation",
