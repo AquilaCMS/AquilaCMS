@@ -17,14 +17,13 @@
     "url": "git+ssh://git@github.com:AquilaCMS/AquilaCMS.git"
   },
   "scripts": {
-    "start": "node api/index.js",
+    "start": "node apps/api/index.js",
     "start:pm2": "pm2-runtime start ecosystem.config.js",
     "start:container": "pm2 start ecosystem.config.js --env production && pm2 logs",
     "start:dev": "pm2-dev start ecosystem.config.js",
-    "start:aws": "yarn install && yarn cache clean && pm2-runtime start index.js --env production",
-    "aqstart": "yarn install && yarn cache clean && pm2-runtime start index.js --env production",
+    "start:aws": "yarn install && yarn cache clean && pm2-runtime start apps/api/index.js --env production",
+    "aqstart": "yarn install && yarn cache clean && pm2-runtime start apps/api/index.js --env production",
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
-    "build": "node index.js build",
     "lint:check": "eslint --ext js,jsx .",
     "lint:fix": "eslint --fix --ext js,jsx .",
     "test": "mocha --exit",
