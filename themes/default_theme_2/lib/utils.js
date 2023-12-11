@@ -573,6 +573,23 @@ export const isAllAqModulesInitialised = (aqModules) => {
     }
     return true;
 };
+
+// Detect device : mobile & tablet or desktop from matchMedia (client ONLY)
+export const getDevice = () => {
+    const mobile  = window.matchMedia('(max-width: 767px)');
+    const tablet  = window.matchMedia('(min-width: 768px) and (max-width: 991px)');
+    const desktop = window.matchMedia('(min-width: 992px)');
+    if (mobile.matches) {
+        return 'mobile';
+    }
+    if (tablet.matches) {
+        return 'tablet';
+    }
+    if (desktop.matches) {
+        return 'desktop';
+    }
+};
+
 export class ConnectorError extends Error {
     constructor(code, message = '') {
         super(message);

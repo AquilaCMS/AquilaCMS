@@ -10,7 +10,7 @@ import { generateSlug, getMainImage }                                   from '@a
 import { addToCart, deleteCartShipment }                                from '@aquilacms/aquila-connector/api/cart';
 import { generateURLImageCache }                                        from '@aquilacms/aquila-connector/lib/utils';
 import { useCart, useComponentData, useShowCartSidebar, useSiteConfig } from '@lib/hooks';
-import { authProtectedPage, formatPrice, formatStock }                  from '@lib/utils';
+import { authProtectedPage, formatPrice, formatStock, moduleHook }      from '@lib/utils';
 
 import 'react-responsive-modal/styles.css';
 
@@ -225,6 +225,9 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                                     product.active === false || (!product.type.startsWith('virtual') && (product.stock?.status === 'epu' || product.stock?.orderable === false)) ? (
                                         <form className="w-commerce-commerceaddtocartform default-state">
                                             <button type="button" className="w-commerce-commerceaddtocartbutton order-button" disabled={true}>{t('components/product:productCard.unavailable')}</button>
+                                            {
+                                                moduleHook('product-card-button', { product })
+                                            }
                                         </form>
                                     ) : (
                                         <form className="w-commerce-commerceaddtocartform default-state" onSubmit={product.type.startsWith('virtual') && product.price.ati.normal === 0 ? onDownloadVirtualProduct : (product.type.startsWith('bundle') ? onOpenModal : onAddToCart)}>
@@ -235,6 +238,9 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                                                 isLoading={isLoading}
                                                 className="w-commerce-commerceaddtocartbutton order-button"
                                             />
+                                            {
+                                                moduleHook('product-card-button', { product })
+                                            }
                                         </form>
                                     )
                                 )

@@ -1,9 +1,9 @@
-import { useState, useEffect }      from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import useTranslation               from 'next-translate/useTranslation';
-import { getPaymentMethods }        from '@aquilacms/aquila-connector/api/payment';
-import { getUser }                  from '@aquilacms/aquila-connector/api/user';
-import { getUserIdFromJwt }         from '@lib/utils';
+import { useState, useEffect }         from 'react';
+import { useSelector, useDispatch }    from 'react-redux';
+import useTranslation                  from 'next-translate/useTranslation';
+import { getPaymentMethods }           from '@aquilacms/aquila-connector/api/payment';
+import { getUser }                     from '@aquilacms/aquila-connector/api/user';
+import { getUserIdFromJwt, getDevice } from '@lib/utils';
 
 /**
  * GET / SET cart data (redux)
@@ -208,6 +208,18 @@ export const useStaticPage = () => {
     return { staticPage, setStaticPage };
 };
 
+// GET / SET module data (redux)
+export const useModuleData = (name) => {
+    const moduleData    = useSelector((state) => state[name]);
+    const dispatch      = useDispatch();
+    const setModuleData = (data) =>
+        dispatch({
+            type: `SET_MODULE_DATA_${name.toUpperCase()}`,
+            data
+        });
+    return { moduleData, setModuleData };
+};
+
 // GET user from JWT
 export const useUser = () => {
     const [user, setUser] = useState();
@@ -229,4 +241,29 @@ export const useUser = () => {
     }, []);
 
     return user;
+};
+
+// GET device
+export const useDevice = () => {
+    const [device, setDevice] = useState('');
+
+    useEffect(() => {
+        setterDevice();
+        window.addEventListener('resize', setterDevice);
+        return () => {
+            window.removeEventListener('resize', setterDevice);
+        };
+    }, []);
+
+    const setterDevice = () => {
+        const newDevice = getDevice();
+        // Set device only if changed
+        setDevice((prev) => {
+            if (prev !== newDevice) {
+                return newDevice;
+            }
+            return prev;
+        });
+    };
+    return device;
 };

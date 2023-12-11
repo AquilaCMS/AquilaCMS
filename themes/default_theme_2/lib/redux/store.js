@@ -1,5 +1,6 @@
 import { useMemo }        from 'react';
 import { configureStore } from '@reduxjs/toolkit';
+import { getAqModules }   from '@lib/utils';
 
 let store;
 
@@ -34,8 +35,21 @@ const initialState = {
     aqModules          : null,
 };
 
+for (const aqModule of getAqModules()) {
+    initialState[aqModule.module] = {};
+}
+
 // TODO : https://openclassrooms.com/fr/courses/5511091-organisez-votre-application-avec-la-logique-redux/5880761-appelez-les-actions-dans-les-reducers
 const rootReducer = (state = initialState, action) => {
+    // Modules
+    for (const aqModule of getAqModules()) {
+        if (action.type === `SET_MODULE_DATA_${aqModule.module.toUpperCase()}`) {
+            return {
+                ...state,
+                [aqModule.module]: action.data || initialState[aqModule.module]
+            };
+        }
+    }
     switch (action.type) {
     // Common
     case 'SET_SITECONFIG':
