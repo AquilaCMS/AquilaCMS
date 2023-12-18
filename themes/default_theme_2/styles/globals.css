@@ -299,6 +299,21 @@ input[type='radio']:focus + .w-form-formradioinput--inputType-custom {
   }
 }
 
+/* 
+  ADD
+  Review content
+*/
+.review-content {
+  overflow: hidden;
+  width: 1130px;
+  max-width: unset !important;
+}
+@media screen and (max-width: 1024px) {
+  .review-content {
+      width: unset;
+  }
+}
+
 /*
   REMOVE => .food-card-content l.6683 mon-restaurant.webflow.css
   margin-left problem in product card (mobile only)
@@ -621,4 +636,12 @@ font-size: 0.8rem;
 
 .disabled-all.clickable {
   cursor: pointer;
+}
+
+/* Reviews */
+.review-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
 }

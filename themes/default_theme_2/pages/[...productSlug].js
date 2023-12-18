@@ -1,32 +1,35 @@
-import { useEffect, useState }                                                                                            from 'react';
-import { ProductJsonLd }                                                                                                  from 'next-seo';
-import absoluteUrl                                                                                                        from 'next-absolute-url';
-import { useRouter }                                                                                                      from 'next/router';
-import getT                                                                                                               from 'next-translate/getT';
-import useTranslation                                                                                                     from 'next-translate/useTranslation';
-import parse                                                                                                              from 'html-react-parser';
-import Cookies                                                                                                            from 'cookies';
-import { Modal }                                                                                                          from 'react-responsive-modal';
-import Lightbox                                                                                                           from 'lightbox-react';
-import ErrorPage                                                                                                          from '@pages/_error';
-import BundleProduct                                                                                                      from '@components/product/BundleProduct';
-import ProductVariants                                                                                                    from '@components/product/ProductVariants';
-import Layout                                                                                                             from '@components/layouts/Layout';
-import NextSeoCustom                                                                                                      from '@components/tools/NextSeoCustom';
-import Breadcrumb                                                                                                         from '@components/navigation/Breadcrumb';
-import ProductList                                                                                                        from '@components/product/ProductList';
-import BlockCMS                                                                                                           from '@components/common/BlockCMS';
-import Button                                                                                                             from '@components/ui/Button';
-import { dispatcher }                                                                                                     from '@lib/redux/dispatcher';
-import { getBlocksCMS }                                                                                                   from '@aquilacms/aquila-connector/api/blockcms';
-import { getBreadcrumb }                                                                                                  from '@aquilacms/aquila-connector/api/breadcrumb';
-import { addToCart, deleteCartShipment }                                                                                  from '@aquilacms/aquila-connector/api/cart';
-import { getCategories }                                                                                                  from '@aquilacms/aquila-connector/api/category';
-import { getProduct, downloadFreeVirtualProduct }                                                                         from '@aquilacms/aquila-connector/api/product';
-import { getImage, getMainImage, getTabImageURL }                                                                         from '@aquilacms/aquila-connector/api/product/helpersProduct';
-import { generateURLImageCache }                                                                                          from '@aquilacms/aquila-connector/lib/utils';
-import { useCart, useAqModules, useProduct, useShowCartSidebar, useSiteConfig }                                           from '@lib/hooks';
-import { initAxios, authProtectedPage, formatPrice, formatStock, getAvailability, moduleHook, isAllAqModulesInitialised } from '@lib/utils';
+import { useEffect, useState }                                                                                                        from 'react';
+import { ProductJsonLd }                                                                                                              from 'next-seo';
+import absoluteUrl                                                                                                                    from 'next-absolute-url';
+import { useRouter }                                                                                                                  from 'next/router';
+import getT                                                                                                                           from 'next-translate/getT';
+import useTranslation                                                                                                                 from 'next-translate/useTranslation';
+import parse                                                                                                                          from 'html-react-parser';
+import Cookies                                                                                                                        from 'cookies';
+import ReactPaginate                                                                                                                  from 'react-paginate';
+import { Modal }                                                                                                                      from 'react-responsive-modal';
+import Lightbox                                                                                                                       from 'lightbox-react';
+import ErrorPage                                                                                                                      from '@pages/_error';
+import BundleProduct                                                                                                                  from '@components/product/BundleProduct';
+import ProductVariants                                                                                                                from '@components/product/ProductVariants';
+import Layout                                                                                                                         from '@components/layouts/Layout';
+import NextSeoCustom                                                                                                                  from '@components/tools/NextSeoCustom';
+import Breadcrumb                                                                                                                     from '@components/navigation/Breadcrumb';
+import PostReview                                                                                                                     from '@components/product/PostReview';
+import ProductList                                                                                                                    from '@components/product/ProductList';
+import BlockCMS                                                                                                                       from '@components/common/BlockCMS';
+import DrawStars                                                                                                                      from '@components/common/DrawStars';
+import Button                                                                                                                         from '@components/ui/Button';
+import { dispatcher }                                                                                                                 from '@lib/redux/dispatcher';
+import { getBlocksCMS }                                                                                                               from '@aquilacms/aquila-connector/api/blockcms';
+import { getBreadcrumb }                                                                                                              from '@aquilacms/aquila-connector/api/breadcrumb';
+import { addToCart, deleteCartShipment }                                                                                              from '@aquilacms/aquila-connector/api/cart';
+import { getCategories }                                                                                                              from '@aquilacms/aquila-connector/api/category';
+import { getProduct, downloadFreeVirtualProduct }                                                                                     from '@aquilacms/aquila-connector/api/product';
+import { getImage, getMainImage, getTabImageURL }                                                                                     from '@aquilacms/aquila-connector/api/product/helpersProduct';
+import { generateURLImageCache }                                                                                                      from '@aquilacms/aquila-connector/lib/utils';
+import { useCart, useAqModules, useProduct, useShowCartSidebar, useSiteConfig }                                                       from '@lib/hooks';
+import { initAxios, authProtectedPage, formatDate, formatPrice, formatStock, getAvailability, moduleHook, isAllAqModulesInitialised } from '@lib/utils';
 
 import 'lightbox-react/style.css';
 import 'react-responsive-modal/styles.css';
@@ -52,11 +55,12 @@ export async function getServerSideProps({ defaultLocale, locale, params, query,
         const postBody = {
             PostBody: {
                 filter   : { [`translation.${locale}.slug`]: productSlug },
-                structure: { allergens: 1, trademark: 1, universe: 1 },
+                structure: { allergens: 1, reviews: 1, set_attributes: 1, trademark: 1, universe: 1 },
                 populate : [
                     'allergens',
                     'associated_prds',
-                    'bundle_sections.products.id'
+                    'bundle_sections.products.id',
+                    'set_attributes',
                 ]
             }
         };
@@ -158,20 +162,24 @@ const Video = ({ content }) => (
 );
 
 export default function Product({ breadcrumb, origin }) {
-    const [qty, setQty]                = useState(1);
-    const [photoIndex, setPhotoIndex]  = useState(0);
-    const [isOpen, setIsOpen]          = useState(false);
-    const [message, setMessage]        = useState();
-    const [isLoading, setIsLoading]    = useState(false);
-    const [openModal, setOpenModal]    = useState(false);
-    const [tabs, setTabs]              = useState(0);
-    const { aqModules }                = useAqModules();
-    const { cart, setCart }            = useCart();
-    const { product }                  = useProduct();
-    const { environment, themeConfig } = useSiteConfig();
-    const { lang, t }                  = useTranslation();
-    const { setShowCartSidebar }       = useShowCartSidebar();
-    const router                       = useRouter();
+    const [qty, setQty]                         = useState(1);
+    const [photoIndex, setPhotoIndex]           = useState(0);
+    const [reviews, setReviews]                 = useState([]);
+    const [filterReviews, setFilterReviews]     = useState({ limit: 5, page: 1, rate: 'all', sort: 'review_date:desc' });
+    const [reviewsCount, setReviewsCount]       = useState(0);
+    const [isOpen, setIsOpen]                   = useState(false);
+    const [message, setMessage]                 = useState();
+    const [isLoading, setIsLoading]             = useState(false);
+    const [openModal, setOpenModal]             = useState(false);
+    const [openModalReview, setOpenModalReview] = useState(false);
+    const [tabs, setTabs]                       = useState(0);
+    const { aqModules }                         = useAqModules();
+    const { cart, setCart }                     = useCart();
+    const { product }                           = useProduct();
+    const { environment, themeConfig }          = useSiteConfig();
+    const { lang, t }                           = useTranslation();
+    const { setShowCartSidebar }                = useShowCartSidebar();
+    const router                                = useRouter();
 
     useEffect(() => {
         // Event when all Aquila modules ("global" type) are initialised
@@ -180,6 +188,36 @@ export default function Product({ breadcrumb, origin }) {
             window.dispatchEvent(addTransaction);
         }
     }, [aqModules]);
+
+    useEffect(() => {
+        // Get reviews with filters
+        if (product.reviews?.datas.length) {
+            let reviews = JSON.parse(JSON.stringify(product.reviews.datas));
+
+            // Sort desc
+            if (filterReviews.sort === 'review_date:asc') {
+                reviews = reviews.sort((a, b) => new Date(a.review_date) - new Date(b.review_date));
+            } else if (filterReviews.sort === 'review_date:desc') {
+                reviews = reviews.sort((a, b) => new Date(b.review_date) - new Date(a.review_date));
+            } else if (filterReviews.sort === 'rate:asc') {
+                reviews = reviews.sort((a, b) => a.rate - b.rate);
+            } else if (filterReviews.sort === 'rate:desc') {
+                reviews = reviews.sort((a, b) => b.rate - a.rate);
+            }
+
+            // Filter by rate
+            if (filterReviews.rate !== 'all') {
+                reviews = reviews.filter((r) => r.rate === filterReviews.rate);
+            }
+
+            setReviewsCount(reviews.length);
+
+            // Filter by page and limit
+            reviews = reviews.filter((r, i) => i >= (filterReviews.page - 1) * filterReviews.limit && i < filterReviews.page * filterReviews.limit);
+
+            setReviews(reviews);
+        }
+    }, [filterReviews]);
 
     if (!product) return <ErrorPage statusCode={404} />;
 
@@ -250,6 +288,13 @@ export default function Product({ breadcrumb, origin }) {
 
     const onCloseModal = () => setOpenModal(false);
 
+    const onOpenModalReview = (e) => {
+        e.preventDefault();
+        setOpenModalReview(true);
+    };
+
+    const onCloseModalReview = () => setOpenModalReview(false);
+
     const onDownloadVirtualProduct = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -274,6 +319,28 @@ export default function Product({ breadcrumb, origin }) {
             setMessage({ type: 'error', message: err.message || t('common:message.unknownError') });
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const reviewsPaginate = (page) => {
+        setFilterReviews({ ...filterReviews, page: page.selected + 1 });
+
+        // Scroll to reviews
+        const element = document.querySelector('.reviews-container');
+        if (element) {
+            const y = element.getBoundingClientRect().top + window.pageYOffset - 100;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    };
+
+    const onFilterReviews = (rate) => {
+        setFilterReviews({ ...filterReviews, rate: rate });
+
+        // Scroll to reviews
+        const element = document.querySelector('.reviews-container');
+        if (element) {
+            const y = element.getBoundingClientRect().top + window.pageYOffset - 100;
+            window.scrollTo({ top: y, behavior: 'smooth' });
         }
     };
 
@@ -312,6 +379,8 @@ export default function Product({ breadcrumb, origin }) {
         return { content: getImage(item, 'max').url, alt: item.alt };
     });
 
+    const reviewPageCount = Math.ceil(reviewsCount / filterReviews.limit);
+
     return (
 
         <Layout>
@@ -328,31 +397,10 @@ export default function Product({ breadcrumb, origin }) {
                 images={tabImageURL}
                 description={product.description2?.text || ''}
                 brand={product.trademark?.name}
-                //     reviews={[
-                //         {
-                //             author: {
-                //                 type: 'Person',
-                //                 name: 'Jim',
-                //             },
-                //             datePublished: '2017-01-06T03:37:40Z',
-                //             reviewBody   :
-                // 'This is my favorite product yet! Thanks Nate for the example products and reviews.',
-                //             name        : 'So awesome!!!',
-                //             reviewRating: {
-                //                 bestRating : '5',
-                //                 ratingValue: '5',
-                //                 worstRating: '1',
-                //             },
-                //             publisher: {
-                //                 type: 'Organization',
-                //                 name: 'TwoVit',
-                //             },
-                //         },
-                //     ]}
-                //     aggregateRating={{
-                //         ratingValue: '4.4',
-                //         reviewCount: '89',
-                //     }}
+                aggregateRating={{
+                    ratingValue: product.reviews.average,
+                    reviewCount: product.reviews.reviews_nb,
+                }}
                 offers={[
                     {
                         price        : product.price?.ati?.special ? product.price.ati.special : product.price?.ati.normal,
@@ -421,6 +469,7 @@ export default function Product({ breadcrumb, origin }) {
                         </div>
                         <div className="product-content">
                             <h3>{product.name}</h3>
+                            { environment.displayingReviews && <div><DrawStars rate={product.reviews.average} displayTextRate={false} width="small" /></div> }
                             <div className="div-block-prix">
                                 <div className="price-text">{ product.price.ati.special ? formatPrice(product.price.ati.special) : formatPrice(product.price.ati.normal) }</div>
                                 { product.price.ati.special ? <div className="price-text sale">{formatPrice(product.price.ati.normal)}</div> : null }
@@ -560,6 +609,87 @@ export default function Product({ breadcrumb, origin }) {
                 </div>
             }
 
+            {
+                environment.displayingReviews && (
+                    <div className="content-section-short reviews-container">
+                        <div className="container">
+                            <div className="title-wrap-centre">
+                                <h3 className="header-h4">Avis ({product.reviews.reviews_nb})</h3>
+                                { product.reviews.reviews_nb > 0 && <DrawStars rate={product.reviews.average} /> }
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
+                                {
+                                    product.reviews.reviews_nb > 0 && Array.from(Array(5).keys()).map((i) => {
+                                        const count = product.reviews.datas.filter((review) => review.rate === i + 1)?.length || 0;
+                                        return (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: count ? 'pointer' : 'inherit' }} onClick={() => count && onFilterReviews(i + 1)}>
+                                                <DrawStars rate={i + 1} width="small" displayTextRate={false} /> <span style={{ fontSize: '12px' }}>({count})</span>
+                                            </div>
+                                        );
+                                    })
+                                }
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px', gap: '10px' }}>
+                                <button type="button" className="button w-button" onClick={onOpenModalReview}>Poster un avis</button>
+                                { filterReviews.rate !== 'all' && <button type="button" className="button w-button" onClick={() => setFilterReviews({ ...filterReviews, rate: 'all' })}>Voir tous les avis</button> }
+                            </div>
+                            {
+                                reviews.length > 0 && (
+                                    <>
+                                        <div style={{ width: '20%' }}>
+                                            <select className="select-field w-select" value={filterReviews.sort} onChange={(e) => setFilterReviews({ ...filterReviews, sort: e.target.value })}>
+                                                <option value="review_date:asc">Trier par date croissante</option>
+                                                <option value="review_date:desc">Trier par date décroissante</option>
+                                                <option value="rate:asc">Trier par note croissante</option>
+                                                <option value="rate:desc">Trier par note décroissante</option>
+                                            </select>
+                                        </div>
+                                        <div className="plain-line" />
+                                        <div role="list" className="reviews-list w-dyn-items w-row">
+                                            {
+                                                reviews.map((review) => (
+                                                    <div key={review._id} role="listitem" className="menu-item w-dyn-item w-col w-col-12">
+                                                        <div className="food-card">
+                                                            <div className="food-card-content">
+                                                                <h6 className="heading-9">{review.title}</h6>
+                                                                <p className="paragraph"><b>{review.name}</b></p>
+                                                                <DrawStars rate={review.rate} />
+                                                                <p className="paragraph">{review.review}</p>
+                                                                <p className="paragraph"><em>{formatDate(review.review_date, lang, { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</em></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                        {
+                                            reviewsCount > filterReviews.limit && (
+                                                <ReactPaginate
+                                                    previousLabel={'<'}
+                                                    nextLabel={'>'}
+                                                    breakLabel={'...'}
+                                                    forcePage={filterReviews.page - 1}
+                                                    pageCount={reviewPageCount}
+                                                    marginPagesDisplayed={2}
+                                                    pageRangeDisplayed={1}
+                                                    onPageChange={reviewsPaginate}
+                                                    containerClassName={'w-pagination-wrapper pagination'}
+                                                    activeClassName={'active'}
+                                                />
+                                            )
+                                        }
+                                    </>
+                                )
+                            }
+                        </div>
+
+                        <Modal open={openModalReview} onClose={onCloseModalReview} center classNames={{ modal: 'review-content' }}>
+                            <PostReview product={product} onCloseModal={onCloseModalReview} />
+                        </Modal>
+                    </div>
+                )
+            }
+
             <BlockCMS nsCode="info-bottom-1" /> {/* TODO : il faudrait afficher le contenu d'une description de la catégorie rattachée ! */}
 
             {
@@ -569,8 +699,6 @@ export default function Product({ breadcrumb, origin }) {
                     </Modal>
                 )
             }
-
         </Layout>
-
     );
 }

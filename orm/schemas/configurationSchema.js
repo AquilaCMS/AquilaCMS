@@ -29,6 +29,7 @@ const ConfigurationSchema = new Schema({
         errorPath         : {type: String},
         favicon           : {type: String},
         defaultImage      : {type: String},
+        displayingReviews : {type: Boolean, default: false},
         cacheTTL          : {type: Number},
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},
