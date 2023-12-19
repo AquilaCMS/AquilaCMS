@@ -18,6 +18,7 @@ module.exports = {
             'components/newsletter',
             'components/navigation',
             'components/pagination',
+            'components/postReview',
             'components/product',
             'components/searchBar',
             'components/slider',
