@@ -19,6 +19,7 @@ const utils        = require('../utils/utils');
 const promoUtils   = require('../utils/promo');
 const QueryBuilder = require('../utils/QueryBuilder');
 const NSErrors     = require('../utils/errors/NSErrors');
+const logger       = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -154,7 +155,7 @@ function conditionOperator(operator, obj, target, value) {
         }
         return isTrue;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
         return false;
     }
 }
@@ -249,7 +250,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
         }
         return tCondition;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 }
 
@@ -309,7 +310,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
         }
         return tCondition;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 }
 
@@ -584,7 +585,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             logValue              = `${new Date()}) End of automatic categorization(${owner_type})`;
             console.log('\x1b[1m\x1b[31m', logValue, '\x1b[0m');
             result.push(logValue);
-            console.error(err);
+            logger.error(err.message);
             result.push(err);
         }
     } else {

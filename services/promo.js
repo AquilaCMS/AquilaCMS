@@ -20,6 +20,7 @@ const ServiceRules    = require('./rules');
 const QueryBuilder    = require('../utils/QueryBuilder');
 const promoUtils      = require('../utils/promo');
 const NSErrors        = require('../utils/errors/NSErrors');
+const logger          = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -187,7 +188,7 @@ const middlewarePromoCatalog = async (req, res) => {
 
         return [];
     } catch (error) {
-        return console.error(error);
+        return logger.error(error.message);
     }
 };
 
@@ -629,7 +630,7 @@ async function isUniqueCodePromo(promo) {
         const resultPromo = await Promise.all(tCodes);
         resultPromo.forEach((resPromo) => !resPromo || nbFound++);
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
     return !nbFound;
 }

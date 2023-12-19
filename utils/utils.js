@@ -12,6 +12,7 @@ const {transforms: {flatten}} = require('json2csv');
 const {v4: uuidv4}            = require('uuid');
 const mongoose                = require('mongoose');
 const {fs}                    = require('aql-utils');
+const logger                  = require('./logger');
 
 /**
  *
@@ -69,7 +70,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
             }
         }
     } catch (err) {
-        console.error('Unable to join the Aquila-CMS license server');
+        logger.error('Unable to join the Aquila-CMS license server');
     }
 };
 

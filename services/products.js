@@ -16,6 +16,7 @@ const utils                       = require('../utils/utils');
 const utilsServer                 = require('../utils/server');
 const utilsMedias                 = require('../utils/medias');
 const NSErrors                    = require('../utils/errors/NSErrors');
+const logger                      = require('../utils/logger');
 const servicesLanguages           = require('./languages');
 const ServicesDownloadHistory     = require('./downloadHistory');
 const servicesCategory            = require('./categories');
@@ -1300,7 +1301,7 @@ const downloadProduct = async (req, res) => {
             // we DL the file
             await utils.downloadFile(prd.downloadLink, tmpFileLocalPath);
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
             throw NSErrors.ProductDownloadLinkInvalid;
         }
     } else {

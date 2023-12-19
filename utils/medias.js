@@ -15,6 +15,7 @@ const imageminSvgo                = require('imagemin-svgo');
 const path                        = require('path');
 const {fs}                        = require('aql-utils');
 const utilsModules                = require('./modules');
+const logger                      = require('./logger');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     const filePathOut = path.join(pathOut, path.basename(pathIn));
@@ -47,7 +48,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
         }
         return pathToReturn.replace(/\\/g, '/');
     } catch (error) {
-        console.error('error =>', error);
+        logger.error(`error => ${error.message}`);
         await fs.rename(pathIn, filePathOut);
         return filePathOut.replace(/\\/g, '/');
     }
@@ -79,13 +80,13 @@ const deleteFile = async (filePath) => {
                 try {
                     await fs.unlink(pathToRemove);
                 } catch (err) {
-                    console.error(err);
+                    logger.error(err.message);
                     throw err;
                 }
             }
         });
     } else {
-        console.error('The function deleteFile has been used but the parameter is not a string');
+        logger.error('The function deleteFile has been used but the parameter is not a string');
     }
 };
 
@@ -101,7 +102,7 @@ const deleteFolder = async (folderPath) => {
             }
         });
     } else {
-        console.error('The function deleteFolder has been used but the parameter is not a string');
+        logger.error('The function deleteFolder has been used but the parameter is not a string');
     }
 };
 
@@ -120,7 +121,7 @@ const renameFile = async (pathIn, filePathOut) => {
                 try {
                     await fs.rename(pathIn, newPath);
                 } catch (err) {
-                    console.error(err);
+                    logger.error(err.message);
                     throw err;
                 }
             }

@@ -19,6 +19,7 @@ const faker                       = require('faker');
 const moment                      = require('moment');
 const {fs, aquilaEvents, execCmd} = require('aql-utils');
 const NSErrors                    = require('../utils/errors/NSErrors');
+const logger                      = require('../utils/logger');
 const appdirname                  = path.dirname(require.main.filename);
 faker.locale                      = 'fr';
 const {
@@ -179,7 +180,7 @@ const copyDatabase = async () => {
         // Anonymization of the copied database
         await anonymizeDatabase();
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         throw err;
     }
 };
@@ -455,7 +456,7 @@ const dumpAnonymizedDatabase = async () => {
         try {
             await execCmd(`mongodump --uri "${uri}" --gzip --archive=./${pathUpload}/temp/database_dump.gz`);
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
         }
         // Removal of the copy database
         await dropDatabase();

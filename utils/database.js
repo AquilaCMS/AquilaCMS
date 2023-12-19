@@ -10,6 +10,7 @@
 const mongoose = require('mongoose');
 mongoose.set('debug', false);
 const NSErrors = require('./errors/NSErrors');
+const logger   = require('./logger');
 let connection = false;
 
 const mongooseOptions = {
@@ -2268,8 +2269,8 @@ const getMongdbVersion = async () => {
     try {
         const mongoVersion = await mongoose.connection.db.admin().buildInfo();
         console.log(`%s@@ MongoDB version : ${mongoVersion.version}%s`, '\x1b[32m', '\x1b[0m');
-    } catch (e) {
-        console.error('MongoDB version : Unknow');
+    } catch (err) {
+        logger.error('MongoDB version : Unknow');
     }
 };
 
@@ -2288,8 +2289,8 @@ const applyMigrationIfNeeded = async () => {
                     .updateOne({}, {$set: {'environment.migration': migration + 1}});
             }
         }
-    } catch (e) {
-        console.error('The migration script failed !', e);
+    } catch (err) {
+        logger.error(`The migration script failed !${err.message}`);
     }
 };
 

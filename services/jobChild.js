@@ -2,6 +2,7 @@ const path             = require('path');
 const utilsDB          = require('../utils/database');
 const NSErrors         = require('../utils/errors/NSErrors');
 const {stringifyError} = require('../utils/utils');
+const logger           = require('../utils/logger');
 
 /**
  * Init child process Globals and Database
@@ -11,7 +12,7 @@ const initChildProcess = async () => {
         global.aquila = global.aquila ? global.aquila : JSON.parse(Buffer.from(process.argv[3], 'base64').toString('utf8'));
         await utilsDB.connect();
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
         throw NSErrors.InitChildProcessError;
     }
 };

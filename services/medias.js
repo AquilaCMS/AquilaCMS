@@ -32,6 +32,7 @@ const QueryBuilder = require('../utils/QueryBuilder');
 const NSErrors     = require('../utils/errors/NSErrors');
 const server       = require('../utils/server');
 const utilsMedias  = require('../utils/medias');
+const logger       = require('../utils/logger');
 const {getChar}    = require('./cache');
 
 const restrictedFields = [];
@@ -63,7 +64,7 @@ const downloadAllDocuments = async () => {
             zip.addLocalFolder(path.resolve(uploadDirectory, 'fonts'), 'fonts');
         }
         zip.writeZip(path.resolve(uploadDirectory, 'temp/documents.zip'), (err) => {
-            if (err) console.error(err);
+            if (err) logger.error(err.message);
         });
     });
     console.log('Finalize downloadAllDocuments..');
@@ -127,8 +128,8 @@ const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder =
             try {
                 await fs.copyRecursive(init_file, target_file);
                 await fs.deleteRecursive(init_file);
-            } catch (e) {
-                console.error(e);
+            } catch (err) {
+                logger.error(err.message);
                 throw NSErrors.MediaNotFound;
             }
 
@@ -145,8 +146,8 @@ const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder =
                     group : group || path.parse(reqFile.originalname).name
                 }, {upsert: true});
             }
-        } catch (e) {
-            console.error(e);
+        } catch (err) {
+            logger.error(err.message);
             throw NSErrors.InvalidFile;
         }
     }
@@ -345,7 +346,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
             }
             await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
         } catch (exc) {
-            console.error('Image not resized : ', exc);
+            logger.error(`Image not resized : ${exc.message}`);
 
             try {
                 // Take the original file size

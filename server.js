@@ -63,7 +63,7 @@ process.on('exit', (code) => {
 
 const init = async () => {
     await serverUtils.getOrCreateEnvFile();
-    await require('./utils/logger')();
+    await require('./utils/logger').init();
     await serverUtils.logVersion();
 };
 

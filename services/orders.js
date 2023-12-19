@@ -20,6 +20,7 @@ const {
 const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utils            = require('../utils');
+const logger           = require('../utils/logger');
 const ServiceMail      = require('./mail');
 const ServicePromo     = require('./promo');
 const ServiceCart      = require('./cart');
@@ -89,7 +90,7 @@ const setOrder = async (order) => {
 
 const setStatus = async (_id, status, sendMail = true) => {
     if (!status) {
-        console.error('Bad status', _id);
+        logger.error(`Bad status ${_id}`);
         return;
     }
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
@@ -103,12 +104,12 @@ const setStatus = async (_id, status, sendMail = true) => {
     }
     if (([orderStatuses.ASK_CANCEL]).includes(order.status) && sendMail) {
         ServiceMail.sendMailOrderRequestCancel(_id).catch((err) => {
-            console.error(err);
+            logger.error(err.message);
         });
     }
     if (![orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAID].includes(order.status) && sendMail) {
         ServiceMail.sendMailOrderStatusEdit(_id).catch((err) => {
-            console.error(err);
+            logger.error(err.message);
         });
     }
 };
@@ -522,7 +523,7 @@ const addPackage = async (orderId, pkgData) => {
                 : '')}`
         });
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 

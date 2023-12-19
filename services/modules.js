@@ -19,6 +19,7 @@ const QueryBuilder                = require('../utils/QueryBuilder');
 const modulesUtils                = require('../utils/modules');
 const {getEnv}                    = require('../utils/server');
 const NSErrors                    = require('../utils/errors/NSErrors');
+const logger                      = require('../utils/logger');
 const {Modules}                   = require('../orm/models');
 const themesService               = require('./themes');
 
@@ -114,7 +115,7 @@ const initModule = async (files) => {
         await new Promise((resolve, reject) => {
             zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
                 if (err) {
-                    console.error(err);
+                    logger.error(err.message);
                     reject();
                 }
                 resolve();
@@ -158,22 +159,22 @@ const initModule = async (files) => {
         // Check if the functions init, initAfter, uninit and rgpd are present
         const pathUninit = path.join(extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
-            console.error(`Uninit file is missing for : ${packageJSON.name}`);
+            logger.error(`Uninit file is missing for : ${packageJSON.name}`);
         }
 
         const pathInit = path.join(extractZipFilePath, 'init.js');
         if (!fs.existsSync(pathInit)) {
-            console.error(`Init file is missing for : ${packageJSON.name}`);
+            logger.error(`Init file is missing for : ${packageJSON.name}`);
         }
 
         const pathInitAfter = path.join(extractZipFilePath, 'initAfter.js');
         if (!fs.existsSync(pathInitAfter)) {
-            console.error(`InitAfter file is missing for : ${packageJSON.name}`);
+            logger.error(`InitAfter file is missing for : ${packageJSON.name}`);
         }
 
         const pathRgpd = path.join(extractZipFilePath, 'rgpd.js');
         if (!fs.existsSync(pathRgpd)) {
-            console.error(`RGPD file is missing for : ${packageJSON.name}`);
+            logger.error(`RGPD file is missing for : ${packageJSON.name}`);
         }
 
         console.log('Module installed');
@@ -187,13 +188,13 @@ const initModule = async (files) => {
             console.log('removing zip file in module folder...');
             await fs.unlink(zipFilePath);
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
         }
         try {
             console.log('removing file in module folder...');
             await fs.deleteRecursive(extractZipFilePath);
         } catch (err) {
-            console.error(err);
+            logger.error(err.message);
         }
         throw err;
     }
@@ -225,7 +226,7 @@ const activateModule = async (idModule, toBeChanged) => {
                     true
                 );
             } catch (err) {
-                console.error(err);
+                logger.error(err.message);
             }
             copyTab.push(copy);
         }
@@ -242,7 +243,7 @@ const activateModule = async (idModule, toBeChanged) => {
                         true
                     );
                 } catch (err) {
-                    console.error(err);
+                    logger.error(err.message);
                 }
                 copyTab.push(dest);
             }
@@ -311,7 +312,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
                         try {
                             await fs.copyRecursive(src, dest, true);
                         } catch (err) {
-                            console.error(err);
+                            logger.error(err.message);
                         }
                         copyTab.push(dest);
                     }
@@ -359,7 +360,7 @@ const deactivateModule = async (idModule) => {
                 if ((await fs.lstat(_module.files[i])).isDirectory()) {
                     await new Promise((resolve) => {
                         rimraf(_module.files[i], (err) => {
-                            if (err) console.error(err);
+                            if (err) logger.error(err.message);
                             resolve();
                         });
                     });
@@ -367,7 +368,7 @@ const deactivateModule = async (idModule) => {
                     try {
                         await fs.unlink(_module.files[i]);
                     } catch (err) {
-                        console.error('Error: ', err);
+                        logger.error(`Error: ${err.message}`);
                     }
                 }
             }
@@ -421,10 +422,10 @@ const removeModule = async (idModule) => {
     try {
         await fs.unlink(path.replace(/\/$/, '.zip'));
     } catch (err) {
-        console.error(err);
+        logger.error(err.message);
     }
     rimraf(path, (err) => {
-        if (err) console.error('Error: ', err);
+        if (err) logger.error(`Error: ${err.message}`);
     });
     return true;
 };
@@ -647,7 +648,7 @@ const removeFromListModule = async (file, currentTheme) => {
             await removeImport(thisModuleElement, result, pathListModules);
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
     }
 };
 
@@ -673,7 +674,7 @@ const removeModuleAddon = async (_module) => {
             try {
                 await require('./job').deleteModuleJobByName(cronName);
             } catch (err) {
-                console.error(`Unable to delete the job '${cronName}'`);
+                logger.error(`Unable to delete the job '${cronName}'`);
             }
         }
     }
@@ -682,7 +683,7 @@ const removeModuleAddon = async (_module) => {
             try {
                 await require('./mailType').deleteMailType(mailCode, false);
             } catch (err) {
-                console.error(err);
+                logger.error(err.message);
             }
         }
     }
@@ -741,8 +742,8 @@ const loadAdminModules = async () => {
             }
             tabM.push(item);
         } catch (err) {
-            console.error(`Could not load module ${oneModule.name}`);
-            console.error(err);
+            logger.error(`Could not load module ${oneModule.name}`);
+            logger.error(err.message);
 
             await require('./admin').insertAdminInformation({
                 code        : `module_${oneModule.name}_missing`,

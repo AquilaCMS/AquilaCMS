@@ -7,6 +7,7 @@
  */
 
 const {Shortcodes} = require('../orm/models');
+const logger       = require('../utils/logger');
 
 /*
  * Get shortcodes
@@ -936,7 +937,7 @@ exports.initDBValues = async () => {
         try {
             await Shortcodes.findOneAndUpdate({tag: element.tag}, element, {new: true, upsert: true});
         } catch (ee) {
-            console.error(ee);
+            logger.error(ee.message);
         }
     }
 };

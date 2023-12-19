@@ -10,6 +10,7 @@ const axios                  = require('axios');
 const AdmZip                 = require('adm-zip');
 const path                   = require('path');
 const {fs, execCmd, restart} = require('aql-utils');
+const logger                 = require('../utils/logger');
 const {Configuration}        = require('../orm/models');
 const tmpPath                = path.resolve('./uploads/temp');
 const packageJSONPath        = path.resolve(global.aquila.appRoot, 'package.json');
@@ -33,7 +34,7 @@ const verifyingUpdate = async () => {
         await downloadURL(fileURL, filePath);
         onlineVersion = fs.readFileSync(filePath).toString().replace('\n', '').trim();
     } catch (exc) {
-        console.error(`Get ${fileURL} failed`);
+        logger.error(`Get ${fileURL} failed`);
     }
     return {
         version    : actualVersion,
@@ -61,7 +62,7 @@ const updateGithub = async () => {
         console.log('Aquila is updated !');
         return restart();
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
         return error;
     }
 };
@@ -82,7 +83,7 @@ const update = async () => {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
     } catch (err) {
-        console.error(`Get ${fileURL} failed`);
+        logger.error(`Get ${fileURL} failed`);
     }
 
     const oldPackageJSON = JSON.parse(await fs.readFile(packageJSONPath));
@@ -94,7 +95,7 @@ const update = async () => {
         const aquilaPath = global.envFile.devMode ? tmpPath : './';
         zip.extractAllTo(aquilaPath, true);
     } catch (err) {
-        console.error(`Unzip ${filePath} failed`);
+        logger.error(`Unzip ${filePath} failed`);
     }
     const packageJSON              = JSON.parse(await fs.readFile(packageJSONPath));
     packageJSON.package.workspaces = workspaces;

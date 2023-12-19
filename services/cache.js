@@ -11,6 +11,7 @@ const path           = require('path');
 const {fs}           = require('aql-utils');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
+const logger         = require('../utils/logger');
 
 const flush = async () => {
     global.cache.flush();
@@ -70,7 +71,7 @@ const deleteCacheImage = (type, datas) => {
 function deleteFileCache(filePathCache) {
     glob(filePathCache, async (err, files) => {
         if (err) {
-            console.error(err);
+            logger.error(err.message);
         } else {
             for (let i = 0; i < files.length; i++) {
                 await fs.unlink(files[i]);

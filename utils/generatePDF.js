@@ -1,4 +1,5 @@
 const wkhtmltopdf = require('wkhtmltopdf');
+const logger      = require('./logger');
 
 const WK_Wrapper = async (content, options) => new Promise((resolve, reject) => {
     const res = wkhtmltopdf(content, options, function (err) {
@@ -58,12 +59,12 @@ const useWkHTMLtoPDF = async (content = '', options = {}, stream = true) => {
         resOfWK = await WK_Wrapper(content, options);
     } catch (error) {
         if (error && error.message) {
-            console.error('wkhtmltopdf produced an error');
+            logger.error('wkhtmltopdf produced an error');
             if (isDebug) {
-                console.error('(already printed in debug)');
+                logger.error('(already printed in debug)');
             } else {
                 const textError = `${error.message.replace('\n', '')}\n`;
-                console.error(textError);
+                logger.error(textError);
             }
         }
         return null;

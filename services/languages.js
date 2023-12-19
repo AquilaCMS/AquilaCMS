@@ -12,6 +12,7 @@ const ServiceConfig = require('./config');
 const {Languages}   = require('../orm/models');
 const NSErrors      = require('../utils/errors/NSErrors');
 const QueryBuilder  = require('../utils/QueryBuilder');
+const logger        = require('../utils/logger');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
@@ -136,7 +137,7 @@ const getListOfAllTranslationFiles = async (dir, translateList) => {
             }
         }
     } catch (err) {
-        console.error('Could not list the directory.', err);
+        logger.error(`Could not list the directory. ${err.message}`);
     }
 };
 
@@ -171,8 +172,8 @@ const createDynamicLangFile = async (selectedTheme = global.aquila.envConfig.env
         }
 
         await fs.writeFile(linkToFile, contentFile);
-    } catch (e) {
-        console.error(e);
+    } catch (err) {
+        logger.error(err.message);
         throw 'Error writing file "dynamic_langs.js"';
     }
 };

@@ -17,6 +17,7 @@ const NSErrors                    = require('../utils/errors/NSErrors');
 const utilsServer                 = require('../utils/server');
 const modulesUtils                = require('../utils/modules');
 const translate                   = require('../utils/translate/common');
+const logger                      = require('../utils/logger');
 const {
     Users,
     Mail,
@@ -684,7 +685,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
         } = global.aquila.envConfig.environment;
 
         if (!mailTo || mailTo.length === 0) {
-            console.error('sendMail() : mailTo is empty !!');
+            logger.error('sendMail() : mailTo is empty !!');
         }
 
         // Check that there is no recipient overload in the config
@@ -715,7 +716,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             }
             for (const file of attachments) {
                 if (typeof file !== 'object') {
-                    console.error('Attachments need to be an object');
+                    logger.error('Attachments need to be an object');
                     continue;
                 }
                 let pathToFile = file.path;
@@ -725,7 +726,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
                 const checkAccess = await fs.hasAccess(pathToFile);
                 const isFile      = (await fs.lstat(pathToFile)).isFile();
                 if (!checkAccess || !isFile) {
-                    console.error('Your attachments looks unreachable');
+                    logger.error('Your attachments looks unreachable');
                 }
                 const data = await fs.readFile(pathToFile, {encoding: 'base64'});
                 mailOptions.attachments.push({
@@ -774,7 +775,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
                 transporter = nodemailer.createTransport(options);
                 return transporter.sendMail(mailOptions);
             } catch (err) {
-                console.error('Send mail error', err);
+                logger.error(`Send mail error : ${err.message}`);
                 throw err;
             }
         }

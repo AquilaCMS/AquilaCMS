@@ -12,6 +12,7 @@ const ProductPreview                   = require('../services/preview');
 const {authentication, adminAuthRight} = require('../middleware/authentication');
 const {securityForceActif}             = require('../middleware/security');
 const {autoFillCode}                   = require('../middleware/autoFillCode');
+const logger                           = require('../utils/logger');
 
 module.exports = function (app) {
     app.get('/v2/adm/products/:lang?', adminAuthRight('products'), getProductsAsAdmin);
@@ -247,7 +248,7 @@ async function changeProductType(req, res, next) {
         const newProduct = await ServiceProduct.changeProductType(req.body.product, req.body.newType);
         return res.json(newProduct);
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
         next(error);
     }
 }
