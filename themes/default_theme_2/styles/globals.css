@@ -419,6 +419,15 @@ input[type='radio']:focus + .w-form-formradioinput--inputType-custom {
   }
 }
 
+/*
+  FUSION => .arrow2 l.6996 style.webflow.css
+*/
+@media screen and (max-width: 991px) {
+  .arrow2 {
+      position: absolute;
+  }
+}
+
 /* 
   ADD mon-restaurant.webflow.css
 */
@@ -636,12 +645,4 @@ font-size: 0.8rem;
 
 .disabled-all.clickable {
   cursor: pointer;
-}
-
-/* Reviews */
-.review-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
 }

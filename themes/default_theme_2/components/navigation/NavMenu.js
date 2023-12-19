@@ -88,7 +88,7 @@ export default function NavMenu() {
                                                     item2.children && item2.children.length > 0 ? (
                                                         <Fragment key={item2._id}>
                                                             <div className="link-to-page">
-                                                                <div className="text-block-nav">
+                                                                <div className="text-block-nav" style={{ position: 'relative' }}>
                                                                     {
                                                                         item2.action !== 'container' && item.slug && item2.slug ? (
                                                                             <Link href={item2.action === 'catalog' || item2.action === 'categorylist' ? `/c/${item.slug[lang]}/${item2.slug[lang]}` : (item2.action === 'page' ? `/${item2.pageSlug}` : (item2.url ? item2.url : '/'))} className="w-dropdown-link" target={item.url?.indexOf('http') === 0 ? '_blank' : '_self'}>
@@ -99,7 +99,7 @@ export default function NavMenu() {
                                                                         )
                                                                     }
                                                                 </div>
-                                                                <div className="arrow2 w-icon-dropdown-toggle" onClick={() => openSubMenuOnClick(item2._id, 2)} />
+                                                                <div className="arrow2 w-icon-dropdown-toggle" style={{ backgroundColor: '#ff5c00', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 0, width: '40px', height: '100%' }} onClick={() => openSubMenuOnClick(item2._id, 2)} />
                                                             </div>
                                                             <div className={`page-2${view.find((v) => v === item2._id) ? 'page-2-open' : ''}`}>
                                                                 {
