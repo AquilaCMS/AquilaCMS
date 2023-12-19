@@ -56,19 +56,19 @@ export default function PostReview({ product, onCloseModal }) {
     return (
         <form onSubmit={onSubmitReview}>
             <div className="title-wrap-centre">
-                <h3 className="header-h4">Poster un avis</h3>
+                <h3 className="header-h4">{t('components/postReview:postReview')}</h3>
                 <h5 className="seprateur-carte">{product.name}</h5>
             </div>
             <div className="block-content-tunnel">
-                <label className="field-label">Note</label>
+                <label className="field-label">{t('components/postReview:rate')}</label>
                 <div>
                     <DrawStars mode="edit" onClickStar={onClickStar} />
                 </div>
-                <label className="field-label">Titre</label>
+                <label className="field-label">{t('components/postReview:title')}</label>
                 <input type="text" className="w-input" name="title" maxLength={100} onChange={onChangeReview} required />
-                <label className="field-label">Avis</label>
+                <label className="field-label">{t('components/postReview:review')}</label>
                 <textarea placeholder="Votre avis" maxLength={5000} rows={6} className="w-input" name="review" onChange={onChangeReview} required />
-                <span className="text-small">{5000 - review.review.length} caractère(s) restant(s)</span>
+                <span className="text-small">{5000 - review.review.length} {t('components/postReview:remainingCharacters')}</span>
             </div>
             {
                 message && (

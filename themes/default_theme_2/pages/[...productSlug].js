@@ -614,7 +614,7 @@ export default function Product({ breadcrumb, origin }) {
                     <div className="content-section-short reviews-container">
                         <div className="container">
                             <div className="title-wrap-centre">
-                                <h3 className="header-h4">Avis ({product.reviews.reviews_nb})</h3>
+                                <h3 className="header-h4">{t('pages/product:reviews')} ({product.reviews.reviews_nb})</h3>
                                 { product.reviews.reviews_nb > 0 && <DrawStars rate={product.reviews.average} /> }
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
@@ -638,10 +638,10 @@ export default function Product({ breadcrumb, origin }) {
                                     <>
                                         <div style={{ width: '20%' }}>
                                             <select className="select-field w-select" value={filterReviews.sort} onChange={(e) => setFilterReviews({ ...filterReviews, sort: e.target.value })}>
-                                                <option value="review_date:asc">Trier par date croissante</option>
-                                                <option value="review_date:desc">Trier par date décroissante</option>
-                                                <option value="rate:asc">Trier par note croissante</option>
-                                                <option value="rate:desc">Trier par note décroissante</option>
+                                                <option value="review_date:asc">{t('pages/product:sortByAscDate')}</option>
+                                                <option value="review_date:desc">{t('pages/product:sortByDescDate')}</option>
+                                                <option value="rate:asc">{t('pages/product:sortByAscRate')}</option>
+                                                <option value="rate:desc">{t('pages/product:sortByDescRate')}</option>
                                             </select>
                                         </div>
                                         <div className="plain-line" />
