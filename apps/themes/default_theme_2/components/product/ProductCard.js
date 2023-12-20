@@ -4,29 +4,30 @@ import { useRouter }                                                    from 'ne
 import useTranslation                                                   from 'next-translate/useTranslation';
 import { Modal }                                                        from 'react-responsive-modal';
 import BundleProduct                                                    from '@components/product/BundleProduct';
+import DrawStars                                                        from '@components/common/DrawStars';
 import Button                                                           from '@components/ui/Button';
 import { downloadFreeVirtualProduct }                                   from '@aquilacms/aquila-connector/api/product';
 import { generateSlug, getMainImage }                                   from '@aquilacms/aquila-connector/api/product/helpersProduct';
 import { addToCart, deleteCartShipment }                                from '@aquilacms/aquila-connector/api/cart';
 import { generateURLImageCache }                                        from '@aquilacms/aquila-connector/lib/utils';
 import { useCart, useComponentData, useShowCartSidebar, useSiteConfig } from '@lib/hooks';
-import { authProtectedPage, formatPrice, formatStock }                  from '@lib/utils';
+import { authProtectedPage, formatPrice, formatStock, moduleHook }      from '@lib/utils';
 
 import 'react-responsive-modal/styles.css';
 
 export default function ProductCard({ type, value, col = 6, hidden = false }) {
-    const [qty, setQty]             = useState(1);
-    const [message, setMessage]     = useState();
-    const [isLoading, setIsLoading] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const productRef                = useRef();
-    const timer                     = useRef();
-    const { query }                 = useRouter();
-    const { cart, setCart }         = useCart();
-    const { setShowCartSidebar }    = useShowCartSidebar();
-    const { themeConfig }           = useSiteConfig();
-    const componentData             = useComponentData();
-    const { lang, t }               = useTranslation();
+    const [qty, setQty]                = useState(1);
+    const [message, setMessage]        = useState();
+    const [isLoading, setIsLoading]    = useState(false);
+    const [openModal, setOpenModal]    = useState(false);
+    const productRef                   = useRef();
+    const timer                        = useRef();
+    const { query }                    = useRouter();
+    const { cart, setCart }            = useCart();
+    const { setShowCartSidebar }       = useShowCartSidebar();
+    const { environment, themeConfig } = useSiteConfig();
+    const componentData                = useComponentData();
+    const { lang, t }                  = useTranslation();
 
     // 2 options :
     // Live use in code (data in "value" prop => type = "data")
@@ -192,6 +193,7 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                 <div className="food-card-content">
                     <Link href={currentSlug} className="food-title-wrap w-inline-block">
                         <h6 className="heading-9">{product.name}</h6>
+                        { environment.displayingReviews && product.reviews.reviews_nb > 0 && <div><DrawStars rate={product.reviews.average} displayTextRate={false} width="small" /></div> }
                         <div className="div-block-prix">
                             {
                                 product.variants_values?.length ? (
@@ -225,6 +227,9 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                                     product.active === false || (!product.type.startsWith('virtual') && (product.stock?.status === 'epu' || product.stock?.orderable === false)) ? (
                                         <form className="w-commerce-commerceaddtocartform default-state">
                                             <button type="button" className="w-commerce-commerceaddtocartbutton order-button" disabled={true}>{t('components/product:productCard.unavailable')}</button>
+                                            {
+                                                moduleHook('product-card-button', { product })
+                                            }
                                         </form>
                                     ) : (
                                         <form className="w-commerce-commerceaddtocartform default-state" onSubmit={product.type.startsWith('virtual') && product.price.ati.normal === 0 ? onDownloadVirtualProduct : (product.type.startsWith('bundle') ? onOpenModal : onAddToCart)}>
@@ -235,6 +240,9 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                                                 isLoading={isLoading}
                                                 className="w-commerce-commerceaddtocartbutton order-button"
                                             />
+                                            {
+                                                moduleHook('product-card-button', { product })
+                                            }
                                         </form>
                                     )
                                 )

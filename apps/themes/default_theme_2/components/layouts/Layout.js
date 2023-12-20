@@ -7,6 +7,7 @@ import BlockCMS                        from '@components/common/BlockCMS';
 import Languages                       from '@components/common/Languages';
 import SearchBar                       from '@components/common/SearchBar';
 import { useCmsBlocks, useSiteConfig } from '@lib/hooks';
+import { moduleHook }                  from '@lib/utils';
 
 export default function Layout({ children }) {
     const cmsBlocks       = useCmsBlocks();
@@ -34,6 +35,8 @@ export default function Layout({ children }) {
             <main>{children}</main>
 
             <Footer />
+
+            { moduleHook('bottom-banner')}
 
             <CookiesBanner />
         </>

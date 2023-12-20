@@ -299,6 +299,21 @@ input[type='radio']:focus + .w-form-formradioinput--inputType-custom {
   }
 }
 
+/* 
+  ADD
+  Review content
+*/
+.review-content {
+  overflow: hidden;
+  width: 1130px;
+  max-width: unset !important;
+}
+@media screen and (max-width: 1024px) {
+  .review-content {
+      width: unset;
+  }
+}
+
 /*
   REMOVE => .food-card-content l.6683 mon-restaurant.webflow.css
   margin-left problem in product card (mobile only)
@@ -401,6 +416,15 @@ input[type='radio']:focus + .w-form-formradioinput--inputType-custom {
 @media screen and (max-width: 479px) {
   .button.absolu {
       right: auto;
+  }
+}
+
+/*
+  FUSION => .arrow2 l.6996 style.webflow.css
+*/
+@media screen and (max-width: 991px) {
+  .arrow2 {
+      position: absolute;
   }
 }
 

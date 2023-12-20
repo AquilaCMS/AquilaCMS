@@ -35,8 +35,9 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
         // - change the Postbody to just have only one parameters
         PostBody = {
             structure : {
-                'environment.siteName' : 1,
-                'environment.demoMode' : 1
+                'environment.siteName'          : 1,
+                'environment.demoMode'          : 1,
+                'environment.displayingReviews' : 1
             },
             filter : {}
         };
