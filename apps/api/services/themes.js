@@ -212,7 +212,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
             return (index > -1 && fileNames[index].value === true);
         });
     }
-    const photoPath = path.join(global.aquila.appRoot, require('../utils/server').getUploadDirectory());
+    const photoPath = path.join(global.aquila.aqlPath, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
 
     for (const value of listOfFile) {

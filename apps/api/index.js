@@ -14,9 +14,14 @@ const path     = require('path');
 const {fs}     = require('aql-utils');
 
 // GLOBAL VAR
-global.aquila              = {};
-global.aquila.appRoot      = path.resolve(__dirname); // TODO : rename into apiPath + take env var if they exist
-global.aquila.appsPath     = path.dirname(path.resolve(__dirname));
+global.aquila = {};
+
+global.aquila.appRoot  = path.resolve(__dirname); // TODO : rename into apiPath + take env var if they exist
+global.aquila.appsPath = path.dirname(path.resolve(global.aquila.appRoot)); // /apps
+
+global.aquila.aqlPath      = path.dirname(path.resolve(global.aquila.appsPath)); // Repo root
+global.aquila.packagesPath = path.join(global.aquila.aqlPath, 'packages'); // /packages
+
 global.aquila.boPath       = path.join(global.aquila.appsPath, 'backoffice');
 global.aquila.themesPath   = path.join(global.aquila.appsPath, 'themes');
 global.aquila.modulesPath  = path.join(global.aquila.appsPath, 'modules');
@@ -105,7 +110,7 @@ const setEnvConfig = async () => {
         await require('./services/admin').removeAdminInformation('server_restart_rebuild');
     }
     if (!configuration.environment.photoPath) {
-        configuration.environment.photoPath = 'uploads';
+        configuration.environment.photoPath = 'packages/uploads';
     }
     global.aquila.envConfig = configuration.toObject();
 

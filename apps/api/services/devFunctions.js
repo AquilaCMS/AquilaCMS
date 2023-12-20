@@ -32,7 +32,7 @@ const createModelData = async () => {
         }
     }
 
-    const photoPath = path.join(global.aquila.appRoot, require('../utils/server').getUploadDirectory());
+    const photoPath = path.join(global.aquila.aqlPath, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
     if (!await fs.hasAccess(photoPath)) {
         throw new Error(`"${photoPath}" is not readable`);

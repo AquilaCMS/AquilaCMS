@@ -26,7 +26,6 @@ const themesService               = require('./themes');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
-const moduleFolderName = 'modules/';
 
 /**
  * Get modules
@@ -72,13 +71,12 @@ const initModule = async (files) => {
     if (path.extname(originalname) !== '.zip') {
         throw NSErrors.InvalidFile;
     }
+
     console.log('Upload module...');
-    const moduleFolderAbsPath = path.resolve(global.aquila.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
-    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
-    const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
+    const zipFilePath        = path.resolve(global.aquila.modulesPath, originalname); // /path/to/AquilaCMS/apps/modules/my-module.zip
+    const extractZipFilePath = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/apps/modules/my-module/
 
     // move the file from the temporary location to the intended location
-    await fs.mkdir(moduleFolderAbsPath, {recursive: true});
     await fs.copyFile(path.resolve(global.aquila.appRoot, filepath), zipFilePath);
     await fs.unlink(path.resolve(global.aquila.appRoot, filepath));
 
@@ -106,6 +104,7 @@ const initModule = async (files) => {
                 || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
             ) {
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -113,7 +112,7 @@ const initModule = async (files) => {
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
-            zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
+            zip.extractAllToAsync(global.aquila.modulesPath, true, (err) => {
                 if (err) {
                     logger.error(err.message);
                     reject();
@@ -123,11 +122,11 @@ const initModule = async (files) => {
         });
         console.log('Unzip module ok, reading info.json...');
 
-        const infoPath = path.resolve(extractZipFilePath, 'info.json');
+        const infoPath = path.join(extractZipFilePath, 'info.json');
         if (!fs.existsSync(infoPath)) throw NSErrors.ModuleInfoNotFound;
         const infoFile = await fs.readFile(infoPath, 'utf8'); // TODO : to be removed when no more info.json is used
 
-        const packageFilePath = path.resolve(extractZipFilePath, 'package.json');
+        const packageFilePath = path.join(extractZipFilePath, 'package.json');
         if (!fs.existsSync(packageFilePath)) throw NSErrors.ModulePackageJsonNotFound;
         const packageFile = await fs.readFile(packageFilePath, 'utf8');
 
@@ -140,7 +139,7 @@ const initModule = async (files) => {
             name                     : packageJSON.name,
             description              : packageJSON.description,
             version                  : packageJSON.version,
-            path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
+            path                     : slash(path.join(global.aquila.modulesPath, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -210,7 +209,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, myModule.name);
+        const moduleFolderAbsPath = path.join(global.aquila.modulesPath, myModule.name);
 
         // Add module name to the module package json workspaces field
         dynamicWorkspacesMgmt(myModule.name, 'modules', true);
