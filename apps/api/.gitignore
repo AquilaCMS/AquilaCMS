@@ -1,0 +1,7 @@
+# Environment
+env.json
+
+/config/envPath
+/uploads
+/logs
+/exports
