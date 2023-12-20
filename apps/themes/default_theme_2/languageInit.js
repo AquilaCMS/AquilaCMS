@@ -7,7 +7,7 @@ const setLanguage = async (langs, defaultLanguage) => {
 
     global.aquila = decodeBase64ToObject(global.aquila);
 
-    const pathToTheme    = path.join(global.aquila.appRoot, 'themes', themeName);
+    const pathToTheme    = path.join(global.aquila.themesPath, themeName);
     const i18nSamplePath = path.join(pathToTheme, 'i18n.js.sample');
     const i18nFilePath   = path.join(pathToTheme, 'i18n.js');
 
@@ -46,7 +46,7 @@ const setLanguage = async (langs, defaultLanguage) => {
 
 const createTranslationFiles = async (langs, defaultLanguage) => {
     const themeName   = path.basename(__dirname);
-    const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
+    const pathToTheme = path.join(global.aquila.themesPath, themeName);
     let pathFrom      = path.join(pathToTheme, 'locales');
 
     // "locales" folder

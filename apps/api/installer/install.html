@@ -170,32 +170,6 @@
             // toastContain.MaterialSnackbar.showSnackbar({message: "Some errors are detected"});
         }
 
-        function Recover() {
-            let form             = $("#secondStep");
-            let loader           = document.getElementById("loading");
-            let config           = document.getElementById("config");
-            let errorDiv         = document.getElementById("errorRecoverDiv");
-            let errorMsg         = document.getElementById("errorRecover");
-            loader.style.display = 'block';
-            config.style.display = 'none';
-            $.ajax({
-                url: '/recover',
-                type: 'POST',
-                data: form.serialize(),
-                success: (response, status) => {
-                    errorDiv.style.display = "none";
-                    window.location.href = `${window.location.origin}/`;
-                },
-                error: (response, status, error) => {
-                    errorDiv.style.display = "block";
-                    errorMsg.innerHTML = response.responseText;
-                    loader.style.display = 'none';
-                    config.style.display = 'block';
-                    console.error(response, status, error);
-                }
-            });
-        }
-
         function testDB(){
 
             let testDBLoader = document.getElementById("testDBLoader");
@@ -311,9 +285,6 @@
                         Next
                     </button>
                 </div>
-                <a style="font-size: 10px; color: rgb(63,81,181); cursor: pointer;" id="recoverConfiguration">
-                    Recover existing configuration
-                </a>
             </div>
         </div>
 
@@ -458,32 +429,6 @@
             </div>
 
         </form>
-
-        <form name="recoverForm" class="demo-card-square mdl-card mdl-shadow--2dp" style="display: none" id="recoverStep">
-            <div class="mdl-card__title mdl-card--expand">
-                <h2 class="mdl-card__title-text">2/ Recover existing configuration</h2>
-            </div>
-            <div class="mdl-card__supporting-text">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="envPath" name="envPath" required>
-                    <label class="mdl-textfield__label" for="envPath">Path for the existing configuration</label>
-                </div>
-            </div>
-            <div class="mdl-card__supporting-text" style="display:none; margin:0px" id="errorRecoverDiv">
-                <p id="errorRecover" style="color:red"></p>
-            </div>
-            <div class="mdl-card__actions mdl-card--border" id="stepConfig">
-                <div class="mdl-layout__header-row" style="padding: 0px 40px 0 40px;">
-                    <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" href="javascript:document.location.reload(true);">
-                        Back
-                    </a>
-                    <div class="mdl-layout-spacer"></div>
-                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit">
-                        Save & restart
-                    </button>
-                </div>
-            </div>
-        </form>
     </div>
     <div class="aquilaCMSVersion">
         aquilaCMS: v{{aquilaCMSVersion}}
@@ -496,19 +441,9 @@
             Configuration();
         });
 
-        document.getElementById("recoverStep").addEventListener("submit", function(event){
-            event.preventDefault();
-            Recover();
-        });
-
         document.getElementById("nextStep").addEventListener("click", function(event) {
             event.preventDefault();
             NextStep();
-        })
-
-        document.getElementById("recoverConfiguration").addEventListener("click", function(event) {
-            event.preventDefault();
-            RecoverConfiguration();
         })
 
         document.getElementById("testDB").addEventListener("click", function(event) {

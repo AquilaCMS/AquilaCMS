@@ -78,7 +78,7 @@ const changeTheme = async (selectedTheme, type) => {
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
         const tmp_path         = filepath;
-        const target_path      = path.join(global.aquila.appRoot, 'themes');
+        const target_path      = path.join(global.aquila.themesPath);
         const target_path_full = path.join(target_path, originalname);
         console.log(`Uploading theme to : ${target_path_full}`);
 
@@ -191,7 +191,7 @@ const getDemoDatasFilesName = async () => {
  * @param {Boolean} override : Override datas if exists
  */
 const copyDatas = async (themePath, override = true, configuration = null, fileNames = null) => {
-    const themeDemoData = path.join(global.aquila.appRoot, 'themes', themePath, 'demoDatas');
+    const themeDemoData = path.join(global.aquila.themesPath, themePath, 'demoDatas');
     const data          = [];
     let listOfFile      = [];
     if (!fs.existsSync(themeDemoData)) {
@@ -275,7 +275,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.aquila.themesPath, themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return (await fs.readFile(fullPath)).toString();
@@ -296,7 +296,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.aquila.themesPath, themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -318,7 +318,7 @@ const getAllCssComponentName = async () => {
         const cssNames  = [];
         const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join(global.aquila.appRoot, 'themes', themePath, cssFolder);
+            const fullPath = path.join(global.aquila.themesPath, themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {
@@ -387,7 +387,7 @@ async function buildTheme(theme) {
 }
 
 async function languageManagement(theme = global.aquila.envConfig.environment.currentTheme) {
-    const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme, '/');
+    const pathToTheme = path.join(global.aquila.themesPath, theme, '/');
     if (fs.existsSync(path.join(pathToTheme, 'languageInit.js'))) {
         await languageInitExec(theme);
     } else {
@@ -399,7 +399,7 @@ async function languageManagement(theme = global.aquila.envConfig.environment.cu
 async function languageInitExec(theme = global.aquila.envConfig.environment.currentTheme) {
     let returnValues;
     try {
-        const pathToTheme        = path.join(global.aquila.appRoot, 'themes', theme);
+        const pathToTheme        = path.join(global.aquila.themesPath, theme);
         const pathToLanguageInit = path.join(pathToTheme, 'languageInit.js');
         const isExist            = await fs.existsSync(pathToLanguageInit);
         if (isExist) {
@@ -438,7 +438,7 @@ async function languageInitExec(theme = global.aquila.envConfig.environment.curr
 
 async function generateDynamicLangFile(theme) {
     try {
-        const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme);
+        const pathToTheme = path.join(global.aquila.themesPath, theme);
         // "dynamic_langs.js" is required to build (reactjs) theme
         const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
         const isExist            = await fs.existsSync(pathToDynamicLangs);
@@ -470,7 +470,7 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
 
 const listTheme = async () => {
     const allTheme    = [];
-    const pathToTheme = path.join(global.aquila.appRoot, 'themes');
+    const pathToTheme = path.join(global.aquila.themesPath);
     const listOfFile  = await fs.readdir(pathToTheme);
     for (const element of listOfFile) {
         const pathToFolder = path.join(pathToTheme, element);

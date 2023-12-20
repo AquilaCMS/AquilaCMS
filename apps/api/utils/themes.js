@@ -18,7 +18,7 @@ const logger                   = require('./logger');
  */
 const themeInstallAndCompile = async (theme) => {
     try {
-        const pathToTheme = path.join(global.aquila.appRoot, 'themes', theme, '/');
+        const pathToTheme = path.join(global.aquila.themesPath, theme, '/');
         if (fs.existsSync(pathToTheme)) {
             const themeName = theme || global.aquila.envConfig.environment.currentTheme;
             await yarnInstall(themeName);
@@ -37,7 +37,7 @@ const themeInstallAndCompile = async (theme) => {
  * Do a yarn install
  */
 const yarnInstall = async (themeName = ''/* , devDependencies = false */) => {
-    const linkToTheme   = path.join(global.aquila.appRoot, 'themes', themeName);
+    const linkToTheme   = path.join(global.aquila.themesPath, themeName);
     const pathToPackage = path.join(linkToTheme, 'package.json');
     const isExist       = fs.existsSync(pathToPackage);
     if (!isExist) {
@@ -55,7 +55,7 @@ const yarnInstall = async (themeName = ''/* , devDependencies = false */) => {
  * Do a yarn run build
  */
 const yarnBuildCustom = async (themeName = '') => {
-    const pathToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
+    const pathToTheme = path.join(global.aquila.themesPath, themeName);
     const pathToInit  = path.join(pathToTheme, 'themeInit.js');
     let returnValues;
     try {
@@ -100,7 +100,7 @@ const yarnBuildCustom = async (themeName = '') => {
  * Do a yarn run build
  */
 const yarnBuild = async (themeName = '') => {
-    const linkToTheme  = path.join(global.aquila.appRoot, 'themes', themeName);
+    const linkToTheme  = path.join(global.aquila.themesPath, themeName);
     const returnValues = await execCmd('yarn run build', path.join(linkToTheme, '/'));
     return returnValues;
 };
@@ -110,7 +110,7 @@ const yarnBuild = async (themeName = '') => {
  */
 const yarnDeleteNodeModulesContent = async (themeName = '') => {
     let returnValues;
-    const linkToTheme = path.join(global.aquila.appRoot, 'themes', themeName);
+    const linkToTheme = path.join(global.aquila.themesPath, themeName);
     const themePath   = path.join(linkToTheme, '/');
     try {
         const createYarnCleanFile = await execCmd('yarn autoclean --init', themePath);
@@ -148,7 +148,7 @@ const yarnDeleteNodeModulesContent = async (themeName = '') => {
  */
 const loadThemeInfo = (theme) => {
     const nameOfFile = 'themeInfo.json';
-    const linkToFile = path.join(global.aquila.appRoot, 'themes', theme, nameOfFile);
+    const linkToFile = path.join(global.aquila.themesPath, theme, nameOfFile);
     try {
         if (fs.existsSync(linkToFile)) {
             const config = require(linkToFile);

@@ -215,7 +215,7 @@ const activateModule = async (idModule, toBeChanged) => {
         // Add module name to the module package json workspaces field
         dynamicWorkspacesMgmt(myModule.name, 'modules', true);
 
-        const copy  = path.join(global.aquila.appRoot, 'backoffice', 'app', myModule.name);
+        const copy  = path.join(global.aquila.boPath, 'app', myModule.name);
         const copyF = path.join(moduleFolderAbsPath, 'app');
         let copyTab = [];
         if (await fs.hasAccess(copyF)) {
@@ -286,7 +286,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
 
     let pathToComponents = 'theme_components';
     if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
-    const pathToThemeComponents = path.join(global.aquila.appRoot, 'modules', myModule.name, pathToComponents);
+    const pathToThemeComponents = path.join(global.aquila.modulesPath, myModule.name, pathToComponents);
 
     // Control compatibility between the module and the theme
     if (!fs.existsSync(pathToThemeComponents)) {
@@ -296,7 +296,7 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
     if (myModule.loadTranslationFront) {
         console.log('Front translation for module : Loading ...');
         try {
-            const pathToTranslateFile = path.join(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n');
+            const pathToTranslateFile = path.join(global.aquila.themesPath, currentTheme, 'assets', 'i18n');
             const hasAccess           = await fs.hasAccess(pathToTranslateFile);
             if (hasAccess) {
                 const files      = await fs.readdir(pathToTranslateFile);
@@ -306,8 +306,8 @@ const frontInstallationActions = async (myModule, toBeChanged, copyTab) => {
                     if (lang === 'index.js') {
                         continue;
                     }
-                    const src  = path.resolve(global.aquila.appRoot, 'modules', myModule.name, 'translations', 'front', lang);
-                    const dest = path.resolve(global.aquila.appRoot, 'themes', currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
+                    const src  = path.resolve(global.aquila.modulesPath, myModule.name, 'translations', 'front', lang);
+                    const dest = path.resolve(global.aquila.themesPath, currentTheme, 'assets', 'i18n', lang, 'modules', myModule.name);
                     if (await fs.hasAccess(src)) {
                         try {
                             await fs.copyRecursive(src, dest, true);
@@ -504,7 +504,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     }
 
     const currentTheme       = theme || global.aquila.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
-    const pathToThemeModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules');
+    const pathToThemeModules = path.join(global.aquila.themesPath, currentTheme, 'modules');
 
     const packageJson   = await fs.readFile(path.join(savePath, 'package.json'));
     const parsedpkgJson = JSON.parse(packageJson);
@@ -595,8 +595,8 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
         for (const file of listOfFile) {
             const fileName = file.name;
             await removeFromListModule(fileName, currentTheme);
-            let filePath = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', fileName);
-            if (!fs.existsSync(filePath)) filePath = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName, fileName); // The new way
+            let filePath = path.join(global.aquila.themesPath, currentTheme, 'modules', fileName);
+            if (!fs.existsSync(filePath)) filePath = path.join(global.aquila.themesPath, currentTheme, 'modules', moduleName, fileName); // The new way
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
@@ -607,12 +607,12 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove) => {
             }
         }
 
-        let moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', moduleName);
+        let moduleFolderInTheme = path.join(global.aquila.themesPath, currentTheme, 'modules', moduleName);
         if (fs.existsSync(moduleFolderInTheme)) {
             fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
             console.log(`Delete ${moduleFolderInTheme}`);
         } else {
-            moduleFolderInTheme = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules', `${moduleName}.disabled`);
+            moduleFolderInTheme = path.join(global.aquila.themesPath, currentTheme, 'modules', `${moduleName}.disabled`);
             if (fs.existsSync(moduleFolderInTheme)) {
                 fs.rmSync(moduleFolderInTheme, {recursive: true, force: true});
                 console.log(`Delete ${moduleFolderInTheme}`);
@@ -641,7 +641,7 @@ const removeImport = async (thisModuleElement, exportDefaultListModule, pathList
 
 const removeFromListModule = async (file, currentTheme) => {
     try {
-        const pathListModules = path.join(global.aquila.appRoot, 'themes', currentTheme, 'modules/list_modules.js');
+        const pathListModules = path.join(global.aquila.themesPath, currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
             const result            = await fs.readFile(pathListModules, 'utf8');
             const thisModuleElement = new RegExp(`{[^{]*${file}[^}]*},`, 'gm');
@@ -729,7 +729,7 @@ const loadAdminModules = async () => {
     for (const oneModule of modules) {
         const item = {module: oneModule.name, files: []};
         try {
-            const pathToModule = path.join(global.aquila.appRoot, 'backoffice', 'app', oneModule.name);
+            const pathToModule = path.join(global.aquila.boPath, 'app', oneModule.name);
             const hasAccess    = await fs.hasAccess(pathToModule);
             if (!hasAccess) {
                 throw `Can't access to ${pathToModule}`;
@@ -797,7 +797,7 @@ const getModuleMd = async (body) => {
     if (!body.moduleName) {
         throw NSErrors.InvalidParameters;
     }
-    const pathToMd = path.join(global.aquila.appRoot, 'modules', body.moduleName, body.filename || 'README.md');
+    const pathToMd = path.join(global.aquila.modulesPath, body.moduleName, body.filename || 'README.md');
     if (await fs.existsSync(pathToMd)) {
         return fs.readFileSync(pathToMd, body.encoding || 'utf8');
     }
