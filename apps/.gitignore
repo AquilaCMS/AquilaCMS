@@ -12,6 +12,7 @@ modules/*
 /backoffice/front/img/slide/
 
 # Backoffice exceptions
+!/backoffice/package.json
 !/backoffice/app/adminList/
 !/backoffice/app/attribute/
 !/backoffice/app/attributesSet/
