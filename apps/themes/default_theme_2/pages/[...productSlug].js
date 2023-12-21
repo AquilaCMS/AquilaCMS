@@ -379,7 +379,7 @@ export default function Product({ breadcrumb, origin }) {
         return { content: getImage(item, 'max').url, alt: item.alt };
     });
 
-    const reviewPageCount = Math.ceil(reviewsCount / filterReviews.limit);
+    const reviewsPageCount = Math.ceil(reviewsCount / filterReviews.limit);
 
     return (
 
@@ -586,7 +586,7 @@ export default function Product({ breadcrumb, origin }) {
                                 </table>
                                 {moduleHook('product-tab') !== false && <hr />}
                                 {
-                                    moduleHook('product-tab')
+                                    moduleHook('product-tab', { product })
                                 }
                             </div>
                             
@@ -630,8 +630,8 @@ export default function Product({ breadcrumb, origin }) {
                                 }
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px', gap: '10px' }}>
-                                <button type="button" className="button w-button" onClick={onOpenModalReview}>Poster un avis</button>
-                                { filterReviews.rate !== 'all' && <button type="button" className="button w-button" onClick={() => setFilterReviews({ ...filterReviews, rate: 'all' })}>Voir tous les avis</button> }
+                                <button type="button" className="button w-button" onClick={onOpenModalReview}>{t('pages/product:postReview')}</button>
+                                { filterReviews.rate !== 'all' && <button type="button" className="button w-button" onClick={() => setFilterReviews({ ...filterReviews, rate: 'all' })}>{t('pages/product:viewAllReviews')}</button> }
                             </div>
                             {
                                 reviews.length > 0 && (
@@ -669,7 +669,7 @@ export default function Product({ breadcrumb, origin }) {
                                                     nextLabel={'>'}
                                                     breakLabel={'...'}
                                                     forcePage={filterReviews.page - 1}
-                                                    pageCount={reviewPageCount}
+                                                    pageCount={reviewsPageCount}
                                                     marginPagesDisplayed={2}
                                                     pageRangeDisplayed={1}
                                                     onPageChange={reviewsPaginate}
@@ -689,6 +689,8 @@ export default function Product({ breadcrumb, origin }) {
                     </div>
                 )
             }
+
+            { moduleHook('product-bottom', { product }) }
 
             <BlockCMS nsCode="info-bottom-1" /> {/* TODO : il faudrait afficher le contenu d'une description de la catégorie rattachée ! */}
 
