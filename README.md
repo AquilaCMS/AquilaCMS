@@ -2,7 +2,9 @@
 
 The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce solution.
 
-[![AquilaCMS](https://www.aquila-cms.com/images/medias/1024x200-90/5eb883a6e88bcc4391038570/AquilaCMS.png)](https://www.aquila-cms.com)
+<p align="center">
+  <a href="https://www.aquila-cms.com"><img width="200" height="183" src="https://www.aquila-cms.com/images/medias/200x183-90/5eb883a6e88bcc4391038570/AquilaCMS.png"></a>
+</p>
 
 [AquilaCMS](https://www.aquila-cms.com) is :
 
