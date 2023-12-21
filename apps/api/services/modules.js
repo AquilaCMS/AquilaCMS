@@ -26,7 +26,6 @@ const themesService               = require('./themes');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
-const moduleFolderName = 'modules/';
 
 /**
  * Get modules
@@ -72,15 +71,14 @@ const initModule = async (files) => {
     if (path.extname(originalname) !== '.zip') {
         throw NSErrors.InvalidFile;
     }
+
     console.log('Upload module...');
-    const moduleFolderAbsPath = path.resolve(global.aquila.appRoot, moduleFolderName);  // /path/to/AquilaCMS/modules/
-    const zipFilePath         = path.resolve(moduleFolderAbsPath, originalname); // /path/to/AquilaCMS/modules/my-module.zip
-    const extractZipFilePath  = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/modules/my-module/
+    const zipFilePath        = path.resolve(global.aquila.modulesPath, originalname); // /path/to/AquilaCMS/apps/modules/my-module.zip
+    const extractZipFilePath = zipFilePath.replace('.zip', '/');                // /path/to/AquilaCMS/apps/modules/my-module/
 
     // move the file from the temporary location to the intended location
-    await fs.mkdir(moduleFolderAbsPath, {recursive: true});
-    await fs.copyFile(path.resolve(global.aquila.appRoot, filepath), zipFilePath);
-    await fs.unlink(path.resolve(global.aquila.appRoot, filepath));
+    await fs.copyFile(filepath, zipFilePath);
+    await fs.unlink(filepath);
 
     try {
         const zip         = new AdmZip(zipFilePath);
@@ -106,6 +104,7 @@ const initModule = async (files) => {
                 || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
             ) {
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -113,7 +112,7 @@ const initModule = async (files) => {
         }
         console.log('Unziping module...');
         await new Promise((resolve, reject) => {
-            zip.extractAllToAsync(moduleFolderAbsPath, true, (err) => {
+            zip.extractAllToAsync(global.aquila.modulesPath, true, (err) => {
                 if (err) {
                     logger.error(err.message);
                     reject();
@@ -123,11 +122,11 @@ const initModule = async (files) => {
         });
         console.log('Unzip module ok, reading info.json...');
 
-        const infoPath = path.resolve(extractZipFilePath, 'info.json');
+        const infoPath = path.join(extractZipFilePath, 'info.json');
         if (!fs.existsSync(infoPath)) throw NSErrors.ModuleInfoNotFound;
         const infoFile = await fs.readFile(infoPath, 'utf8'); // TODO : to be removed when no more info.json is used
 
-        const packageFilePath = path.resolve(extractZipFilePath, 'package.json');
+        const packageFilePath = path.join(extractZipFilePath, 'package.json');
         if (!fs.existsSync(packageFilePath)) throw NSErrors.ModulePackageJsonNotFound;
         const packageFile = await fs.readFile(packageFilePath, 'utf8');
 
@@ -140,7 +139,7 @@ const initModule = async (files) => {
             name                     : packageJSON.name,
             description              : packageJSON.description,
             version                  : packageJSON.version,
-            path                     : slash(path.join(moduleFolderName, originalname).replace('.zip', '/')),
+            path                     : slash(path.join(global.aquila.modulesPath, originalname).replace('.zip', '/')),
             url                      : info.url,
             cronNames                : info.cronNames,
             mailTypeCode             : info.mailTypeCode,
@@ -210,21 +209,17 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const moduleFolderAbsPath = path.join(global.aquila.appRoot, moduleFolderName, myModule.name);
+        const moduleFolderAbsPath = path.join(global.aquila.modulesPath, myModule.name);
 
         // Add module name to the module package json workspaces field
-        dynamicWorkspacesMgmt(myModule.name, 'modules', true);
+        await dynamicWorkspacesMgmt(myModule.name, 'modules', true);
 
         const copy  = path.join(global.aquila.boPath, 'app', myModule.name);
         const copyF = path.join(moduleFolderAbsPath, 'app');
         let copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
-                await fs.copyRecursive(
-                    path.resolve(global.aquila.appRoot, copyF),
-                    path.resolve(global.aquila.appRoot, copy),
-                    true
-                );
+                await fs.copyRecursive(copyF, copy, true);
             } catch (err) {
                 logger.error(err.message);
             }
@@ -233,15 +228,11 @@ const activateModule = async (idModule, toBeChanged) => {
 
         if (myModule.loadTranslationBack) {
             console.log('Loading back translation for module...');
-            const src  = path.join('modules', myModule.name, 'translations/back');
-            const dest = path.join('backoffice/assets/translations/modules', myModule.name);
+            const src  = path.join(global.aquila.modulesPath, myModule.name, 'translations/back');
+            const dest = path.join(global.aquila.boPath, 'assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursive(
-                        path.resolve(global.aquila.appRoot, src),
-                        path.resolve(global.aquila.appRoot, dest),
-                        true
-                    );
+                    await fs.copyRecursive(src, dest, true);
                 } catch (err) {
                     logger.error(err.message);
                 }
@@ -249,7 +240,7 @@ const activateModule = async (idModule, toBeChanged) => {
             }
         }
 
-        await execCmd('yarn install', global.aquila.appRoot);
+        await execCmd('yarn install', global.aquila.aqlPath);
 
         // All the actions concerning the module that will be performed in the theme
         copyTab = await frontInstallationActions(myModule, toBeChanged, copyTab);
@@ -266,7 +257,7 @@ const activateModule = async (idModule, toBeChanged) => {
 
 const installDependencies = async () => {
     console.log('Modules packageDependencies install start');
-    await execCmd('yarn install', global.aquila.appRoot);
+    await execCmd('yarn install', global.aquila.aqlPath);
     console.log('Modules packageDependencies installed');
     return true;
 };
@@ -349,9 +340,6 @@ const deactivateModule = async (idModule) => {
         // Add module name to the module package json workspaces field
         dynamicWorkspacesMgmt(_module.name, 'modules', false);
 
-        // We have to update dependencies to remove dependencies from this module
-        await execCmd('yarn install', global.aquila.appRoot);
-
         await removeModuleAddon(_module);
 
         // Deleting copied files
@@ -376,6 +364,9 @@ const deactivateModule = async (idModule) => {
 
         await frontUninstallationActions(_module);
 
+        // We have to update dependencies to remove dependencies from this module
+        await execCmd('yarn install', global.aquila.aqlPath);
+
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module deactivated');
         return Modules.find({}).sort({active: -1, name: 1});
@@ -394,7 +385,7 @@ const frontUninstallationActions = async (_module) => {
     } else {
         let pathToComponents = 'theme_components';
         if (themeModuleComponent) pathToComponents = path.join(pathToComponents, themeModuleComponent);
-        const pathToThemeComponents = path.join(global.aquila.appRoot, _module.path, pathToComponents);
+        const pathToThemeComponents = path.join(global.aquila.modulesPath, _module.name, pathToComponents);
         await addOrRemoveThemeFiles(
             pathToThemeComponents,
             true
@@ -402,7 +393,7 @@ const frontUninstallationActions = async (_module) => {
         console.log('Removing dependencies of the module...');
         if (_module.packageDependencies) {
             // At this point the module folder has a ".disabled" at the end so a yarn install will remove the associate dependencies
-            await execCmd('yarn install', global.aquila.appRoot);
+            await execCmd('yarn install', global.aquila.aqlPath);
         }
     }
 };
@@ -414,7 +405,7 @@ const frontUninstallationActions = async (_module) => {
 const removeModule = async (idModule) => {
     const module = await Modules.findOne({_id: idModule});
 
-    const path = module.path;
+    const path = path.join(global.aquila.modulesPath, module.name);
     console.log('Removing module in database');
     await Modules.deleteOne({_id: idModule});
 
@@ -469,7 +460,7 @@ const setFrontModules = async (theme) => {
         const oneModule = listModules[index];
 
         // Does this module contain a front?
-        const modulePath = path.join(global.aquila.appRoot, oneModule.path);
+        const modulePath = path.join(global.aquila.modulesPath, oneModule.name);
         if (await fs.hasAccess(modulePath)) {
             // Write the file if it's not already in it
             await setFrontModuleInTheme(modulePath, theme || global.aquila.envConfig.environment.currentTheme);
@@ -658,7 +649,7 @@ const removeFromListModule = async (file, currentTheme) => {
  */
 const removeModuleAddon = async (_module) => {
     if (!_module) return;
-    const uninit = path.join(global.aquila.appRoot, _module.path, 'uninit.js');
+    const uninit = path.join(global.aquila.modulesPath, _module.name, 'uninit.js');
     if (fs.existsSync(uninit)) {
         try {
             await new Promise((resolve, reject) => {

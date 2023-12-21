@@ -13,7 +13,6 @@ const ModulesSchema = new Schema({
     name                 : {type: String, index: true, unique: true},
     description          : {type: String},
     version              : {type: String},
-    path                 : {type: String},
     url                  : {type: String},
     cronNames            : [String],
     mailTypeCode         : [String],

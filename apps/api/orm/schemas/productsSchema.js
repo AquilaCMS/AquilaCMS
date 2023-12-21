@@ -193,7 +193,7 @@ ProductsSchema.methods.updateData = async function (data) {
                 // on delete les images cache generées depuis cette image
                 await require('../../services/cache').deleteCacheImage('products', this);
                 // puis on delete l'image original
-                const joindPath = path.join(global.aquila.envConfig.environment.photoPath, prdImage.url);
+                const joindPath = path.join(global.aquila.aqlPath, global.aquila.envConfig.environment.photoPath, prdImage.url);
                 try {
                     await fs.unlinkSync(joindPath);
                 } catch {

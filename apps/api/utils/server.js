@@ -245,7 +245,7 @@ const getUploadDirectory = () => {
             return photoPath;
         }
     }
-    return 'uploads';
+    return 'packages/uploads';
 };
 
 const generateNewEnv = (envExample) => {

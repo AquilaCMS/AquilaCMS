@@ -6,7 +6,7 @@ const serverUtils  = require('../utils/server');
 const photoPath = serverUtils.getUploadDirectory();
 
 const storage = multer.diskStorage({
-    destination : path.resolve(photoPath, 'temp'),
+    destination : path.join(global.aquila.aqlPath, photoPath, 'temp'),
     filename(req, file, cb) {
         cb(null, uuidv1() + path.extname(file.originalname));
     }
