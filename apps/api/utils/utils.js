@@ -317,7 +317,7 @@ const isAdmin = (info) => info && info.isAdmin;
  * @returns
  */
 const dynamicWorkspacesMgmt = async (workspaceName, packageJsonFolder, isAnActivation) => {
-    const packageJsonAbsPath = path.join(global.aquila.appRoot, packageJsonFolder, 'package.json');
+    const packageJsonAbsPath = path.join(global.aquila.appsPath, packageJsonFolder, 'package.json');
     const packageJson        = JSON.parse(await fs.readFile(packageJsonAbsPath));
 
     if (!packageJson.workspaces) {

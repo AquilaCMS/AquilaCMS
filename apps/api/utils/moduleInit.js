@@ -23,9 +23,9 @@ const fetchModules = async () => {
     console.log('Required modules :');
     for (let i = 0; i < loadedModules.length; i++) {
         console.log(`- ${loadedModules[i].name}`);
-        const infoFile = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/info.json`);
-        if (fs.existsSync(infoFile)) {
-            loadedModules[i] = {...loadedModules[i], ...require(infoFile)};
+        const packageJson = path.join(global.aquila.modulesPath, `/${loadedModules[i].name}/package.json`);
+        if (fs.existsSync(packageJson)) {
+            loadedModules[i] = {...loadedModules[i], ...require(packageJson)};
             loadedModules[i] = await checkModule(loadedModules[i]);
         } else {
             delete loadedModules[i];

@@ -5,8 +5,8 @@
   "main": "server.js",
   "private": true,
   "workspaces": [
-    "themes",
-    "modules"
+    "apps/themes",
+    "apps/modules"
   ],
   "license": "OSL-3.0",
   "engines": {
