@@ -45,18 +45,18 @@ const moduleInitSteps = async (step = -1, params = {}) => {
                 if (!loadedModules[i].info.init.steps[moduleStep]) {
                     console.log(`Module ${loadedModules[i].name} has no step ${step}`);
                 } else {
-                    const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/init/${loadedModules[i].info.init.steps[moduleStep]}`);
+                    const filePath = path.join(global.aquila.modulesPath, `/${loadedModules[i].name}/init/${loadedModules[i].info.init.steps[moduleStep]}`);
                     await runStepFile(loadedModules[i], filePath, params);
                 }
             } else {
                 // ------- The old way with init.js and initAfter.js
                 if (step === 1) { // init.js
-                    const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/init.js`);
+                    const filePath = path.join(global.aquila.modulesPath, `/${loadedModules[i].name}/init.js`);
                     await runStepFile(loadedModules[i], filePath, params);
                 } else if (step === 4) { // initAfter.js
                     await new Promise(async (resolve, reject) => {
                         try {
-                            const filePath = path.join(global.aquila.appRoot, `/modules/${loadedModules[i].name}/initAfter.js`);
+                            const filePath = path.join(global.aquila.modulesPath, `/${loadedModules[i].name}/initAfter.js`);
                             if (fs.existsSync(filePath)) {
                                 require(filePath)(resolve, reject, params.server, params.apiRouter, params.passport);
                             } else {
