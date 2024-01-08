@@ -213,7 +213,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     }
 
     let _path          = server.getUploadDirectory();
-    _path              = path.join(global.aquila.appRoot, _path);
+    _path              = path.join(global.aquila.aqlPath, _path);
     const cacheFolder  = path.join(_path, '/cache/');
     let filePath       = '';
     let filePathCache  = '';
