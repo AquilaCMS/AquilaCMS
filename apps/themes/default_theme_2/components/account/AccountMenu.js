@@ -1,12 +1,15 @@
-import Link           from 'next/link';
-import { useRouter }  from 'next/router';
-import useTranslation from 'next-translate/useTranslation';
-import { logout }     from '@aquilacms/aquila-connector/api/login';
-import { moduleHook } from '@lib/utils';
+import Link               from 'next/link';
+import { useRouter }      from 'next/router';
+import useTranslation     from 'next-translate/useTranslation';
+import { logout }         from '@aquilacms/aquila-connector/api/login';
+import { useLoadModules } from '@lib/hooks';
 
 export default function AccountMenu({ active }) {
-    const router = useRouter();
-    const { t }  = useTranslation();
+    const router       = useRouter();
+    const { t }        = useTranslation();
+    const modulesHooks = useLoadModules([
+        { id: 'accountMenu', props: { active } }
+    ]);
 
     const onLogout = async () => {
         await logout();
@@ -24,7 +27,7 @@ export default function AccountMenu({ active }) {
             <Link href="/account/rgpd" className={(active === '3' ? 'w--current' : '') + ' tab-link-round w-inline-block w-tab-link'}>
                 <div>{t('components/account/accountLayout:navigation.rgpd')}</div>
             </Link>
-            {moduleHook('accountMenu', { active })}
+            {modulesHooks['accountMenu']}
             <button type="button" className="tab-link-round w-inline-block w-tab-link" onClick={onLogout}>{t('components/account/accountLayout:navigation.logout')}</button>
         </div>
     );

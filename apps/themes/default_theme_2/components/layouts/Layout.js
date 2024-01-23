@@ -1,17 +1,19 @@
-import Head                            from 'next/head';
-import parse                           from 'html-react-parser';
-import Header                          from '@components/layouts/Header';
-import Footer                          from '@components/layouts/Footer';
-import CookiesBanner                   from '@components/common/CookiesBanner';
-import BlockCMS                        from '@components/common/BlockCMS';
-import Languages                       from '@components/common/Languages';
-import SearchBar                       from '@components/common/SearchBar';
-import { useCmsBlocks, useSiteConfig } from '@lib/hooks';
-import { moduleHook }                  from '@lib/utils';
+import Head                                            from 'next/head';
+import parse                                           from 'html-react-parser';
+import Header                                          from '@components/layouts/Header';
+import Footer                                          from '@components/layouts/Footer';
+import CookiesBanner                                   from '@components/common/CookiesBanner';
+import BlockCMS                                        from '@components/common/BlockCMS';
+import Languages                                       from '@components/common/Languages';
+import SearchBar                                       from '@components/common/SearchBar';
+import { useCmsBlocks, useSiteConfig, useLoadModules } from '@lib/hooks';
 
 export default function Layout({ children }) {
     const cmsBlocks       = useCmsBlocks();
     const { themeConfig } = useSiteConfig();
+    const modulesHooks    = useLoadModules([
+        { id: 'bottom-banner' }
+    ]);
 
     const cmsBlockHead = cmsBlocks.find((b) => b.code === 'head'); // Getting CMS block "Head"
 
@@ -36,7 +38,7 @@ export default function Layout({ children }) {
 
             <Footer />
 
-            { moduleHook('bottom-banner')}
+            { modulesHooks['bottom-banner']}
 
             <CookiesBanner />
         </>

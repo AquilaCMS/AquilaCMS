@@ -544,8 +544,17 @@ export const getAqModules = () => {
     }
 };
 
-export const moduleHook = (type, props = {}) => {
-    const nsModules = getAqModules();
+export const getAqModulesClient = async () => {
+    try {
+        const nsModules = await import('modules/list_modules');
+        return nsModules.default;
+    } catch (err) {
+        return null;
+    }
+};
+
+export const moduleHook = async (type, props = {}) => {
+    const nsModules = await getAqModulesClient();
     const modules   = nsModules?.filter((m) => m.type === type);
     if (!modules || !modules.length) return null;
     const components = [];

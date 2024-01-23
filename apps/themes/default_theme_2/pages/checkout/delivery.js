@@ -1,10 +1,10 @@
-import useTranslation                                               from 'next-translate/useTranslation';
-import DeliveryStep                                                 from '@components/checkout/DeliveryStep';
-import LightLayout                                                  from '@components/layouts/LightLayout';
-import NextSeoCustom                                                from '@components/tools/NextSeoCustom';
-import { useSiteConfig }                                            from '@lib/hooks';
-import { initAxios, authProtectedPage, serverRedirect, moduleHook } from '@lib/utils';
-import { dispatcher }                                               from '@lib/redux/dispatcher';
+import useTranslation                                   from 'next-translate/useTranslation';
+import DeliveryStep                                     from '@components/checkout/DeliveryStep';
+import LightLayout                                      from '@components/layouts/LightLayout';
+import NextSeoCustom                                    from '@components/tools/NextSeoCustom';
+import { useSiteConfig, useLoadModules }                from '@lib/hooks';
+import { initAxios, authProtectedPage, serverRedirect } from '@lib/utils';
+import { dispatcher }                                   from '@lib/redux/dispatcher';
 
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
@@ -23,6 +23,9 @@ export async function getServerSideProps({ locale, req, res }) {
 export default function CheckoutDelivery({ user }) {
     const { environment } = useSiteConfig();
     const { t }           = useTranslation();
+    const modulesHooks    = useLoadModules([
+        { id: 'checkout-delivery-step', props: { user } }
+    ]);
     
     return (
         <LightLayout>
@@ -47,7 +50,7 @@ export default function CheckoutDelivery({ user }) {
                         <h2 className="heading-2-steps">{t('pages/checkout:delivery.step')}</h2>
                     </div>
                     
-                    { moduleHook('checkout-delivery-step', { user }) || <DeliveryStep /> }
+                    { modulesHooks['checkout-delivery-step'] || <DeliveryStep /> }
                 </div>
             </div>
         </LightLayout>

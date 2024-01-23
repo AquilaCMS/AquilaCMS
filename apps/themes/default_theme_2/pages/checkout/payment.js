@@ -1,10 +1,10 @@
-import useTranslation                                               from 'next-translate/useTranslation';
-import PaymentStep                                                  from '@components/checkout/PaymentStep';
-import LightLayout                                                  from '@components/layouts/LightLayout';
-import NextSeoCustom                                                from '@components/tools/NextSeoCustom';
-import { useSiteConfig }                                            from '@lib/hooks';
-import { initAxios, authProtectedPage, serverRedirect, moduleHook } from '@lib/utils';
-import { dispatcher }                                               from '@lib/redux/dispatcher';
+import useTranslation                                   from 'next-translate/useTranslation';
+import PaymentStep                                      from '@components/checkout/PaymentStep';
+import LightLayout                                      from '@components/layouts/LightLayout';
+import NextSeoCustom                                    from '@components/tools/NextSeoCustom';
+import { useSiteConfig, useLoadModules }                from '@lib/hooks';
+import { initAxios, authProtectedPage, serverRedirect } from '@lib/utils';
+import { dispatcher }                                   from '@lib/redux/dispatcher';
 
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
@@ -21,6 +21,9 @@ export async function getServerSideProps({ locale, req, res }) {
 export default function CheckoutPayment() {
     const { environment } = useSiteConfig();
     const { t }           = useTranslation();
+    const modulesHooks    = useLoadModules([
+        { id: 'checkout-payment-step' }
+    ]);
 
     return (
         <LightLayout>
@@ -44,7 +47,7 @@ export default function CheckoutPayment() {
                         <h2 className="heading-steps">4</h2>
                         <h2 className="heading-2-steps">{t('pages/checkout:payment.step')}</h2>
                     </div>
-                    { moduleHook('checkout-payment-step') || <PaymentStep /> }
+                    { modulesHooks['checkout-payment-step'] || <PaymentStep /> }
                 </div>
             </div>
         </LightLayout>

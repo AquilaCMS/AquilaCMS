@@ -1,9 +1,9 @@
-import { useState, useEffect }         from 'react';
-import { useSelector, useDispatch }    from 'react-redux';
-import useTranslation                  from 'next-translate/useTranslation';
-import { getPaymentMethods }           from '@aquilacms/aquila-connector/api/payment';
-import { getUser }                     from '@aquilacms/aquila-connector/api/user';
-import { getUserIdFromJwt, getDevice } from '@lib/utils';
+import { useState, useEffect }                     from 'react';
+import { useSelector, useDispatch }                from 'react-redux';
+import useTranslation                              from 'next-translate/useTranslation';
+import { getPaymentMethods }                       from '@aquilacms/aquila-connector/api/payment';
+import { getUser }                                 from '@aquilacms/aquila-connector/api/user';
+import { getUserIdFromJwt, getDevice, moduleHook } from '@lib/utils';
 
 /**
  * GET / SET cart data (redux)
@@ -266,4 +266,30 @@ export const useDevice = () => {
         });
     };
     return device;
+};
+
+// Load modules
+export const useLoadModules = (initModules = []) => {
+    const [modules, setModules] = useState({});
+    const { t }                 = useTranslation();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = {};
+                for (const m of initModules) {
+                    const res = await moduleHook(m.id, m.props);
+                    if (res) {
+                        data[m.id] = res;
+                    }
+                }
+                setModules(data);
+            } catch (err) {
+                console.error(err.message || t('common:message.unknownError'));
+            }
+        };
+        fetchData();
+    }, []);
+
+    return modules;
 };

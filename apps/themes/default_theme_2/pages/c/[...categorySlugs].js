@@ -1,25 +1,25 @@
-import { useEffect, useState }                              from 'react';
-import absoluteUrl                                          from 'next-absolute-url';
-import Head                                                 from 'next/head';
-import { useRouter }                                        from 'next/router';
-import getT                                                 from 'next-translate/getT';
-import useTranslation                                       from 'next-translate/useTranslation';
-import parse                                                from 'html-react-parser';
-import Cookies                                              from 'cookies';
-import PageError                                            from '@pages/_error';
-import Filters                                              from '@components/category/Filters';
-import Pagination                                           from '@components/category/Pagination';
-import Layout                                               from '@components/layouts/Layout';
-import NextSeoCustom                                        from '@components/tools/NextSeoCustom';
-import Breadcrumb                                           from '@components/navigation/Breadcrumb';
-import CategoryList                                         from '@components/category/CategoryList';
-import ProductList                                          from '@components/product/ProductList';
-import MenuCategories                                       from '@components/navigation/MenuCategories';
-import { dispatcher }                                       from '@lib/redux/dispatcher';
-import { getBreadcrumb }                                    from '@aquilacms/aquila-connector/api/breadcrumb';
-import { getCategory, getCategoryProducts }                 from '@aquilacms/aquila-connector/api/category';
-import { getSiteInfo }                                      from '@aquilacms/aquila-connector/api/site';
-import { useCategoryProducts, useAqModules, useSiteConfig } from '@lib/hooks';
+import { useEffect, useState }                                              from 'react';
+import absoluteUrl                                                          from 'next-absolute-url';
+import Head                                                                 from 'next/head';
+import { useRouter }                                                        from 'next/router';
+import getT                                                                 from 'next-translate/getT';
+import useTranslation                                                       from 'next-translate/useTranslation';
+import parse                                                                from 'html-react-parser';
+import Cookies                                                              from 'cookies';
+import PageError                                                            from '@pages/_error';
+import Filters                                                              from '@components/category/Filters';
+import Pagination                                                           from '@components/category/Pagination';
+import Layout                                                               from '@components/layouts/Layout';
+import NextSeoCustom                                                        from '@components/tools/NextSeoCustom';
+import Breadcrumb                                                           from '@components/navigation/Breadcrumb';
+import CategoryList                                                         from '@components/category/CategoryList';
+import ProductList                                                          from '@components/product/ProductList';
+import MenuCategories                                                       from '@components/navigation/MenuCategories';
+import { dispatcher }                                                       from '@lib/redux/dispatcher';
+import { getBreadcrumb }                                                    from '@aquilacms/aquila-connector/api/breadcrumb';
+import { getCategory, getCategoryProducts }                                 from '@aquilacms/aquila-connector/api/category';
+import { getSiteInfo }                                                      from '@aquilacms/aquila-connector/api/site';
+import { useCategoryProducts, useAqModules, useSiteConfig, useLoadModules } from '@lib/hooks';
 import {
     initAxios, 
     serverRedirect, 
@@ -27,7 +27,6 @@ import {
     getBodyRequestProductsFromCookie, 
     convertFilter, 
     filterPriceFix, 
-    moduleHook, 
     isAllAqModulesInitialised 
 } from '@lib/utils';
 
@@ -252,6 +251,10 @@ export default function Category({ breadcrumb, category, limit, origin, error })
     const { environment, themeConfig } = useSiteConfig();
     const router                       = useRouter();
     const { lang, t }                  = useTranslation();
+    const modulesHooks                 = useLoadModules([
+        { id: 'category-top' },
+        { id: 'category-top-list' },
+    ]);
 
     useEffect(() => {
         // Event when all Aquila modules ("global" type) are initialised
@@ -330,7 +333,7 @@ export default function Category({ breadcrumb, category, limit, origin, error })
             <div>{parse(category.extraText || '')}</div>
 
             {
-                moduleHook('category-top')
+                modulesHooks['category-top']
             }
 
             <Breadcrumb items={breadcrumb} origin={origin} />
@@ -359,7 +362,7 @@ export default function Category({ breadcrumb, category, limit, origin, error })
                             <div className="container w-container">
                                 <div className="paragraph-seo">{parse(category.extraText2 || '')}</div>
                                 {
-                                    moduleHook('category-top-list')
+                                    modulesHooks['category-top-list']
                                 }
                             </div>
                             <div className="container-col">

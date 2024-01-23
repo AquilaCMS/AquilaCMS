@@ -1,10 +1,10 @@
-import useTranslation                                               from 'next-translate/useTranslation';
-import AddressStep                                                  from '@components/checkout/AddressStep';
-import LightLayout                                                  from '@components/layouts/LightLayout';
-import NextSeoCustom                                                from '@components/tools/NextSeoCustom';
-import { useSiteConfig }                                            from '@lib/hooks';
-import { initAxios, authProtectedPage, serverRedirect, moduleHook } from '@lib/utils';
-import { dispatcher }                                               from '@lib/redux/dispatcher';
+import useTranslation                                   from 'next-translate/useTranslation';
+import AddressStep                                      from '@components/checkout/AddressStep';
+import LightLayout                                      from '@components/layouts/LightLayout';
+import NextSeoCustom                                    from '@components/tools/NextSeoCustom';
+import { useSiteConfig, useLoadModules }                from '@lib/hooks';
+import { initAxios, authProtectedPage, serverRedirect } from '@lib/utils';
+import { dispatcher }                                   from '@lib/redux/dispatcher';
 
 export async function getServerSideProps({ locale, req, res }) {
     initAxios(locale, req, res);
@@ -23,6 +23,9 @@ export async function getServerSideProps({ locale, req, res }) {
 export default function CheckoutAddress({ user }) {
     const { environment } = useSiteConfig();
     const { t }           = useTranslation();
+    const modulesHooks    = useLoadModules([
+        { id: 'checkout-address-step', props: { user } }
+    ]);
     
     return (
         <LightLayout>
@@ -47,7 +50,7 @@ export default function CheckoutAddress({ user }) {
                         <h2 className="heading-2-steps">{t('pages/checkout:address.step')}</h2>
                     </div>
                     
-                    { moduleHook('checkout-address-step', { user }) || <AddressStep user={user} /> }
+                    { modulesHooks['checkout-address-step'] || <AddressStep user={user} /> }
                 </div>
             </div>
         </LightLayout>

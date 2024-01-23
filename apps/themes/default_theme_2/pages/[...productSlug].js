@@ -1,35 +1,35 @@
-import { useEffect, useState }                                                                                                        from 'react';
-import { ProductJsonLd }                                                                                                              from 'next-seo';
-import absoluteUrl                                                                                                                    from 'next-absolute-url';
-import { useRouter }                                                                                                                  from 'next/router';
-import getT                                                                                                                           from 'next-translate/getT';
-import useTranslation                                                                                                                 from 'next-translate/useTranslation';
-import parse                                                                                                                          from 'html-react-parser';
-import Cookies                                                                                                                        from 'cookies';
-import ReactPaginate                                                                                                                  from 'react-paginate';
-import { Modal }                                                                                                                      from 'react-responsive-modal';
-import Lightbox                                                                                                                       from 'lightbox-react';
-import ErrorPage                                                                                                                      from '@pages/_error';
-import BundleProduct                                                                                                                  from '@components/product/BundleProduct';
-import ProductVariants                                                                                                                from '@components/product/ProductVariants';
-import Layout                                                                                                                         from '@components/layouts/Layout';
-import NextSeoCustom                                                                                                                  from '@components/tools/NextSeoCustom';
-import Breadcrumb                                                                                                                     from '@components/navigation/Breadcrumb';
-import PostReview                                                                                                                     from '@components/product/PostReview';
-import ProductList                                                                                                                    from '@components/product/ProductList';
-import BlockCMS                                                                                                                       from '@components/common/BlockCMS';
-import DrawStars                                                                                                                      from '@components/common/DrawStars';
-import Button                                                                                                                         from '@components/ui/Button';
-import { dispatcher }                                                                                                                 from '@lib/redux/dispatcher';
-import { getBlocksCMS }                                                                                                               from '@aquilacms/aquila-connector/api/blockcms';
-import { getBreadcrumb }                                                                                                              from '@aquilacms/aquila-connector/api/breadcrumb';
-import { addToCart, deleteCartShipment }                                                                                              from '@aquilacms/aquila-connector/api/cart';
-import { getCategories }                                                                                                              from '@aquilacms/aquila-connector/api/category';
-import { getProduct, downloadFreeVirtualProduct }                                                                                     from '@aquilacms/aquila-connector/api/product';
-import { getImage, getMainImage, getTabImageURL }                                                                                     from '@aquilacms/aquila-connector/api/product/helpersProduct';
-import { generateURLImageCache }                                                                                                      from '@aquilacms/aquila-connector/lib/utils';
-import { useCart, useAqModules, useProduct, useShowCartSidebar, useSiteConfig }                                                       from '@lib/hooks';
-import { initAxios, authProtectedPage, formatDate, formatPrice, formatStock, getAvailability, moduleHook, isAllAqModulesInitialised } from '@lib/utils';
+import { useEffect, useState }                                                                                            from 'react';
+import { ProductJsonLd }                                                                                                  from 'next-seo';
+import absoluteUrl                                                                                                        from 'next-absolute-url';
+import { useRouter }                                                                                                      from 'next/router';
+import getT                                                                                                               from 'next-translate/getT';
+import useTranslation                                                                                                     from 'next-translate/useTranslation';
+import parse                                                                                                              from 'html-react-parser';
+import Cookies                                                                                                            from 'cookies';
+import ReactPaginate                                                                                                      from 'react-paginate';
+import { Modal }                                                                                                          from 'react-responsive-modal';
+import Lightbox                                                                                                           from 'lightbox-react';
+import ErrorPage                                                                                                          from '@pages/_error';
+import BundleProduct                                                                                                      from '@components/product/BundleProduct';
+import ProductVariants                                                                                                    from '@components/product/ProductVariants';
+import Layout                                                                                                             from '@components/layouts/Layout';
+import NextSeoCustom                                                                                                      from '@components/tools/NextSeoCustom';
+import Breadcrumb                                                                                                         from '@components/navigation/Breadcrumb';
+import PostReview                                                                                                         from '@components/product/PostReview';
+import ProductList                                                                                                        from '@components/product/ProductList';
+import BlockCMS                                                                                                           from '@components/common/BlockCMS';
+import DrawStars                                                                                                          from '@components/common/DrawStars';
+import Button                                                                                                             from '@components/ui/Button';
+import { dispatcher }                                                                                                     from '@lib/redux/dispatcher';
+import { getBlocksCMS }                                                                                                   from '@aquilacms/aquila-connector/api/blockcms';
+import { getBreadcrumb }                                                                                                  from '@aquilacms/aquila-connector/api/breadcrumb';
+import { addToCart, deleteCartShipment }                                                                                  from '@aquilacms/aquila-connector/api/cart';
+import { getCategories }                                                                                                  from '@aquilacms/aquila-connector/api/category';
+import { getProduct, downloadFreeVirtualProduct }                                                                         from '@aquilacms/aquila-connector/api/product';
+import { getImage, getMainImage, getTabImageURL }                                                                         from '@aquilacms/aquila-connector/api/product/helpersProduct';
+import { generateURLImageCache }                                                                                          from '@aquilacms/aquila-connector/lib/utils';
+import { useCart, useAqModules, useProduct, useShowCartSidebar, useSiteConfig, useLoadModules }                           from '@lib/hooks';
+import { initAxios, authProtectedPage, formatDate, formatPrice, formatStock, getAvailability, isAllAqModulesInitialised } from '@lib/utils';
 
 import 'lightbox-react/style.css';
 import 'react-responsive-modal/styles.css';
@@ -180,6 +180,10 @@ export default function Product({ breadcrumb, origin }) {
     const { lang, t }                           = useTranslation();
     const { setShowCartSidebar }                = useShowCartSidebar();
     const router                                = useRouter();
+    const modulesHooks                          = useLoadModules([
+        { id: 'product-tab', props: { product } },
+        { id: 'product-bottom', props: { product } },
+    ]);
 
     useEffect(() => {
         // Event when all Aquila modules ("global" type) are initialised
@@ -584,9 +588,9 @@ export default function Product({ breadcrumb, origin }) {
                                         }
                                     </tbody>
                                 </table>
-                                {moduleHook('product-tab') !== false && <hr />}
+                                {modulesHooks['product-tab'] && <hr />}
                                 {
-                                    moduleHook('product-tab', { product })
+                                    modulesHooks['product-tab']
                                 }
                             </div>
                             
@@ -690,7 +694,7 @@ export default function Product({ breadcrumb, origin }) {
                 )
             }
 
-            { moduleHook('product-bottom', { product }) }
+            { modulesHooks['product-bottom'] }
 
             <BlockCMS nsCode="info-bottom-1" /> {/* TODO : il faudrait afficher le contenu d'une description de la catégorie rattachée ! */}
 

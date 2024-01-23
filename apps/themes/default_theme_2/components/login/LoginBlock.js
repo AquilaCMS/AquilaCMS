@@ -3,7 +3,7 @@ import { useRouter }                   from 'next/router';
 import useTranslation                  from 'next-translate/useTranslation';
 import Button                          from '@components/ui/Button';
 import { auth, sendMailResetPassword } from '@aquilacms/aquila-connector/api/login';
-import { moduleHook }                  from '@lib/utils';
+import { useLoadModules }              from '@lib/hooks';
 
 export default function LoginBlock() {
     const [step, setStep]                 = useState(0);
@@ -12,6 +12,9 @@ export default function LoginBlock() {
     const [isLoading, setIsLoading]       = useState(false);
     const router                          = useRouter();
     const { lang, t }                     = useTranslation();
+    const modulesHooks                    = useLoadModules([
+        { id: 'login' }
+    ]);
     const redirect                        = router?.query?.redirect || '/account';
 
 
@@ -88,7 +91,7 @@ export default function LoginBlock() {
                         }
                     
                         <Button text={t('components/login/loginBlock:signin')} loadingText={t('components/login/loginBlock:signinLoading')} isLoading={isLoading} className="log-button w-button" />
-                        <div style={{ marginTop: '20px' }}>{ moduleHook('login') }</div>
+                        <div style={{ marginTop: '20px' }}>{ modulesHooks['login'] }</div>
                     </form>
                 )
             }

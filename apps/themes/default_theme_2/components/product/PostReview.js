@@ -65,9 +65,9 @@ export default function PostReview({ product, onCloseModal }) {
                     <DrawStars mode="edit" onClickStar={onClickStar} />
                 </div>
                 <label className="field-label">{t('components/postReview:title')}</label>
-                <input type="text" className="w-input" name="title" maxLength={100} onChange={onChangeReview} required />
+                <input type="text" className="w-input" name="title" maxLength={100} value={review.title} onChange={onChangeReview} required />
                 <label className="field-label">{t('components/postReview:review')}</label>
-                <textarea placeholder="Votre avis" maxLength={5000} rows={6} className="w-input" name="review" onChange={onChangeReview} required />
+                <textarea placeholder="Votre avis" maxLength={5000} rows={6} className="w-input" name="review" value={review.review} onChange={onChangeReview} required />
                 <span className="text-small">{5000 - review.review.length} {t('components/postReview:remainingCharacters')}</span>
             </div>
             {

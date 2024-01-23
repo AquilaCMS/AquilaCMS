@@ -1,10 +1,13 @@
-import { useEffect }  from 'react';
-import useTranslation from 'next-translate/useTranslation';
-import CartListItems  from '@components/cart/CartListItems';
-import { moduleHook } from '@lib/utils';
+import { useEffect }      from 'react';
+import useTranslation     from 'next-translate/useTranslation';
+import CartListItems      from '@components/cart/CartListItems';
+import { useLoadModules } from '@lib/hooks';
 
 export default function CartSidebarView({ hideCartSidebar }) {
-    const { t } = useTranslation();
+    const { t }        = useTranslation();
+    const modulesHooks = useLoadModules([
+        { id: 'cart-list-items' }
+    ]);
 
     useEffect(() => {
         // Patch when there is a double scroll bar
@@ -30,7 +33,7 @@ export default function CartSidebarView({ hideCartSidebar }) {
                 </div>
                 <div className="w-commerce-commercecartformwrapper">
                     {
-                        moduleHook('cart-list-items') || <CartListItems />
+                        modulesHooks['cart-list-items'] || <CartListItems />
                     }
                 </div>
             </div>

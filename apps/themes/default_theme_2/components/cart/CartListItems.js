@@ -1,9 +1,9 @@
-import Link                        from 'next/link';
-import useTranslation              from 'next-translate/useTranslation';
-import CartDiscount                from '@components/cart/CartDiscount';
-import CartItem                    from '@components/cart/CartItem';
-import { useCart }                 from '@lib/hooks';
-import { formatPrice, moduleHook } from '@lib/utils';
+import Link            from 'next/link';
+import useTranslation  from 'next-translate/useTranslation';
+import CartDiscount    from '@components/cart/CartDiscount';
+import CartItem        from '@components/cart/CartItem';
+import { useCart }     from '@lib/hooks';
+import { formatPrice } from '@lib/utils';
 
 export default function CartListItems() {
     const { cart } = useCart();
