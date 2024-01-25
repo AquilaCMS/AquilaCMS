@@ -1,6 +1,6 @@
 {
-  "name": "aquila-cms-api",
-  "version": "1.0.0",
+  "name": "@aquilacms/api",
+  "version": "1.0.1",
   "description": "AquilaCMS API",
   "main": "server.js",
   "private": true,

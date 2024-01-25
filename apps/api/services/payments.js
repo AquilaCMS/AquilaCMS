@@ -342,7 +342,7 @@ function createDeferredPayment(order, method, lang) {
 
 async function immediateCashPayment(req, method) {
     try {
-        const modulePath     = path.join(global.aquila.appRoot, `modules/${method.moduleFolderName}`);
+        const modulePath     = path.join(global.aquila.modulesPath, method.moduleFolderName);
         const paymentService = require(`${modulePath}/services/${method.paymentServiceFileName ? method.paymentServiceFileName : req.body.paymentMethod}`);
         // We set the same value in several places to fit all modules
         req.query.orderId      = req.params.orderNumber;

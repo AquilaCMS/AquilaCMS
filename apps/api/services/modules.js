@@ -91,9 +91,9 @@ const initModule = async (files) => {
         }
         const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
         if (moduleAquilaVersion) {
-            const packageAquila = (await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
-            const aquilaVersion = JSON.parse(packageAquila).version;
-            if (!semver.satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+            const packageAquilaApi = (await fs.readFile(path.join(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
+            const apiVersion       = JSON.parse(packageAquilaApi).version;
+            if (!semver.satisfies(apiVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
                 throw NSErrors.ModuleAquilaVersionNotSatisfied;
             }
         }

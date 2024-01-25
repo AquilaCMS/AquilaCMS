@@ -69,7 +69,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
             const url = req.url.replace('/bo', '/bo/build');
             res.sendFile(path.join(global.aquila.appRoot, url));
         } else {
-            res.sendFile(path.join(global.aquila.appRoot, 'bo/build/index.html'));
+            res.sendFile(path.join(global.aquila.appsPath, 'bo/build/index.html'));
         }
     } else if (req.url.startsWith('/google')) {
         res.sendFile(path.join(global.aquila.appRoot, req.url));
@@ -84,10 +84,10 @@ const manageExceptionsRoutes = async (req, res, next) => {
         let url = req.url.replace(global.aquila.envConfig.environment.adminPrefix, '').split('?')[0];
         if (fs.existsSync(path.join(global.aquila.boPath, url))) {
             res.sendFile(path.join(global.aquila.boPath, url));
-        } else {
+        } else { // If the file requested is not in the bo folder, we search in the uploads folder
             url = url.replace('backoffice', require('../utils/server').getUploadDirectory());
-            if (fs.existsSync(path.join(global.aquila.appRoot, url))) {
-                res.sendFile(path.join(global.aquila.appRoot, url));
+            if (fs.existsSync(url)) {
+                res.sendFile(url);
             } else {
                 res.end();
             }

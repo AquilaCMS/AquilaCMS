@@ -1,5 +1,5 @@
 {
-  "name": "aquila-cms-bo",
+  "name": "@aquilacms/bo-angularjs",
   "version": "1.0.0",
   "description": "AquilaCMS Backoffice v1",
   "private": true,

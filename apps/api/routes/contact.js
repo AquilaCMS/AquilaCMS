@@ -69,7 +69,7 @@ async function setContact(req, res, next) {
                     extension,
                     full        : true
                 }, async () => {
-                    target_path_full = path.resolve(pathUpload, target_path_full);
+                    target_path_full = path.join(global.aquila.aqlPath, pathUpload, target_path_full);
 
                     try {
                         await fs.copyRecursive(tmp_path, target_path_full);
@@ -78,7 +78,7 @@ async function setContact(req, res, next) {
                         return next(err);
                     }
 
-                    target_path_full   = target_path_full.replace(path.resolve(global.aquila.appRoot, pathUpload), '');
+                    target_path_full   = target_path_full.replace(path.join(global.aquila.aqlPath, pathUpload), '');
                     _body.filesPath[i] = url.resolve(global.aquila.envConfig.environment.appUrl, target_path_full);
                     return _body.filesPath[i];
                 });

@@ -95,9 +95,9 @@ const uploadTheme = async (originalname, filepath) => {
         if (packageTheme) {
             const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
             if (moduleAquilaVersion) {
-                const packageAquila = (await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
-                const aquilaVersion = JSON.parse(packageAquila).version;
-                if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+                const packageAquilaApi = (await fs.readFile(path.resolve(global.aquila.appRoot, 'package.json'), 'utf8')).toString();
+                const apiVersion       = JSON.parse(packageAquilaApi).version;
+                if (!require('semver').satisfies(apiVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
                     throw NSErrors.ThemeAquilaVersionNotSatisfied;
                 }
             }
@@ -148,9 +148,8 @@ const deleteTheme = async (themePath) => {
         throw NSErrors.DesignThemeRemoveCurrent;
     }
     await removeConfigTheme(themePath);
-    const complete_Path = `themes/${themePath}`;
-    console.log(`Remove theme : ${complete_Path}...`);
-    const pathToTheme = path.join(global.aquila.appRoot, complete_Path);
+    const pathToTheme = path.join(global.aquila.themesPath, themePath);
+    console.log(`Remove theme : ${pathToTheme}...`);
     if (await fs.hasAccess(pathToTheme)) {
         const nodeModulesContent = await themesUtils.yarnDeleteNodeModulesContent(themePath);
         console.log(nodeModulesContent.stdout);
@@ -160,7 +159,7 @@ const deleteTheme = async (themePath) => {
 };
 
 const getDemoDatasFilesName = async () => {
-    const folder = path.join(global.aquila.appRoot, `themes/${global.aquila.envConfig.environment.currentTheme}/demoDatas`);
+    const folder = path.join(global.aquila.themesPath, `${global.aquila.envConfig.environment.currentTheme}/demoDatas`);
     if (!fs.existsSync(folder)) {
         return [];
     }
@@ -460,8 +459,7 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
         await require('../utils/translation').initI18n(i18nInstance, ns);
         server.use(i18nextMiddleware.handle(i18nInstance));
         server.use('/locales', express.static(path.join(
-            global.aquila.appRoot,
-            'themes',
+            global.aquila.themesPath,
             global.aquila.envConfig.environment.currentTheme,
             'assets/i18n'
         )));

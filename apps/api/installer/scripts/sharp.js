@@ -3,7 +3,7 @@ const sharp = require('sharp');
 
 process.on('message', async (appRoot) => {
     try {
-        const testFilePath = path.resolve(appRoot, '../installer/scripts/logo.png'); // he is in process folder
+        const testFilePath = path.join(appRoot, 'installer', 'scripts', 'logo.png'); // he is in process folder
         await sharp(testFilePath).resize(100).toBuffer();
         process.send(true);
         setTimeout(() => process.exit(0), 2000); // make sure it is disconnected

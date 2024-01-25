@@ -63,7 +63,7 @@ const createListModuleFile = async (theme = global.aquila.envConfig.environment.
  */
 const displayListModule = async (theme = global.aquila.envConfig.environment.currentTheme) => {
     try {
-        const modules_folder = path.join(global.aquila.appRoot, `themes/${theme}/modules`);
+        const modules_folder = path.join(global.aquila.themesPath, `${theme}/modules`);
         const fileContent    = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
