@@ -1,7 +1,7 @@
 module.exports = {
     apps : [{
         name   : 'Aquila_TEST',
-        script : 'server.js',
+        script : 'apps/api/index.js',
         port   : 3010,
         // To launch in development mode, launch 'pm2 start ecosystem.config.js'
         env    : {
