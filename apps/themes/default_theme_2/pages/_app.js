@@ -5,7 +5,6 @@ import GenericHoc                     from '@components/common/GenericHoc';
 import FacebookPixel                  from '@components/tools/FacebookPixel';
 import { useStore }                   from '@lib/redux/store';
 import { useLoadModules }             from '@lib/hooks';
-import { getAqModulesClient }         from '@lib/utils';
 
 import '@styles/normalize.css';
 import '@styles/webflow.css';

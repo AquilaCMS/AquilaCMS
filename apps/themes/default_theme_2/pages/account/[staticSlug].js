@@ -20,16 +20,17 @@ export async function getServerSideProps({ locale, params, req, res }) {
         return { notFound: true };
     }
 
-    const pageProps     = await dispatcher(locale, req, res);
-    pageProps.props.cms = cms;
+    const pageProps            = await dispatcher(locale, req, res);
+    pageProps.props.cms        = cms;
+    pageProps.props.staticSlug = params.staticSlug;
     return pageProps;
 }
 
-export default function StaticAccount({ cms }) {
+export default function StaticAccount({ cms, staticSlug }) {
     const { environment } = useSiteConfig();
 
     return (
-        <AccountLayout active="module-booking-aquila-bookings">
+        <AccountLayout active={`module-${staticSlug}`}>
             <NextSeoCustom
                 noindex={true}
                 title={`${environment?.siteName} - ${cms.description}`}

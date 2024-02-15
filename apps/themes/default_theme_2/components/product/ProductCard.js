@@ -197,7 +197,7 @@ export default function ProductCard({ type, value, col = 6, hidden = false }) {
                 <div className="food-card-content">
                     <Link href={currentSlug} className="food-title-wrap w-inline-block">
                         <h6 className="heading-9">{product.name}</h6>
-                        { environment.displayingReviews && product.reviews.reviews_nb > 0 && <div><DrawStars rate={product.reviews.average} displayTextRate={false} width="small" /></div> }
+                        { environment.displayingReviews && product.reviews?.reviews_nb > 0 && <div><DrawStars rate={product.reviews.average} displayTextRate={false} width="small" /></div> }
                         <div className="div-block-prix">
                             {
                                 product.variants_values?.length ? (
