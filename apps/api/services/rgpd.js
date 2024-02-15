@@ -461,7 +461,7 @@ const dumpAnonymizedDatabase = async () => {
         // Removal of the copy database
         await dropDatabase();
         // Download the dump file
-        const pathToArchive = path.join(global.aquila.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        const pathToArchive = path.join(global.aquila.aqlPath, pathUpload, 'temp', 'database_dump.gz');
         const temp          = fs.readFile(pathToArchive, 'binary');
         fs.unlink(pathToArchive, function () {
             console.log('File was deleted'); // Callback

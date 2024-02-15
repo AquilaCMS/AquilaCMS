@@ -78,7 +78,7 @@ const uploadAllMedias = async (reqFile, insertDB, group = '', deleteTempFolder =
     console.log('Upload medias start...');
 
     // Specify the full path to the file to be sure to have an absolute path (which is not the case when calling this service from a module for example)
-    reqFile.path      = path.resolve(global.aquila.appRoot, reqFile.path);
+    reqFile.path      = path.resolve(global.aquila.aqlPath, reqFile.path);
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
         .slice(0, -1)

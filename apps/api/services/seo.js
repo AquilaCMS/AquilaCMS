@@ -235,7 +235,7 @@ const removeSitemap = async () => {
 * Allow / Disallow seo in robots.txt
 */
 const manageRobotsTxt = async (allow = true) => {
-    const filePath  = path.join(global.aquila.appRoot, getUploadDirectory(), 'robots.txt');
+    const filePath  = path.join(global.aquila.aqlPath, getUploadDirectory(), 'robots.txt');
     let contentFile = 'User-agent: *\nAllow: /';
 
     if (!allow) {
