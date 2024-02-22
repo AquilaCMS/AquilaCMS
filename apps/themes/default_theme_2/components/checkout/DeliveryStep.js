@@ -1,22 +1,26 @@
-import { useEffect, useState }                           from 'react';
-import Link                                              from 'next/link';
-import { useRouter }                                     from 'next/router';
-import useTranslation                                    from 'next-translate/useTranslation';
-import Button                                            from '@components/ui/Button';
-import { getShipmentCart, setCartShipment }              from '@aquilacms/aquila-connector/api/cart';
-import { useCart }                                       from '@lib/hooks';
-import { formatDate, formatPrice, isAllVirtualProducts } from '@lib/utils';
+import { Fragment, useEffect, useMemo, useState }                      from 'react';
+import Link                                                            from 'next/link';
+import dynamic                                                         from 'next/dynamic';
+import { useRouter }                                                   from 'next/router';
+import useTranslation                                                  from 'next-translate/useTranslation';
+import Button                                                          from '@components/ui/Button';
+import { getShipmentCart, setCartShipment }                            from '@aquilacms/aquila-connector/api/cart';
+import { useCart }                                                     from '@lib/hooks';
+import { formatDate, formatPrice, isAllVirtualProducts, getAqModules } from '@lib/utils';
 
-export default function DeliveryStep() {
-    const [show, setShow]                   = useState(false);
-    const [shipments, setShipments]         = useState([]);
-    const { cart, setCart }                 = useCart();
-    const [deliveryValue, setDeliveryValue] = useState(0);
-    const [total, setTotal]                 = useState(cart.priceTotal?.ati);
-    const [message, setMessage]             = useState();
-    const [isLoading, setIsLoading]         = useState(false);
-    const router                            = useRouter();
-    const { lang, t }                       = useTranslation();
+export default function DeliveryStep({ user }) {
+    const [show, setShow]                         = useState(false);
+    const [shipments, setShipments]               = useState([]);
+    const [selectedShipment, setSelectedShipment] = useState(null);
+    const { cart, setCart }                       = useCart();
+    const [deliveryValue, setDeliveryValue]       = useState(0);
+    const [total, setTotal]                       = useState(cart.priceTotal?.ati);
+    const [message, setMessage]                   = useState();
+    const [isLoading, setIsLoading]               = useState(false);
+    const router                                  = useRouter();
+    const { lang, t }                             = useTranslation();
+
+    const aqModules = getAqModules();
     
     useEffect(() => {
         if (!cart?.items?.length) {
@@ -31,10 +35,11 @@ export default function DeliveryStep() {
         } else {
             const fetchData = async () => {
                 try {
-                    const res = await getShipmentCart({ _id: cart._id }, null, {}, lang);
+                    const res = await getShipmentCart({ _id: cart._id }, null, { structure: { component_template_front: 1, config: 1 } }, lang);
                     setShipments(res.datas);
                     if (res.datas.length > 0) {
                         if (cart.delivery?.method && cart.delivery?.value?.ati) {
+                            setSelectedShipment(cart.delivery.method);
                             return setDeliveryValue(cart.delivery.value.ati);
                         }
                         const defaultPrice = res.datas[0].price;
@@ -51,7 +56,15 @@ export default function DeliveryStep() {
     }, []);
 
     const calculateDelivery = (id) => {
-        const ship = shipments.find((s) => s._id === id);
+        setSelectedShipment(id);
+        const ship    = shipments.find((s) => s._id === id);
+        const newCart = JSON.parse(JSON.stringify(cart));
+        if (ship.type === 'DELIVERY') {
+            newCart.addresses.delivery = user.addresses[user.delivery_address];
+        } else {
+            newCart.addresses.delivery = '';
+        }
+        setCart(newCart);
         setDeliveryValue(ship.price);
         if (cart.delivery?.method && cart.delivery?.value?.ati) {
             setTotal((cart.priceTotal.ati - cart.delivery.value.ati) + ship.price);
@@ -64,14 +77,17 @@ export default function DeliveryStep() {
         e.preventDefault();
         setIsLoading(true);
 
-        const postForm = e.currentTarget;
+        const ship = shipments.find((s) => s._id === selectedShipment);
 
-        const shipmentId = postForm.shipment.value;
-        const ship       = shipments.find((s) => s._id === shipmentId);
+        if (!cart.addresses.delivery) {
+            setMessage({ type: 'error', message: t('components/checkout/deliveryStep:noDeliveryAddress') });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             // Set cart addresses
-            const newCart = await setCartShipment(cart._id, ship, cart.addresses.delivery.isoCountryCode, lang);
+            const newCart = await setCartShipment(cart._id, ship, cart.addresses.delivery, lang);
             setCart(newCart);
 
             router.push('/checkout/payment');
@@ -82,6 +98,49 @@ export default function DeliveryStep() {
         }
     };
 
+    const shipmentsFiltered = useMemo(() => {
+        return (
+            <>
+                {
+                    shipments.length ? shipments.map((ship, index) => {
+                        const AqModule = ship.component_template_front ? dynamic(() => aqModules.find((comp) => comp.code === ship.component_template_front)?.jsx) : null;
+                        return (
+                            <Fragment key={ship._id}>
+                                <div className="column-center w-col w-col-12" style={{ justifyContent: 'unset', marginTop: '10px' }}>
+                                    <label className="checkbox-click-collect w-radio">
+                                        <input type="radio" name="shipment" value={ship._id} defaultChecked={ship._id === cart.delivery?.method || index === 0} onClick={(e) => calculateDelivery(e.target.value)} required style={{ opacity: 0, position: 'absolute', zIndex: -1 }} />
+                                        <div className="w-form-formradioinput w-form-formradioinput--inputType-custom radio-retrait w-radio-input"></div>
+                                        <div className="labels">
+                                            {
+                                                ship.url_logo ? (
+                                                    <>
+                                                        <img src={ship.url_logo} alt={ship.name} style={{ width: '100px' }} />
+                                                        <span className="checkbox-label w-form-label">{ship.name}</span>
+                                                    </>
+                                                ) : (
+                                                    <span className="checkbox-label w-form-label">{ship.name}</span>
+                                                )   
+                                            }
+                                            <span>&nbsp;({formatDate(ship.dateDelivery, lang, { year: 'numeric', month: 'numeric', day: 'numeric' })})</span>
+                                        </div>
+                                        <div className="price">{ship.price > 0 ? formatPrice(ship.price) : 'GRATUIT'}</div>
+                                    </label>
+                                </div>
+                                {
+                                    AqModule && selectedShipment === ship._id && (
+                                        <div>
+                                            <AqModule user={user} shipment={ship} />
+                                        </div>
+                                    )
+                                }
+                            </Fragment>
+                        );
+                    }) : <p>{t('components/checkout/deliveryStep:noDelivery')}</p>
+                }
+            </>
+        );
+    }, [shipments, selectedShipment]);
+
     if (!show) {
         return null;
     }
@@ -90,31 +149,7 @@ export default function DeliveryStep() {
         <>
             <form className="form-mode-paiement-tunnel" onSubmit={onSubmitDelivery}>
                 <div className="columns-picker-paiement-tunnel delivery">
-                    {
-                        shipments.length ? shipments.map((ship, index) => (
-                            <div key={ship._id} className="column-center w-col w-col-12" style={{ justifyContent: 'unset', marginTop: '10px' }}>
-                                <label className="checkbox-click-collect w-radio">
-                                    <input type="radio" name="shipment" value={ship._id} defaultChecked={ship._id === cart.delivery?.method || index === 0} onClick={(e) => calculateDelivery(e.target.value)} required style={{ opacity: 0, position: 'absolute', zIndex: -1 }} />
-                                    <div className="w-form-formradioinput w-form-formradioinput--inputType-custom radio-retrait w-radio-input"></div>
-                                    <div className="labels">
-                                        {
-                                            ship.url_logo ? (
-                                                <>
-                                                    <img src={ship.url_logo} alt={ship.name} style={{ width: '100px' }} />
-                                                    <span className="checkbox-label w-form-label">{ship.name}</span>
-                                                </>
-                                            ) : (
-                                                <span className="checkbox-label w-form-label">{ship.name}</span>
-                                            )
-                                                    
-                                        }
-                                        <span>&nbsp;({formatDate(ship.dateDelivery, lang, { year: 'numeric', month: 'numeric', day: 'numeric' })})</span>
-                                        <div className="price">{ship.price > 0 ? formatPrice(ship.price) : 'GRATUIT'}</div>
-                                    </div>
-                                </label>
-                            </div>
-                        )) : <p>{t('components/checkout/deliveryStep:noDelivery')}</p>
-                    }
+                    { shipmentsFiltered }
                 </div>
 
                 <div className="w-commerce-commercecartfooter" style={{ width: '100%' }}>

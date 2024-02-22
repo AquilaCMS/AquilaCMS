@@ -691,14 +691,14 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
     if (removeDeliveryDatas) {
         cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
     } else {
-        let {shipment}                       = datas;
-        const {lang, cartId, isoCountryCode} = datas;
-        const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
+        let {shipment}                        = datas;
+        const {lang, cartId, deliveryAddress} = datas;
+        const oCart                           = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true}).populate('customer.id').exec();
         if (!shipment.countries || !shipment.preparation) {
             const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
             shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
         }
-        const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
+        const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (deliveryAddress.isoCountryCode).toLowerCase());
         const delaysT       = country.translation;
         const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
         const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
@@ -721,14 +721,13 @@ const updateDelivery = async (datas, removeDeliveryDatas = false) => {
                 unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
             }
         };
-        cart                = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
+        const addresses     = {
+            delivery : deliveryAddress,
+            billing  : oCart.customer.id.addresses[oCart.customer.id.billing_address]
+        };
+        cart                = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {addresses, delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : (shipment.type === 'RELAY_POINT' ? 'relaypoint' : 'withdrawal')}, {new: true}).exec();
         if (!cart) {
             throw NSErrors.CartInactive;
-        }
-        if (cart.orderReceipt.method === 'delivery') {
-            cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
-            cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
-            await cart.save();
         }
     }
     return {code: 'CART_DELIVERY_UPDATED', data: {cart: await cart.getItemsStock()}};

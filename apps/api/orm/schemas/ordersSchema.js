@@ -172,7 +172,7 @@ const OrdersSchema = new Schema({
         }
     ],
     orderReceipt : {
-        method        : {type: String, enum: ['delivery', 'withdrawal']},
+        method        : {type: String, enum: ['delivery', 'relaypoint', 'withdrawal']},
         date          : Date,
         confirmedDate : Date
     },

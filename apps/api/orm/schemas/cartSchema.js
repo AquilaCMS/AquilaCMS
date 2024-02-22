@@ -72,7 +72,7 @@ const CartSchema = new Schema({
         // vatCountry     : Number
     },
     orderReceipt : {
-        method : {type: String, enum: ['delivery', 'withdrawal'], default: 'delivery'},
+        method : {type: String, enum: ['delivery', 'relaypoint', 'withdrawal'], default: 'delivery'},
         date   : Date
     }
 }, {

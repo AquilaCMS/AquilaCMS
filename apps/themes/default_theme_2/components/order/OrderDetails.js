@@ -79,6 +79,41 @@ export default function OrderDetails({ order, setOrders = undefined }) {
         }
     };
 
+    const deliveryRender = () => {
+        switch (order.orderReceipt.method) {
+        case 'withdrawal':
+            return (
+                <>
+                    <label htmlFor="email-2">{t('components/orderDetails:withdrawal')}</label>
+                    <p className="label-tunnel">
+                        {formatDate(order.orderReceipt.date, lang, { year: 'numeric', month: 'numeric', day: 'numeric' }) + ' ' + formatTime(order.orderReceipt.date, lang, { hour: 'numeric', minute: 'numeric' })}
+                    </p>
+                </>
+            );
+        case 'relaypoint':
+            return (
+                <>
+                    <label htmlFor="email-2">{t('components/orderDetails:relaypoint')}</label>
+                    <p className="label-tunnel">
+                        {order.addresses.delivery.nameRelayPoint}{order.addresses.delivery.idRelayPoint ? <> ({order.addresses.delivery.idRelayPoint})</> : null}<br />
+                        {order.addresses.delivery.line1}<br />
+                        {order.addresses.delivery.line2 ? <>{order.addresses.delivery.line2}<br /></> : null}
+                        {order.addresses.delivery.zipcode}<br />
+                        {order.addresses.delivery.city}<br /><br />
+                        <>{order.delivery?.name}<br />{t('components/orderDetails:estimatedDelivery')} :<br/>{formatDate(order.delivery.date, lang)}</>
+                    </p>
+                </>
+            );
+        default:
+            return (
+                <>
+                    <label htmlFor="email-2">{t('components/orderDetails:delivery')}</label>
+                    <p className="label-tunnel"><>{order.delivery?.name}<br />{t('components/orderDetails:estimatedDelivery')} :<br/>{formatDate(order.delivery.date, lang)}</></p>
+                </>
+            );
+        }
+    };
+
     return (
         <div className="container-order">
             <div className="columns-tunnel w-row">
@@ -150,18 +185,8 @@ export default function OrderDetails({ order, setOrders = undefined }) {
                                         <h5>{t('components/orderDetails:deliveryMethod')}</h5>
                                     </div>
                                     <div className="block-content-tunnel-space-flex">
-                                        <div className="w-col w-col-6">
-                                            <label htmlFor="email-2">
-                                                {order.orderReceipt.method === 'withdrawal' ? t('components/orderDetails:withdrawal') : t('components/orderDetails:delivery')}
-                                            </label>
-                                            <p className="label-tunnel">
-                                                {order.orderReceipt.method === 'withdrawal' ? (
-                                                    formatDate(order.orderReceipt.date, lang, { year: 'numeric', month: 'numeric', day: 'numeric' }) + ' ' + formatTime(order.orderReceipt.date, lang, { hour: 'numeric', minute: 'numeric' })
-                                                ) : (
-                                                    <>{order.delivery?.name}<br />{t('components/orderDetails:estimatedDelivery')} :<br/>{formatDate(order.delivery.date, lang)}</>
-                                                )
-                                                }
-                                            </p>
+                                        <div className="w-col w-col-12">
+                                            { deliveryRender() }
                                         </div>
                                     </div>
                                 </>
@@ -179,7 +204,7 @@ export default function OrderDetails({ order, setOrders = undefined }) {
                                     <p className="label-tunnel">{order.customer.email}</p>
                                 </div>
                                 <div className="w-col w-col-6">
-                                    <label htmlFor="email-2">{order.orderReceipt.method === 'withdrawal' ? t('components/orderDetails:withdrawalAddress') : t('components/orderDetails:deliveryAddress')}</label>
+                                    <label htmlFor="email-2">{order.orderReceipt.method === 'withdrawal' || order.orderReceipt.method === 'relaypoint' ? t('components/orderDetails:withdrawalAddress') : t('components/orderDetails:deliveryAddress')}</label>
                                     <p className="label-tunnel">
                                         {order.addresses.delivery.line1}<br />
                                         {order.addresses.delivery.line2 ? <>{order.addresses.delivery.line2}<br /></> : null}

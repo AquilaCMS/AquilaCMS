@@ -16,8 +16,12 @@ module.exports = {
         en : 'incl tax'
     },
     withdrawal : {
-        fr : 'Retrait en magazin',
+        fr : 'Retrait en magasin',
         en : 'Withdrawal'
+    },
+    relaypoint : {
+        fr : 'Livraison en point relais',
+        en : 'Delivery to relay point'
     },
     delivery : {
         fr : 'Livraison à domicile',

@@ -6,6 +6,7 @@
     "deliveryAddress": "Adresse de livraison",
     "deliveryMethod": "Mode de livraison",
     "withdrawal": "Retrait",
+    "relaypoint": "Point relais",
     "delivery": "Livraison",
     "estimatedDelivery": "Date de livraison estimée",
     "paymentInformations": "Informations de paiement",

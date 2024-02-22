@@ -553,7 +553,21 @@ export const getAqModulesClient = async () => {
     }
 };
 
-export const moduleHook = async (type, props = {}) => {
+export const moduleHookScripts = () => {
+    const nsModules = getAqModules();
+    const modules   = nsModules?.filter((m) => m.type === 'scripts');
+    if (!modules || !modules.length) return null;
+    let scripts = [];
+    for (let index in modules) {
+        const { urls } = modules[index].jsx;
+        if (urls) {
+            scripts = [...scripts, ...urls];
+        }
+    }
+    return scripts;
+};
+
+export const asyncModuleHook = async (type, props = {}) => {
     const nsModules = await getAqModulesClient();
     const modules   = nsModules?.filter((m) => m.type === type);
     if (!modules || !modules.length) return null;

@@ -1,5 +1,6 @@
 {
     "noDelivery": "No delivery methods !",
+    "noDeliveryAddress": "Please complete your delivery method options !",
     "previous": "PREVIOUS",
     "next": "NEXT",
     "nextLoading": "LOADING..."

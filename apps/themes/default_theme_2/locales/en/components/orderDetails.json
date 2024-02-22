@@ -6,6 +6,7 @@
     "deliveryAddress": "Delivery address",
     "deliveryMethod": "Delivery method",
     "withdrawal": "Pick-up",
+    "relaypoint": "Relay point",
     "delivery": "Delivery",
     "estimatedDelivery": "Estimated date of delivery",
     "paymentInformations": "Payment Information",

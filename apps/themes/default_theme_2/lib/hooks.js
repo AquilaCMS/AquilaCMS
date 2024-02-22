@@ -1,9 +1,9 @@
-import { useState, useEffect }                     from 'react';
-import { useSelector, useDispatch }                from 'react-redux';
-import useTranslation                              from 'next-translate/useTranslation';
-import { getPaymentMethods }                       from '@aquilacms/aquila-connector/api/payment';
-import { getUser }                                 from '@aquilacms/aquila-connector/api/user';
-import { getUserIdFromJwt, getDevice, moduleHook } from '@lib/utils';
+import { useState, useEffect }                          from 'react';
+import { useSelector, useDispatch }                     from 'react-redux';
+import useTranslation                                   from 'next-translate/useTranslation';
+import { getPaymentMethods }                            from '@aquilacms/aquila-connector/api/payment';
+import { getUser }                                      from '@aquilacms/aquila-connector/api/user';
+import { getUserIdFromJwt, getDevice, asyncModuleHook } from '@lib/utils';
 
 /**
  * GET / SET cart data (redux)
@@ -278,7 +278,7 @@ export const useLoadModules = (initModules = []) => {
             try {
                 const data = {};
                 for (const m of initModules) {
-                    const res = await moduleHook(m.id, m.props);
+                    const res = await asyncModuleHook(m.id, m.props);
                     if (res) {
                         data[m.id] = res;
                     }

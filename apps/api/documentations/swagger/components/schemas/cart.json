@@ -127,7 +127,7 @@
             "orderReceipt" : {
                 "type": "object",
                 "properties": {
-                    "method" : {"type": "string", "enum": ["delivery", "withdrawal"], "default": "delivery"},
+                    "method" : {"type": "string", "enum": ["delivery", "relaypoint", "withdrawal"], "default": "delivery"},
                     "date"   : {
                         "type": "string",
                         "format": "date"

@@ -50,7 +50,7 @@ export default function CheckoutDelivery({ user }) {
                         <h2 className="heading-2-steps">{t('pages/checkout:delivery.step')}</h2>
                     </div>
                     
-                    { modulesHooks['checkout-delivery-step'] || <DeliveryStep /> }
+                    { modulesHooks['checkout-delivery-step'] || <DeliveryStep user={user} /> }
                 </div>
             </div>
         </LightLayout>
