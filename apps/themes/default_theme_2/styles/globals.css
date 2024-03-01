@@ -19,6 +19,10 @@ a {
 body {
   font-family: Arial, sans-serif;
 }
+/* FUSION => .section-footer l.5369 mon-restaurant.webflow.css */
+.section-footer {
+  background-color: #ff8946;
+}
 /* FUSION => .footer-paragraphe l.5425 mon-restaurant.webflow.css */
 .footer-paragraphe {
   font-family: Arial, sans-serif;
@@ -27,6 +31,7 @@ body {
 /* FUSION => .link-footer l.6365 mon-restaurant.webflow.css */
 .link-footer {
   display: block;
+  color: #fff;
 }
 
 /* FUSION => .tab-menu-round l.3376 mon-restaurant.webflow.css */
@@ -496,6 +501,7 @@ input[type='radio']:focus + .w-form-formradioinput--inputType-custom {
 }
 .columns-picker-paiement-tunnel.delivery .labels {
   display: flex;
+  gap: 10px;
 }
 .columns-picker-paiement-tunnel.delivery .price {
   width: 100%;
@@ -645,4 +651,33 @@ font-size: 0.8rem;
 
 .disabled-all.clickable {
   cursor: pointer;
+}
+
+
+
+/* POC */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-gap: 10px;
+  height: 500px; /* Définissez la hauteur fixe de la grille ici */
+}
+
+.grid-item {
+  position: relative;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  resize: both;
+  margin: 0;
+  padding: 0;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #3498db;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
 }
