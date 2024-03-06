@@ -231,7 +231,7 @@ export default function Filters({ filtersData, getProductsList }) {
         <form ref={formRef} className="filters">
             <div className="lien_alergenes w-inline-block" onClick={() => openBlock()}>
                 <h6 className="heading-6-center">{t('components/filters:title')}</h6>
-                <img src="/images/Plus.svg" alt="" className="plus" />
+                <img src="/images/Plus.svg" alt="" className={`plus${open ? ' plus-2-active' : ''}`} />
             </div>
             <div className={`faq-content${open ? ' filters-open' : ''}`}>
                 <div className="filters-list">

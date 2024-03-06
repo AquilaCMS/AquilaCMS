@@ -21,7 +21,7 @@ export default function MenuCategories() {
             <>
                 <div className="lien_carte w-inline-block" onClick={openBlock}>
                     <h6 className="heading-bouton-carte">{t('components/navigation:viewMore')}</h6>
-                    <img src="/images/Plus.svg" alt="" className="plus-2" />
+                    <img src="/images/Plus.svg" alt=""  className={`plus-2${open ? ' plus-2-active' : ''}`} />
                 </div>
 
                 <div className={`tab-menu-round w-tab-menu${open ? ' tab-menu-round-open' : ''}`}>
