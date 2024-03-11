@@ -90,7 +90,6 @@ const ProductsPreviewSchema = new Schema({
             id_review   : {type: String},
             name        : {type: String},
             id_client   : {type: ObjectId}, // Si on peut l’avoir avec avisverifies c’est cool
-            ip_client   : {type: String},
             review_date : {type: Date, default: Date.now},
             review      : {type: String},
             lang        : {type: String},

@@ -379,6 +379,10 @@ module.exports = {
         fr : 'Le slug existe déjà',
         en : 'Slug already exists'
     },
+    ProductReviewAlreadyExists : {
+        fr : 'Vous avez déjà donné votre avis sur ce produit',
+        en : 'You have already reviewed this product'
+    },
     SlugTooShort : {
         fr : 'Le slug est trop court',
         en : 'Slug is too short'

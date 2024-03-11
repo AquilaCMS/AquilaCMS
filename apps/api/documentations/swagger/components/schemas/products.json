@@ -142,7 +142,6 @@
                                 "id_review"   : {"type": "string"},
                                 "name"        : {"type": "string"},
                                 "id_client"   : {"type": "string", "format": "ObjectId", "description": "Si on peut l’avoir avec avisverifies c’est cool"},
-                                "ip_client"   : {"type": "string"},
                                 "review_date" : {"type": "string", "format": "date", "default": "Date.now"},
                                 "review"      : {"type": "string"},
                                 "lang"        : {"type": "string"},

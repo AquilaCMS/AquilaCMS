@@ -56,11 +56,17 @@ const getAggregateReviews = async (body) => {
  * @param {ObjectId} idProduct product id
  * @param {Object} review comment on item idProduct
  */
-const setProductReview = async (idProduct, user, review, title, rate, lang, questions = [], ipClient = null) => {
+const setProductReview = async (idProduct, user, review, title, rate, lang, questions = []) => {
+    if (!user) {
+        throw NSErrors.Unauthorized;
+    }
     const {Products} = require('../orm/models');
     const product    = await Products.findById(idProduct);
     if (!product) {
         throw NSErrors.NotFound;
+    }
+    if (product.reviews.datas?.find((r) => r.id_client?.toString() === user._id.toString())) {
+        throw NSErrors.ProductReviewAlreadyExists;
     }
     if (!idProduct || !review || !title || !rate) {
         throw NSErrors.InvalidRequest;
@@ -71,25 +77,15 @@ const setProductReview = async (idProduct, user, review, title, rate, lang, ques
             throw NSErrors.NotFound;
         }
     }
-    let name      = 'Anonymous';
-    let id_client = null;
-    if (user) {
-        name                             = '';
-        const {firstname, lastname, _id} = user;
-        id_client                        = _id;
-        if (firstname) name += firstname;
-        if (lastname) name += ` ${lastname.trim().substring(0, 1)}.`;
-    }
     const oReview = {
         title,
         review,
         rate,
         lang,
-        name,
-        id_client,
+        name      : `${user.firstname} ${user.lastname.trim().substring(0, 1)}.`,
+        id_client : user._id,
         visible   : false,
         verify    : false,
-        ip_client : ipClient,
         questions
     };
     product.reviews.datas.push(oReview);

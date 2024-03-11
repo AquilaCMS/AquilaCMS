@@ -34,9 +34,7 @@ const setProductReview = async (req, res, next) => {
     // We add the product
     try {
         const {review, title, rate, lang, questions} = req.body;
-
-        const ipClient = req.header('x-forwarded-for') || req.connection.remoteAddress;
-        const result   = await ServiceReviews.setProductReview(req.params.id, req.info, review, title, rate, lang, questions, ipClient);
+        const result                                 = await ServiceReviews.setProductReview(req.params.id, req.info, review, title, rate, lang, questions);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);

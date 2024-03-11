@@ -120,8 +120,7 @@ const anonymizeBillsByUser = async (id) => Bills.updateMany({client: id}, {
 
 const anonymizeReviewsByUser = async (id) => Products.updateMany({}, {
     $set : {
-        'reviews.datas.$[data].ip_client' : faker.internet.ip(),
-        'reviews.datas.$[data].name'      : faker.name.firstName()
+        'reviews.datas.$[data].name' : faker.name.firstName()
     }
 }, {
     arrayFilters : [{'data.id_client': id}]
@@ -301,8 +300,7 @@ const anonymizeDatabase = async () => {
     for (let i = 0; i < products.length; i++) {
         const datas = products[i].reviews.datas;
         for (let j = 0; j < products[i].reviews.datas.length; j++) {
-            datas[j].ip_client = faker.internet.ip();
-            datas[j].name      = faker.name.firstName();
+            datas[j].name = faker.name.firstName();
             await database.collection('products').findOneAndUpdate({_id: products[i]._id}, {
                 $set : {
                     'reviews.datas' : datas

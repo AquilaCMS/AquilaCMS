@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { aqlRound }            from 'aql-utils/theme';
 
-export default function DrawStars({ mode = 'read', rate = 0, numberStars = 5, displayTextRate = true, positionTextRate = 'right',  onClickStar, questionId = null, starsColor = '#ff8946', textRateColor = '#ff8946', width = 'normal' }) {
+export default function DrawStars({ mode = 'read', rate = 0, numberStars = 5, displayTextRate = true, positionTextRate = 'right', onClickStar, questionId = null, starsColor = '#ff8946', textRateColor = '#ff8946', width = 'normal' }) {
     const [initStars, setInitStars] = useState(0);
     const [stars, setStars]         = useState(0);
 
