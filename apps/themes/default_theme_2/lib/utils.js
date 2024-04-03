@@ -556,7 +556,7 @@ export const getAqModulesClient = async () => {
 export const moduleHookScripts = () => {
     const nsModules = getAqModules();
     const modules   = nsModules?.filter((m) => m.type === 'scripts');
-    if (!modules || !modules.length) return null;
+    if (!modules || !modules.length) return [];
     let scripts = [];
     for (let index in modules) {
         const { urls } = modules[index].jsx;
