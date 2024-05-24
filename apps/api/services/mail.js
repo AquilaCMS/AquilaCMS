@@ -720,21 +720,31 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
                     continue;
                 }
                 let pathToFile = file.path;
-                if (!path.isAbsolute(pathToFile)) {
-                    pathToFile = path.resolve(utilsServer.getUploadDirectory(), file.path);
+                if (!pathToFile) {
+                    // File in memory storage
+                    mailOptions.attachments.push({
+                        filename    : file.originalname,
+                        content     : file.buffer,
+                        encoding    : 'base64',
+                        contentType : file.mimetype
+                    });
+                } else {
+                    if (!path.isAbsolute(pathToFile)) {
+                        pathToFile = path.resolve(utilsServer.getUploadDirectory(), file.path);
+                    }
+                    const checkAccess = await fs.hasAccess(pathToFile);
+                    const isFile      = (await fs.lstat(pathToFile)).isFile();
+                    if (!checkAccess || !isFile) {
+                        logger.error('Your attachments looks unreachable');
+                    }
+                    const data = await fs.readFile(pathToFile, {encoding: 'base64'});
+                    mailOptions.attachments.push({
+                        filename    : `${file.name.originalname}.${file.name.mimetype.split('/')[1]}`,
+                        content     : data,
+                        encoding    : 'base64',
+                        contentType : file.name.mimetype
+                    });
                 }
-                const checkAccess = await fs.hasAccess(pathToFile);
-                const isFile      = (await fs.lstat(pathToFile)).isFile();
-                if (!checkAccess || !isFile) {
-                    logger.error('Your attachments looks unreachable');
-                }
-                const data = await fs.readFile(pathToFile, {encoding: 'base64'});
-                mailOptions.attachments.push({
-                    filename    : `${file.name.originalname}.${file.name.mimetype.split('/')[1]}`,
-                    content     : data,
-                    encoding    : 'base64',
-                    contentType : file.name.mimetype
-                });
             }
         }
         mailOptions.text = textBody || htmlBody;
