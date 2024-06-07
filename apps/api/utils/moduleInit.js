@@ -28,8 +28,8 @@ const fetchModules = async () => {
             loadedModules[i] = {...loadedModules[i], ...require(packageJson)};
             loadedModules[i] = await checkModule(loadedModules[i]);
         } else {
-            delete loadedModules[i];
             console.log(`There is no info file for ${loadedModules[i].name}`); // TODO : to be replaced by package.json when yarn workspaces will be merged
+            loadedModules = loadedModules.filter((mod) => mod.name !== loadedModules[i].name);
         }
     }
 };
