@@ -11,6 +11,7 @@ const axios        = require('axios');
 const {fork}       = require('child_process');
 const mongoose     = require('mongoose');
 const moment       = require('moment');
+const path         = require('path');
 const NSErrors     = require('../utils/errors/NSErrors');
 const utils        = require('../utils/utils');
 const errorMessage = require('../utils/translate/errors');
@@ -408,7 +409,7 @@ const getPlayImmediateJob = async (_id, option, lang) => {
 };
 
 const execDefineService = async (modulePath, funcName, option) => {
-    const response = await require(`..${modulePath}`)[funcName](option);
+    const response = await require(path.join(global.aquila.appsPath, modulePath))[funcName](option);
     return JSON.stringify(response, null, 2);
 };
 
