@@ -6,7 +6,7 @@
 <h3 align="center">A complete and multi-purpose open-source CMS</h3>
 
 <p align="center" style="font-size:1.1em;">
-  <a href="https://www.aquila-cms.com">Website</a> | <a href="https://shop.aquila-cms.com/">Modules & Themes</a>
+  <a href="https://www.aquila-cms.com">Website</a> | <a href="https://shop.aquila-cms.com/">Modules & Themes</a> | <a href="https://discord.gg/bsVXQRrVaF">Discord</a>
 </p>
 
 <p align="center">
@@ -127,6 +127,7 @@ You can reach out to us via:
 
 - [Create an issue](https://github.com/AquilaCMS/AquilaCMS/issues/new)
 - [Email](mailto:contact@nextsourcia.com)
+- [Discord](https://discord.gg/bsVXQRrVaF)
 
 We take all queries, recommandations and issues that you might have. Feel free to ask.
 
