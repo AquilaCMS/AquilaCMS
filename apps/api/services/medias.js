@@ -423,7 +423,7 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        const absoluteTargetPath = slash(path.resolve(global.aquila.appRoot, target_path_full));
+        const absoluteTargetPath = slash(path.resolve(global.aquila.aqlPath, target_path_full));
         await fs.copyRecursive(tmp_path, absoluteTargetPath);
         if ((await fs.stat(tmp_path)).isDirectory()) {
             await fs.deleteRecursive(tmp_path);
