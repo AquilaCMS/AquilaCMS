@@ -322,7 +322,7 @@ async function deferredPayment(req, method) {
                 action = '/cart/success';
             }
         }
-        return `<form method='POST' id='paymentid' action='${action}'></form>`;
+        return `<form method='GET' id='paymentid' action='${action}'></form>`;
     } catch (err) {
         return err;
     }

@@ -60,7 +60,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody = undefined
             const shipObject = shipment.countries[index].toObject();
             const range      = shipObject.prices.find((_price) => totalWeight >= _price.weight_min && totalWeight <= _price.weight_max);
             if (range) {
-                if (shipment.freePriceLimit && cart.priceTotal && cart.priceTotal.ati && (shipment.freePriceLimit <= cart.priceTotal.ati.aqlRound(2))) {
+                if (shipment.freePriceLimit && cart.priceSubTotal && cart.priceSubTotal.ati && (shipment.freePriceLimit <= cart.priceSubTotal.ati.aqlRound(2))) {
                     choices.push({shipment, price});
                 } else {
                     const priceR = range.price;
@@ -92,7 +92,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody = undefined
             const range = selectedCountry.prices.find((price) => totalWeight >= price.weight_min && totalWeight <= price.weight_max);
             if (range) {
                 const oShipment = shipment.toObject();
-                if (shipment.freePriceLimit && shipment.freePriceLimit <= cart.priceTotal.ati.aqlRound(2)) {
+                if (shipment.freePriceLimit && shipment.freePriceLimit <= cart.priceSubTotal.ati.aqlRound(2)) {
                     arrayPrices[shipment.code] = 0;
                     oShipment.price            = 0;
                 } else {
