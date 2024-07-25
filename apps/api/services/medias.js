@@ -45,30 +45,30 @@ const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultField
 const downloadAllDocuments = async () => {
     console.log('Preparing downloadAllDocuments...');
     const uploadDirectory = server.getUploadDirectory();
-
+    const pathUpload = path.join(global.aquila.aqlPath, uploadDirectory);
     await utilsModules.modulesLoadFunctions('downloadAllDocuments', {}, () => {
-        if (!fs.existsSync(`./${uploadDirectory}/temp`)) {
-            fs.mkdirSync(`./${uploadDirectory}/temp`);
+        if (!fs.existsSync(path.join(pathUpload, 'temp'))) {
+            fs.mkdirSync(path.join(pathUpload, 'temp'));
         }
         const zip = new AdmZip();
-        if (fs.existsSync(path.resolve(uploadDirectory, 'documents'))) {
-            zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
+        if (fs.existsSync(path.join(pathUpload, 'documents'))) {
+            zip.addLocalFolder(path.join(pathUpload, 'documents'), 'documents');
         }
-        if (fs.existsSync(path.resolve(uploadDirectory, 'medias'))) {
-            zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
+        if (fs.existsSync(path.join(pathUpload, 'medias'))) {
+            zip.addLocalFolder(path.join(pathUpload, 'medias'), 'medias');
         }
-        if (fs.existsSync(path.resolve(uploadDirectory, 'photos'))) {
-            zip.addLocalFolder(path.resolve(uploadDirectory, 'photos'), 'photos');
+        if (fs.existsSync(path.join(pathUpload, 'photos'))) {
+            zip.addLocalFolder(path.join(pathUpload, 'photos'), 'photos');
         }
-        if (fs.existsSync(path.resolve(uploadDirectory, 'fonts'))) {
-            zip.addLocalFolder(path.resolve(uploadDirectory, 'fonts'), 'fonts');
+        if (fs.existsSync(path.join(pathUpload, 'fonts'))) {
+            zip.addLocalFolder(path.join(pathUpload, 'fonts'), 'fonts');
         }
-        zip.writeZip(path.resolve(uploadDirectory, 'temp/documents.zip'), (err) => {
+        zip.writeZip(path.join(pathUpload, 'temp', 'documents.zip'), (err) => {
             if (err) logger.error(err.message);
         });
     });
     console.log('Finalize downloadAllDocuments..');
-    return path.resolve(uploadDirectory, 'temp/documents.zip');
+    return path.join(pathUpload, 'temp', 'documents.zip');
 };
 
 /**

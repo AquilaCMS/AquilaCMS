@@ -864,16 +864,19 @@ const sendContact = async (datas, lang = '') => {
         if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
             attachments = contactMail.translation[lang].attachments;
         }
-        let bodyString = '';
+        let bodyString = '<table>';
         Object.keys(datas).forEach((key) => {
+            bodyString += '<tr>';
             if (Array.isArray(datas[key])) {
                 for (let i = 0; i < datas[key].length; i++) {
-                    bodyString += `<div><b>${key}:</b> ${datas[key][i]}</div>`;
+                    bodyString += `<td><b>${key} :</b></td><td>${datas[key][i]}</td>`;
                 }
             } else {
-                bodyString += `<div><b>${key}:</b> ${datas[key]}</div>`;
+                bodyString += `<td><b>${key} :</b></td><td>${datas[key]}</td>`;
             }
+            bodyString += '</tr>';
         });
+        bodyString += '</table>';
 
         const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
         return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, attachments});
