@@ -858,12 +858,26 @@ const sendContact = async (datas, lang = '') => {
         if (!contactMail) {
             throw NSErrors.MailNotFound;
         }
-        const content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+        let content   = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
         const subject   = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
         let attachments = null;
         if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
             attachments = contactMail.translation[lang].attachments;
         }
+
+        let templateItems  = '';
+        const itemTemplate = content.match(/<!--startitems-->(.|\n)*?<!--enditems-->/g);
+        if (itemTemplate && itemTemplate[0]) {
+            const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
+            for (const key in datas) {
+                if (!datas[key] || !datas[key].length) continue;
+                const data = datas[key].replace(/(?:\r\n|\r|\n)/g, '<br>');
+                const prdData = { '{{key}}': key, '{{value}}': data };
+                templateItems += await generateHTML(htmlItem, prdData);
+            }
+            content = content.replace(htmlItem, templateItems);
+        }
+
         let bodyString = '<table>';
         Object.keys(datas).forEach((key) => {
             bodyString += '<tr>';
