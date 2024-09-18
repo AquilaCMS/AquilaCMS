@@ -603,7 +603,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
-        aquilaEvents.emit('postCartToOrder', _cart);
+        aquilaEvents.emit('postCartToOrder', _cart, createdOrder);
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
