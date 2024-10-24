@@ -405,17 +405,17 @@ const frontUninstallationActions = async (_module) => {
 const removeModule = async (idModule) => {
     const module = await Modules.findOne({_id: idModule});
 
-    const path = path.join(global.aquila.modulesPath, module.name);
+    const modulePath = path.join(global.aquila.modulesPath, module.name);
     console.log('Removing module in database');
     await Modules.deleteOne({_id: idModule});
 
     console.log('Removing modules files');
     try {
-        await fs.unlink(path.replace(/\/$/, '.zip'));
+        await fs.unlink(modulePath.replace(/\/$/, '.zip'));
     } catch (err) {
         logger.error(err.message);
     }
-    rimraf(path, (err) => {
+    rimraf(modulePath, (err) => {
         if (err) logger.error(`Error: ${err.message}`);
     });
     return true;
