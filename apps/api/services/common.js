@@ -122,14 +122,19 @@ const exportData = async (model, PostBody, noCSV = false) => {
         const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
 
         if (noCSV) return {datas, csvFields};
+
         const uploadDirectory = server.getUploadDirectory();
-        if (!fs.existsSync(path.resolve(uploadDirectory, 'temp'))) {
-            fs.mkdirSync(path.resolve(uploadDirectory, 'temp'));
+        const tempPath        = path.join(global.aquila.aqlPath, uploadDirectory, 'temp');
+
+        if (!fs.existsSync(path.join(tempPath))) {
+            fs.mkdirSync(path.join(tempPath));
         }
 
         const date   = Date.now();
         const result = await utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
-        fs.writeFile(path.resolve(uploadDirectory, 'temp', `${date}.csv`), `\ufeff${result.csv}`, {encoding: 'utf8'});
+
+        fs.writeFile(path.join(tempPath, `${date}.csv`), `\ufeff${result.csv}`, {encoding: 'utf8'});
+
         result.url = date;
         return result;
     }
