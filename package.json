@@ -6,6 +6,7 @@
   "private": true,
   "workspaces": [
     "apps/api",
+    "apps/api-v3",
     "apps/themes",
     "apps/modules"
   ],
