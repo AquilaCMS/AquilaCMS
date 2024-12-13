@@ -36,6 +36,16 @@ const getGallery = async (_id) => {
 };
 
 /**
+ * @description Returns a gallery whose code is passed in parameter
+ * @param code : the gallery code
+ */
+const getGallerybyCode = async (code) => {
+    const result = await Gallery.findOne({code}).lean();
+    if (!result) throw NSErrors.GalleryNotFound;
+    return result;
+};
+
+/**
  * @description Returns the items of a gallery for code in parameter
  * @param code : the gallery code
  * @param skip : the number of items to skip before displaying the next "initItemNumber" items
@@ -62,17 +72,17 @@ const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
  * @param maxColumnNumber : number of columns that the gallery must display
  * @param _id : _id from the gallery, if not null then we will do an update
  */
-const setGallery = async (code, initItemNumber, maxColumnNumber, _id = null) => {
+const setGallery = async (gallery) => {
     let result;
-    code = slugify(code);
-    if (_id) {
+    gallery.code = slugify(gallery.code);
+    if (gallery._id) {
         // Update
-        if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-        result = await Gallery.findByIdAndUpdate(_id, {code, initItemNumber, maxColumnNumber}, {new: true, runValidators: true});
+        if (!mongoose.Types.ObjectId.isValid(gallery._id)) throw NSErrors.InvalidObjectIdError;
+        result = await Gallery.findByIdAndUpdate(gallery._id, gallery, {new: true, runValidators: true});
         if (!result) throw NSErrors.GalleryUpdateError;
     } else {
         // Create
-        result = await Gallery.create({code});
+        result = await Gallery.create(gallery);
     }
     return result;
 };
@@ -146,6 +156,7 @@ const deleteItemGallery = async (_id, _id_item) => {
 module.exports = {
     getGalleries,
     getGallery,
+    getGallerybyCode,
     getItemsGallery,
     setGallery,
     setItemGallery,

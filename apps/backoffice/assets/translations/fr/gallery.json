@@ -11,8 +11,16 @@
         "t1": "Détail Galerie",
         "t2": "Nouvelle Galerie",
         "code": "Code",
+        "type": "Type",
+        "type1": "Simple",
+        "type2": "Avancé",
         "nbItemDisplayed": "Nombre d'items affichés",
         "nbColMax": "Nombre de colonnes max",
+        "grid": "Grille",
+        "addRow": "Ajouter une ligne",
+        "targetMode": "Mode cible",
+        "removeRow": "Supprimer",
+        "target": "Cible",
         "add": "Ajouter"
     },
     "item": {

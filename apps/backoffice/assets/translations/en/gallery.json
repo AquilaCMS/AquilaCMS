@@ -11,8 +11,16 @@
         "t1": "Gallery Detail",
         "t2": "New Gallery",
         "code": "Code",
+        "type": "Type",
+        "type1": "Simple",
+        "type2": "Advance",
         "nbItemDisplayed": "Number of items displayed",
         "nbColMax": "Max number of column",
+        "grid": "Grid",
+        "addRow": "Add a row",
+        "targetMode": "Target mode",
+        "removeRow": "Remove",
+        "target": "Target",
         "add": "Add"
     },
     "item": {

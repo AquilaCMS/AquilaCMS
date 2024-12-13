@@ -17,6 +17,7 @@ const MailSchema = new Schema({
     type        : {type: String, default: '', index: true}, // jointure entre type et code dans mail_type
     from        : {type: String, trim: true, required: true/* , validate: [{validator: (value) => isEmail(value), msg: 'Invalid email.'}] */}, // adresse mail d'envoi
     fromName    : {type: String, default: ''},
+    to          : {type: String, default: ''},
     translation : {}
 }, {
     timestamps : true,

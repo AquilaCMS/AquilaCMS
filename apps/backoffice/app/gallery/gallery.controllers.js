@@ -25,6 +25,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         $scope.isEditMode = false;
         $scope.disableSave = true;
         $scope.gallery = {};
+        $scope.rowConfig = [];
 
         if ($routeParams.id !== "new") {
             $scope.isEditMode = true;
@@ -32,10 +33,50 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
             GalleryService.detail({ id: $routeParams.id }, function (res) {
                 $scope.gallery = res;
                 $scope.disableSave = false;
+                $scope.rowConfig = $scope.gallery.grid.map(row => row.length.toString());
             });
         }
         else {
             $scope.gallery = { code: "", initItemNumber: 12, maxColumnNumber: 4 };
+        }
+
+        $scope.updateType = function () {
+            if ($scope.gallery.type === "simple") {
+                $scope.gallery.grid = [];
+                $scope.rowConfig = [];
+            }
+        };
+
+        $scope.addRowGrid = function () {
+            if (!$scope.gallery.grid) {
+                $scope.gallery.grid = [];
+            }
+            $scope.gallery.grid.push([]);
+        };
+
+        $scope.removeRowGrid = function (index) {
+            $scope.gallery.grid.splice(index, 1);
+            $scope.rowConfig.splice(index, 1);
+        };
+
+        $scope.updateRowColsNb = function (row, colsNb) {
+            $scope.gallery.grid[row] = Array(Number(colsNb)).fill(Math.floor(12 / colsNb));
+        }
+
+        $scope.updateCol = function (rowIndex, index) {
+            // Sum of all columns in the row
+
+            const row = $scope.gallery.grid[rowIndex];
+            const sum = row.reduce((acc, val) => acc + val, 0);
+            console.log(sum);
+            let max = 12 - sum;
+            if (max < 0) {
+                $scope.gallery.grid[rowIndex][index] = $scope.gallery.grid[rowIndex][index] - 1;
+            }
+        }
+
+        $scope.getSrcTargetImagePreview = function (i, j) {
+            return $scope.gallery.items.find(img => img.target === `${i}-${j}`)?.src;
         }
 
         var elementInDrag;
@@ -202,6 +243,16 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         if (item) {
             $scope.isEditMode = true;
             $scope.item = angular.copy(item);
+        }
+
+        $scope.targets = [''];
+        for (var i = 0; i < gallery.grid.length; i++) {
+            for (var j = 0; j < gallery.grid[i].length; j++) {
+                if ($scope.gallery.items.find(img => img.src !== $scope.item.src && img.target === `${i}-${j}`)) {
+                    continue;
+                }
+                $scope.targets.push(`${i}-${j}`);
+            }
         }
 
         $scope.save = function () {

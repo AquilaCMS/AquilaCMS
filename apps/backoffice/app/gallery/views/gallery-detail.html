@@ -12,6 +12,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="title" class="col-sm-3 control-label" translate>gallery.detail.type</label>
+                    <div class="col-sm-2">
+                        <select id="type" class="form-control" ng-model="gallery.type" ng-change="updateType()">
+                            <option value="simple" translate>gallery.detail.type1</option>
+                            <option value="advance" translate>gallery.detail.type2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-show="gallery.type === 'simple'">
                     <label for="item_show" class="col-sm-3 control-label" translate>gallery.detail.nbItemDisplayed</label>
                     <div class="col-sm-2">
                         <input id="item_show" type="number" class="form-control" min="1" ng-model="gallery.initItemNumber" ng-change="checkValidity()" />
@@ -22,6 +32,62 @@
                         <input id="max_col" type="number" class="form-control" min="1" ng-model="gallery.maxColumnNumber" ng-change="checkValidity()" />
                     </div>
                 </div>
+
+                <div ng-show="gallery.type === 'advance'">
+                    <div class="form-group">
+                        <label for="item_show" class="col-sm-3 control-label" translate>gallery.detail.grid</label>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-default" ng-click="addRowGrid()" translate>gallery.detail.addRow</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="item_show" class="col-sm-3 control-label" translate>gallery.detail.targetMode</label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" ng-model="gallery.targetMode">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div ng-repeat="row in gallery.grid" style="display: flex; align-items: center; gap: 10px;">
+                            <div>
+                                <select class="form-control" ng-model="rowConfig[$index]" ng-change="updateRowColsNb($index, rowConfig[$index])" style="width: 60px;"">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                            <div ng-show="rowConfig[$index]">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                            <div ng-show="rowConfig[$index]" style="display: flex; gap: 5px; border: 1px dashed #576fa1; padding: 10px; flex: 1;">
+                                <div ng-repeat="col in row track by $index" ng-style="{'width': 'calc((' + col + ' * (100% - (11 * 5px)) / 12) + ((' + col + ' - 1) * 5px))'}" style="display: flex; justify-content: center; align-items: center; gap: 5px; padding: 5px; background-color: #576fa1;">
+                                    <div>
+                                        <input type="number" class="form-control" ng-model="row[$index]" ng-change="updateCol($parent.$index, $index)" min="1" style="width: 50px; text-align: center;">
+                                        <div ng-show="gallery.targetMode" style="font-size: 0.9rem; color: #fff;"><span translate>gallery.detail.target</span> : {{$parent.$index}}-{{$index}}</div>
+                                    </div>
+                                    <div >
+                                        <img ng-show="gallery.targetMode" ng-src="{{getSrcTargetImagePreview($parent.$index, $index)}}" style="height: 40px;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <button type="button" class="btn btn-danger" style="display: flex; justify-content: center; align-items: center; min-width: 50px; color: #fff;" ng-click="removeRowGrid($index)">
+                                    <i class="fa fa-trash" style="display: flex; visibility: visible;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
 
                 <div ng-show="isEditMode" class="row">
                     <div class="col-sm-2 text-center" style="margin-bottom: 30px;padding:15px;">

@@ -33,8 +33,15 @@
                                 </div>
 
                                 <label for="image_alt" class="col-sm-4 control-label" translate>gallery.item.info</label>
-                                <div class="col-sm-8">
+                                <div class="col-sm-8" style="margin-bottom: 30px">
                                     <input id="image_alt" class="form-control" translate translate-attr-placeholder='gallery.item.ph2' ng-model="item.alt" />
+                                </div>
+
+                                <div ng-show="gallery.targetMode">
+                                    <label for="image_alt" class="col-sm-4 control-label" translate>gallery.detail.target</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" ng-model="item.target" ng-options="target for target in targets"></select>
+                                    </div>
                                 </div>
                             </div>
                         </div>

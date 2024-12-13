@@ -15,8 +15,11 @@ const utilsDatabase  = require('../../utils/database');
  */
 const GallerySchema = new Schema({
     code            : {type: String, required: true, unique: true},
+    type            : {type: String, enum: ['simple', 'advance'], default: 'simple', required: true},
     initItemNumber  : {type: Number, default: 6, required: true},
     maxColumnNumber : {type: Number, default: 3, required: true},
+    targetMode      : {type: Boolean, default: false},
+    grid            : {type: [], default: []},
     items           : [{
         _itemId   : Schema.Types.ObjectId,
         src       : {type: String, trim: true, default: ''},
@@ -25,7 +28,8 @@ const GallerySchema = new Schema({
         content   : {type: String, trim: true, default: ''}, // IDyoutube
         alt       : {type: String, default: ''},
         order     : {type: Number, default: 0},
-        extension : {type: String, default: '.jpg'}
+        extension : {type: String, default: '.jpg'},
+        target    : {type: String, default: ''}
     }]
 }, {
     timestamps : true,

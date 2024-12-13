@@ -13,6 +13,7 @@ const {autoFillCode}   = require('../middleware/autoFillCode');
 module.exports = function (app) {
     app.post('/v2/galleries', adminAuthRight('gallery'), getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
+    app.get('/v2/gallery/:code/code', getGallerybyCode);
     app.get('/v2/gallery/:code/items', getItemsGallery);
     app.put('/v2/gallery', adminAuthRight('gallery'), autoFillCode, setGallery);
     app.put('/v2/gallery/:_id/item', adminAuthRight('gallery'), setItemsGallery);
@@ -43,6 +44,19 @@ async function getGallery(req, res, next) {
         return next(error);
     }
 }
+
+/**
+ * Function returning a gallery by its code
+ */
+async function getGallerybyCode(req, res, next) {
+    try {
+        const result = await ServiceGallery.getGallerybyCode(req.params.code);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
 /**
  * Function returning the items of a gallery according to its code
  */
@@ -60,7 +74,7 @@ async function getItemsGallery(req, res, next) {
 async function setGallery(req, res, next) {
     // we add product
     try {
-        const result = await ServiceGallery.setGallery(req.body.code, req.body.initItemNumber, req.body.maxColumnNumber, req.body._id);
+        const result = await ServiceGallery.setGallery(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
