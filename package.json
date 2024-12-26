@@ -19,7 +19,9 @@
     "url": "git+ssh://git@github.com:AquilaCMS/AquilaCMS.git"
   },
   "scripts": {
+    "all": "run-p start start:apiv3",
     "start": "node apps/api/index.js",
+    "start:apiv3": "cd apps/api-v3 && npm run start:dev",
     "start:pm2": "pm2-runtime start ecosystem.config.js",
     "start:container": "pm2 start ecosystem.config.js --env production && pm2 logs",
     "start:dev": "pm2-dev start ecosystem.config.js",
@@ -46,6 +48,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.1.1",
     "mocha": "^10.2.0",
+    "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0"
   },
   "lint-staged": {
