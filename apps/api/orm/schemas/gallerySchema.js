@@ -29,7 +29,8 @@ const GallerySchema = new Schema({
         alt       : {type: String, default: ''},
         order     : {type: Number, default: 0},
         extension : {type: String, default: '.jpg'},
-        target    : {type: String, default: ''}
+        target    : {type: String, default: ''},
+        targetUrl : {type: String, default: ''}
     }]
 }, {
     timestamps : true,

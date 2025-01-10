@@ -255,6 +255,13 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
             }
         }
 
+        $scope.copyUrl = function (url) {
+            // Copy to clipboard
+            navigator.clipboard.writeText(`/${url}`).then(function () {
+                toastService.toast("success", $translate.instant('gallery.item.urlCopied'));
+            });
+        }
+
         $scope.save = function () {
             if ($scope.item.type === "photo") {
                 $scope.item.content = "";

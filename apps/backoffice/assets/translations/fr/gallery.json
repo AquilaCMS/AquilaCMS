@@ -21,6 +21,7 @@
         "targetMode": "Mode cible",
         "removeRow": "Supprimer",
         "target": "Cible",
+        "targetUrl": "URL",
         "add": "Ajouter"
     },
     "item": {
@@ -40,6 +41,7 @@
         "cancel": "Annuler",
         "save": "Enregistrer",
         "added": "Ajout réussi",
-        "updated": "Modification réussie"
+        "updated": "Modification réussie",
+        "urlCopied": "URL copiée"
     }
 }

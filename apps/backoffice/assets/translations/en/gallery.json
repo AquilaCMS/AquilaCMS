@@ -21,6 +21,7 @@
         "targetMode": "Target mode",
         "removeRow": "Remove",
         "target": "Target",
+        "targetUrl": "URL",
         "add": "Add"
     },
     "item": {
@@ -40,6 +41,7 @@
         "cancel": "Cancel",
         "save": "Save",
         "added": "Item added",
-        "updated": "Item updated"
+        "updated": "Item updated",
+        "urlCopied": "URL copied"
     }
 }

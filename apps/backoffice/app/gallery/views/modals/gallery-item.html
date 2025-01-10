@@ -28,8 +28,11 @@
 
                             <div class="col-sm-8">
                                 <label for="image_url" class="col-sm-4 control-label" translate>gallery.item.url</label>
-                                <div class="col-sm-8" style="margin-bottom: 30px">
+                                <div class="col-sm-8" style="display: flex; gap: 5px; margin-bottom: 30px">
                                     <input id="image_url" class="form-control" translate translate-attr-placeholder='gallery.item.ph1' ng-model="item.src" disabled />
+                                    <button type="button" title="Copier" ng-click="copyUrl(item.src)">
+                                        <i class="fa fa-files-o"></i>
+                                    </button>
                                 </div>
 
                                 <label for="image_alt" class="col-sm-4 control-label" translate>gallery.item.info</label>
@@ -39,9 +42,14 @@
 
                                 <div ng-show="gallery.targetMode">
                                     <label for="image_alt" class="col-sm-4 control-label" translate>gallery.detail.target</label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-8" style="margin-bottom: 30px">
                                         <select class="form-control" ng-model="item.target" ng-options="target for target in targets"></select>
                                     </div>
+                                </div>
+
+                                <label for="image_alt" class="col-sm-4 control-label" translate>gallery.detail.targetUrl</label>
+                                <div class="col-sm-8">
+                                    <input id="image_targetUrl" class="form-control" ng-model="item.targetUrl" />
                                 </div>
                             </div>
                         </div>
