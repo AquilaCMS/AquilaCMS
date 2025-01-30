@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aquila-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aquila
+  template:
+    metadata:
+      labels:
+        app: aquila
+    spec:
+      containers:
+      - name: aquila
+        image: satya36-cpu/aquila:1.0
+        ports:
+        - containerPort: 8005
