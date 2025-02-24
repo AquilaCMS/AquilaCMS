@@ -106,6 +106,15 @@ module.exports = class QueryBuilder {
         const postBodyChecked                                  = this.verifyPostBody(PostBody);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
 
+        if (populate) {
+            const forbiddenWords = ['process', 'require', 'global', 'mainModule', 'constructor', 'eval', 'Function', '_load', 'child_process', 'exec', 'spawn', 'fork', 'execFile'];
+            const stringPopulate = JSON.stringify(populate);
+
+            for (const word of forbiddenWords) {
+                if (stringPopulate.includes(word)) throw NSErrors.PostBodyUndefined;
+            }
+        }
+
         const addStructure   = this.addToStructure(structure, sort);
         const [count, datas] = await Promise.all([
             this.model.countDocuments(filter),
